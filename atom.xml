@@ -3,11 +3,11 @@
   <title>LycTechStack</title>
   
   <subtitle>个人成长技术栈</subtitle>
-  <link href="http://example.com/atom.xml" rel="self"/>
+  <link href="https://lz328.github.io/LycTechStack.github.io/atom.xml" rel="self"/>
   
-  <link href="http://example.com/"/>
+  <link href="https://lz328.github.io/LycTechStack.github.io/"/>
   <updated>2022-03-02T12:15:32.534Z</updated>
-  <id>http://example.com/</id>
+  <id>https://lz328.github.io/LycTechStack.github.io/</id>
   
   <author>
     <name>Lyc</name>
@@ -18,8 +18,8 @@
   
   <entry>
     <title>【计算机图形学】变换-Transform</title>
-    <link href="http://example.com/2022/03/02/transform/"/>
-    <id>http://example.com/2022/03/02/transform/</id>
+    <link href="https://lz328.github.io/LycTechStack.github.io/2022/03/02/transform/"/>
+    <id>https://lz328.github.io/LycTechStack.github.io/2022/03/02/transform/</id>
     <published>2022-03-02T12:13:38.000Z</published>
     <updated>2022-03-02T12:15:32.534Z</updated>
     
@@ -34,14 +34,14 @@
     
     
     
-    <category term="计算机图形学" scheme="http://example.com/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/"/>
+    <category term="计算机图形学" scheme="https://lz328.github.io/LycTechStack.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/"/>
     
   </entry>
   
   <entry>
     <title>Hello World</title>
-    <link href="http://example.com/2022/03/02/hello-world/"/>
-    <id>http://example.com/2022/03/02/hello-world/</id>
+    <link href="https://lz328.github.io/LycTechStack.github.io/2022/03/02/hello-world/"/>
+    <id>https://lz328.github.io/LycTechStack.github.io/2022/03/02/hello-world/</id>
     <published>2022-03-02T11:18:53.055Z</published>
     <updated>1985-10-26T08:15:00.000Z</updated>
     
