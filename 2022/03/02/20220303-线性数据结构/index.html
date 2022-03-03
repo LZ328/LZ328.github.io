@@ -20,32 +20,22 @@
     var CONFIG = {"hostname":"lz328.github.io","root":"/LycTechStack.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":5,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="旋转与四元数一、三维旋转变换的表示方式1、欧拉角 ​        直接给出$x$（俯仰）、$y$（偏航）、$z$（滚转）三个轴向的旋转角，优点是表示简单直接，容易理解，但存在万向节死锁的问题（当两个轴重合时，会损失一个自由度）。">
+  <meta name="description" content="线性数据结构对LeetCode上各种线性数据结构相关的题目做了一个分类整理，主要内容来源于LeetCode官方学习内容，这里只是一个记录和梳理，后序会持续更新。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="【计算机图形学】旋转与四元数">
-<meta property="og:url" content="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/index.html">
+<meta property="og:title" content="【数据结构】线性数据结构">
+<meta property="og:url" content="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220303-%E7%BA%BF%E6%80%A7%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/index.html">
 <meta property="og:site_name" content="LycTechStack">
-<meta property="og:description" content="旋转与四元数一、三维旋转变换的表示方式1、欧拉角 ​        直接给出$x$（俯仰）、$y$（偏航）、$z$（滚转）三个轴向的旋转角，优点是表示简单直接，容易理解，但存在万向节死锁的问题（当两个轴重合时，会损失一个自由度）。">
+<meta property="og:description" content="线性数据结构对LeetCode上各种线性数据结构相关的题目做了一个分类整理，主要内容来源于LeetCode官方学习内容，这里只是一个记录和梳理，后序会持续更新。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301162321017.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301162445459.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301184920885.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185303072.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185318122.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301184949807.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185026298.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185208658.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185635142.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185811398.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185855191.png">
-<meta property="article:published_time" content="2022-03-03T03:45:31.000Z">
-<meta property="article:modified_time" content="2022-03-03T03:49:01.292Z">
+<meta property="article:published_time" content="2022-03-02T12:44:31.000Z">
+<meta property="article:modified_time" content="2022-03-03T04:00:24.151Z">
 <meta property="article:author" content="Lyc">
-<meta property="article:tag" content="计算机图形学">
+<meta property="article:tag" content="数据结构">
+<meta property="article:tag" content="算法">
+<meta property="article:tag" content="C++">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301162321017.png">
 
-<link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/">
+<link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220303-%E7%BA%BF%E6%80%A7%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
 
 
 <script id="page-configurations">
@@ -58,7 +48,7 @@
   };
 </script>
 
-  <title>【计算机图形学】旋转与四元数 | LycTechStack</title>
+  <title>【数据结构】线性数据结构 | LycTechStack</title>
   
 
 
@@ -204,7 +194,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/">
+    <link itemprop="mainEntityOfPage" href="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220303-%E7%BA%BF%E6%80%A7%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/LycTechStack.github.io/images/avatar.png">
@@ -217,7 +207,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          【计算机图形学】旋转与四元数
+          【数据结构】线性数据结构
         </h1>
 
         <div class="post-meta">
@@ -226,17 +216,23 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2022-03-03 11:45:31 / 修改时间：11:49:01" itemprop="dateCreated datePublished" datetime="2022-03-03T11:45:31+08:00">2022-03-03</time>
+              <time title="创建时间：2022-03-02 20:44:31" itemprop="dateCreated datePublished" datetime="2022-03-02T20:44:31+08:00">2022-03-02</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-03 12:00:24" itemprop="dateModified" datetime="2022-03-03T12:00:24+08:00">2022-03-03</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/LycTechStack.github.io/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/" itemprop="url" rel="index"><span itemprop="name">计算机图形学</span></a>
+                  <a href="/LycTechStack.github.io/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
                 </span>
             </span>
 
@@ -253,14 +249,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.4k</span>
+              <span>1.8k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>2 分钟</span>
             </span>
 
         </div>
@@ -272,62 +268,39 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h3 id="旋转与四元数"><a href="#旋转与四元数" class="headerlink" title="旋转与四元数"></a>旋转与四元数</h3><h4 id="一、三维旋转变换的表示方式"><a href="#一、三维旋转变换的表示方式" class="headerlink" title="一、三维旋转变换的表示方式"></a>一、三维旋转变换的表示方式</h4><p><strong>1、欧拉角</strong></p>
-<p>​        直接给出$x$（俯仰）、$y$（偏航）、$z$（滚转）三个轴向的旋转角，优点是表示简单直接，容易理解，但存在万向节死锁的问题（当两个轴重合时，会损失一个自由度）。</p>
+        <h3 id="线性数据结构"><a href="#线性数据结构" class="headerlink" title="线性数据结构"></a>线性数据结构</h3><p>对LeetCode上各种线性数据结构相关的题目做了一个分类整理，主要内容来源于LeetCode官方学习内容，这里只是一个记录和梳理，后序会持续更新。</p>
 <p><em><span id="more"></span></em></p>
-<p><strong>2、轴角</strong></p>
-<p>​        顾名思义，用一个轴$n$和一个角$\theta$表示旋转，其中轴是旋转轴，默认用一个过坐标原点的三维向量表示，角表示绕这个轴旋转的角度，轴角表示为一个四元组$(x,y,z,\theta)$。</p>
-<p>​        但轴角也存在明显的缺陷，一方面，因为角度的周期性，任何$2n\pi$的旋转都等价于没有旋转，这在某些情况下是不可接受的；另一方面，由于轴角描述的“四元组”并不是一个空间下的东西，首先$(x,y,z)$是一个3维坐标下的矢量，而$\theta$则是极坐标下的角度，简单的将他们组合到一起并不能保证他们插值结果的稳定性，因为他们无法归一化，所以不能保证最终插值后得到的矢量长度（经过旋转变换后两点之间的距离）相等；此外，轴角形式的旋转不能直接施于点或矢量，必转换为矩阵或者四元数。</p>
-<p><strong>3、矩阵</strong></p>
-<p>​        计算机图形学中，一般以矩阵形式表示旋转，对于三维空间的点或向量，将其表示为齐次坐标形式，则绕不同旋转轴的旋转矩阵为：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301162321017.png" alt="image-20220301162321017"></p>
-<p>而对于任意旋转，都可以分解为这三个轴的旋转，可以利用<strong>Rodrigues旋转公式</strong>将轴角表示的任意旋转转换为矩阵形式：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301162445459.png" alt="image-20220301162445459"></p>
-<p>​        矩阵表示法可以直接施加于点或向量，计算相对方便，也叫容易理解，但在实际工程中，如果我们要存储一个对象的旋转参数，就要存储这个对象的旋转矩阵，一共16个浮点数，对空间消耗较大，并且矩阵形式同样无法进行简单的插值，因此在实际的游戏开发及其他工程应用中，存储一个对象的旋转，通常采用四元数的形式。</p>
-<p><strong>4、四元数</strong></p>
-<p>​        四元数像是轴角表示法的优化版本，但解决了所有轴角可能存在的问题，最大的优势就是便于插值，并且存储时只需要存储4个浮点数，而且求逆、串联等操作比矩阵更方便，相比于轴角和矩阵优势巨大。</p>
-<p>​        对于四元数的理解，可以看作是有一个实部和三个虚部构成的虚数，描述的是四维空间，具体可以看<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/53872740">可视化理解四元数</a>。</p>
-<hr>
-<h4 id="二、四元数"><a href="#二、四元数" class="headerlink" title="二、四元数"></a>二、四元数</h4><p>​        四元数的全部公式和运算法则以及与矩阵等形式的转化，可以查看<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/97186723">四元数(Quaternions)</a>，这里对常用的关键公式进行总结。</p>
-<p>​        四元数表示为$(x,y,z,w)$，其中<br>$$<br>x&#x3D;i·q_1·sin(\theta&#x2F;2) \<br>y&#x3D;j·q_2·sin(\theta&#x2F;2) \<br>z&#x3D;k·q_3·sin(\theta&#x2F;2) \<br>w&#x3D;cos(\theta&#x2F;2)<br>$$<br>其中$(iq_1,jq_2,kq_3)$是表示旋转轴的矢量，$\theta$表示绕此轴旋转的角度。对四元数$q_2$左乘一个四元数$q_1$，其作用是将$q_2$拉伸$q_1$的模长，再作用一个特殊的四维旋转。所以我们用<strong>单位四元数</strong>来表示三维空间中的旋转，因为单位四元数模长为1$(w^2+x^2+y^2+z^2&#x3D;1)$，而旋转时必须要保证的就是，一个向量旋转前后模长不变。</p>
-<ul>
-<li>乘法</li>
+<h4 id="1、数组和字符串"><a href="#1、数组和字符串" class="headerlink" title="1、数组和字符串"></a>1、<a target="_blank" rel="noopener" href="https://leetcode-cn.com/leetbook/detail/array-and-string/">数组和字符串</a></h4><ul>
+<li>二分查找（一般用于给定的数组是有序的，或先手动排序，如<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/search-insert-position/solution/">搜索插入位置</a>、<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array/solution/">寻找旋转排序数组中的最小值</a>）</li>
+<li>首尾双指针（<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/two-sum-ii-input-array-is-sorted/solution/">两数之和 II - 输入有序数组</a>）</li>
+<li>快慢双指针（<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/remove-element/solution/">移除元素</a>、<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/max-consecutive-ones/solution/">最大连续 1 的个数</a>、<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/minimum-size-subarray-sum/solution/">长度最小的子数组</a>、<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/remove-duplicates-from-sorted-array/solution/">删除有序数组中的重复项</a>、<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/move-zeroes/solution/">移动零</a>）</li>
+<li>滑动窗口（<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/maximum-average-subarray-i/solution/">子数组最大平均数</a>、<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/maximum-points-you-can-obtain-from-cards/solution/">可获得的最大点数</a>、<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/grumpy-bookstore-owner/solution/">爱生气的书店老板</a>、<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/maximum-number-of-vowels-in-a-substring-of-given-length/solution/">定长子串中元音的最大数目</a>、<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/minimum-operations-to-reduce-x-to-zero/submissions/">将 x 减到 0 的最小操作数</a>、<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/minimum-window-substring/solution/hua-dong-chuang-kou-you-hua-jie-fa-by-bu-1i5e/">最小覆盖子串</a>）</li>
+<li><a target="_blank" rel="noopener" href="https://leetcode-cn.com/leetbook/read/array-and-string/cpoo6/">字符串匹配KMP算法</a>：关键在于构建next数组的方法</li>
+<li><a target="_blank" rel="noopener" href="https://leetcode-cn.com/leetbook/read/array-and-string/y1nke/">二维数组</a></li>
 </ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301184920885.png" alt="image-20220301184920885"></p>
-<ul>
-<li>标量乘法</li>
+<h4 id="2、链表"><a href="#2、链表" class="headerlink" title="2、链表"></a>2、<a target="_blank" rel="noopener" href="https://leetcode-cn.com/leetbook/detail/linked-list/">链表</a></h4><ul>
+<li>递归（大部分问题都可以用递归，典型问题如<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/swap-nodes-in-pairs/solution/hua-jie-suan-fa-24-liang-liang-jiao-huan-lian-biao/">两两交换链表中的节点</a>）</li>
+<li>快慢指针（[环形链表](<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/linked-list-cycle-ii/solution/">142. 环形链表 II 题解 - 力扣（LeetCode） (leetcode-cn.com)</a>)、[相交链表](<a target="_blank" rel="noopener" href="https://leetcode-cn.com/leetbook/read/linked-list/jjbj2/">链表 - LeetBook - 力扣（LeetCode）全球极客挚爱的技术成长平台 (leetcode-cn.com)</a>)等）</li>
+<li>经典问题（[反转链表](<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/reverse-linked-list/">206. 反转链表 - 力扣（LeetCode） (leetcode-cn.com)</a>)、[回文链表](<a target="_blank" rel="noopener" href="https://leetcode-cn.com/leetbook/read/linked-list/fov6t/">链表 - LeetBook - 力扣（LeetCode）全球极客挚爱的技术成长平台 (leetcode-cn.com)</a>)等）</li>
+<li>一般处理链表问题时在原链表前加一个虚节点就可以避免对头节点的特殊判断</li>
 </ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185303072.png" alt="image-20220301185303072"></p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185318122.png" alt="image-20220301185318122"></p>
-<ul>
-<li>加法</li>
+<h4 id="3、队列"><a href="#3、队列" class="headerlink" title="3、队列"></a>3、队列</h4><ul>
+<li><a target="_blank" rel="noopener" href="https://leetcode-cn.com/leetbook/read/queue-stack/kc5ge/">广搜BFS</a>（<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/walls-and-gates/">墙与门</a>、<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/number-of-islands/">岛屿数量</a>、<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/open-the-lock/">打开转盘锁</a>）:一般用来二叉树的层序遍历、求最短路径、最小数量之类的题目</li>
+<li>广度优先搜索模板：</li>
 </ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301184949807.png" alt="image-20220301184949807"></p>
-<ul>
-<li>共轭</li>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">BFS</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	queue&lt;<span class="type">int</span>&gt; q;</span><br><span class="line">    unordered_set&lt;节点或状态&gt; map;	<span class="comment">//可选，看是否需要重复入队</span></span><br><span class="line">    <span class="type">int</span> step = <span class="number">0</span>;</span><br><span class="line">    q.<span class="built_in">push</span>(根节点或状态);</span><br><span class="line">    <span class="keyword">while</span>(!q.<span class="built_in">empty</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        ++step;</span><br><span class="line">        <span class="type">int</span> size = q.<span class="built_in">size</span>();</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; size; i++)	<span class="comment">//遍历当前层所有节点并扩展相邻节点</span></span><br><span class="line">        &#123;</span><br><span class="line">            节点或状态 cur = q.<span class="built_in">front</span>();	<span class="comment">//取队列头节点</span></span><br><span class="line">            <span class="keyword">if</span>(cur == 目标节点或状态)	<span class="keyword">return</span> step;</span><br><span class="line">            <span class="keyword">for</span>(节点 x : cur的所有相邻节点)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(map.<span class="built_in">count</span>(x)) <span class="keyword">continue</span>;	<span class="comment">//判断是否已经访问过，可选</span></span><br><span class="line">                q.<span class="built_in">push</span>(x);</span><br><span class="line">                map.<span class="built_in">insert</span>(x);	<span class="comment">//可选</span></span><br><span class="line">            &#125;</span><br><span class="line">            q.<span class="built_in">pop</span>();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> step;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="4、栈"><a href="#4、栈" class="headerlink" title="4、栈"></a>4、栈</h4><ul>
+<li>深搜DFS（<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/keys-and-rooms/solution/yao-chi-he-fang-jian-shen-sou-he-yan-sou-nn8j/">钥匙和房间</a>、<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/flood-fill/solution/tu-xiang-xuan-ran-dfshe-bfs-by-bu-luo-bu-2tg4/">图像渲染</a>、以及上面可以用BFS做的题）：一般能用广搜的也能用深搜，但是深搜不能保证是最短路径或者最小数量，还用于二叉树的前中后序遍历</li>
+<li>DFS模板（非递归，类似于上面的BFS）</li>
 </ul>
-<p>$$<br>q&#x3D;(w,x,y,z) \<br>q^*&#x3D;(w,-x,-y,-z)<br>$$</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">DFS</span><span class="params">(节点 root，节点 target)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	stack&lt;<span class="type">int</span>&gt; s;</span><br><span class="line">    unordered_set&lt;节点&gt; visited;	<span class="comment">//可选，看是否需要重复入栈</span></span><br><span class="line">    s.<span class="built_in">push</span>(root);</span><br><span class="line">    visited.<span class="built_in">insert</span>(root);</span><br><span class="line">    <span class="keyword">while</span>(!s.<span class="built_in">empty</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        节点 cur = q.<span class="built_in">top</span>();	<span class="comment">//取栈顶节点</span></span><br><span class="line">        <span class="keyword">if</span>(cur == target) <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        <span class="keyword">for</span>(节点 x : cur的所有相邻节点)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span>(visited.<span class="built_in">count</span>(x)) <span class="keyword">continue</span>;	<span class="comment">//判断是否已经访问过，可选</span></span><br><span class="line">            q.<span class="built_in">push</span>(x);</span><br><span class="line">            visited.<span class="built_in">insert</span>(x);	<span class="comment">//可选</span></span><br><span class="line">        &#125;</span><br><span class="line">        q.<span class="built_in">pop</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <ul>
-<li>模</li>
+<li>DFS模板（递归）</li>
 </ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185026298.png" alt="image-20220301185026298"></p>
-<ul>
-<li>Identity</li>
-</ul>
-<p>$$<br>i&#x3D;(0,0,0,1)<br>$$</p>
-<ul>
-<li>逆</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185208658.png" alt="image-20220301185208658"></p>
-<ul>
-<li>单位四元数表示旋转：单位四元数模为1，因此可以表示为</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185635142.png" alt="image-20220301185635142"></p>
-<p>将一个三维向量$p$写成四元数形式</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185811398.png" alt="image-20220301185811398"></p>
-<p>则运算</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185855191.png" alt="image-20220301185855191"></p>
-<p>表示向量$p$在三维空间中绕轴$u_q$旋转$2\phi$弧度。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">DFS</span><span class="params">(节点 root，节点 target, unordered_set&lt;节点&gt;&amp; visited)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(root == target) <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    <span class="keyword">for</span>(节点 x : root的所有相邻节点)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(visited.<span class="built_in">count</span>(x)) <span class="keyword">continue</span>;	<span class="comment">//判断是否已经访问过，可选</span></span><br><span class="line">        visited.<span class="built_in">insert</span>(x);	<span class="comment">//可选</span></span><br><span class="line">        <span class="keyword">if</span>(<span class="built_in">DFS</span>(x,target,visited)) <span class="keyword">return</span> <span class="literal">true</span>;   </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 
     </div>
 
@@ -348,7 +321,9 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/LycTechStack.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/" rel="tag"># 计算机图形学</a>
+              <a href="/LycTechStack.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag"># 数据结构</a>
+              <a href="/LycTechStack.github.io/tags/%E7%AE%97%E6%B3%95/" rel="tag"># 算法</a>
+              <a href="/LycTechStack.github.io/tags/C/" rel="tag"># C++</a>
           </div>
 
         
@@ -356,13 +331,10 @@
 
         
     <div class="post-nav">
+      <div class="post-nav-item"></div>
       <div class="post-nav-item">
-    <a href="/LycTechStack.github.io/2022/03/02/20200302-%E5%8F%98%E6%8D%A2/" rel="prev" title="【计算机图形学】变换-Transform">
-      <i class="fa fa-chevron-left"></i> 【计算机图形学】变换-Transform
-    </a></div>
-      <div class="post-nav-item">
-    <a href="/LycTechStack.github.io/2022/03/03/20220303-%E4%BA%8C%E5%8F%89%E6%A0%91/" rel="next" title="【数据结构】二叉树">
-      【数据结构】二叉树 <i class="fa fa-chevron-right"></i>
+    <a href="/LycTechStack.github.io/2022/03/02/20200302-%E5%8F%98%E6%8D%A2/" rel="next" title="【计算机图形学】变换-Transform">
+      【计算机图形学】变换-Transform <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -423,7 +395,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0"><span class="nav-text">旋转与四元数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%B8%89%E7%BB%B4%E6%97%8B%E8%BD%AC%E5%8F%98%E6%8D%A2%E7%9A%84%E8%A1%A8%E7%A4%BA%E6%96%B9%E5%BC%8F"><span class="nav-text">一、三维旋转变换的表示方式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%9B%9B%E5%85%83%E6%95%B0"><span class="nav-text">二、四元数</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%BF%E6%80%A7%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-text">线性数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1%E3%80%81%E6%95%B0%E7%BB%84%E5%92%8C%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="nav-text">1、数组和字符串</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2%E3%80%81%E9%93%BE%E8%A1%A8"><span class="nav-text">2、链表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3%E3%80%81%E9%98%9F%E5%88%97"><span class="nav-text">3、队列</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4%E3%80%81%E6%A0%88"><span class="nav-text">4、栈</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -713,7 +685,7 @@ NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
       repo        : 'LycTechStack.github.io',
       owner       : 'LZ328',
       admin       : ['Lyc'],
-      id          : 'd03da625f06b42d0ba81dd343968b6a0',
+      id          : 'c545587856059d27f0aeb9f878b5dbf2',
         language: 'zh-CN',
       distractionFreeMode: true
     });
