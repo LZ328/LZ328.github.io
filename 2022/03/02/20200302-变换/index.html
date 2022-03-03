@@ -437,13 +437,40 @@
 
     <div>
     
-      <div>
+      <style>
+        html{
+            font-size: 20px;
+        }
+
+        .box1{
+            width: 100%;
+            height: 10rem;
+
+            background-color: gold;
+            font-size: 14px;
+            line-height: 10rem;
+            text-align: center;
+        }
+    </style>
+    <script>
+        (function(){
+            var calc = function(){
+                var docElement = document.documentElement;
+                var clientWidthValue = docElement.clientWidth > 750 ? 750 : docElement.clientWidth;
+                docElement.style.fontSize = 20*(clientWidthValue/375) + 'px';
+            }
+            calc();
+            window.addEventListener('resize',calc);
+        })();
+    </script>
+
+<div>
     
         <div style="text-align:center;color: #ccc;font-size:14px;">---- 本文结束 <i class="fa fa-trophy"></i> 知识又增加了亿点点！----</div>
     
 </div>
 <br />
-<div>
+<div class="box1">
   <div>
     <fieldset
         style="
