@@ -14,10 +14,12 @@
 
 
 <link rel="stylesheet" href="/LycTechStack.github.io/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/LycTechStack.github.io/lib/pace/pace-theme-minimal.min.css">
+  <script src="/LycTechStack.github.io/lib/pace/pace.min.js"></script>
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"lz328.github.io","root":"/LycTechStack.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":5,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"lz328.github.io","root":"/LycTechStack.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":5,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="二叉树 摘要 本文主要总结与二叉树有关的关键知识以及具有代表性的题目，后续将持续更新。">
@@ -123,11 +125,6 @@
     <a href="/LycTechStack.github.io/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
 
   </li>
-        <li class="menu-item menu-item-about">
-
-    <a href="/LycTechStack.github.io/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
-
-  </li>
         <li class="menu-item menu-item-tags">
 
     <a href="/LycTechStack.github.io/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
@@ -141,6 +138,11 @@
         <li class="menu-item menu-item-archives">
 
     <a href="/LycTechStack.github.io/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/LycTechStack.github.io/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -204,7 +206,7 @@
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/LycTechStack.github.io/images/avatar.png">
       <meta itemprop="name" content="Lyc">
-      <meta itemprop="description" content="从零开始记录学习笔记，主要内容包括C++、数据结构、算法、计算机图形学、游戏引擎、游戏原理、计算机网络、操作系统、数据库、面经等等">
+      <meta itemprop="description" content="从零开始的个人学习总结和技术经验分享，主要内容包括C++、数据结构、算法、计算机图形学、游戏引擎、游戏原理、计算机网络、操作系统、数据库、面经等等">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -297,14 +299,51 @@
 
     <div>
     
-      
-<div>
+      <div>
     
-        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+        <div style="text-align:center;color: #ccc;font-size:14px;">------------- 本文结束 <i class="fa fa-trophy"></i> 知识又增加了亿点点！-------------</div>
     
 </div>
+<br />
+<div>
+  <div>
+    <fieldset
+        style="
+            border: 1px dashed #C0C0C0;
+            padding: 10px;
+            border-radius: 5px;
+            line-height: 2em;
+            color: #6d6d6d;
+        ">
+        <legend
+            align="center"
+            style="
+                width: 30%;
+                text-align: center;
+                color: #6d6d6d;
+                border: 1px dashed #C0C0C0;
+                border-radius: 5px;
+            ">
+            文章版权声明
+        </legend>
+        1、博客名称：<font color="#37c6c0">LycTechStack</font><br />
+        2、博客网址：<font color="#37c6c0">https://lz328.github.io/LycTechStack.github.io/</font><br />
+        3、本博客的文章部分内容可能来源于网络，仅供大家学习与参考，如有侵权，请联系博客主进行删除处理。<br />
+        4、本博客所有文章版权归博客主所有，如需转载请标明出处。<br />
+    </fieldset>
+  </div>
+</div>
+
     
     </div>
+      
+  <div class="popular-posts-header">相关文章</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\02\20220303-线性数据结构\" rel="bookmark">【数据结构】线性数据结构</a></div>
+    </li>
+  </ul>
+
 
       <footer class="post-footer">
           <div class="post-tags">
@@ -391,7 +430,7 @@
     <img class="site-author-image" itemprop="image" alt="Lyc"
       src="/LycTechStack.github.io/images/avatar.png">
   <p class="site-author-name" itemprop="name">Lyc</p>
-  <div class="site-description" itemprop="description">从零开始记录学习笔记，主要内容包括C++、数据结构、算法、计算机图形学、游戏引擎、游戏原理、计算机网络、操作系统、数据库、面经等等</div>
+  <div class="site-description" itemprop="description">从零开始的个人学习总结和技术经验分享，主要内容包括C++、数据结构、算法、计算机图形学、游戏引擎、游戏原理、计算机网络、操作系统、数据库、面经等等</div>
 </div>
 <div class="site-state-wrap motion-element">
   <nav class="site-state">
@@ -448,7 +487,7 @@
   &copy; 2021 – 
   <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
-    <i class="fa fa-heart"></i>
+    <i class="fa fa-heartbeat"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">Lyc</span>
     <span class="post-meta-divider">|</span>
@@ -499,8 +538,7 @@
   </div>
 
   
-  
-  <script color='0,0,0' opacity='0.5' zIndex='-1' count='150' src="/LycTechStack.github.io/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script size="300" alpha="0.6" zIndex="-1" src="/LycTechStack.github.io/lib/canvas-ribbon/canvas-ribbon.js"></script>
   <script src="/LycTechStack.github.io/lib/anime.min.js"></script>
   <script src="/LycTechStack.github.io/lib/pjax/pjax.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/pangu@4/dist/browser/pangu.min.js"></script>
