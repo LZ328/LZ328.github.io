@@ -239,17 +239,17 @@
       
         <h2 id="变换"><a href="#变换" class="headerlink" title="变换"></a>变换</h2><h3 id="1-二维变换"><a href="#1-二维变换" class="headerlink" title="1 二维变换"></a>1 二维变换</h3><h4 id="1-1-缩放、反射、错切、旋转"><a href="#1-1-缩放、反射、错切、旋转" class="headerlink" title="1.1 缩放、反射、错切、旋转"></a>1.1 缩放、反射、错切、旋转</h4><p>​        缩放、反射、错切、旋转都属于<strong>线性变换</strong>，可以用<br>$$<br>p’&#x3D;M·p<br>$$<br>的形式表示，其中M是变换矩阵。</p>
 <p><strong>1.1.1 缩放变换</strong></p>
-<p><img src="/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302163741174.png" alt="image-20220302163741174"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302163741174.png" alt="image-20220302163741174"></p>
 <p><strong>1.1.2 反射变换</strong></p>
-<p><img src="/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302163741174.png" alt="image-20220302163741174"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302163741174.png" alt="image-20220302163741174"></p>
 <p><strong>1.1.3 错切变换</strong></p>
-<p><img src="/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302163814166.png" alt="image-20220302163814166"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302163814166.png" alt="image-20220302163814166"></p>
 <p><strong>1.1.4 旋转变换</strong></p>
-<p><img src="/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302163954343.png" alt="image-20220302163954343"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302163954343.png" alt="image-20220302163954343"></p>
 <h4 id="1-2-平移变换"><a href="#1-2-平移变换" class="headerlink" title="1.2 平移变换"></a>1.2 平移变换</h4><p>​        <strong>平移变换不是线性变换</strong>，因为不可以用矩阵乘法的形式表示，而是在原向量上加一个平移向量</p>
-<p><img src="/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302164304998.png" alt="image-20220302164304998"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302164304998.png" alt="image-20220302164304998"></p>
 <h4 id="1-3-齐次坐标"><a href="#1-3-齐次坐标" class="headerlink" title="1.3 齐次坐标"></a>1.3 齐次坐标</h4><p>​        为了使得所有变换都能成为线性变换，即让所有变换都能表示成<br>$$<br>p’&#x3D;M·p<br>$$<br>的形式，引入齐次坐标的概念。为二维坐标引入第三维，二维点的第三维填充1，二维向量的第三维填充0：</p>
-<p><img src="/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302164609617.png" alt="image-20220302164609617"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302164609617.png" alt="image-20220302164609617"></p>
 <blockquote>
 <p>为什么点是1，向量是0？</p>
 <p>因为这样的规定符合点和向量的运算关系：</p>
@@ -258,34 +258,34 @@
 <p>点 + 点 &#x3D; 点（两点之和在齐次坐标中是二者中点，因为<strong>齐次坐标中规定，$(x,y,z,1)$和$(kx,ky,kz,k)$表示的是同一个点。</strong>）</p>
 </blockquote>
 <p>由此，平移变换也可以表示为：</p>
-<p><img src="/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302164639435.png" alt="image-20220302164639435"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302164639435.png" alt="image-20220302164639435"></p>
 <p>于是对于二维空间的任意变换，使用齐次坐标都可以进行表示：</p>
-<p><img src="/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302164801021.png" alt="image-20220302164801021"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302164801021.png" alt="image-20220302164801021"></p>
 <p>对于任何线性变换+平移的组合，称为仿射变换</p>
-<p><img src="/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302164926591.png" alt="image-20220302164926591"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302164926591.png" alt="image-20220302164926591"></p>
 <p>仿射变换在齐次坐标下的通用形式就可以表示为：</p>
-<p><img src="/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302164916131.png" alt="image-20220302164916131"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302164916131.png" alt="image-20220302164916131"></p>
 <h4 id="1-4-逆变换"><a href="#1-4-逆变换" class="headerlink" title="1.4 逆变换"></a>1.4 逆变换</h4><p>​        一个变换矩阵的逆矩阵就是这个变换的逆变换。</p>
-<p><img src="/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302165438620.png" alt="image-20220302165438620"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302165438620.png" alt="image-20220302165438620"></p>
 <h4 id="1-5-组合变换"><a href="#1-5-组合变换" class="headerlink" title="1.5 组合变换"></a>1.5 组合变换</h4><p>​        组合变换按顺序将每一步变换矩阵施加于原来的点或向量即可，但变换顺序不能随意交换，因为矩阵乘法不满足交换律。</p>
-<p><img src="/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302165628966.png" alt="image-20220302165628966"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302165628966.png" alt="image-20220302165628966"></p>
 <h3 id="2-三维变换"><a href="#2-三维变换" class="headerlink" title="2 三维变换"></a>2 三维变换</h3><h4 id="2-1-三维齐次坐标"><a href="#2-1-三维齐次坐标" class="headerlink" title="2.1 三维齐次坐标"></a>2.1 三维齐次坐标</h4><p>​        二维齐次坐标的概念可以完全推广到三维：</p>
-<p><img src="/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302165804338.png" alt="image-20220302165804338"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302165804338.png" alt="image-20220302165804338"></p>
 <p>​        仿射变换矩阵也同样可以进行推广：</p>
-<p><img src="/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302165829764.png" alt="image-20220302165829764"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302165829764.png" alt="image-20220302165829764"></p>
 <p>​        但对于三维旋转变换，有一定的特殊性，三维旋转变换矩阵表示如下：</p>
-<p><img src="/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302165915330.png" alt="image-20220302165915330"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302165915330.png" alt="image-20220302165915330"></p>
 <blockquote>
 <p>注意绕y轴旋转时的矩阵，与绕另外两轴旋转时略有不同，这是由于在右手坐标系中，y轴正方向定义为z轴叉乘x轴，而不是x轴叉乘z轴，所以sin的正负号会有换位，而x轴正方向定义为y轴叉乘z轴，z轴正方向定义为x轴叉乘y轴，所以矩阵形式和二维一样。</p>
 <p>更多关于三维旋转的内容，查看<a href="%E2%80%AA%E5%8F%98%E6%8D%A2%EF%BC%9A%E8%A1%A5%E5%85%85%E5%86%85%E5%AE%B9-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0.md">‪补充内容：旋转与四元数</a></p>
 </blockquote>
 <h4 id="2-2-视图变换（Viewing-Transformation）"><a href="#2-2-视图变换（Viewing-Transformation）" class="headerlink" title="2.2 视图变换（Viewing Transformation）"></a>2.2 视图变换（Viewing Transformation）</h4><p>​        视图变换模拟现实世界中拍照的过程，指把三维空间中的物体，投影到我们的观察视角上的过程，也称为<strong>MVP变换（model、view、projection）</strong></p>
-<p><img src="/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302170639587.png" alt="image-20220302170639587"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302170639587.png" alt="image-20220302170639587"></p>
 <p>首先将物体变换到指定位置（model变换），再把相机（视角）摆放到指定位置（view变换），然后进行拍照（投影变换）。</p>
 <h4 id="2-3-视角-x2F-相机变换（View-x2F-Camera-Transformation）"><a href="#2-3-视角-x2F-相机变换（View-x2F-Camera-Transformation）" class="headerlink" title="2.3 视角&#x2F;相机变换（View&#x2F;Camera Transformation）"></a>2.3 视角&#x2F;相机变换（View&#x2F;Camera Transformation）</h4><p>​        如何让固定一个相机的位置？首先要有一个位置向量$\vec e$指示相机摆放的位置，然后要有一个视角（凝视）向量指向$\vec g$观察方向，最后要有一个上方向向量$\vec t$指示当前向上的方向是什么，相当于固定相机的旋转。</p>
-<p><img src="/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302171338777.png" alt="image-20220302171338777"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302171338777.png" alt="image-20220302171338777"></p>
 <p>​        再考虑一个关键点，对于相机和被拍摄的物体，如果二者之间不存在相对运动，那么拍摄出的画面永远是一样的</p>
-<p><img src="/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302171432219.png" alt="image-20220302171432219"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302171432219.png" alt="image-20220302171432219"></p>
 <p>​        因此，为了计算和表示方便，我们对于任意给定的相机和物体，把相机放置到坐标系原点，观察方向沿-Z轴方向，up方向为Y轴方向，物体随着相机做相同的变换，这样相机和物体没有发生相对运动，观察到的画面也不发生改变，这一过程即为视角&#x2F;相机变换，这个过程完成了MVP变换中M和V两步。<br>​        因为对相机和物体的变换是相同的，所以他们的变换矩阵也相同，我们按照相机推导出变换矩阵即可。相机要做的变换分为3步：</p>
 <ul>
 <li>位置向量$\vec e$平移到坐标原点</li>
@@ -294,16 +294,16 @@
 <li>做完这些后，自然$\vec g \times \vec t$指向X轴方向</li>
 </ul>
 <p>于是，平移矩阵为：</p>
-<p><img src="/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302172209907.png" alt="image-20220302172209907"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302172209907.png" alt="image-20220302172209907"></p>
 <p>旋转矩阵不好写出，但是将X轴旋转到$\vec g \times \vec t$方向，Y轴旋转到$\vec t$方向，-Z轴旋转到$\vec g$方向的旋转矩阵可以直接写出：</p>
-<p><img src="/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302172334394.png" alt="image-20220302172334394"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302172334394.png" alt="image-20220302172334394"></p>
 <p>于是这个变换的逆变换就是我们要的旋转矩阵，又因为旋转矩阵是正交矩阵，所以逆矩阵就是转置矩阵，因此我们要的旋转矩阵为：</p>
-<p><img src="/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302172437821.png" alt="image-20220302172437821"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302172437821.png" alt="image-20220302172437821"></p>
 <p>于是整个视角&#x2F;相机变换的矩阵为：</p>
-<p><img src="/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302172458878.png" alt="image-20220302172458878"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302172458878.png" alt="image-20220302172458878"></p>
 <h4 id="2-4-投影变换"><a href="#2-4-投影变换" class="headerlink" title="2.4 投影变换"></a>2.4 投影变换</h4><p>​        投影变换分为正交投影和透视投影，透视投影更为常用，但要以正交投影为基础。</p>
-<p><img src="/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302172624799.png" alt="image-20220302172624799"></p>
-<p><img src="/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302172700695.png" alt="image-20220302172700695"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302172624799.png" alt="image-20220302172624799"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302172700695.png" alt="image-20220302172700695"></p>
 <p><strong>2.4.1 正交投影（Orthographic projection）</strong></p>
 <p>​        正交投影的一般过程为：</p>
 <ul>
@@ -311,40 +311,40 @@
 <li>先将该立方体的中心平移到坐标原点</li>
 <li>再将三个区间缩放到[-1,1]，最终得到一个规范立方体</li>
 </ul>
-<p><img src="/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302172959740.png" alt="image-20220302172959740"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302172959740.png" alt="image-20220302172959740"></p>
 <p>​        以上一系列变换的矩阵很好写出：</p>
-<p><img src="/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302173201783.png" alt="image-20220302173201783"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302173201783.png" alt="image-20220302173201783"></p>
 <p>​        这就是正交投影矩阵。</p>
 <p><strong>2.4.2 透视投影（Perspective Projection）</strong></p>
 <p>​        透视投影也就是人眼正常情况下观察到的画面，近大远小，平行线不再平行。对比透视投影和正交投影，可以发现，只要我们把透视投影的四棱台“压缩”成正交投影的立方体，再做正交投影即可。</p>
-<p><img src="/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302173404924.png" alt="image-20220302173404924"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302173404924.png" alt="image-20220302173404924"></p>
 <p>​        那么“压缩”这一步如何用矩阵形式表示呢？通过侧视图，可以看出远平面上的点$(x,y,z)$和近平面上的点$(x’,y’,z’)$的y坐标的关系：</p>
-<p><img src="/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302173616684.png" alt="image-20220302173616684"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302173616684.png" alt="image-20220302173616684"></p>
 <p>同理也可以得到x坐标的关系：</p>
-<p><img src="/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302173700210.png" alt="image-20220302173700210"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302173700210.png" alt="image-20220302173700210"></p>
 <p>因此在齐次坐标系下，远平面上的点$(x,y,z)$经过“压缩”的过程就可以写成：</p>
-<p><img src="/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302173827446.png" alt="image-20220302173827446"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302173827446.png" alt="image-20220302173827446"></p>
 <p>根据这个关系，这个“压缩”矩阵$M_{persp\rightarrow ortho}^{4\times 4}$我们就可以确定一部分，因为</p>
-<p><img src="/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302173918746.png" alt="image-20220302173918746"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302173918746.png" alt="image-20220302173918746"></p>
 <p>所以</p>
-<p><img src="/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302174126707.png" alt="image-20220302174126707"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302174126707.png" alt="image-20220302174126707"></p>
 <p>但是第三啊行如何确定呢，直接推导任意点的Z坐标变换前后是如何变化的是非常困难的，但是我们可以从特殊点入手，我们知道以下两个关键信息：</p>
 <ul>
 <li>对于任意近平面上的点，变换前后所有坐标都不发生变化</li>
 <li>对于任意远平面上的点，变换前后Z坐标不发生变化</li>
 </ul>
 <p>对于第一点，任意近平面上的点可以写成$(x,y,n,1)$，所以写成数学形式就是：</p>
-<p><img src="/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302174358169.png" alt="image-20220302174358169"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302174358169.png" alt="image-20220302174358169"></p>
 <p>可以看到变换后的Z坐标变成了$n^2$，显然与$x$和$y$无关，因此矩阵$M_{persp\rightarrow ortho}^{4\times 4}$的第三行一定是$(0,0,A,B)$的形式。</p>
-<p><img src="/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302174644740.png" alt="image-20220302174644740"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302174644740.png" alt="image-20220302174644740"></p>
 <p>所以我们可以得到：</p>
-<p><img src="/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302174719504.png" alt="image-20220302174719504"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302174719504.png" alt="image-20220302174719504"></p>
 <p>同样的，对于第二点，任意远平面上的点变换前后Z坐标不变，我们取远平面中心点$(x,y,f,1)$，于是可以得到：</p>
-<p><img src="/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302174908764.png" alt="image-20220302174908764"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302174908764.png" alt="image-20220302174908764"></p>
 <p>两个未知数，两个方程，联立可以把A和B解出来：</p>
-<p><img src="/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302174938303.png" alt="image-20220302174938303"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302174938303.png" alt="image-20220302174938303"></p>
 <p>这样我们就知道了完整的$M_{persp\rightarrow ortho}^{4\times 4}$矩阵：<br>$$<br>\begin{pmatrix}<br>n &amp; 0 &amp; 0 &amp; 0 \<br>0 &amp; n &amp; 0 &amp; 0 \<br>0 &amp; 0 &amp; n+f &amp; -nf \<br>0 &amp; 0 &amp; 1 &amp; 0<br>\end{pmatrix}<br>$$<br>于是透视投影变换的矩阵就是：</p>
-<p><img src="/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302175347739.png" alt="image-20220302175347739"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20220302-transform/image-20220302175347739.png" alt="image-20220302175347739"></p>
 
     </div>
 
