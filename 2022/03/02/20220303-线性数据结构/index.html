@@ -299,18 +299,15 @@
 <li>广度优先搜索模板：</li>
 </ul>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">BFS</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	queue&lt;<span class="type">int</span>&gt; q;</span><br><span class="line">    unordered_set&lt;节点或状态&gt; map;	<span class="comment">//可选，看是否需要重复入队</span></span><br><span class="line">    <span class="type">int</span> step = <span class="number">0</span>;</span><br><span class="line">    q.<span class="built_in">push</span>(根节点或状态);</span><br><span class="line">    <span class="keyword">while</span>(!q.<span class="built_in">empty</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        ++step;</span><br><span class="line">        <span class="type">int</span> size = q.<span class="built_in">size</span>();</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; size; i++)	<span class="comment">//遍历当前层所有节点并扩展相邻节点</span></span><br><span class="line">        &#123;</span><br><span class="line">            节点或状态 cur = q.<span class="built_in">front</span>();	<span class="comment">//取队列头节点</span></span><br><span class="line">            <span class="keyword">if</span>(cur == 目标节点或状态)	<span class="keyword">return</span> step;</span><br><span class="line">            <span class="keyword">for</span>(节点 x : cur的所有相邻节点)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(map.<span class="built_in">count</span>(x)) <span class="keyword">continue</span>;	<span class="comment">//判断是否已经访问过，可选</span></span><br><span class="line">                q.<span class="built_in">push</span>(x);</span><br><span class="line">                map.<span class="built_in">insert</span>(x);	<span class="comment">//可选</span></span><br><span class="line">            &#125;</span><br><span class="line">            q.<span class="built_in">pop</span>();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> step;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <h4 id="4、栈"><a href="#4、栈" class="headerlink" title="4、栈"></a>4、栈</h4><ul>
 <li>深搜DFS（<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/keys-and-rooms/solution/yao-chi-he-fang-jian-shen-sou-he-yan-sou-nn8j/">钥匙和房间</a>、<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/flood-fill/solution/tu-xiang-xuan-ran-dfshe-bfs-by-bu-luo-bu-2tg4/">图像渲染</a>、以及上面可以用BFS做的题）：一般能用广搜的也能用深搜，但是深搜不能保证是最短路径或者最小数量，还用于二叉树的前中后序遍历</li>
 <li>DFS模板（非递归，类似于上面的BFS）</li>
 </ul>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">DFS</span><span class="params">(节点 root，节点 target)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	stack&lt;<span class="type">int</span>&gt; s;</span><br><span class="line">    unordered_set&lt;节点&gt; visited;	<span class="comment">//可选，看是否需要重复入栈</span></span><br><span class="line">    s.<span class="built_in">push</span>(root);</span><br><span class="line">    visited.<span class="built_in">insert</span>(root);</span><br><span class="line">    <span class="keyword">while</span>(!s.<span class="built_in">empty</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        节点 cur = q.<span class="built_in">top</span>();	<span class="comment">//取栈顶节点</span></span><br><span class="line">        <span class="keyword">if</span>(cur == target) <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        <span class="keyword">for</span>(节点 x : cur的所有相邻节点)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span>(visited.<span class="built_in">count</span>(x)) <span class="keyword">continue</span>;	<span class="comment">//判断是否已经访问过，可选</span></span><br><span class="line">            q.<span class="built_in">push</span>(x);</span><br><span class="line">            visited.<span class="built_in">insert</span>(x);	<span class="comment">//可选</span></span><br><span class="line">        &#125;</span><br><span class="line">        q.<span class="built_in">pop</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <ul>
 <li>DFS模板（递归）</li>
 </ul>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">DFS</span><span class="params">(节点 root，节点 target, unordered_set&lt;节点&gt;&amp; visited)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(root == target) <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    <span class="keyword">for</span>(节点 x : root的所有相邻节点)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(visited.<span class="built_in">count</span>(x)) <span class="keyword">continue</span>;	<span class="comment">//判断是否已经访问过，可选</span></span><br><span class="line">        visited.<span class="built_in">insert</span>(x);	<span class="comment">//可选</span></span><br><span class="line">        <span class="keyword">if</span>(<span class="built_in">DFS</span>(x,target,visited)) <span class="keyword">return</span> <span class="literal">true</span>;   </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 
     </div>
 
@@ -320,40 +317,13 @@
 
     <div>
     
-      <style>
-        html{
-            font-size: 20px;
-        }
-
-        .box1{
-            width: 100%;
-            height: 10rem;
-
-            background-color: gold;
-            font-size: 14px;
-            line-height: 10rem;
-            text-align: center;
-        }
-    </style>
-    <script>
-        (function(){
-            var calc = function(){
-                var docElement = document.documentElement;
-                var clientWidthValue = docElement.clientWidth > 750 ? 750 : docElement.clientWidth;
-                docElement.style.fontSize = 20*(clientWidthValue/375) + 'px';
-            }
-            calc();
-            window.addEventListener('resize',calc);
-        })();
-    </script>
-
-<div>
+      <div>
     
         <div style="text-align:center;color: #ccc;font-size:14px;">---- 本文结束 <i class="fa fa-trophy"></i> 知识又增加了亿点点！----</div>
     
 </div>
 <br />
-<div class="box1">
+<div>
   <div>
     <fieldset
         style="
@@ -381,6 +351,7 @@
     </fieldset>
   </div>
 </div>
+<p><img src="https://github.com/LZ328/LycTechStack.github.io/tree/main/images/copyright.png" alt="copyright"></p>
 
     
     </div>
