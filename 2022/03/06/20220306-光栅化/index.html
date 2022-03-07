@@ -22,28 +22,28 @@
     var CONFIG = {"hostname":"lz328.github.io","root":"/LycTechStack.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":5,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="光栅化首先回顾一下MVP变换的过程（之前的文章中没有提到坐标系的概念，这里回顾的时候顺便提一下图形学中的各个坐标系的转换，其实就是之前的各种变换）：  为了得到从某一个视角看到的物体的样子，我们首先要对相机和物体进行相机变换（View &#x2F; Camera Transformation），将相机的三个方向轴与世界坐标系对齐，并移到坐标原点（这一步是将相机坐标系转换到世界坐标系，或者反着说，将">
+  <meta name="description" content="光栅化首先回顾一下MVP变换的过程（之前的文章中没有提到坐标系的概念，这里回顾的时候顺便提一下图形学中的各个坐标系的转换，其实就是之前的各种变换）：  为了得到从某一个视角看到的物体的样子，我们首先要对相机和物体进行相机变换（View &#x2F; Camera Transformation），将相机的三个方向轴与世界坐标系对齐，并移到坐标原点（这一步是将相机坐标系转换到世界坐标系，或者反着说，将世界坐标系">
 <meta property="og:type" content="article">
 <meta property="og:title" content="【计算机图形学】（三）光栅化">
 <meta property="og:url" content="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/index.html">
 <meta property="og:site_name" content="LycTechStack">
-<meta property="og:description" content="光栅化首先回顾一下MVP变换的过程（之前的文章中没有提到坐标系的概念，这里回顾的时候顺便提一下图形学中的各个坐标系的转换，其实就是之前的各种变换）：  为了得到从某一个视角看到的物体的样子，我们首先要对相机和物体进行相机变换（View &#x2F; Camera Transformation），将相机的三个方向轴与世界坐标系对齐，并移到坐标原点（这一步是将相机坐标系转换到世界坐标系，或者反着说，将">
+<meta property="og:description" content="光栅化首先回顾一下MVP变换的过程（之前的文章中没有提到坐标系的概念，这里回顾的时候顺便提一下图形学中的各个坐标系的转换，其实就是之前的各种变换）：  为了得到从某一个视角看到的物体的样子，我们首先要对相机和物体进行相机变换（View &#x2F; Camera Transformation），将相机的三个方向轴与世界坐标系对齐，并移到坐标原点（这一步是将相机坐标系转换到世界坐标系，或者反着说，将世界坐标系">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/image-20220306172222268.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/image-20220306173109581.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/image-20220306180614301.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/image-20220306180926083.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/image-20220306182055653.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/image-20220306182158250.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/image-20220306182343897.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/image-20220306182649751.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/image-20220306182717888.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220306172222268.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220306173109581.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220306180614301.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220306180926083.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220306182055653.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220306182158250.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220306182343897.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220306182649751.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220306182717888.png">
 <meta property="article:published_time" content="2022-03-06T10:33:25.000Z">
 <meta property="article:modified_time" content="2022-03-06T11:12:59.155Z">
 <meta property="article:author" content="Lyc">
 <meta property="article:tag" content="计算机图形学">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/image-20220306172222268.png">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220306172222268.png">
 
 <link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/">
 
@@ -279,7 +279,7 @@
       
         <h3 id="光栅化"><a href="#光栅化" class="headerlink" title="光栅化"></a>光栅化</h3><p>首先回顾一下MVP变换的过程（之前的文章中没有提到坐标系的概念，这里回顾的时候顺便提一下图形学中的各个坐标系的转换，其实就是之前的各种变换）：</p>
 <ul>
-<li>为了得到从某一个视角看到的物体的样子，我们首先要对相机和物体进行相机变换（View &#x2F; Camera Transformation），将相机的三个方向轴与世界坐标系对齐，并移到坐标原点（这一步是将相机坐标系转换到世界坐标系，或者反着说，将世界坐标系转到相机坐标系，因为相机就是我们的眼睛，是观察物体的坐标系）</li>
+<li>为了得到从某一个视角看到的物体的样子，我们首先要对相机和物体进行相机变换（View / Camera Transformation），将相机的三个方向轴与世界坐标系对齐，并移到坐标原点（这一步是将相机坐标系转换到世界坐标系，或者反着说，将世界坐标系转到相机坐标系，因为相机就是我们的眼睛，是观察物体的坐标系）</li>
 <li>然后对物体做同样的变换以使得相机和物体不发生相对运动</li>
 <li>最后进行投影变换，无论是正交投影还是透视投影，最终物体都被投影到一个单位立方体中（这个过程是从相机坐标系到透视坐标系的过程）</li>
 </ul>
@@ -287,13 +287,13 @@
 <p><em><span id="more"></span></em></p>
 <h4 id="1-屏幕的定义"><a href="#1-屏幕的定义" class="headerlink" title="1 屏幕的定义"></a>1 屏幕的定义</h4><p>屏幕可以看作是一个二维矩阵，矩阵中的每一个元素存储的是像素值，屏幕显示图形的过程，就是遍历整个数组，显示对应像素值的过程。这个二维数组的大小也就是常说的分辨率。</p>
 <p>为了简化后面的推导，这里我们把每一个像素简单的抽象成为一个方格，并且这个方格中的颜色是一致的，如下图所示：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/image-20220306172222268.png" alt="image-20220306172222268"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220306172222268.png" alt="image-20220306172222268"></p>
 <p>蓝色像素的坐标是 (2, 1) ，这个像素的中心点的坐标是 (2.5, 1.5) ，也就是像素 (x, y) 的中心点坐标是 (x+0.5, y+0.5) .</p>
 <p>这里的屏幕坐标系原点定义在了左下角，通常计算机中屏幕原点在左上角，这个定义不影响后面的推导。</p>
 <h4 id="2-视口变换"><a href="#2-视口变换" class="headerlink" title="2 视口变换"></a>2 视口变换</h4><p>有了屏幕的定义，我们想要把投影后的立方体显示在屏幕上，接下来要做的一步叫做<strong>视口变换</strong>，也就是将立方体转换到屏幕空间中，只有先转换到屏幕空间中，才能进一步计算屏幕空间中的点（像素）都应该是什么颜色。</p>
 <p>这是一个3D空间到2D空间的转换，因此我们先考虑简化的情况，也就是不考虑Z方向，即不考虑3D空间中的远近、遮挡等关系，先只将XY平面转换到屏幕平面上，这个过程很简单，只要将立方体的XY平面映射到和屏幕一样的比例就可以。也就是把 [-1, 1] 映射到 [0, width] 和 [0, height]上。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/image-20220306173109581.png" alt="image-20220306173109581"></p>
-<p>同时还要进行平移，因为透视坐标系中原点是在 (0,0) 的位置，我们当然希望这个原点在屏幕的中央，而屏幕的左下角是原点，所以需要把透视坐标原点平移(width&#x2F;2, height&#x2F;2).</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220306173109581.png" alt="image-20220306173109581"></p>
+<p>同时还要进行平移，因为透视坐标系中原点是在 (0,0) 的位置，我们当然希望这个原点在屏幕的中央，而屏幕的左下角是原点，所以需要把透视坐标原点平移(width/2, height/2).</p>
 <p>这样就完成了从透视坐标系到屏幕坐标系的转换。</p>
 <h4 id="3-光栅化"><a href="#3-光栅化" class="headerlink" title="3 光栅化"></a>3 光栅化</h4><p>在介绍光栅化之前，有必要再次重申一下我们现在在干嘛。</p>
 <p>我们的目标是把一个三维的物体显示在二维的屏幕上，那么我们首先做的就是坐标转换，之前的所有变换都是在做坐标转换，直到视口变换，我们终于完成了从三维坐标到二维坐标的映射；下一步就是计算三维物体顶点的颜色，我们得知道这个三维物体每个部分原来是什么颜色，才能把它显示在二维屏幕上，这个过程会通过UV贴图的颜色，结合光照，透明度等等，计算出模型每个顶点的具体颜色（R, G, B），这里我们先不管；最后就是在二维平面上绘制，所谓绘制也就是把这个二维平面填上颜色，前面说了，屏幕就是存储像素值的二维数组，所以绘制也就是计算每一个像素的颜色，然后屏幕根据这个数组就能显示出三维场景了。</p>
@@ -309,10 +309,10 @@
 <p>因为三角形是最最基本的几何图形，任何多边形都可以拆分成若干三角形，并且三角形有许多优秀的性质，比如对于图形的内外有严格的定义，再比如很好进行插值运算，上面三角形颜色取三个顶点颜色的渐变就是三角形优势的体现之一。</p>
 </blockquote>
 <p>有了这个三角形之后，我们要做的事情就很简单了，判断每一个像素是否在这个三角形内部，如果在内部，就填上三角形的颜色。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/image-20220306180614301.png" alt="image-20220306180614301"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220306180614301.png" alt="image-20220306180614301"></p>
 <p>这个过程其实是一个<strong>采样</strong>的过程，采样这个概念非常重要，简单而不严谨的来说就是定义一个函数，计算每个采样点在这个函数上的值就是采样。这里的函数就是判断一个点 (x, y) 是否在给定的三角形内部，那么如何实现这个函数的功能呢？</p>
 <p>最简单的方法就是<strong>向量叉乘</strong>，如下图所示：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/image-20220306180926083.png" alt="image-20220306180926083"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220306180926083.png" alt="image-20220306180926083"></p>
 <p>对于点 P，计算向量$\vec{AB}$与向量$\vec{AP}$的叉乘，得到的方向朝向屏幕外，这意味着点 P 在 AB 的左边，同理计算向量$\vec{BC}$与向量$\vec{BP}$的叉乘，得到的向量方向也是朝向屏幕外，这意味着点 P 在 BC 的左边，同样计算向量$\vec{CA}$与向量$\vec{CP}$的叉乘，得到的向量方向还是朝向屏幕外，这意味着点 P 在 CA 的左边，于是我们可以判定点 P 在三角形 ABC 的内部。</p>
 <p>如果三个叉乘得到的某一个向量方向朝屏幕内，就说明点 P 在某一条边的右侧，那么点 P 一定在三角形ABC外部。</p>
 <p>利用这个方法就可以判断任意一个点是否在三角形内部了，当然还可以算出三条边的方程，带入 P 点坐标得到三个值，判断同号异号，本质上和向量叉乘是一样的。</p>
@@ -326,16 +326,16 @@
 <li>判断屏幕上每一个像素是否在三角形内部，在则上色</li>
 </ul>
 <p>这个过程很简单，但存在许多问题，比如按照上面的流程，我们的代码应该这样写：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/image-20220306182055653.png" alt="image-20220306182055653"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220306182055653.png" alt="image-20220306182055653"></p>
 <p>显然十分暴力，对于下大多数情况来说，我们完全不必遍历所有像素点，使用一个Bounding Box就可以大幅降低时间复杂度：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/image-20220306182158250.png" alt="image-20220306182158250"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220306182158250.png" alt="image-20220306182158250"></p>
 <p>但这还不够，如果三角形非常细长，而且还刚好倾斜45°左右，那么实际上它也只占整个Bounding Box很少一部分，于是我们可以进一步改进：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/image-20220306182343897.png" alt="image-20220306182343897"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220306182343897.png" alt="image-20220306182343897"></p>
 <p>先算出每一行的起点坐标，逐行扫描，遇到不在三角形内部的点就开始扫描下一行。</p>
 <p>现在我们来看一下光栅化之后的结果是什么样的：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/image-20220306182649751.png" alt="image-20220306182649751"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220306182649751.png" alt="image-20220306182649751"></p>
 <p>而我们想得到的样子却是这样：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/image-20220306182717888.png" alt="image-20220306182717888"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220306182717888.png" alt="image-20220306182717888"></p>
 <p>不能说毫无关系，但确实不是一个东西，这是因为我们现在得到的光栅化结果有太多的<strong>锯齿</strong>了，更专业一点的说法就是我们的光栅化过程使得图形<strong>走样（Aliasing）</strong>了，因此我们必须对光栅化的过程进行<strong>抗锯齿</strong>，更准确的说法叫做<strong>反走样</strong>。关于反走样将在下一篇文章中进行详细介绍。</p>
 
     </div>
@@ -491,7 +491,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/LycTechStack.github.io/archives/">
         
-          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-count">7</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -504,7 +504,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/LycTechStack.github.io/tags/">
           
-        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -555,7 +555,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">12 分钟</span>
+    <span title="站点阅读时长">13 分钟</span>
 </div>
 
         
