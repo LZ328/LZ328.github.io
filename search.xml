@@ -118,6 +118,15 @@
 <p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20200302-%E5%8F%98%E6%8D%A2/image-20220303144633780.png" alt="image-20220303144633780"></p>
 <p>于是透视投影变换的矩阵就是：</p>
 <p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20200302-%E5%8F%98%E6%8D%A2/image-20220302175347739.png" alt="image-20220302175347739"></p>
+<p><strong>2.4.3 视场角与宽高比</strong></p>
+<p>很多情况下，不会给定上面说到的立方体的 l, r, t, b 等数值，而是以视场角（field-of-view）和宽高比（aspect ratio）的形式给出的，当然，近平面 n 和远平面 f 的是一定会给出的。</p>
+<p>在这种情况下我们认为 l &#x3D; -r , t &#x3D; -b，也就是我们在做正交投影矩阵时不需要再做平移变换了，只要通过视场角和宽高比计算得到立方体的宽和高就知道X方向和Y方向的缩放比，也就可以构造正交投影矩阵了 。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20200302-%E5%8F%98%E6%8D%A2/image-20220307142910300.png" alt="image-20220307142910300"></p>
+<p>从侧面看这幅图可以得到：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20200302-%E5%8F%98%E6%8D%A2/image-20220307142946563.png" alt="image-20220307142946563"></p>
+<p>因此可以得出：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20200302-%E5%8F%98%E6%8D%A2/image-20220307143010470.png" alt="image-20220307143010470"></p>
+<p>这样我们就得到了宽度的一半 r 和高度的一半 t ，长度依然是 f - n ，然后就可以像之前一样构造投影矩阵了。</p>
 ]]></content>
       <categories>
         <category>计算机图形学</category>
