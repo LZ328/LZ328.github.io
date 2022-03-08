@@ -582,7 +582,7 @@
       </tags>
   </entry>
   <entry>
-    <title>【计算机图形学】（五）深度缓冲（Z-Buffer）</title>
+    <title>【计算机图形学】（五）深度缓冲</title>
     <url>/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/</url>
     <content><![CDATA[<h3 id="深度缓冲（Z-Buffer）"><a href="#深度缓冲（Z-Buffer）" class="headerlink" title="深度缓冲（Z-Buffer）"></a>深度缓冲（Z-Buffer）</h3><p>到上一篇文章为止，我们基本完成了把三维物体画在二维屏幕上的过程，但在这个过程中，还有一个非常重要的问题没有讨论，那就是在光栅化的时候我们之前的推导都没有考虑Z轴，也就是没有考虑三维物体离我们的远近，但是现实生活中我们看一个三维物体或者场景，由于物体离我们眼睛的距离不同，自然会产生遮挡现象。</p>
 <p><em><span id="more"></span></em></p>
