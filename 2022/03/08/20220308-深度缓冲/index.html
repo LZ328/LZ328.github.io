@@ -22,32 +22,27 @@
     var CONFIG = {"hostname":"lz328.github.io","root":"/LycTechStack.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":5,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="旋转与四元数 摘要 本文主要介绍三维旋转的几类重要表示方式，以及在游戏及其他工程领域最为常用的四元数的相关概念、性质、运算法则和常用公式。">
+  <meta name="description" content="深度缓冲（Z-Buffer）到上一篇文章为止，我们基本完成了把三维物体画在二维屏幕上的过程，但在这个过程中，还有一个非常重要的问题没有讨论，那就是在光栅化的时候我们之前的推导都没有考虑Z轴，也就是没有考虑三维物体离我们的远近，但是现实生活中我们看一个三维物体或者场景，由于物体离我们眼睛的距离不同，自然会产生遮挡现象。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="【计算机图形学】（二）旋转与四元数">
-<meta property="og:url" content="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/index.html">
+<meta property="og:title" content="【计算机图形学】（五）深度缓冲（Z-Buffer）">
+<meta property="og:url" content="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/index.html">
 <meta property="og:site_name" content="LycTechStack">
-<meta property="og:description" content="旋转与四元数 摘要 本文主要介绍三维旋转的几类重要表示方式，以及在游戏及其他工程领域最为常用的四元数的相关概念、性质、运算法则和常用公式。">
+<meta property="og:description" content="深度缓冲（Z-Buffer）到上一篇文章为止，我们基本完成了把三维物体画在二维屏幕上的过程，但在这个过程中，还有一个非常重要的问题没有讨论，那就是在光栅化的时候我们之前的推导都没有考虑Z轴，也就是没有考虑三维物体离我们的远近，但是现实生活中我们看一个三维物体或者场景，由于物体离我们眼睛的距离不同，自然会产生遮挡现象。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301162321017.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301162445459.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301184920885.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185303072.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185318122.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301184949807.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185026298.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185208658.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185635142.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185811398.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185855191.png">
-<meta property="article:published_time" content="2022-03-03T03:45:31.000Z">
-<meta property="article:modified_time" content="2022-03-06T10:32:46.276Z">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308174826553.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308175526241.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308175553407.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308180155386.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308180255018.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308180341613.png">
+<meta property="article:published_time" content="2022-03-08T10:15:14.000Z">
+<meta property="article:modified_time" content="2022-03-08T10:17:25.319Z">
 <meta property="article:author" content="Lyc">
 <meta property="article:tag" content="计算机图形学">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301162321017.png">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308174826553.png">
 
-<link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/">
+<link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/">
 
 
 <script id="page-configurations">
@@ -60,7 +55,7 @@
   };
 </script>
 
-  <title>【计算机图形学】（二）旋转与四元数 | LycTechStack</title>
+  <title>【计算机图形学】（五）深度缓冲（Z-Buffer） | LycTechStack</title>
   
 
 
@@ -211,7 +206,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/">
+    <link itemprop="mainEntityOfPage" href="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/LycTechStack.github.io/images/avatar.png">
@@ -224,7 +219,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          【计算机图形学】（二）旋转与四元数
+          【计算机图形学】（五）深度缓冲（Z-Buffer）
         </h1>
 
         <div class="post-meta">
@@ -233,16 +228,10 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2022-03-03 11:45:31" itemprop="dateCreated datePublished" datetime="2022-03-03T11:45:31+08:00">2022-03-03</time>
+              <time title="创建时间：2022-03-08 18:15:14 / 修改时间：18:17:25" itemprop="dateCreated datePublished" datetime="2022-03-08T18:15:14+08:00">2022-03-08</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-06 18:32:46" itemprop="dateModified" datetime="2022-03-06T18:32:46+08:00">2022-03-06</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -266,7 +255,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.5k</span>
+              <span>1.2k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -285,66 +274,30 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h3 id="旋转与四元数"><a href="#旋转与四元数" class="headerlink" title="旋转与四元数"></a>旋转与四元数</h3><blockquote>
-<p><strong>摘要</strong></p>
-<p>本文主要介绍三维旋转的几类重要表示方式，以及在游戏及其他工程领域最为常用的四元数的相关概念、性质、运算法则和常用公式。</p>
-</blockquote>
+        <h3 id="深度缓冲（Z-Buffer）"><a href="#深度缓冲（Z-Buffer）" class="headerlink" title="深度缓冲（Z-Buffer）"></a>深度缓冲（Z-Buffer）</h3><p>到上一篇文章为止，我们基本完成了把三维物体画在二维屏幕上的过程，但在这个过程中，还有一个非常重要的问题没有讨论，那就是在光栅化的时候我们之前的推导都没有考虑Z轴，也就是没有考虑三维物体离我们的远近，但是现实生活中我们看一个三维物体或者场景，由于物体离我们眼睛的距离不同，自然会产生遮挡现象。</p>
 <p><em><span id="more"></span></em></p>
-<h4 id="一、三维旋转变换的表示方式"><a href="#一、三维旋转变换的表示方式" class="headerlink" title="一、三维旋转变换的表示方式"></a>一、三维旋转变换的表示方式</h4><p><strong>1、欧拉角</strong></p>
-<p>直接给出$x$（俯仰）、$y$（偏航）、$z$（滚转）三个轴向的旋转角，优点是表示简单直接，容易理解，但存在万向节死锁的问题（当两个轴重合时，会损失一个自由度）。</p>
-<p><strong>2、轴角</strong></p>
-<p>顾名思义，用一个轴$n$和一个角$\theta$表示旋转，其中轴是旋转轴，默认用一个过坐标原点的三维向量表示，角表示绕这个轴旋转的角度，轴角表示为一个四元组$(x,y,z,\theta)$。</p>
-<p>但轴角也存在明显的缺陷，一方面，因为角度的周期性，任何$2n\pi$的旋转都等价于没有旋转，这在某些情况下是不可接受的；另一方面，由于轴角描述的“四元组”并不是一个空间下的东西，首先$(x,y,z)$是一个3维坐标下的矢量，而$\theta$则是极坐标下的角度，简单的将他们组合到一起并不能保证他们插值结果的稳定性，因为他们无法归一化，所以不能保证最终插值后得到的矢量长度（经过旋转变换后两点之间的距离）相等；此外，轴角形式的旋转不能直接施于点或矢量，必转换为矩阵或者四元数。</p>
-<p><strong>3、矩阵</strong></p>
-<p>计算机图形学中，一般以矩阵形式表示旋转，对于三维空间的点或向量，将其表示为齐次坐标形式，则绕不同旋转轴的旋转矩阵为：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301162321017.png" alt="image-20220301162321017"></p>
-<p>而对于任意旋转，都可以分解为这三个轴的旋转，可以利用<strong>Rodrigues旋转公式</strong>将轴角表示的任意旋转转换为矩阵形式：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301162445459.png" alt="image-20220301162445459"></p>
-<p>矩阵表示法可以直接施加于点或向量，计算相对方便，也叫容易理解，但在实际工程中，如果我们要存储一个对象的旋转参数，就要存储这个对象的旋转矩阵，一共16个浮点数，对空间消耗较大，并且矩阵形式同样无法进行简单的插值，因此在实际的游戏开发及其他工程应用中，存储一个对象的旋转，通常采用四元数的形式。</p>
-<p><strong>4、四元数</strong></p>
-<p>四元数像是轴角表示法的优化版本，但解决了所有轴角可能存在的问题，最大的优势就是便于插值，并且存储时只需要存储4个浮点数，而且求逆、串联等操作比矩阵更方便，相比于轴角和矩阵优势巨大。</p>
-<p>对于四元数的理解，可以看作是有一个实部和三个虚部构成的虚数，描述的是四维空间，具体可以看<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/53872740">可视化理解四元数</a>。</p>
-<hr>
-<h4 id="二、四元数"><a href="#二、四元数" class="headerlink" title="二、四元数"></a>二、四元数</h4><p>四元数的全部公式和运算法则以及与矩阵等形式的转化，可以查看<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/97186723">四元数(Quaternions)</a>，这里对常用的关键公式进行总结。</p>
-<p>四元数表示为$(x,y,z,w)$，其中<br>$$<br>x&#x3D;i·q_1·sin(\theta&#x2F;2) \<br>y&#x3D;j·q_2·sin(\theta&#x2F;2) \<br>z&#x3D;k·q_3·sin(\theta&#x2F;2) \<br>w&#x3D;cos(\theta&#x2F;2)<br>$$<br>其中$(iq_1,jq_2,kq_3)$是表示旋转轴的矢量，$\theta$表示绕此轴旋转的角度。对四元数$q_2$左乘一个四元数$q_1$，其作用是将$q_2$拉伸$q_1$的模长，再作用一个特殊的四维旋转。所以我们用<strong>单位四元数</strong>来表示三维空间中的旋转，因为单位四元数模长为1$(w^2+x^2+y^2+z^2&#x3D;1)$，而旋转时必须要保证的就是，一个向量旋转前后模长不变。</p>
-<ul>
-<li>乘法</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301184920885.png" alt="image-20220301184920885"></p>
-<ul>
-<li>标量乘法</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185303072.png" alt="image-20220301185303072"></p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185318122.png" alt="image-20220301185318122"></p>
-<ul>
-<li>加法</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301184949807.png" alt="image-20220301184949807"></p>
-<ul>
-<li>共轭</li>
-</ul>
-<p>$$<br>q&#x3D;(w,x,y,z) \<br>q^*&#x3D;(w,-x,-y,-z)<br>$$</p>
-<ul>
-<li>模</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185026298.png" alt="image-20220301185026298"></p>
-<ul>
-<li>Identity</li>
-</ul>
-<p>$$<br>i&#x3D;(0,0,0,1)<br>$$</p>
-<ul>
-<li>逆</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185208658.png" alt="image-20220301185208658"></p>
-<ul>
-<li>单位四元数表示旋转：单位四元数模为1，因此可以表示为</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185635142.png" alt="image-20220301185635142"></p>
-<p>将一个三维向量$p$写成四元数形式</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185811398.png" alt="image-20220301185811398"></p>
-<p>则运算</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185855191.png" alt="image-20220301185855191"></p>
-<p>表示向量$p$在三维空间中绕轴$u_q$旋转$2\phi$弧度。</p>
+<p>比如一个立方体，在这样的视角下我们是看不到它的左平面、下平面和后平面的，但是在光栅化的过程中，我们依然会取这个立方体左平面上的三个点组成三角形并画在屏幕上，如果不考虑遮挡关系，那画出来的正方体显然和我们看到的就不一样了。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308174826553.png" alt="image-20220308174826553"></p>
+<p>那如何在光栅化过程中考虑这种遮挡关系，并把这种关系正确的画出来呢？这就是这一节要讨论的内容。</p>
+<p>在开始之前，要先明确一个概念，这一节所说的 Z ，并不是物体的 Z 坐标，<strong>而是代表物体离我们的远近，也就是深度，这个深度永远是正数，而且数值越小离我们越近</strong>。因为之前说了相机指向 -Z 方向，所以如果是 Z 坐标的话，离我们越近的反而数值上越大，这不符合我们的直觉。因此需要重新给出这个深度的概念。</p>
+<h4 id="1-画家算法"><a href="#1-画家算法" class="headerlink" title="1 画家算法"></a>1 画家算法</h4><p>画家算法指的是我们像画家画画一样，从远处往近处画，这样近处的画面自然会遮挡住远处的画面，光栅化的时候也可以这样，我们先对三角形的深度排序，然后从远往近画在屏幕上。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308175526241.png" alt="image-20220308175526241"></p>
+<p>但是这样的算法无法解决下面这种情况：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308175553407.png" alt="image-20220308175553407"></p>
+<p>三角形的遮挡关系往往没有那么简单，因此画家算法大多情况下并不适用。</p>
+<h4 id="2-Z-Buffer"><a href="#2-Z-Buffer" class="headerlink" title="2 Z-Buffer"></a>2 Z-Buffer</h4><p>Z-Buffer的思想非常简单，那就是我们在渲染图形时，除了维护frame-buffer（显示在屏幕上的图）外，再维护一个Z-buffer（深度图），<strong>Z-buffer中存储屏幕上每一个像素当前的最小深度</strong>，在光栅化开始时，Z-buffer中每一个像素的深度都设为无穷大，之后渲染三角形的时候，每次都先判断当前渲染的三角形的深度和Z-buffer中当前像素的深度谁更小（谁离我们更近），如果三角形的深度更小，那么就把三角形的颜色存入frame-buffer中这个像素的位置，同时把Z-buffer中当前像素的最小深度更新一次，这样我们总能保证深度小的颜色遮挡深度大的颜色。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308180155386.png" alt="image-20220308180155386"></p>
+<p>Z-buffer和frame-buffer总是同时渲染的，因此当我们生成一张图片的时候，也就生成了这张图片的深度图。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308180255018.png" alt="image-20220308180255018"></p>
+<p>可以看到深度图中越远的地方像素值越大，越近的地方像素值越小。</p>
+<p>Z-buffer的伪代码如下：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308180341613.png" alt="image-20220308180341613"></p>
+<p>相比于画家算法 O(nlogn) ，Z-buffer只需要 O(n) 的时间复杂度。</p>
+<blockquote>
+<p>为什么是O(n)？</p>
+<p>假设每个三角形只覆盖常数个像素，那么Z-buffer做的就是对每一个三角形判断对应的深度，然后填充像素，因此只需要花费 O(1) 时间，那么有n个三角形，复杂度就是O(n).</p>
+</blockquote>
+<p>最后说一下Z-buffer的优势，就是与画三角形的顺序无关，只要维护对了深度信息，画出来的一定是正确是遮挡关系，并且对硬件没有特殊需求，容易实现。</p>
 
     </div>
 
@@ -398,13 +351,13 @@
       <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\02\20200302-变换\" rel="bookmark">【计算机图形学】（一）变换-Transform</a></div>
     </li>
     <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\03\20200303-旋转与四元数\" rel="bookmark">【计算机图形学】（二）旋转与四元数</a></div>
+    </li>
+    <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\06\20220306-光栅化\" rel="bookmark">【计算机图形学】（三）光栅化</a></div>
     </li>
     <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\06\20220306-反走样\" rel="bookmark">【计算机图形学】（四）反走样</a></div>
-    </li>
-    <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\08\20220308-深度缓冲\" rel="bookmark">【计算机图形学】（五）深度缓冲（Z-Buffer）</a></div>
     </li>
   </ul>
 
@@ -420,13 +373,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/LycTechStack.github.io/2022/03/02/20200302-%E5%8F%98%E6%8D%A2/" rel="prev" title="【计算机图形学】（一）变换-Transform">
-      <i class="fa fa-chevron-left"></i> 【计算机图形学】（一）变换-Transform
+    <a href="/LycTechStack.github.io/2022/03/07/20220307-%E7%BA%BF%E6%80%A7%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92-%E5%8D%95%E4%B8%B2/" rel="prev" title="【动态规划】（一）线性动态规划之单串问题">
+      <i class="fa fa-chevron-left"></i> 【动态规划】（一）线性动态规划之单串问题
     </a></div>
-      <div class="post-nav-item">
-    <a href="/LycTechStack.github.io/2022/03/03/20220303-%E4%BA%8C%E5%8F%89%E6%A0%91/" rel="next" title="【数据结构】二叉树">
-      【数据结构】二叉树 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -486,7 +436,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0"><span class="nav-text">旋转与四元数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%B8%89%E7%BB%B4%E6%97%8B%E8%BD%AC%E5%8F%98%E6%8D%A2%E7%9A%84%E8%A1%A8%E7%A4%BA%E6%96%B9%E5%BC%8F"><span class="nav-text">一、三维旋转变换的表示方式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%9B%9B%E5%85%83%E6%95%B0"><span class="nav-text">二、四元数</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2%EF%BC%88Z-Buffer%EF%BC%89"><span class="nav-text">深度缓冲（Z-Buffer）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E7%94%BB%E5%AE%B6%E7%AE%97%E6%B3%95"><span class="nav-text">1 画家算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-Z-Buffer"><span class="nav-text">2 Z-Buffer</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -775,7 +725,7 @@ NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
       repo        : 'LycTechStack.github.io',
       owner       : 'LZ328',
       admin       : ['LZ328'],
-      id          : 'd03da625f06b42d0ba81dd343968b6a0',
+      id          : '217a2d8203f882fd490d2fa817216901',
         language: 'zh-CN',
       distractionFreeMode: true
     });
