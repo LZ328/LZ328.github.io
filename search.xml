@@ -1,83 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>【计算机图形学】（二）旋转与四元数</title>
-    <url>/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/</url>
-    <content><![CDATA[<h3 id="旋转与四元数"><a href="#旋转与四元数" class="headerlink" title="旋转与四元数"></a>旋转与四元数</h3><blockquote>
-<p><strong>摘要</strong></p>
-<p>本文主要介绍三维旋转的几类重要表示方式，以及在游戏及其他工程领域最为常用的四元数的相关概念、性质、运算法则和常用公式。</p>
-</blockquote>
-<p><em><span id="more"></span></em></p>
-<h4 id="一、三维旋转变换的表示方式"><a href="#一、三维旋转变换的表示方式" class="headerlink" title="一、三维旋转变换的表示方式"></a>一、三维旋转变换的表示方式</h4><p><strong>1、欧拉角</strong></p>
-<p>直接给出$x$（俯仰）、$y$（偏航）、$z$（滚转）三个轴向的旋转角，优点是表示简单直接，容易理解，但存在万向节死锁的问题（当两个轴重合时，会损失一个自由度）。</p>
-<p><strong>2、轴角</strong></p>
-<p>顾名思义，用一个轴$n$和一个角$\theta$表示旋转，其中轴是旋转轴，默认用一个过坐标原点的三维向量表示，角表示绕这个轴旋转的角度，轴角表示为一个四元组$(x,y,z,\theta)$。</p>
-<p>但轴角也存在明显的缺陷，一方面，因为角度的周期性，任何$2n\pi$的旋转都等价于没有旋转，这在某些情况下是不可接受的；另一方面，由于轴角描述的“四元组”并不是一个空间下的东西，首先$(x,y,z)$是一个3维坐标下的矢量，而$\theta$则是极坐标下的角度，简单的将他们组合到一起并不能保证他们插值结果的稳定性，因为他们无法归一化，所以不能保证最终插值后得到的矢量长度（经过旋转变换后两点之间的距离）相等；此外，轴角形式的旋转不能直接施于点或矢量，必转换为矩阵或者四元数。</p>
-<p><strong>3、矩阵</strong></p>
-<p>计算机图形学中，一般以矩阵形式表示旋转，对于三维空间的点或向量，将其表示为齐次坐标形式，则绕不同旋转轴的旋转矩阵为：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220301162321017.png" alt="image-20220301162321017"></p>
-<p>而对于任意旋转，都可以分解为这三个轴的旋转，可以利用<strong>Rodrigues旋转公式</strong>将轴角表示的任意旋转转换为矩阵形式：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220301162445459.png" alt="image-20220301162445459"></p>
-<p>矩阵表示法可以直接施加于点或向量，计算相对方便，也叫容易理解，但在实际工程中，如果我们要存储一个对象的旋转参数，就要存储这个对象的旋转矩阵，一共16个浮点数，对空间消耗较大，并且矩阵形式同样无法进行简单的插值，因此在实际的游戏开发及其他工程应用中，存储一个对象的旋转，通常采用四元数的形式。</p>
-<p><strong>4、四元数</strong></p>
-<p>四元数像是轴角表示法的优化版本，但解决了所有轴角可能存在的问题，最大的优势就是便于插值，并且存储时只需要存储4个浮点数，而且求逆、串联等操作比矩阵更方便，相比于轴角和矩阵优势巨大。</p>
-<p>对于四元数的理解，可以看作是有一个实部和三个虚部构成的虚数，描述的是四维空间，具体可以看<a href="https://zhuanlan.zhihu.com/p/53872740">可视化理解四元数</a>。</p>
-<hr>
-<h4 id="二、四元数"><a href="#二、四元数" class="headerlink" title="二、四元数"></a>二、四元数</h4><p>四元数的全部公式和运算法则以及与矩阵等形式的转化，可以查看<a href="https://zhuanlan.zhihu.com/p/97186723">四元数(Quaternions)</a>，这里对常用的关键公式进行总结。</p>
-<p>四元数表示为$(x,y,z,w)$，其中</p>
-<script type="math/tex; mode=display">
-x=i·q_1·sin(\theta/2) \\
-y=j·q_2·sin(\theta/2) \\
-z=k·q_3·sin(\theta/2) \\
-w=cos(\theta/2)</script><p>其中$(iq_1,jq_2,kq_3)$是表示旋转轴的矢量，$\theta$表示绕此轴旋转的角度。对四元数$q_2$左乘一个四元数$q_1$，其作用是将$q_2$拉伸$q_1$的模长，再作用一个特殊的四维旋转。所以我们用<strong>单位四元数</strong>来表示三维空间中的旋转，因为单位四元数模长为1$(w^2+x^2+y^2+z^2=1)$，而旋转时必须要保证的就是，一个向量旋转前后模长不变。</p>
-<ul>
-<li>乘法</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220301184920885.png" alt="image-20220301184920885"></p>
-<ul>
-<li>标量乘法</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220301185303072.png" alt="image-20220301185303072"></p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220301185318122.png" alt="image-20220301185318122"></p>
-<ul>
-<li>加法</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220301184949807.png" alt="image-20220301184949807"></p>
-<ul>
-<li>共轭</li>
-</ul>
-<script type="math/tex; mode=display">
-q=(w,x,y,z) \\
-q^*=(w,-x,-y,-z)</script><ul>
-<li>模</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220301185026298.png" alt="image-20220301185026298"></p>
-<ul>
-<li>Identity</li>
-</ul>
-<script type="math/tex; mode=display">
-i=(0,0,0,1)</script><ul>
-<li>逆</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220301185208658.png" alt="image-20220301185208658"></p>
-<ul>
-<li>单位四元数表示旋转：单位四元数模为1，因此可以表示为</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220301185635142.png" alt="image-20220301185635142"></p>
-<p>将一个三维向量$p$写成四元数形式</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220301185811398.png" alt="image-20220301185811398"></p>
-<p>则运算</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220301185855191.png" alt="image-20220301185855191"></p>
-<p>表示向量$p$在三维空间中绕轴$u_q$旋转$2\phi$弧度。</p>
-]]></content>
-      <categories>
-        <category>计算机图形学</category>
-      </categories>
-      <tags>
-        <tag>计算机图形学</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>【计算机图形学】（一）变换</title>
     <url>/LycTechStack.github.io/2022/03/02/20200302-%E5%8F%98%E6%8D%A2/</url>
     <content><![CDATA[<h2 id="变换（Transform）"><a href="#变换（Transform）" class="headerlink" title="变换（Transform）"></a>变换（Transform）</h2><blockquote>
@@ -208,6 +131,83 @@ p'=M·p</script><p>的形式，引入齐次坐标的概念。为二维坐标引�
 <p>因此可以得出：</p>
 <p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220307143010470.png" alt="image-20220307143010470"></p>
 <p>这样我们就得到了宽度的一半 r 和高度的一半 t ，长度依然是 f - n ，然后就可以像之前一样构造投影矩阵了。</p>
+]]></content>
+      <categories>
+        <category>计算机图形学</category>
+      </categories>
+      <tags>
+        <tag>计算机图形学</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>【计算机图形学】（二）旋转与四元数</title>
+    <url>/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/</url>
+    <content><![CDATA[<h3 id="旋转与四元数"><a href="#旋转与四元数" class="headerlink" title="旋转与四元数"></a>旋转与四元数</h3><blockquote>
+<p><strong>摘要</strong></p>
+<p>本文主要介绍三维旋转的几类重要表示方式，以及在游戏及其他工程领域最为常用的四元数的相关概念、性质、运算法则和常用公式。</p>
+</blockquote>
+<p><em><span id="more"></span></em></p>
+<h4 id="一、三维旋转变换的表示方式"><a href="#一、三维旋转变换的表示方式" class="headerlink" title="一、三维旋转变换的表示方式"></a>一、三维旋转变换的表示方式</h4><p><strong>1、欧拉角</strong></p>
+<p>直接给出$x$（俯仰）、$y$（偏航）、$z$（滚转）三个轴向的旋转角，优点是表示简单直接，容易理解，但存在万向节死锁的问题（当两个轴重合时，会损失一个自由度）。</p>
+<p><strong>2、轴角</strong></p>
+<p>顾名思义，用一个轴$n$和一个角$\theta$表示旋转，其中轴是旋转轴，默认用一个过坐标原点的三维向量表示，角表示绕这个轴旋转的角度，轴角表示为一个四元组$(x,y,z,\theta)$。</p>
+<p>但轴角也存在明显的缺陷，一方面，因为角度的周期性，任何$2n\pi$的旋转都等价于没有旋转，这在某些情况下是不可接受的；另一方面，由于轴角描述的“四元组”并不是一个空间下的东西，首先$(x,y,z)$是一个3维坐标下的矢量，而$\theta$则是极坐标下的角度，简单的将他们组合到一起并不能保证他们插值结果的稳定性，因为他们无法归一化，所以不能保证最终插值后得到的矢量长度（经过旋转变换后两点之间的距离）相等；此外，轴角形式的旋转不能直接施于点或矢量，必转换为矩阵或者四元数。</p>
+<p><strong>3、矩阵</strong></p>
+<p>计算机图形学中，一般以矩阵形式表示旋转，对于三维空间的点或向量，将其表示为齐次坐标形式，则绕不同旋转轴的旋转矩阵为：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220301162321017.png" alt="image-20220301162321017"></p>
+<p>而对于任意旋转，都可以分解为这三个轴的旋转，可以利用<strong>Rodrigues旋转公式</strong>将轴角表示的任意旋转转换为矩阵形式：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220301162445459.png" alt="image-20220301162445459"></p>
+<p>矩阵表示法可以直接施加于点或向量，计算相对方便，也叫容易理解，但在实际工程中，如果我们要存储一个对象的旋转参数，就要存储这个对象的旋转矩阵，一共16个浮点数，对空间消耗较大，并且矩阵形式同样无法进行简单的插值，因此在实际的游戏开发及其他工程应用中，存储一个对象的旋转，通常采用四元数的形式。</p>
+<p><strong>4、四元数</strong></p>
+<p>四元数像是轴角表示法的优化版本，但解决了所有轴角可能存在的问题，最大的优势就是便于插值，并且存储时只需要存储4个浮点数，而且求逆、串联等操作比矩阵更方便，相比于轴角和矩阵优势巨大。</p>
+<p>对于四元数的理解，可以看作是有一个实部和三个虚部构成的虚数，描述的是四维空间，具体可以看<a href="https://zhuanlan.zhihu.com/p/53872740">可视化理解四元数</a>。</p>
+<hr>
+<h4 id="二、四元数"><a href="#二、四元数" class="headerlink" title="二、四元数"></a>二、四元数</h4><p>四元数的全部公式和运算法则以及与矩阵等形式的转化，可以查看<a href="https://zhuanlan.zhihu.com/p/97186723">四元数(Quaternions)</a>，这里对常用的关键公式进行总结。</p>
+<p>四元数表示为$(x,y,z,w)$，其中</p>
+<script type="math/tex; mode=display">
+x=i·q_1·sin(\theta/2) \\
+y=j·q_2·sin(\theta/2) \\
+z=k·q_3·sin(\theta/2) \\
+w=cos(\theta/2)</script><p>其中$(iq_1,jq_2,kq_3)$是表示旋转轴的矢量，$\theta$表示绕此轴旋转的角度。对四元数$q_2$左乘一个四元数$q_1$，其作用是将$q_2$拉伸$q_1$的模长，再作用一个特殊的四维旋转。所以我们用<strong>单位四元数</strong>来表示三维空间中的旋转，因为单位四元数模长为1$(w^2+x^2+y^2+z^2=1)$，而旋转时必须要保证的就是，一个向量旋转前后模长不变。</p>
+<ul>
+<li>乘法</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220301184920885.png" alt="image-20220301184920885"></p>
+<ul>
+<li>标量乘法</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220301185303072.png" alt="image-20220301185303072"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220301185318122.png" alt="image-20220301185318122"></p>
+<ul>
+<li>加法</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220301184949807.png" alt="image-20220301184949807"></p>
+<ul>
+<li>共轭</li>
+</ul>
+<script type="math/tex; mode=display">
+q=(w,x,y,z) \\
+q^*=(w,-x,-y,-z)</script><ul>
+<li>模</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220301185026298.png" alt="image-20220301185026298"></p>
+<ul>
+<li>Identity</li>
+</ul>
+<script type="math/tex; mode=display">
+i=(0,0,0,1)</script><ul>
+<li>逆</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220301185208658.png" alt="image-20220301185208658"></p>
+<ul>
+<li>单位四元数表示旋转：单位四元数模为1，因此可以表示为</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220301185635142.png" alt="image-20220301185635142"></p>
+<p>将一个三维向量$p$写成四元数形式</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220301185811398.png" alt="image-20220301185811398"></p>
+<p>则运算</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220301185855191.png" alt="image-20220301185855191"></p>
+<p>表示向量$p$在三维空间中绕轴$u_q$旋转$2\phi$弧度。</p>
 ]]></content>
       <categories>
         <category>计算机图形学</category>
@@ -364,95 +364,6 @@ p'=M·p</script><p>的形式，引入齐次坐标的概念。为二维坐标引�
       </tags>
   </entry>
   <entry>
-    <title>【动态规划】（一）线性动态规划之单串问题</title>
-    <url>/LycTechStack.github.io/2022/03/07/20220307-%E7%BA%BF%E6%80%A7%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92-%E5%8D%95%E4%B8%B2/</url>
-    <content><![CDATA[<p>线性动态规划的主要特点是状态的推导是按照问题规模 i 从小到大依次推过去的，较大规模的问题的解依赖较小规模的问题的解。这里问题规模为 i 的含义是考虑前 i 个元素 [0..i] 时问题的解。</p>
-<p>大规模问题的状态只与较小规模的问题有关，而问题规模完全用一个变量 i 表示，i 的大小表示了问题规模的大小，因此从小到大推 i 直至推到 n，就得到了大规模问题的解，这就是线性动态规划的过程。</p>
-<p>按照问题的输入格式，<strong>线性动态规划解决的问题主要是单串，双串，矩阵上的问题</strong>，因为在单串，双串，矩阵上问题规模可以完全用位置表示，并且位置的大小就是问题规模的大小，因此从前往后推位置就相当于从小到大推问题规模。</p>
-<p><em><span id="more"></span></em></p>
-<h3 id="单串问题"><a href="#单串问题" class="headerlink" title="单串问题"></a>单串问题</h3><p>单串 <code>dp[i]</code> 是线性动态规划最简单的一类问题，输入是一个串，状态一般定义为 <code>dp[i] := 考虑[0..i]上，原问题的解</code>，其中<code>考虑[0..i]上，原问题的解</code>又可以分为两大类，即我们要考虑[0..i]上所有子问题的解（考虑O(n)个子问题的解），还是只考虑考虑[0..i]上常数个子问题的解（考虑O(1)个子问题的解），一般只考虑常数个子问题的解就是考虑 dp[i-1] 或（和）dp[i-2]。单串问题基本上可以分为以下几大类。</p>
-<h4 id="1-最长递增子序列（LIS问题）"><a href="#1-最长递增子序列（LIS问题）" class="headerlink" title="1 最长递增子序列（LIS问题）"></a>1 最长递增子序列（LIS问题）</h4><p>这是最经典的线性动态规划问题，也是最能体现线性动态规划思想的问题之一。</p>
-<blockquote>
-<p>问题描述：</p>
-<p>给你一个整数数组 <code>nums</code> ，找到其中最长严格递增子序列的长度。</p>
-<p>子序列 是由数组派生而来的序列，删除（或不删除）数组中的元素而不改变其余元素的顺序。例如，<code>[3,6,2,7]</code>是数组 <code>[0,3,1,6,2,2,7]</code>的子序列。</p>
-</blockquote>
-<p>我们用$f(i)$表示以nums[i]结尾的子数组的LIS长度，因为子序列需要上升，因此以 nums[i] 结尾的子序列中，nums[i] 之前的数字一定要比 nums[i] 小才行，因此目标就是先找到以此前比 nums[i] 小的各个元素，然后每个所选元素对应一个以它们结尾的最长子序列，从这些子序列中选择最长的，其长度加 1 就是当前的问题的结果。如果此前没有比 nums[i] 小的数字，则当前问题的结果就是 1 。于是可以写出状态转移方程：</p>
-<script type="math/tex; mode=display">
-\begin{equation}
-f(i)=\left\{
-\begin{aligned}
-max(f(i),f(j)+1) & , & nums[i]>nums[j], \\
-1 & , & nums[i]<=nums[j].
-\end{aligned}
-\right.
-\end{equation}</script><p>其中$j &lt; i$，显然求解$f(i)$需要遍历所有$f(j)$，因此我们要考虑O(n)个子问题的解。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">lengthOfLIS</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">dp</span><span class="params">(nums.size(),<span class="number">1</span>)</span></span>;</span><br><span class="line">        <span class="type">int</span> ans = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; nums.<span class="built_in">size</span>(); i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt; i; j++)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(nums[j] &lt; nums[i])</span><br><span class="line">                &#123;</span><br><span class="line">                    dp[i] = <span class="built_in">max</span>(dp[i],dp[j] + <span class="number">1</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            ans = <span class="built_in">max</span>(ans, dp[i]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p><strong>LIS问题及其变体问题：</strong></p>
-<ul>
-<li><a href="https://leetcode-cn.com/problems/longest-increasing-subsequence/">最长递增子序列</a></li>
-<li><a href="https://leetcode-cn.com/problems/number-of-longest-increasing-subsequence/">最长递增子序列的个数</a>：除了维护记录长度的dp数组外，还要维护一个记录子序列个数的cnt数组</li>
-<li><a href="https://leetcode-cn.com/problems/russian-doll-envelopes/">俄罗斯套娃信封问题</a></li>
-<li><a href="https://leetcode-cn.com/problems/largest-divisible-subset/">最大整除子集</a>：动态规划过程类似于最长上升子序列，难点在于还原出子集的所有元素</li>
-</ul>
-<h4 id="2-最大子数组和"><a href="#2-最大子数组和" class="headerlink" title="2 最大子数组和"></a>2 最大子数组和</h4><p>另一个经典单串问题</p>
-<blockquote>
-<p>问题描述：</p>
-<p>给你一个整数数组 <code>nums</code> ，请你找出一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。</p>
-</blockquote>
-<p>同样的思路，我们用 dp[i] 表示以nums[i]结尾的最大子数组和，因为状态的推导是按照 i 从 0 到 n - 1 按顺序推的，推到 dp[i]，时，dp[i - 1], …, dp[0] 已经计算完。因为子数组是连续的，所以子问题 dp[i] 其实只与子问题 dp[i - 1] 有关。如果 [0..i-1] 上以 nums[i-1] 结尾的最大子数组和(缓存在 dp[i-1] )为非负数，则以 nums[i] 结尾的最大子数组和就在 dp[i-1] 的基础上加上 nums[i] 就是 dp[i] 的结果否则以 i 结尾的子数组就不要 i-1 及之前的数，因为选了的话子数组的和只会更小。因此可以写出状态转移方程：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">dp[i] = nums[i] + max(dp[i - 1], 0)</span><br></pre></td></tr></table></figure>
-<p>显然这个问题中，我们只要考虑O(1)个子问题的解，因此也没有必要维护 dp 数组了，运用滚动数组的思想，只要记录下来 dp[i-1] 就可以了。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">maxSubArray</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> fi = <span class="number">0</span>;</span><br><span class="line">        <span class="type">int</span> res = INT_MIN;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i&lt;nums.<span class="built_in">size</span>();i++)</span><br><span class="line">        &#123;</span><br><span class="line">            fi = <span class="built_in">max</span>(fi + nums[i], nums[i]);</span><br><span class="line">            res = <span class="built_in">max</span>(res,fi);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p><strong>最大子数组和及其变体问题：</strong></p>
-<ul>
-<li><a href="https://leetcode-cn.com/problems/maximum-subarray/">最大子数组和</a></li>
-<li><a href="https://leetcode-cn.com/problems/maximum-sum-circular-subarray/solution/huan-xing-shu-zu-zui-da-he-by-bu-luo-bu-7bqj/">环形数组最大和</a></li>
-<li><a href="https://leetcode-cn.com/problems/maximum-product-subarray/solution/cheng-ji-zui-da-zi-shu-zu-by-bu-luo-bu-xvsx/">乘积最大子数组</a></li>
-<li><a href="https://leetcode-cn.com/problems/max-submatrix-lcci/solution/">最大子矩阵</a>：二维转换为一维的典型题目</li>
-<li><a href="https://leetcode-cn.com/problems/max-sum-of-rectangle-no-larger-than-k/">矩形区域不超过 K 的最大数值和</a>：上一题的进阶版</li>
-</ul>
-<h4 id="3-打家劫舍问题"><a href="#3-打家劫舍问题" class="headerlink" title="3 打家劫舍问题"></a>3 打家劫舍问题</h4><p>打家劫舍类似于最大子数组和，但这里的子数组不能连续，也就是不相邻子序列的最大和问题。</p>
-<blockquote>
-<p>问题描述：</p>
-<p>你是一个专业的小偷，计划偷窃沿街的房屋。每间房内都藏有一定的现金，<strong>影响你偷窃的唯一制约因素就是相邻的房屋装有相互连通的防盗系统</strong>，如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警。</p>
-<p>给定一个代表每个房屋存放金额的非负整数数组，计算你不触动警报装置的情况下，一夜之内能够偷窃到的最高金额。</p>
-</blockquote>
-<p>问题的关键在于我们如果偷了第 i 个房间，那么就不能偷第 i-1 个房间，所以 dp[i] 表示到第 i 个房间为止的最大金额，这个最大金额的取值有两种情况，如果我们不偷第 i 个房间，那么 dp[i] = dp[i-1]；如果我们偷第 i 个房间， 那么 dp[i] = dp[i-2] + num[i]。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">rob</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(nums.<span class="built_in">size</span>() &lt;= <span class="number">2</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> *<span class="built_in">max_element</span>(nums.<span class="built_in">begin</span>(),nums.<span class="built_in">end</span>());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">int</span> dp1 = nums[<span class="number">0</span>];              <span class="comment">//屋子能偷盗的最大金额</span></span><br><span class="line">        <span class="type">int</span> dp2 = <span class="built_in">max</span>(dp1,nums[<span class="number">1</span>]);     <span class="comment">//前一间屋子能偷到的最大金额</span></span><br><span class="line">        <span class="type">int</span> ans = <span class="built_in">max</span>(dp1, dp2);</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">2</span>; i &lt; nums.<span class="built_in">size</span>(); i++)</span><br><span class="line">        &#123;</span><br><span class="line">            ans = <span class="built_in">max</span>(dp1 + nums[i], dp2);</span><br><span class="line">            dp1 = dp2;</span><br><span class="line">            dp2 = ans;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p><strong>打家劫舍及其变体问题：</strong></p>
-<ul>
-<li><a href="https://leetcode-cn.com/problems/house-robber/">打家劫舍</a></li>
-<li><a href="https://leetcode-cn.com/problems/house-robber-ii/">打家劫舍 II</a>：数组变成了环形，也就是偷了第1个房间就不能偷最后一个房间，在区间 [0, nums.size()-1] 和 [1, nums.size()] 上应用两次打家劫舍的算法即可</li>
-<li><a href="https://leetcode-cn.com/problems/delete-and-earn/solution/">删除并获得点数</a>：难点在于怎么转换成打家劫舍问题</li>
-<li><a href="https://leetcode-cn.com/problems/pizza-with-3n-slices/solution/">3n 块披萨</a>：难点在于动态规划状态的定义，因为一定有 3n 个数，我们最多只能拿其中 n 个数字，所以相当于打家劫舍中我们只能偷 3n 个房间中的 n 个</li>
-</ul>
-<h4 id="4-需要记录两个位置的问题"><a href="#4-需要记录两个位置的问题" class="headerlink" title="4 需要记录两个位置的问题"></a>4 需要记录两个位置的问题</h4><p>有一些单串问题在涉及状态时需要考虑相邻两个元素的情况，因为只考虑最后一个的话无法对状态描述清楚，例如：</p>
-<ul>
-<li><a href="https://leetcode-cn.com/problems/length-of-longest-fibonacci-subsequence/">最长的斐波那契子序列的长度</a>：$dp[i][j]$表示以 $j, i$ 结尾的最长斐波那契子序列长度，转移时在 [0..j] 中找满足条件的 k </li>
-<li><a href="https://leetcode-cn.com/problems/longest-arithmetic-subsequence/">最长等差数列</a>：同上，但是两道题的具体实现细节稍有不同</li>
-</ul>
-<h4 id="5-其他没有显式给定数组的线性动态规划问题"><a href="#5-其他没有显式给定数组的线性动态规划问题" class="headerlink" title="5 其他没有显式给定数组的线性动态规划问题"></a>5 其他没有显式给定数组的线性动态规划问题</h4><p>线性 DP 还有一些问题没有显式的数组，字符串等。此类问题一般没有什么固定的模式，只能通过多做题来积累。</p>
-<ul>
-<li><a href="https://leetcode-cn.com/problems/longest-valid-parentheses/solution/">最长有效括号</a>：这道题最容易想到的是用栈，但其实算法过程比较难做对，用动态规划更简单，但对于状态转移的过程比较难想到</li>
-<li><a href="https://leetcode-cn.com/problems/arithmetic-slices/">等差数列划分</a>：最长等差数列的简单版本，给定的数组是严格递增或递减的，处理起来会简单很多</li>
-<li><a href="https://leetcode-cn.com/problems/decode-ways/">解码方法</a>：关键在于有效数字只有可能是一位或者两位，因此对于任何一个数字，要么本身一位进行编码，要么和前一位组成两位数字进行编码</li>
-<li><a href="https://leetcode-cn.com/problems/palindrome-partitioning/">分割回文串</a>：主要考察的是深搜回溯的方法，但是使用动态规划对字符串预处理可以在O(1)时间内判断回文子串</li>
-<li><a href="https://leetcode-cn.com/problems/palindrome-partitioning-ii/">分割回文串 II</a>：dp[i] 表示以 s[i] 结尾的字符串的最小分割次数，状态转移时如果 s[i] 能与前面的某个位置 j 组成回文子串 s[j…i]，那么dp[i] = dp[j] + 1，遍历所有满足条件的 j &lt; i ，dp[i]取这些值里面的最小值，判断回文子串 s[j…i] 时同样可以用分割回文串中的动态规划方法，所以本题进行了两次动态规划，较为复杂。</li>
-<li><a href="https://leetcode-cn.com/problems/delete-operation-for-two-strings/solution/liang-ge-zi-fu-chuan-de-shan-chu-cao-zuo-14uw/">两个字符串的删除操作</a>：转化成LCS问题可以很简单的解决，但还可以用更符合题意的状态定义$dp[i][j]$</li>
-<li><a href="https://leetcode-cn.com/problems/counting-bits/">比特位计数</a>：比较简单</li>
-</ul>
-]]></content>
-      <categories>
-        <category>数据结构与算法</category>
-      </categories>
-      <tags>
-        <tag>C++</tag>
-        <tag>算法</tag>
-        <tag>动态规划</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>【计算机图形学】（四）反走样</title>
     <url>/LycTechStack.github.io/2022/03/06/20220306-%E5%8F%8D%E8%B5%B0%E6%A0%B7/</url>
     <content><![CDATA[<h3 id="反走样（Antialiasing）"><a href="#反走样（Antialiasing）" class="headerlink" title="反走样（Antialiasing）"></a>反走样（Antialiasing）</h3><p>上一篇文章说到，光栅化的采样过程导致了图形走样，这一篇来讲如何反走样。</p>
@@ -593,6 +504,95 @@ max(f(i),f(j)+1) & , & nums[i]>nums[j], \\
       </tags>
   </entry>
   <entry>
+    <title>【动态规划】（一）线性动态规划之单串问题</title>
+    <url>/LycTechStack.github.io/2022/03/07/20220307-%E7%BA%BF%E6%80%A7%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92-%E5%8D%95%E4%B8%B2/</url>
+    <content><![CDATA[<p>线性动态规划的主要特点是状态的推导是按照问题规模 i 从小到大依次推过去的，较大规模的问题的解依赖较小规模的问题的解。这里问题规模为 i 的含义是考虑前 i 个元素 [0..i] 时问题的解。</p>
+<p>大规模问题的状态只与较小规模的问题有关，而问题规模完全用一个变量 i 表示，i 的大小表示了问题规模的大小，因此从小到大推 i 直至推到 n，就得到了大规模问题的解，这就是线性动态规划的过程。</p>
+<p>按照问题的输入格式，<strong>线性动态规划解决的问题主要是单串，双串，矩阵上的问题</strong>，因为在单串，双串，矩阵上问题规模可以完全用位置表示，并且位置的大小就是问题规模的大小，因此从前往后推位置就相当于从小到大推问题规模。</p>
+<p><em><span id="more"></span></em></p>
+<h3 id="单串问题"><a href="#单串问题" class="headerlink" title="单串问题"></a>单串问题</h3><p>单串 <code>dp[i]</code> 是线性动态规划最简单的一类问题，输入是一个串，状态一般定义为 <code>dp[i] := 考虑[0..i]上，原问题的解</code>，其中<code>考虑[0..i]上，原问题的解</code>又可以分为两大类，即我们要考虑[0..i]上所有子问题的解（考虑O(n)个子问题的解），还是只考虑考虑[0..i]上常数个子问题的解（考虑O(1)个子问题的解），一般只考虑常数个子问题的解就是考虑 dp[i-1] 或（和）dp[i-2]。单串问题基本上可以分为以下几大类。</p>
+<h4 id="1-最长递增子序列（LIS问题）"><a href="#1-最长递增子序列（LIS问题）" class="headerlink" title="1 最长递增子序列（LIS问题）"></a>1 最长递增子序列（LIS问题）</h4><p>这是最经典的线性动态规划问题，也是最能体现线性动态规划思想的问题之一。</p>
+<blockquote>
+<p>问题描述：</p>
+<p>给你一个整数数组 <code>nums</code> ，找到其中最长严格递增子序列的长度。</p>
+<p>子序列 是由数组派生而来的序列，删除（或不删除）数组中的元素而不改变其余元素的顺序。例如，<code>[3,6,2,7]</code>是数组 <code>[0,3,1,6,2,2,7]</code>的子序列。</p>
+</blockquote>
+<p>我们用$f(i)$表示以nums[i]结尾的子数组的LIS长度，因为子序列需要上升，因此以 nums[i] 结尾的子序列中，nums[i] 之前的数字一定要比 nums[i] 小才行，因此目标就是先找到以此前比 nums[i] 小的各个元素，然后每个所选元素对应一个以它们结尾的最长子序列，从这些子序列中选择最长的，其长度加 1 就是当前的问题的结果。如果此前没有比 nums[i] 小的数字，则当前问题的结果就是 1 。于是可以写出状态转移方程：</p>
+<script type="math/tex; mode=display">
+\begin{equation}
+f(i)=\left\{
+\begin{aligned}
+max(f(i),f(j)+1) & , & nums[i]>nums[j], \\
+1 & , & nums[i]<=nums[j].
+\end{aligned}
+\right.
+\end{equation}</script><p>其中$j &lt; i$，显然求解$f(i)$需要遍历所有$f(j)$，因此我们要考虑O(n)个子问题的解。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">lengthOfLIS</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">dp</span><span class="params">(nums.size(),<span class="number">1</span>)</span></span>;</span><br><span class="line">        <span class="type">int</span> ans = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; nums.<span class="built_in">size</span>(); i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt; i; j++)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(nums[j] &lt; nums[i])</span><br><span class="line">                &#123;</span><br><span class="line">                    dp[i] = <span class="built_in">max</span>(dp[i],dp[j] + <span class="number">1</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            ans = <span class="built_in">max</span>(ans, dp[i]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p><strong>LIS问题及其变体问题：</strong></p>
+<ul>
+<li><a href="https://leetcode-cn.com/problems/longest-increasing-subsequence/">最长递增子序列</a></li>
+<li><a href="https://leetcode-cn.com/problems/number-of-longest-increasing-subsequence/">最长递增子序列的个数</a>：除了维护记录长度的dp数组外，还要维护一个记录子序列个数的cnt数组</li>
+<li><a href="https://leetcode-cn.com/problems/russian-doll-envelopes/">俄罗斯套娃信封问题</a></li>
+<li><a href="https://leetcode-cn.com/problems/largest-divisible-subset/">最大整除子集</a>：动态规划过程类似于最长上升子序列，难点在于还原出子集的所有元素</li>
+</ul>
+<h4 id="2-最大子数组和"><a href="#2-最大子数组和" class="headerlink" title="2 最大子数组和"></a>2 最大子数组和</h4><p>另一个经典单串问题</p>
+<blockquote>
+<p>问题描述：</p>
+<p>给你一个整数数组 <code>nums</code> ，请你找出一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。</p>
+</blockquote>
+<p>同样的思路，我们用 dp[i] 表示以nums[i]结尾的最大子数组和，因为状态的推导是按照 i 从 0 到 n - 1 按顺序推的，推到 dp[i]，时，dp[i - 1], …, dp[0] 已经计算完。因为子数组是连续的，所以子问题 dp[i] 其实只与子问题 dp[i - 1] 有关。如果 [0..i-1] 上以 nums[i-1] 结尾的最大子数组和(缓存在 dp[i-1] )为非负数，则以 nums[i] 结尾的最大子数组和就在 dp[i-1] 的基础上加上 nums[i] 就是 dp[i] 的结果否则以 i 结尾的子数组就不要 i-1 及之前的数，因为选了的话子数组的和只会更小。因此可以写出状态转移方程：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">dp[i] = nums[i] + max(dp[i - 1], 0)</span><br></pre></td></tr></table></figure>
+<p>显然这个问题中，我们只要考虑O(1)个子问题的解，因此也没有必要维护 dp 数组了，运用滚动数组的思想，只要记录下来 dp[i-1] 就可以了。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">maxSubArray</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> fi = <span class="number">0</span>;</span><br><span class="line">        <span class="type">int</span> res = INT_MIN;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i&lt;nums.<span class="built_in">size</span>();i++)</span><br><span class="line">        &#123;</span><br><span class="line">            fi = <span class="built_in">max</span>(fi + nums[i], nums[i]);</span><br><span class="line">            res = <span class="built_in">max</span>(res,fi);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p><strong>最大子数组和及其变体问题：</strong></p>
+<ul>
+<li><a href="https://leetcode-cn.com/problems/maximum-subarray/">最大子数组和</a></li>
+<li><a href="https://leetcode-cn.com/problems/maximum-sum-circular-subarray/solution/huan-xing-shu-zu-zui-da-he-by-bu-luo-bu-7bqj/">环形数组最大和</a></li>
+<li><a href="https://leetcode-cn.com/problems/maximum-product-subarray/solution/cheng-ji-zui-da-zi-shu-zu-by-bu-luo-bu-xvsx/">乘积最大子数组</a></li>
+<li><a href="https://leetcode-cn.com/problems/max-submatrix-lcci/solution/">最大子矩阵</a>：二维转换为一维的典型题目</li>
+<li><a href="https://leetcode-cn.com/problems/max-sum-of-rectangle-no-larger-than-k/">矩形区域不超过 K 的最大数值和</a>：上一题的进阶版</li>
+</ul>
+<h4 id="3-打家劫舍问题"><a href="#3-打家劫舍问题" class="headerlink" title="3 打家劫舍问题"></a>3 打家劫舍问题</h4><p>打家劫舍类似于最大子数组和，但这里的子数组不能连续，也就是不相邻子序列的最大和问题。</p>
+<blockquote>
+<p>问题描述：</p>
+<p>你是一个专业的小偷，计划偷窃沿街的房屋。每间房内都藏有一定的现金，<strong>影响你偷窃的唯一制约因素就是相邻的房屋装有相互连通的防盗系统</strong>，如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警。</p>
+<p>给定一个代表每个房屋存放金额的非负整数数组，计算你不触动警报装置的情况下，一夜之内能够偷窃到的最高金额。</p>
+</blockquote>
+<p>问题的关键在于我们如果偷了第 i 个房间，那么就不能偷第 i-1 个房间，所以 dp[i] 表示到第 i 个房间为止的最大金额，这个最大金额的取值有两种情况，如果我们不偷第 i 个房间，那么 dp[i] = dp[i-1]；如果我们偷第 i 个房间， 那么 dp[i] = dp[i-2] + num[i]。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">rob</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(nums.<span class="built_in">size</span>() &lt;= <span class="number">2</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> *<span class="built_in">max_element</span>(nums.<span class="built_in">begin</span>(),nums.<span class="built_in">end</span>());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">int</span> dp1 = nums[<span class="number">0</span>];              <span class="comment">//屋子能偷盗的最大金额</span></span><br><span class="line">        <span class="type">int</span> dp2 = <span class="built_in">max</span>(dp1,nums[<span class="number">1</span>]);     <span class="comment">//前一间屋子能偷到的最大金额</span></span><br><span class="line">        <span class="type">int</span> ans = <span class="built_in">max</span>(dp1, dp2);</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">2</span>; i &lt; nums.<span class="built_in">size</span>(); i++)</span><br><span class="line">        &#123;</span><br><span class="line">            ans = <span class="built_in">max</span>(dp1 + nums[i], dp2);</span><br><span class="line">            dp1 = dp2;</span><br><span class="line">            dp2 = ans;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p><strong>打家劫舍及其变体问题：</strong></p>
+<ul>
+<li><a href="https://leetcode-cn.com/problems/house-robber/">打家劫舍</a></li>
+<li><a href="https://leetcode-cn.com/problems/house-robber-ii/">打家劫舍 II</a>：数组变成了环形，也就是偷了第1个房间就不能偷最后一个房间，在区间 [0, nums.size()-1] 和 [1, nums.size()] 上应用两次打家劫舍的算法即可</li>
+<li><a href="https://leetcode-cn.com/problems/delete-and-earn/solution/">删除并获得点数</a>：难点在于怎么转换成打家劫舍问题</li>
+<li><a href="https://leetcode-cn.com/problems/pizza-with-3n-slices/solution/">3n 块披萨</a>：难点在于动态规划状态的定义，因为一定有 3n 个数，我们最多只能拿其中 n 个数字，所以相当于打家劫舍中我们只能偷 3n 个房间中的 n 个</li>
+</ul>
+<h4 id="4-需要记录两个位置的问题"><a href="#4-需要记录两个位置的问题" class="headerlink" title="4 需要记录两个位置的问题"></a>4 需要记录两个位置的问题</h4><p>有一些单串问题在涉及状态时需要考虑相邻两个元素的情况，因为只考虑最后一个的话无法对状态描述清楚，例如：</p>
+<ul>
+<li><a href="https://leetcode-cn.com/problems/length-of-longest-fibonacci-subsequence/">最长的斐波那契子序列的长度</a>：$dp[i][j]$表示以 $j, i$ 结尾的最长斐波那契子序列长度，转移时在 [0..j] 中找满足条件的 k </li>
+<li><a href="https://leetcode-cn.com/problems/longest-arithmetic-subsequence/">最长等差数列</a>：同上，但是两道题的具体实现细节稍有不同</li>
+</ul>
+<h4 id="5-其他没有显式给定数组的线性动态规划问题"><a href="#5-其他没有显式给定数组的线性动态规划问题" class="headerlink" title="5 其他没有显式给定数组的线性动态规划问题"></a>5 其他没有显式给定数组的线性动态规划问题</h4><p>线性 DP 还有一些问题没有显式的数组，字符串等。此类问题一般没有什么固定的模式，只能通过多做题来积累。</p>
+<ul>
+<li><a href="https://leetcode-cn.com/problems/longest-valid-parentheses/solution/">最长有效括号</a>：这道题最容易想到的是用栈，但其实算法过程比较难做对，用动态规划更简单，但对于状态转移的过程比较难想到</li>
+<li><a href="https://leetcode-cn.com/problems/arithmetic-slices/">等差数列划分</a>：最长等差数列的简单版本，给定的数组是严格递增或递减的，处理起来会简单很多</li>
+<li><a href="https://leetcode-cn.com/problems/decode-ways/">解码方法</a>：关键在于有效数字只有可能是一位或者两位，因此对于任何一个数字，要么本身一位进行编码，要么和前一位组成两位数字进行编码</li>
+<li><a href="https://leetcode-cn.com/problems/palindrome-partitioning/">分割回文串</a>：主要考察的是深搜回溯的方法，但是使用动态规划对字符串预处理可以在O(1)时间内判断回文子串</li>
+<li><a href="https://leetcode-cn.com/problems/palindrome-partitioning-ii/">分割回文串 II</a>：dp[i] 表示以 s[i] 结尾的字符串的最小分割次数，状态转移时如果 s[i] 能与前面的某个位置 j 组成回文子串 s[j…i]，那么dp[i] = dp[j] + 1，遍历所有满足条件的 j &lt; i ，dp[i]取这些值里面的最小值，判断回文子串 s[j…i] 时同样可以用分割回文串中的动态规划方法，所以本题进行了两次动态规划，较为复杂。</li>
+<li><a href="https://leetcode-cn.com/problems/delete-operation-for-two-strings/solution/liang-ge-zi-fu-chuan-de-shan-chu-cao-zuo-14uw/">两个字符串的删除操作</a>：转化成LCS问题可以很简单的解决，但还可以用更符合题意的状态定义$dp[i][j]$</li>
+<li><a href="https://leetcode-cn.com/problems/counting-bits/">比特位计数</a>：比较简单</li>
+</ul>
+]]></content>
+      <categories>
+        <category>数据结构与算法</category>
+      </categories>
+      <tags>
+        <tag>C++</tag>
+        <tag>算法</tag>
+        <tag>动态规划</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>【计算机图形学】（五）深度缓冲</title>
     <url>/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/</url>
     <content><![CDATA[<h3 id="深度缓冲（Z-Buffer）"><a href="#深度缓冲（Z-Buffer）" class="headerlink" title="深度缓冲（Z-Buffer）"></a>深度缓冲（Z-Buffer）</h3><p>到上一篇文章为止，我们基本完成了把三维物体画在二维屏幕上的过程，但在这个过程中，还有一个非常重要的问题没有讨论，那就是在光栅化的时候我们之前的推导都没有考虑Z轴，也就是没有考虑三维物体离我们的远近，但是现实生活中我们看一个三维物体或者场景，由于物体离我们眼睛的距离不同，自然会产生遮挡现象。</p>
@@ -619,6 +619,106 @@ max(f(i),f(j)+1) & , & nums[i]>nums[j], \\
 <p>假设每个三角形只覆盖常数个像素，那么Z-buffer做的就是对每一个三角形判断对应的深度，然后填充像素，因此只需要花费 O(1) 时间，那么有n个三角形，复杂度就是O(n).</p>
 </blockquote>
 <p>最后说一下Z-buffer的优势，就是与画三角形的顺序无关，只要维护对了深度信息，画出来的一定是正确是遮挡关系，并且对硬件没有特殊需求，容易实现。</p>
+]]></content>
+      <categories>
+        <category>计算机图形学</category>
+      </categories>
+      <tags>
+        <tag>计算机图形学</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>【计算机图形学】（六）着色</title>
+    <url>/LycTechStack.github.io/2022/03/09/20220309-%E7%9D%80%E8%89%B2/</url>
+    <content><![CDATA[<h3 id="着色（Shading）"><a href="#着色（Shading）" class="headerlink" title="着色（Shading）"></a>着色（Shading）</h3><p>前几节我们介绍了三维中的各种变换，三维到二维的映射，以及如何在屏幕空间中渲染三维空间中我们所看到的物体，也就是光栅化。光栅化的过程实际上就是判断像素是否在三角形内，如果在就填上对应的颜色的过程。那么从这一节开始，我们将讨论“填上对应的颜色”这里的颜色从何而来。</p>
+<p><em><span id="more"></span></em></p>
+<h4 id="1-什么是着色？"><a href="#1-什么是着色？" class="headerlink" title="1 什么是着色？"></a>1 什么是着色？</h4><p>现实生活中我们之所以能看见东西，是因为光线和物体本身发生了某些”作用“，而我们看到的世界实际上是发生这个作用之后的世界，那对于计算机而言，我们给定了相机、模型以及场景，利用前几节的内容我们实际上就能显示出相机看到了什么，但显示出的内容和实际我们应该看到的内容有很大的区别，原因在于我们没有考虑光线和物体所发生的”作用“，当光线照到物体上时，我们所看到的物体的颜色，一定和实际物体的颜色是不同的，比如下面这张图，相信这也很好理解：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220309165537111.png" alt="image-20220309165537111"></p>
+<p>立方体本身的颜色一定是一样的，但我们看到的每一个面颜色都不同，这就是光线的作用，因此我们要想画出来实际看到的场景，就要知道我们看到的模型的每一个部分是什么颜色的，而不是模型本身是什么颜色的，这也就是着色所做的工作。当然上面的图是很简单的情况，实际应用中我们渲染的场景可能非常复杂：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220309165746676.png" alt="image-20220309165746676"></p>
+<p>可以看到这个场景具有复杂的光照条件，包含了各种不同材质的物体，还包括透明的液体，还有右边杯子上倒映出的周围环境的镜像，这些都是我们眼睛看到的，而不是物体本身具有的，<strong>着色就是要根据物体本身具有的属性，以及环境的光照计算出物体上每一个点在我们的视角下，应该被看到的颜色。</strong></p>
+<h4 id="2-Blinn-Phong着色模型"><a href="#2-Blinn-Phong着色模型" class="headerlink" title="2 Blinn-Phong着色模型"></a>2 Blinn-Phong着色模型</h4><p>通常来说光线与物体之间的”作用“可以描述为以下三种，如下图所示：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220309170238290.png" alt="image-20220309170238290"></p>
+<p>一种是我们看到的非常亮的反光，叫做<strong>高光（Specular highlights）</strong>；另一种是物体颜色上细微的渐变，也就是<strong>漫反射（Diffuse reflection）</strong>；最后是没有被光线直接照射到但也可以被看到的部分，因为有间接的光线照射到了这部分，也就是<strong>环境光或间接光照（Ambient lighting）</strong>。</p>
+<blockquote>
+<p>在展开介绍之前要先明确，我们计算着色永远是在进行局部的计算，因为物体上的每一部分都和光线有不同的角度，所以也就发生不同的反应，我们计算的这个局部的点称为<strong>着色点</strong>，这也是一个抽象的概念，着色点可以是一个点也可以是一个平面，平面可以理解为这个点抽象而成的无限小的平面，我们计算各种光照时，都是光线在与这个平面发生作用。</p>
+</blockquote>
+<p>计算着色其实就是计算上面三种光照，对于这三种光照的计算，输入都是一样的：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220309171357997.png" alt="image-20220309171357997"></p>
+<p>输入包含我们观察的方向向量$\vec v$，着色点的法向量$\vec n$，光线的入射方向$\vec l$以及着色点表面的属性，也就是颜色等信息。需要说明的是这三个表示方向的向量只表示方向，因此都是单位向量。</p>
+<h5 id="2-1-漫反射"><a href="#2-1-漫反射" class="headerlink" title="2.1 漫反射"></a>2.1 漫反射</h5><p>漫反射非常简单，就是光线射到物体表面时会朝各个方向均匀的发散：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220309171931199.png" alt="image-20220309171931199"></p>
+<p>也就是说，物体表面的颜色从各个方向看都是相同的，决定物体颜色深浅的，只有物体<strong>接收</strong>到光线之后，<strong>吸收</strong>了多少光，又<strong>反射</strong>出去了多少光，反射出去的这部分，也就是我们看到的颜色。</p>
+<p>于是首先要考虑物体能<strong>接收</strong>到多少光。如下图所示：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220309172156026.png" alt="image-20220309172156026"></p>
+<p>物体表面如果和光线入射方向垂直，那就接收到了几乎全部的光，而如果物体旋转一定的角度，就有一部分光到达不了物体表面，也就无法被接收，而到达物体表面的光，也与物体表面有一定的角度，能量也是无法被完全接收的，那如何描述这个关系呢，Lambert’s余弦定理给出了答案：<strong>物体表面单位面积的光照与平面法线和光线夹角的余弦成正比</strong>。这里的光线方向是从物体表面指向光源的方向，是光线入射方向的反方向。</p>
+<p>那么光的强度又该如何描述呢，光可以理解为一种能量，所以在传播的过程中能量一定是有所损失的，所以光的强度与传播距离是成反比的，如果光源处强度为$I$，那么距离光源 $r$ 处的强度为$I/r^2$.</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220309172942182.png" alt="image-20220309172942182"></p>
+<p>于是我们就可以得出漫反射的计算公式：<br><img src="https://lz328.github.io/LycTechStack.github.io/image-20220309173151067.png" alt="image-20220309173151067"></p>
+<p>$k_d$ 是漫反射系数，也就是着色点的颜色；平面法线和光线夹角的余弦也就是着色点的法向量$\vec n$和光线的入射方向$\vec l$的点乘，因而二者都是单位向量所以点乘就是余弦，$max(0, \bold{n·\bold{l}})$的含义是有时夹角余弦为负，那我们认为这是无意义的，因为这相当于光线从平面下方射入，实际上就是看不到任何颜色，所以如果夹角余弦为负我们就取0.</p>
+<p>可以看出漫反射计算中不包含视线方向 $\vec v$ ，正好对应开头说的，漫反射与观察方向无关，漫反射的颜色从任何方向看都是一样的。</p>
+<p>下面的图展示了$k_d$ 逐渐增大对应的漫反射表现，也就是颜色逐渐变亮。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220309175149118.png" alt="image-20220309175149118"></p>
+<h5 id="2-2-高光"><a href="#2-2-高光" class="headerlink" title="2.2 高光"></a>2.2 高光</h5><p>当我们的视线方向和光线的镜面反射方向比较接近时，就产生了高光：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220309175403769.png" alt="image-20220309175403769"></p>
+<p>所以我们只要计算镜面反射方向 $\vec R$ 和观察方向 $\vec v$ 的夹角余弦就可以，高光和这个夹角余弦成正比。</p>
+<p>在布林冯模型中没有直接计算镜面反射方向 $\vec R$ 和观察方向 $\vec v$ 的夹角余弦，而是进行了优化：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220309175724874.png" alt="image-20220309175724874"></p>
+<p>镜面反射方向 $\vec R$ 和观察方向 $\vec v$ 接近可以转化为着色点法向量和<strong>半程向量</strong>接近。所谓半程向量是指光线入射方向和观察方向的角平分线方向，这个向量非常容易计算，根据向量的平行四边形法则，半程向量就是光线入射方向向量和观察方向向量的和。</p>
+<p>于是我们就得到了上面的高光计算公式，和漫反射非常类似，$k_s$ 是高光系数，也就是高光的颜色，一般就是白色，与漫反射唯一不同的是，高光计算公式中夹角余弦部分多了一个指数 $p$，这是因为余弦函数本身的容忍度太高，如下图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220309180233721.png" alt="image-20220309180233721"></p>
+<p>如果直接使用余弦函数，那么镜面反射方向和观察方向夹角45°甚至更大时，我们还会取到一个比较大的值，此时意味着我们还可以看到比较明显的高光，但实际上我们只有在镜面反射方向和观察方向夹角非常小时才能看到高光。可以看到随着余弦函数幂次的增大，我们能看到高光的夹角阈值在变小，当我们使用余弦函数的64次方时，只有在镜面反射方向和观察方向夹角大约20°范围内才能看到高光，当然这还是太大了，所以在布林冯模型中 $p$ 的取值一般在100~200左右。</p>
+<p>下面的图每一行展示的是随着 $p$ 取值增大所看到的高光的效果，每一列代表的是高光系数 $k_s$ 增大带来的变化，就是高光部分的颜色越来越亮。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220309180800693.png" alt="image-20220309180800693"></p>
+<h5 id="2-3-间接光照"><a href="#2-3-间接光照" class="headerlink" title="2.3 间接光照"></a>2.3 间接光照</h5><p>间接光照最为简单，间接光照就是从四面八方射向物体表面的各种光对物体颜色产生的影响的总和，与光线的入射方向、物体表面的法线方向和我们的观察方向都没有关系，所以间接光照就是一个常数。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220309181612011.png" alt="image-20220309181612011"></p>
+<h5 id="2-4-布林冯模型"><a href="#2-4-布林冯模型" class="headerlink" title="2.4 布林冯模型"></a>2.4 布林冯模型</h5><p>将上面的三个光照项加起来就得到了物体表面受光照影响的总和，这就是布林冯着色模型。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220309181732816.png" alt="image-20220309181732816"></p>
+<p>可以看到最左边间接光照就是一个固定的颜色（常数），漫反射表现的是物体表面颜色的变化，这个变化是由物体表面和光线方向不同引起的，高光是一些白色的亮光，只有物体上使得光线镜面反射方向和观察方向夹角比较小的部分才会显示出高光。这些项全部叠加起来也就是最终我们看到的物体的颜色了。</p>
+<h4 id="3-着色频率"><a href="#3-着色频率" class="headerlink" title="3 着色频率"></a>3 着色频率</h4><p>到此为止我们了解了对一个着色点应该如何着色，那么对于一个物体，我们该以什么样的方式去对整个物体表面进行着色呢？有以下三种方式：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220309182145738.png" alt="image-20220309182145738"></p>
+<ul>
+<li>最左边是对物体上的每一个片面（也就是组成物体的基本几何图形，可以是三角形，可以是矩形），进行一次着色，此时这一个片面就是一个着色点，所以这个片面内计算出的颜色是一致的，可以看出着色效果并不好</li>
+<li>中间是对物体上的每一个片面的每一个顶点进行一次着色，此时每个片面的顶点是一个着色点，片面的颜色取决于计算出的这些顶点的颜色，可以用插值的方法得到每个片面的颜色</li>
+<li>右边是对物体上每一个点进行一次着色，此时每一个点都是一个着色点，因此效果也最细腻</li>
+</ul>
+<p>上面三种着色方式代表着三种不同的着色频率，其中也包含很多具体的问题，接下来具体介绍这三种着色方式。</p>
+<h5 id="3-1-Flat-shading"><a href="#3-1-Flat-shading" class="headerlink" title="3.1 Flat shading"></a>3.1 Flat shading</h5><p>Flat shading对物体每一个片面三角形进行着色，是最简单的着色方式，但是对于平滑表面着色效果不好。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220309182705236.png" alt="image-20220309182705236"></p>
+<h5 id="3-2-Gouraud-shading"><a href="#3-2-Gouraud-shading" class="headerlink" title="3.2 Gouraud shading"></a>3.2 Gouraud shading</h5><p>Gouraud shading对物体上的每一个三角形的每一个顶点进行一次着色，计算出每个顶点的颜色后，对三个顶点颜色进行插值就可以得到三角形上每一个点的颜色。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220309182821004.png" alt="image-20220309182821004"></p>
+<p>具体如何插值后面会专门介绍，除此之外还存在一个问题，就是一个顶点怎么计算它的法向量？</p>
+<p>我们首先考虑一个简单的二维情况，如果这个顶点是一个圆上的点，那么这个点的法线方向就是圆心和这个点连线的方向，如果这个点是圆某个内接多边形的顶点（圆上任何一个点都可以是内接多边形的顶点），那么法线方向就是与这个顶点相邻的两条边的法线的角平分线方向，也就是两条边的法向量的和。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220309183734717.png" alt="image-20220309183734717"></p>
+<p>推广到三维中，<strong>物体上一个点的法线方向就是与它相邻的所有平面法向量的加权和</strong>。加权是因为实际应用中三维物体不可能都是一个均匀球体，会是各种形状，所以每个相邻的平面也不一样大，自然对这个顶点法线方向的贡献也不同。</p>
+<p>知道了如何计算点的法向量，也就知道如何进行Gouraud shading了。关于三角形颜色的插值，后面会统一介绍。</p>
+<h5 id="3-3-Phong-shading"><a href="#3-3-Phong-shading" class="headerlink" title="3.3 Phong shading"></a>3.3 Phong shading</h5><p>Phong shading对模型上每一个点进行着色计算，因此每一个点都是一个单独的着色点。那么又出现一个问题，我们如何计算物体上每一个点的法向量呢？</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220309184149978.png" alt="image-20220309184149978"></p>
+<p>由于这些点大部分都不是片面三角形的顶点，所以上面的法线计算方法并不适用。但我们可以先计算出片面三角形顶点的法向量，再利用插值的方法得到三角形内每一个点的法向量，当然别忘了计算完成后对法向量进行归一化，法向量只指示方向，一定是单位向量。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220309184601435.png" alt="image-20220309184601435"></p>
+<p>和上面的颜色插值一样，这里又要用到三角形的插值，只不过这次插值的内容是法向量。接下来我们专门介绍三角形的插值方法——利用重心坐标。</p>
+<h4 id="4-重心坐标（Barycentric-Coordinates）"><a href="#4-重心坐标（Barycentric-Coordinates）" class="headerlink" title="4 重心坐标（Barycentric Coordinates）"></a>4 重心坐标（Barycentric Coordinates）</h4><p>三角形插值是图形学中经常使用的操作，因为很多时候我们只知道三角形三个顶点对应的某些属性值，那么想要使得三角形内部每一个点的属性值平滑的变化，就需要利用已有值进行插值。于是引入三角形重心坐标的概念。</p>
+<p>重心坐标实际上是一个坐标表示方法，对于空间中的三角形ABC，任意一个在三角形ABC平面上的点$(x,y)$，都可以表示为三角形三个顶点坐标的线性组合$\alpha A+\beta B+ \gamma C$，其中三个系数就是这个点在这个三角形下的重心坐标，重心坐标需要满足约束$\alpha + \beta + \gamma=1$，如果不满足这个约束，表示出来的点就不在三角形ABC这个平面上；并且如果这个点在三角形内部，重心坐标三个数都非负。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220309185358567.png" alt="image-20220309185358567"></p>
+<p>有了重心坐标的定义，那对于三角形内部的任意一个点，怎么去得到它的重心坐标呢？</p>
+<p>对于三角形内部任意一个点，将它和三个顶点相连，会形成三个子三角形，重心坐标可以根据三个子三角形面积求出：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220309190117856.png" alt="image-20220309190117856"></p>
+<p>每个顶点对应的系数等于该顶点<strong>对面</strong>的子三角形面积除以三角形的总面积，比如点 A 的系数 $\alpha$ 等于点 A 对面的子三角形，也就是和点 A 不相邻的子三角形$A_A$的面积除以三角形ABC的总面积。</p>
+<p>显然三角形重心的重心坐标就是：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220309190751306.png" alt="image-20220309190751306"></p>
+<p>给定三角形的三个顶点和三角形内任意一个点坐标，我们可以根据下面的式子求出该点的重心坐标：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220309190924381.png" alt="image-20220309190924381"></p>
+<p>得到重心坐标后，再进行三角形内部的线性插值就非常容易了，因为线性插值就是把三角形内任意一个点的某项属性（属性可以是坐标、颜色、深度、法向量等等）表示为三角形三个顶点属性的线性组合，至于怎么组合，重心坐标就是“坐标”这个属性的组合系数，自然也可以用在其他任何属性上。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220309191134142.png" alt="image-20220309191134142"></p>
+<p>需要注意的是，<strong>重心坐标不具有投影不变性</strong>，因为空间中的三角形投影到平面上，形状可能会变化，那么三角形内每个点的重心坐标自然会发生变化，因此计算和空间有关的属性的插值时，要先在三维空间中计算，再投影到二维空间。</p>
+<h4 id="5-总结"><a href="#5-总结" class="headerlink" title="5 总结"></a>5 总结</h4><p>总之，着色就是计算模型上每一个点应该被我们看到的颜色，根据着色频率的不同，着色时又分为三种着色策略：</p>
+<ul>
+<li>Flat shading</li>
+<li>Gouraud shading</li>
+<li>Phong shading</li>
+</ul>
+<p>下面是这三种着色策略的对比，可以看出，当模型片面不够多时，Flat shading的效果较差，但随着模型复杂度的提升，Flat shading的效果并不差，并且由于不需要插值运算，当模型足够精细时，使用Flat shading是性价比更高的。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220309192158594.png" alt="image-20220309192158594"></p>
 ]]></content>
       <categories>
         <category>计算机图形学</category>
