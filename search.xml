@@ -207,6 +207,39 @@
       </tags>
   </entry>
   <entry>
+    <title>【数据结构】二叉树</title>
+    <url>/LycTechStack.github.io/2022/03/03/20220303-%E4%BA%8C%E5%8F%89%E6%A0%91/</url>
+    <content><![CDATA[<h3 id="二叉树"><a href="#二叉树" class="headerlink" title="二叉树"></a>二叉树</h3><blockquote>
+<p><strong>摘要</strong></p>
+<p>本文主要总结与二叉树有关的关键知识以及具有代表性的题目，后续将持续更新。</p>
+</blockquote>
+<p><em><span id="more"></span></em></p>
+<h4 id="1、前序、中序、后序遍历的迭代算法："><a href="#1、前序、中序、后序遍历的迭代算法：" class="headerlink" title="1、前序、中序、后序遍历的迭代算法："></a>1、前序、中序、后序遍历的迭代算法：</h4><p><strong>对于前序遍历</strong>，遍历顺序为“根、左、右”，因此对于任意一个节点，直接将节点值加入结果列表并入栈，然后遍历左子树，直到节点为空，开始遍历右子树即可，前序遍历代码：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">preorderTraversal</span><span class="params">(TreeNode* root)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; ans;</span><br><span class="line">    stack&lt;TreeNode*&gt; s;</span><br><span class="line">    <span class="keyword">while</span>(root != <span class="literal">nullptr</span> || !s.<span class="built_in">empty</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">while</span>(root)</span><br><span class="line">        &#123;</span><br><span class="line">            ans.<span class="built_in">push_back</span>(root-&gt;val);	<span class="comment">//直接加入结果</span></span><br><span class="line">            s.<span class="built_in">push</span>(root);		<span class="comment">//入栈</span></span><br><span class="line">           	root = root-&gt;left;	<span class="comment">//遍历左子树</span></span><br><span class="line">        &#125;</span><br><span class="line">        root = s.<span class="built_in">top</span>();</span><br><span class="line">        s.<span class="built_in">pop</span>();</span><br><span class="line">        root = root-&gt;right;		<span class="comment">//遍历右子树</span></span><br><span class="line">	&#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>对于中序遍历</strong>，遍历顺序为“左、根、右”，因此只需要将前序遍历的顺序改为，对于任意一个节点，先遍历左子树入栈，直到节点为空，取栈顶节点加入结果列表（此时栈顶节点的左节点为空，因此栈顶结点即为子树的根节点，加入结果列表），然后遍历右子树，中序遍历代码：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">inorderTraversal</span><span class="params">(TreeNode* root)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; ans;</span><br><span class="line">    stack&lt;TreeNode*&gt; s;</span><br><span class="line">    <span class="keyword">while</span>(root != <span class="literal">nullptr</span> || !s.<span class="built_in">empty</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">while</span>(root)</span><br><span class="line">        &#123;</span><br><span class="line">            s.<span class="built_in">push</span>(root);		<span class="comment">//入栈</span></span><br><span class="line">           	root = root-&gt;left;	<span class="comment">//遍历左子树</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//左子树为空此时栈顶结点就作为子树的根节点，加入结果列表，并出栈，然后遍历右子树</span></span><br><span class="line">        root = s.<span class="built_in">top</span>();</span><br><span class="line">        ans.<span class="built_in">push_back</span>(root-&gt;val);</span><br><span class="line">        s.<span class="built_in">pop</span>();</span><br><span class="line">        root = root-&gt;right;		<span class="comment">//遍历右子树</span></span><br><span class="line">	&#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>对于后序遍历</strong>，遍历顺序为“左、右、根”，考虑其和前序遍历顺序“根、左、右”的关系，如果前序遍历时把节点值放入结果的、列表尾部的操作改为插入列表头部，则遍历顺序变为“右、左、根”，此时只需要再将前序遍历时，先遍历左子树在遍历右子树的顺序对调，就可以将遍历顺序改为“左、右、根”，即为后序遍历了，后序遍历代码：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">postorderTraversal</span><span class="params">(TreeNode* root)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; ans;</span><br><span class="line">    stack&lt;TreeNode*&gt; s;</span><br><span class="line">    <span class="keyword">while</span>(root != <span class="literal">nullptr</span> || !s.<span class="built_in">empty</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">while</span>(root)</span><br><span class="line">        &#123;</span><br><span class="line">            ans.<span class="built_in">insert</span>(ans.<span class="built_in">begin</span>(),root-&gt;val);	<span class="comment">//结果插到列表开头</span></span><br><span class="line">            s.<span class="built_in">push</span>(root);		<span class="comment">//入栈</span></span><br><span class="line">           	root = root-&gt;right;	<span class="comment">//先遍历右子树</span></span><br><span class="line">        &#125;</span><br><span class="line">        root = s.<span class="built_in">top</span>();</span><br><span class="line">        s.<span class="built_in">pop</span>();</span><br><span class="line">        root = root-&gt;left;		<span class="comment">//再遍历左子树</span></span><br><span class="line">	&#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="2、层序遍历：使用广度优先搜索即可"><a href="#2、层序遍历：使用广度优先搜索即可" class="headerlink" title="2、层序遍历：使用广度优先搜索即可"></a>2、层序遍历：使用广度优先搜索即可</h4><h4 id="3、构造二叉树："><a href="#3、构造二叉树：" class="headerlink" title="3、构造二叉树："></a>3、构造二叉树：</h4><p><a href="https://leetcode-cn.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/solution/qian-xu-yu-zhong-xu-gou-jian-er-cha-shu-7dznd/">前序与中序构建二叉树</a></p>
+<p><a href="https://leetcode-cn.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/solution/hou-xu-yu-zhong-xu-gou-jian-er-cha-shu-d-kmrr/">后序与中序构建二叉树</a></p>
+<p><a href="https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/solution/">二叉树的序列化与反序列化</a></p>
+<h4 id="4、递归解决二叉树问题："><a href="#4、递归解决二叉树问题：" class="headerlink" title="4、递归解决二叉树问题："></a>4、递归解决二叉树问题：</h4><p><a href="https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/solution/">二叉树的最大深度</a></p>
+<p><a href="https://leetcode-cn.com/problems/symmetric-tree/">对称二叉树</a></p>
+<p><a href="https://leetcode-cn.com/problems/path-sum/solution/">路径总和</a></p>
+<p><a href="https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/">二叉树的最近公共祖先</a></p>
+]]></content>
+      <categories>
+        <category>数据结构与算法</category>
+      </categories>
+      <tags>
+        <tag>数据结构</tag>
+        <tag>C++</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>【数据结构】线性数据结构</title>
     <url>/LycTechStack.github.io/2022/03/02/20220303-%E7%BA%BF%E6%80%A7%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/</url>
     <content><![CDATA[<h3 id="线性数据结构"><a href="#线性数据结构" class="headerlink" title="线性数据结构"></a>线性数据结构</h3><blockquote>
@@ -245,39 +278,6 @@
 </ul>
 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">DFS</span><span class="params">(节点 root，节点 target, unordered_set&lt;节点&gt;&amp; visited)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(root == target) <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    <span class="keyword">for</span>(节点 x : root的所有相邻节点)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(visited.<span class="built_in">count</span>(x)) <span class="keyword">continue</span>;	<span class="comment">//判断是否已经访问过，可选</span></span><br><span class="line">        visited.<span class="built_in">insert</span>(x);	<span class="comment">//可选</span></span><br><span class="line">        <span class="keyword">if</span>(<span class="built_in">DFS</span>(x,target,visited)) <span class="keyword">return</span> <span class="literal">true</span>;   </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-]]></content>
-      <categories>
-        <category>数据结构与算法</category>
-      </categories>
-      <tags>
-        <tag>数据结构</tag>
-        <tag>C++</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>【数据结构】二叉树</title>
-    <url>/LycTechStack.github.io/2022/03/03/20220303-%E4%BA%8C%E5%8F%89%E6%A0%91/</url>
-    <content><![CDATA[<h3 id="二叉树"><a href="#二叉树" class="headerlink" title="二叉树"></a>二叉树</h3><blockquote>
-<p><strong>摘要</strong></p>
-<p>本文主要总结与二叉树有关的关键知识以及具有代表性的题目，后续将持续更新。</p>
-</blockquote>
-<p><em><span id="more"></span></em></p>
-<h4 id="1、前序、中序、后序遍历的迭代算法："><a href="#1、前序、中序、后序遍历的迭代算法：" class="headerlink" title="1、前序、中序、后序遍历的迭代算法："></a>1、前序、中序、后序遍历的迭代算法：</h4><p><strong>对于前序遍历</strong>，遍历顺序为“根、左、右”，因此对于任意一个节点，直接将节点值加入结果列表并入栈，然后遍历左子树，直到节点为空，开始遍历右子树即可，前序遍历代码：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">preorderTraversal</span><span class="params">(TreeNode* root)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; ans;</span><br><span class="line">    stack&lt;TreeNode*&gt; s;</span><br><span class="line">    <span class="keyword">while</span>(root != <span class="literal">nullptr</span> || !s.<span class="built_in">empty</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">while</span>(root)</span><br><span class="line">        &#123;</span><br><span class="line">            ans.<span class="built_in">push_back</span>(root-&gt;val);	<span class="comment">//直接加入结果</span></span><br><span class="line">            s.<span class="built_in">push</span>(root);		<span class="comment">//入栈</span></span><br><span class="line">           	root = root-&gt;left;	<span class="comment">//遍历左子树</span></span><br><span class="line">        &#125;</span><br><span class="line">        root = s.<span class="built_in">top</span>();</span><br><span class="line">        s.<span class="built_in">pop</span>();</span><br><span class="line">        root = root-&gt;right;		<span class="comment">//遍历右子树</span></span><br><span class="line">	&#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>对于中序遍历</strong>，遍历顺序为“左、根、右”，因此只需要将前序遍历的顺序改为，对于任意一个节点，先遍历左子树入栈，直到节点为空，取栈顶节点加入结果列表（此时栈顶节点的左节点为空，因此栈顶结点即为子树的根节点，加入结果列表），然后遍历右子树，中序遍历代码：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">inorderTraversal</span><span class="params">(TreeNode* root)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; ans;</span><br><span class="line">    stack&lt;TreeNode*&gt; s;</span><br><span class="line">    <span class="keyword">while</span>(root != <span class="literal">nullptr</span> || !s.<span class="built_in">empty</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">while</span>(root)</span><br><span class="line">        &#123;</span><br><span class="line">            s.<span class="built_in">push</span>(root);		<span class="comment">//入栈</span></span><br><span class="line">           	root = root-&gt;left;	<span class="comment">//遍历左子树</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//左子树为空此时栈顶结点就作为子树的根节点，加入结果列表，并出栈，然后遍历右子树</span></span><br><span class="line">        root = s.<span class="built_in">top</span>();</span><br><span class="line">        ans.<span class="built_in">push_back</span>(root-&gt;val);</span><br><span class="line">        s.<span class="built_in">pop</span>();</span><br><span class="line">        root = root-&gt;right;		<span class="comment">//遍历右子树</span></span><br><span class="line">	&#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>对于后序遍历</strong>，遍历顺序为“左、右、根”，考虑其和前序遍历顺序“根、左、右”的关系，如果前序遍历时把节点值放入结果的、列表尾部的操作改为插入列表头部，则遍历顺序变为“右、左、根”，此时只需要再将前序遍历时，先遍历左子树在遍历右子树的顺序对调，就可以将遍历顺序改为“左、右、根”，即为后序遍历了，后序遍历代码：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">postorderTraversal</span><span class="params">(TreeNode* root)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; ans;</span><br><span class="line">    stack&lt;TreeNode*&gt; s;</span><br><span class="line">    <span class="keyword">while</span>(root != <span class="literal">nullptr</span> || !s.<span class="built_in">empty</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">while</span>(root)</span><br><span class="line">        &#123;</span><br><span class="line">            ans.<span class="built_in">insert</span>(ans.<span class="built_in">begin</span>(),root-&gt;val);	<span class="comment">//结果插到列表开头</span></span><br><span class="line">            s.<span class="built_in">push</span>(root);		<span class="comment">//入栈</span></span><br><span class="line">           	root = root-&gt;right;	<span class="comment">//先遍历右子树</span></span><br><span class="line">        &#125;</span><br><span class="line">        root = s.<span class="built_in">top</span>();</span><br><span class="line">        s.<span class="built_in">pop</span>();</span><br><span class="line">        root = root-&gt;left;		<span class="comment">//再遍历左子树</span></span><br><span class="line">	&#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="2、层序遍历：使用广度优先搜索即可"><a href="#2、层序遍历：使用广度优先搜索即可" class="headerlink" title="2、层序遍历：使用广度优先搜索即可"></a>2、层序遍历：使用广度优先搜索即可</h4><h4 id="3、构造二叉树："><a href="#3、构造二叉树：" class="headerlink" title="3、构造二叉树："></a>3、构造二叉树：</h4><p><a href="https://leetcode-cn.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/solution/qian-xu-yu-zhong-xu-gou-jian-er-cha-shu-7dznd/">前序与中序构建二叉树</a></p>
-<p><a href="https://leetcode-cn.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/solution/hou-xu-yu-zhong-xu-gou-jian-er-cha-shu-d-kmrr/">后序与中序构建二叉树</a></p>
-<p><a href="https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/solution/">二叉树的序列化与反序列化</a></p>
-<h4 id="4、递归解决二叉树问题："><a href="#4、递归解决二叉树问题：" class="headerlink" title="4、递归解决二叉树问题："></a>4、递归解决二叉树问题：</h4><p><a href="https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/solution/">二叉树的最大深度</a></p>
-<p><a href="https://leetcode-cn.com/problems/symmetric-tree/">对称二叉树</a></p>
-<p><a href="https://leetcode-cn.com/problems/path-sum/solution/">路径总和</a></p>
-<p><a href="https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/">二叉树的最近公共祖先</a></p>
 ]]></content>
       <categories>
         <category>数据结构与算法</category>
@@ -586,41 +586,6 @@
       </tags>
   </entry>
   <entry>
-    <title>【计算机图形学】（五）深度缓冲</title>
-    <url>/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/</url>
-    <content><![CDATA[<h3 id="深度缓冲（Z-Buffer）"><a href="#深度缓冲（Z-Buffer）" class="headerlink" title="深度缓冲（Z-Buffer）"></a>深度缓冲（Z-Buffer）</h3><p>到上一篇文章为止，我们基本完成了把三维物体画在二维屏幕上的过程，但在这个过程中，还有一个非常重要的问题没有讨论，那就是在光栅化的时候我们之前的推导都没有考虑Z轴，也就是没有考虑三维物体离我们的远近，但是现实生活中我们看一个三维物体或者场景，由于物体离我们眼睛的距离不同，自然会产生遮挡现象。</p>
-<p><em><span id="more"></span></em></p>
-<p>比如一个立方体，在这样的视角下我们是看不到它的左平面、下平面和后平面的，但是在光栅化的过程中，我们依然会取这个立方体左平面上的三个点组成三角形并画在屏幕上，如果不考虑遮挡关系，那画出来的正方体显然和我们看到的就不一样了。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308174826553.png" alt="image-20220308174826553"></p>
-<p>那如何在光栅化过程中考虑这种遮挡关系，并把这种关系正确的画出来呢？这就是这一节要讨论的内容。</p>
-<p>在开始之前，要先明确一个概念，这一节所说的 Z ，并不是物体的 Z 坐标，<strong>而是代表物体离我们的远近，也就是深度，这个深度永远是正数，而且数值越小离我们越近</strong>。因为之前说了相机指向 -Z 方向，所以如果是 Z 坐标的话，离我们越近的反而数值上越大，这不符合我们的直觉。因此需要重新给出这个深度的概念。</p>
-<h4 id="1-画家算法"><a href="#1-画家算法" class="headerlink" title="1 画家算法"></a>1 画家算法</h4><p>画家算法指的是我们像画家画画一样，从远处往近处画，这样近处的画面自然会遮挡住远处的画面，光栅化的时候也可以这样，我们先对三角形的深度排序，然后从远往近画在屏幕上。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308175526241.png" alt="image-20220308175526241"></p>
-<p>但是这样的算法无法解决下面这种情况：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308175553407.png" alt="image-20220308175553407"></p>
-<p>三角形的遮挡关系往往没有那么简单，因此画家算法大多情况下并不适用。</p>
-<h4 id="2-Z-Buffer"><a href="#2-Z-Buffer" class="headerlink" title="2 Z-Buffer"></a>2 Z-Buffer</h4><p>Z-Buffer的思想非常简单，那就是我们在渲染图形时，除了维护frame-buffer（显示在屏幕上的图）外，再维护一个Z-buffer（深度图），<strong>Z-buffer中存储屏幕上每一个像素当前的最小深度</strong>，在光栅化开始时，Z-buffer中每一个像素的深度都设为无穷大，之后渲染三角形的时候，每次都先判断当前渲染的三角形的深度和Z-buffer中当前像素的深度谁更小（谁离我们更近），如果三角形的深度更小，那么就把三角形的颜色存入frame-buffer中这个像素的位置，同时把Z-buffer中当前像素的最小深度更新一次，这样我们总能保证深度小的颜色遮挡深度大的颜色。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308180155386.png" alt="image-20220308180155386"></p>
-<p>Z-buffer和frame-buffer总是同时渲染的，因此当我们生成一张图片的时候，也就生成了这张图片的深度图。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308180255018.png" alt="image-20220308180255018"></p>
-<p>可以看到深度图中越远的地方像素值越大，越近的地方像素值越小。</p>
-<p>Z-buffer的伪代码如下：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308180341613.png" alt="image-20220308180341613"></p>
-<p>相比于画家算法 O(nlogn) ，Z-buffer只需要 O(n) 的时间复杂度。</p>
-<blockquote>
-<p>为什么是O(n)？</p>
-<p>假设每个三角形只覆盖常数个像素，那么Z-buffer做的就是对每一个三角形判断对应的深度，然后填充像素，因此只需要花费 O(1) 时间，那么有n个三角形，复杂度就是O(n).</p>
-</blockquote>
-<p>最后说一下Z-buffer的优势，就是与画三角形的顺序无关，只要维护对了深度信息，画出来的一定是正确是遮挡关系，并且对硬件没有特殊需求，容易实现。</p>
-]]></content>
-      <categories>
-        <category>计算机图形学</category>
-      </categories>
-      <tags>
-        <tag>计算机图形学</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>【计算机图形学】（六）着色</title>
     <url>/LycTechStack.github.io/2022/03/09/20220309-%E7%9D%80%E8%89%B2/</url>
     <content><![CDATA[<h3 id="着色（Shading）"><a href="#着色（Shading）" class="headerlink" title="着色（Shading）"></a>着色（Shading）</h3><p>前几节我们介绍了三维中的各种变换，三维到二维的映射，以及如何在屏幕空间中渲染三维空间中我们所看到的物体，也就是光栅化。光栅化的过程实际上就是判断像素是否在三角形内，如果在就填上对应的颜色的过程。那么从这一节开始，我们将讨论“填上对应的颜色”这里的颜色从何而来。</p>
@@ -648,7 +613,7 @@
 <p>那么光的强度又该如何描述呢，光可以理解为一种能量，所以在传播的过程中能量一定是有所损失的，所以光的强度与传播距离是成反比的，如果光源处强度为$I$，那么距离光源 $r$ 处的强度为$I&#x2F;r^2$.</p>
 <p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/09/20220309-%E7%9D%80%E8%89%B2/image-20220309172942182.png" alt="image-20220309172942182"></p>
 <p>于是我们就可以得出漫反射的计算公式：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/09/20220309-%E7%9D%80%E8%89%B2/image-20220309173151067.png" alt="image-20220309173151067"></p>
-<p>$k_d$ 是漫反射系数，也就是着色点的颜色；平面法线和光线夹角的余弦也就是着色点的法向量$\vec n$和光线的入射方向$\vec l$的点乘，因而二者都是单位向量所以点乘就是余弦，$max(0, \bold{n·\bold{l}})$的含义是有时夹角余弦为负，那我们认为这是无意义的，因为这相当于光线从平面下方射入，实际上就是看不到任何颜色，所以如果夹角余弦为负我们就取0.</p>
+<p>$k_d$ 是漫反射系数，也就是着色点的颜色；平面法线和光线夹角的余弦也就是着色点的法向量$\vec n$和光线的入射方向$\vec l$的点乘，因而二者都是单位向量所以点乘就是余弦，$max(0, \vec n·\vec l)$的含义是有时夹角余弦为负，那我们认为这是无意义的，因为这相当于光线从平面下方射入，实际上就是看不到任何颜色，所以如果夹角余弦为负我们就取0.</p>
 <p>可以看出漫反射计算中不包含视线方向 $\vec v$ ，正好对应开头说的，漫反射与观察方向无关，漫反射的颜色从任何方向看都是一样的。</p>
 <p>下面的图展示了$k_d$ 逐渐增大对应的漫反射表现，也就是颜色逐渐变亮。</p>
 <p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/09/20220309-%E7%9D%80%E8%89%B2/image-20220309175149118.png" alt="image-20220309175149118"></p>
@@ -712,6 +677,41 @@
 </ul>
 <p>下面是这三种着色策略的对比，可以看出，当模型片面不够多时，Flat shading的效果较差，但随着模型复杂度的提升，Flat shading的效果并不差，并且由于不需要插值运算，当模型足够精细时，使用Flat shading是性价比更高的。</p>
 <p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/09/20220309-%E7%9D%80%E8%89%B2/image-20220309192158594.png" alt="image-20220309192158594"></p>
+]]></content>
+      <categories>
+        <category>计算机图形学</category>
+      </categories>
+      <tags>
+        <tag>计算机图形学</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>【计算机图形学】（五）深度缓冲</title>
+    <url>/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/</url>
+    <content><![CDATA[<h3 id="深度缓冲（Z-Buffer）"><a href="#深度缓冲（Z-Buffer）" class="headerlink" title="深度缓冲（Z-Buffer）"></a>深度缓冲（Z-Buffer）</h3><p>到上一篇文章为止，我们基本完成了把三维物体画在二维屏幕上的过程，但在这个过程中，还有一个非常重要的问题没有讨论，那就是在光栅化的时候我们之前的推导都没有考虑Z轴，也就是没有考虑三维物体离我们的远近，但是现实生活中我们看一个三维物体或者场景，由于物体离我们眼睛的距离不同，自然会产生遮挡现象。</p>
+<p><em><span id="more"></span></em></p>
+<p>比如一个立方体，在这样的视角下我们是看不到它的左平面、下平面和后平面的，但是在光栅化的过程中，我们依然会取这个立方体左平面上的三个点组成三角形并画在屏幕上，如果不考虑遮挡关系，那画出来的正方体显然和我们看到的就不一样了。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308174826553.png" alt="image-20220308174826553"></p>
+<p>那如何在光栅化过程中考虑这种遮挡关系，并把这种关系正确的画出来呢？这就是这一节要讨论的内容。</p>
+<p>在开始之前，要先明确一个概念，这一节所说的 Z ，并不是物体的 Z 坐标，<strong>而是代表物体离我们的远近，也就是深度，这个深度永远是正数，而且数值越小离我们越近</strong>。因为之前说了相机指向 -Z 方向，所以如果是 Z 坐标的话，离我们越近的反而数值上越大，这不符合我们的直觉。因此需要重新给出这个深度的概念。</p>
+<h4 id="1-画家算法"><a href="#1-画家算法" class="headerlink" title="1 画家算法"></a>1 画家算法</h4><p>画家算法指的是我们像画家画画一样，从远处往近处画，这样近处的画面自然会遮挡住远处的画面，光栅化的时候也可以这样，我们先对三角形的深度排序，然后从远往近画在屏幕上。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308175526241.png" alt="image-20220308175526241"></p>
+<p>但是这样的算法无法解决下面这种情况：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308175553407.png" alt="image-20220308175553407"></p>
+<p>三角形的遮挡关系往往没有那么简单，因此画家算法大多情况下并不适用。</p>
+<h4 id="2-Z-Buffer"><a href="#2-Z-Buffer" class="headerlink" title="2 Z-Buffer"></a>2 Z-Buffer</h4><p>Z-Buffer的思想非常简单，那就是我们在渲染图形时，除了维护frame-buffer（显示在屏幕上的图）外，再维护一个Z-buffer（深度图），<strong>Z-buffer中存储屏幕上每一个像素当前的最小深度</strong>，在光栅化开始时，Z-buffer中每一个像素的深度都设为无穷大，之后渲染三角形的时候，每次都先判断当前渲染的三角形的深度和Z-buffer中当前像素的深度谁更小（谁离我们更近），如果三角形的深度更小，那么就把三角形的颜色存入frame-buffer中这个像素的位置，同时把Z-buffer中当前像素的最小深度更新一次，这样我们总能保证深度小的颜色遮挡深度大的颜色。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308180155386.png" alt="image-20220308180155386"></p>
+<p>Z-buffer和frame-buffer总是同时渲染的，因此当我们生成一张图片的时候，也就生成了这张图片的深度图。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308180255018.png" alt="image-20220308180255018"></p>
+<p>可以看到深度图中越远的地方像素值越大，越近的地方像素值越小。</p>
+<p>Z-buffer的伪代码如下：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308180341613.png" alt="image-20220308180341613"></p>
+<p>相比于画家算法 O(nlogn) ，Z-buffer只需要 O(n) 的时间复杂度。</p>
+<blockquote>
+<p>为什么是O(n)？</p>
+<p>假设每个三角形只覆盖常数个像素，那么Z-buffer做的就是对每一个三角形判断对应的深度，然后填充像素，因此只需要花费 O(1) 时间，那么有n个三角形，复杂度就是O(n).</p>
+</blockquote>
+<p>最后说一下Z-buffer的优势，就是与画三角形的顺序无关，只要维护对了深度信息，画出来的一定是正确是遮挡关系，并且对硬件没有特殊需求，容易实现。</p>
 ]]></content>
       <categories>
         <category>计算机图形学</category>
