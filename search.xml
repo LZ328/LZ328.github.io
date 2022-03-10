@@ -361,6 +361,90 @@
       </tags>
   </entry>
   <entry>
+    <title>【动态规划】（一）线性动态规划之单串问题</title>
+    <url>/LycTechStack.github.io/2022/03/07/20220307-%E7%BA%BF%E6%80%A7%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92-%E5%8D%95%E4%B8%B2/</url>
+    <content><![CDATA[<p>线性动态规划的主要特点是状态的推导是按照问题规模 i 从小到大依次推过去的，较大规模的问题的解依赖较小规模的问题的解。这里问题规模为 i 的含义是考虑前 i 个元素 [0..i] 时问题的解。</p>
+<p>大规模问题的状态只与较小规模的问题有关，而问题规模完全用一个变量 i 表示，i 的大小表示了问题规模的大小，因此从小到大推 i 直至推到 n，就得到了大规模问题的解，这就是线性动态规划的过程。</p>
+<p>按照问题的输入格式，<strong>线性动态规划解决的问题主要是单串，双串，矩阵上的问题</strong>，因为在单串，双串，矩阵上问题规模可以完全用位置表示，并且位置的大小就是问题规模的大小，因此从前往后推位置就相当于从小到大推问题规模。</p>
+<p><em><span id="more"></span></em></p>
+<h3 id="单串问题"><a href="#单串问题" class="headerlink" title="单串问题"></a>单串问题</h3><p>单串 <code>dp[i]</code> 是线性动态规划最简单的一类问题，输入是一个串，状态一般定义为 <code>dp[i] := 考虑[0..i]上，原问题的解</code>，其中<code>考虑[0..i]上，原问题的解</code>又可以分为两大类，即我们要考虑[0..i]上所有子问题的解（考虑O(n)个子问题的解），还是只考虑考虑[0..i]上常数个子问题的解（考虑O(1)个子问题的解），一般只考虑常数个子问题的解就是考虑 dp[i-1] 或（和）dp[i-2]。单串问题基本上可以分为以下几大类。</p>
+<h4 id="1-最长递增子序列（LIS问题）"><a href="#1-最长递增子序列（LIS问题）" class="headerlink" title="1 最长递增子序列（LIS问题）"></a>1 最长递增子序列（LIS问题）</h4><p>这是最经典的线性动态规划问题，也是最能体现线性动态规划思想的问题之一。</p>
+<blockquote>
+<p>问题描述：</p>
+<p>给你一个整数数组 <code>nums</code> ，找到其中最长严格递增子序列的长度。</p>
+<p>子序列 是由数组派生而来的序列，删除（或不删除）数组中的元素而不改变其余元素的顺序。例如，<code>[3,6,2,7] </code>是数组 <code>[0,3,1,6,2,2,7] </code>的子序列。</p>
+</blockquote>
+<p>我们用$f(i)$表示以nums[i]结尾的子数组的LIS长度，因为子序列需要上升，因此以 nums[i] 结尾的子序列中，nums[i] 之前的数字一定要比 nums[i] 小才行，因此目标就是先找到以此前比 nums[i] 小的各个元素，然后每个所选元素对应一个以它们结尾的最长子序列，从这些子序列中选择最长的，其长度加 1 就是当前的问题的结果。如果此前没有比 nums[i] 小的数字，则当前问题的结果就是 1 。于是可以写出状态转移方程：<br>$$<br>\begin{equation}<br>f(i)&#x3D;\left{<br>\begin{aligned}<br>max(f(i),f(j)+1) &amp; , &amp; nums[i]&gt;nums[j], \<br>1 &amp; , &amp; nums[i]&lt;&#x3D;nums[j].<br>\end{aligned}<br>\right.<br>\end{equation}<br>$$<br>其中$j &lt; i$，显然求解$f(i)$需要遍历所有$f(j)$，因此我们要考虑O(n)个子问题的解。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">lengthOfLIS</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">dp</span><span class="params">(nums.size(),<span class="number">1</span>)</span></span>;</span><br><span class="line">        <span class="type">int</span> ans = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; nums.<span class="built_in">size</span>(); i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt; i; j++)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(nums[j] &lt; nums[i])</span><br><span class="line">                &#123;</span><br><span class="line">                    dp[i] = <span class="built_in">max</span>(dp[i],dp[j] + <span class="number">1</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            ans = <span class="built_in">max</span>(ans, dp[i]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p><strong>LIS问题及其变体问题：</strong></p>
+<ul>
+<li><a href="https://leetcode-cn.com/problems/longest-increasing-subsequence/">最长递增子序列</a></li>
+<li><a href="https://leetcode-cn.com/problems/number-of-longest-increasing-subsequence/">最长递增子序列的个数</a>：除了维护记录长度的dp数组外，还要维护一个记录子序列个数的cnt数组</li>
+<li><a href="https://leetcode-cn.com/problems/russian-doll-envelopes/">俄罗斯套娃信封问题</a></li>
+<li><a href="https://leetcode-cn.com/problems/largest-divisible-subset/">最大整除子集</a>：动态规划过程类似于最长上升子序列，难点在于还原出子集的所有元素</li>
+</ul>
+<h4 id="2-最大子数组和"><a href="#2-最大子数组和" class="headerlink" title="2 最大子数组和"></a>2 最大子数组和</h4><p>另一个经典单串问题</p>
+<blockquote>
+<p>问题描述：</p>
+<p>给你一个整数数组 <code>nums</code> ，请你找出一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。</p>
+</blockquote>
+<p>同样的思路，我们用 dp[i] 表示以nums[i]结尾的最大子数组和，因为状态的推导是按照 i 从 0 到 n - 1 按顺序推的，推到 dp[i]，时，dp[i - 1], …, dp[0] 已经计算完。因为子数组是连续的，所以子问题 dp[i] 其实只与子问题 dp[i - 1] 有关。如果 [0..i-1] 上以 nums[i-1] 结尾的最大子数组和(缓存在 dp[i-1] )为非负数，则以 nums[i] 结尾的最大子数组和就在 dp[i-1] 的基础上加上 nums[i] 就是 dp[i] 的结果否则以 i 结尾的子数组就不要 i-1 及之前的数，因为选了的话子数组的和只会更小。因此可以写出状态转移方程：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">dp[i] = nums[i] + max(dp[i - 1], 0)</span><br></pre></td></tr></table></figure>
+
+<p>显然这个问题中，我们只要考虑O(1)个子问题的解，因此也没有必要维护 dp 数组了，运用滚动数组的思想，只要记录下来 dp[i-1] 就可以了。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">maxSubArray</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> fi = <span class="number">0</span>;</span><br><span class="line">        <span class="type">int</span> res = INT_MIN;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i&lt;nums.<span class="built_in">size</span>();i++)</span><br><span class="line">        &#123;</span><br><span class="line">            fi = <span class="built_in">max</span>(fi + nums[i], nums[i]);</span><br><span class="line">            res = <span class="built_in">max</span>(res,fi);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p><strong>最大子数组和及其变体问题：</strong></p>
+<ul>
+<li><a href="https://leetcode-cn.com/problems/maximum-subarray/">最大子数组和</a></li>
+<li><a href="https://leetcode-cn.com/problems/maximum-sum-circular-subarray/solution/huan-xing-shu-zu-zui-da-he-by-bu-luo-bu-7bqj/">环形数组最大和</a></li>
+<li><a href="https://leetcode-cn.com/problems/maximum-product-subarray/solution/cheng-ji-zui-da-zi-shu-zu-by-bu-luo-bu-xvsx/">乘积最大子数组</a></li>
+<li><a href="https://leetcode-cn.com/problems/max-submatrix-lcci/solution/">最大子矩阵</a>：二维转换为一维的典型题目</li>
+<li><a href="https://leetcode-cn.com/problems/max-sum-of-rectangle-no-larger-than-k/">矩形区域不超过 K 的最大数值和</a>：上一题的进阶版</li>
+</ul>
+<h4 id="3-打家劫舍问题"><a href="#3-打家劫舍问题" class="headerlink" title="3 打家劫舍问题"></a>3 打家劫舍问题</h4><p>打家劫舍类似于最大子数组和，但这里的子数组不能连续，也就是不相邻子序列的最大和问题。</p>
+<blockquote>
+<p>问题描述：</p>
+<p>你是一个专业的小偷，计划偷窃沿街的房屋。每间房内都藏有一定的现金，<strong>影响你偷窃的唯一制约因素就是相邻的房屋装有相互连通的防盗系统</strong>，如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警。</p>
+<p>给定一个代表每个房屋存放金额的非负整数数组，计算你不触动警报装置的情况下，一夜之内能够偷窃到的最高金额。</p>
+</blockquote>
+<p>问题的关键在于我们如果偷了第 i 个房间，那么就不能偷第 i-1 个房间，所以 dp[i] 表示到第 i 个房间为止的最大金额，这个最大金额的取值有两种情况，如果我们不偷第 i 个房间，那么 dp[i] &#x3D; dp[i-1]；如果我们偷第 i 个房间， 那么 dp[i] &#x3D; dp[i-2] + num[i]。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">rob</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(nums.<span class="built_in">size</span>() &lt;= <span class="number">2</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> *<span class="built_in">max_element</span>(nums.<span class="built_in">begin</span>(),nums.<span class="built_in">end</span>());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">int</span> dp1 = nums[<span class="number">0</span>];              <span class="comment">//屋子能偷盗的最大金额</span></span><br><span class="line">        <span class="type">int</span> dp2 = <span class="built_in">max</span>(dp1,nums[<span class="number">1</span>]);     <span class="comment">//前一间屋子能偷到的最大金额</span></span><br><span class="line">        <span class="type">int</span> ans = <span class="built_in">max</span>(dp1, dp2);</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">2</span>; i &lt; nums.<span class="built_in">size</span>(); i++)</span><br><span class="line">        &#123;</span><br><span class="line">            ans = <span class="built_in">max</span>(dp1 + nums[i], dp2);</span><br><span class="line">            dp1 = dp2;</span><br><span class="line">            dp2 = ans;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p><strong>打家劫舍及其变体问题：</strong></p>
+<ul>
+<li><a href="https://leetcode-cn.com/problems/house-robber/">打家劫舍</a></li>
+<li><a href="https://leetcode-cn.com/problems/house-robber-ii/">打家劫舍 II</a>：数组变成了环形，也就是偷了第1个房间就不能偷最后一个房间，在区间 [0, nums.size()-1] 和 [1, nums.size()] 上应用两次打家劫舍的算法即可</li>
+<li><a href="https://leetcode-cn.com/problems/delete-and-earn/solution/">删除并获得点数</a>：难点在于怎么转换成打家劫舍问题</li>
+<li><a href="https://leetcode-cn.com/problems/pizza-with-3n-slices/solution/">3n 块披萨</a>：难点在于动态规划状态的定义，因为一定有 3n 个数，我们最多只能拿其中 n 个数字，所以相当于打家劫舍中我们只能偷 3n 个房间中的 n 个</li>
+</ul>
+<h4 id="4-需要记录两个位置的问题"><a href="#4-需要记录两个位置的问题" class="headerlink" title="4 需要记录两个位置的问题"></a>4 需要记录两个位置的问题</h4><p>有一些单串问题在涉及状态时需要考虑相邻两个元素的情况，因为只考虑最后一个的话无法对状态描述清楚，例如：</p>
+<ul>
+<li><a href="https://leetcode-cn.com/problems/length-of-longest-fibonacci-subsequence/">最长的斐波那契子序列的长度</a>：$dp[i][j]$表示以 $j, i$ 结尾的最长斐波那契子序列长度，转移时在 [0..j] 中找满足条件的 k </li>
+<li><a href="https://leetcode-cn.com/problems/longest-arithmetic-subsequence/">最长等差数列</a>：同上，但是两道题的具体实现细节稍有不同</li>
+</ul>
+<h4 id="5-其他没有显式给定数组的线性动态规划问题"><a href="#5-其他没有显式给定数组的线性动态规划问题" class="headerlink" title="5 其他没有显式给定数组的线性动态规划问题"></a>5 其他没有显式给定数组的线性动态规划问题</h4><p>线性 DP 还有一些问题没有显式的数组，字符串等。此类问题一般没有什么固定的模式，只能通过多做题来积累。</p>
+<ul>
+<li><a href="https://leetcode-cn.com/problems/longest-valid-parentheses/solution/">最长有效括号</a>：这道题最容易想到的是用栈，但其实算法过程比较难做对，用动态规划更简单，但对于状态转移的过程比较难想到</li>
+<li><a href="https://leetcode-cn.com/problems/arithmetic-slices/">等差数列划分</a>：最长等差数列的简单版本，给定的数组是严格递增或递减的，处理起来会简单很多</li>
+<li><a href="https://leetcode-cn.com/problems/decode-ways/">解码方法</a>：关键在于有效数字只有可能是一位或者两位，因此对于任何一个数字，要么本身一位进行编码，要么和前一位组成两位数字进行编码</li>
+<li><a href="https://leetcode-cn.com/problems/palindrome-partitioning/">分割回文串</a>：主要考察的是深搜回溯的方法，但是使用动态规划对字符串预处理可以在O(1)时间内判断回文子串</li>
+<li><a href="https://leetcode-cn.com/problems/palindrome-partitioning-ii/">分割回文串 II</a>：dp[i] 表示以 s[i] 结尾的字符串的最小分割次数，状态转移时如果 s[i] 能与前面的某个位置 j 组成回文子串 s[j…i]，那么dp[i] &#x3D; dp[j] + 1，遍历所有满足条件的 j &lt; i ，dp[i]取这些值里面的最小值，判断回文子串 s[j…i] 时同样可以用分割回文串中的动态规划方法，所以本题进行了两次动态规划，较为复杂。</li>
+<li><a href="https://leetcode-cn.com/problems/delete-operation-for-two-strings/solution/liang-ge-zi-fu-chuan-de-shan-chu-cao-zuo-14uw/">两个字符串的删除操作</a>：转化成LCS问题可以很简单的解决，但还可以用更符合题意的状态定义$dp[i][j]$</li>
+<li><a href="https://leetcode-cn.com/problems/counting-bits/">比特位计数</a>：比较简单</li>
+</ul>
+]]></content>
+      <categories>
+        <category>数据结构与算法</category>
+      </categories>
+      <tags>
+        <tag>C++</tag>
+        <tag>算法</tag>
+        <tag>动态规划</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>【计算机图形学】（四）反走样</title>
     <url>/LycTechStack.github.io/2022/03/06/20220306-%E5%8F%8D%E8%B5%B0%E6%A0%B7/</url>
     <content><![CDATA[<h3 id="反走样（Antialiasing）"><a href="#反走样（Antialiasing）" class="headerlink" title="反走样（Antialiasing）"></a>反走样（Antialiasing）</h3><p>上一篇文章说到，光栅化的采样过程导致了图形走样，这一篇来讲如何反走样。</p>
@@ -502,87 +586,38 @@
       </tags>
   </entry>
   <entry>
-    <title>【动态规划】（一）线性动态规划之单串问题</title>
-    <url>/LycTechStack.github.io/2022/03/07/20220307-%E7%BA%BF%E6%80%A7%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92-%E5%8D%95%E4%B8%B2/</url>
-    <content><![CDATA[<p>线性动态规划的主要特点是状态的推导是按照问题规模 i 从小到大依次推过去的，较大规模的问题的解依赖较小规模的问题的解。这里问题规模为 i 的含义是考虑前 i 个元素 [0..i] 时问题的解。</p>
-<p>大规模问题的状态只与较小规模的问题有关，而问题规模完全用一个变量 i 表示，i 的大小表示了问题规模的大小，因此从小到大推 i 直至推到 n，就得到了大规模问题的解，这就是线性动态规划的过程。</p>
-<p>按照问题的输入格式，<strong>线性动态规划解决的问题主要是单串，双串，矩阵上的问题</strong>，因为在单串，双串，矩阵上问题规模可以完全用位置表示，并且位置的大小就是问题规模的大小，因此从前往后推位置就相当于从小到大推问题规模。</p>
+    <title>【计算机图形学】（五）深度缓冲</title>
+    <url>/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/</url>
+    <content><![CDATA[<h3 id="深度缓冲（Z-Buffer）"><a href="#深度缓冲（Z-Buffer）" class="headerlink" title="深度缓冲（Z-Buffer）"></a>深度缓冲（Z-Buffer）</h3><p>到上一篇文章为止，我们基本完成了把三维物体画在二维屏幕上的过程，但在这个过程中，还有一个非常重要的问题没有讨论，那就是在光栅化的时候我们之前的推导都没有考虑Z轴，也就是没有考虑三维物体离我们的远近，但是现实生活中我们看一个三维物体或者场景，由于物体离我们眼睛的距离不同，自然会产生遮挡现象。</p>
 <p><em><span id="more"></span></em></p>
-<h3 id="单串问题"><a href="#单串问题" class="headerlink" title="单串问题"></a>单串问题</h3><p>单串 <code>dp[i]</code> 是线性动态规划最简单的一类问题，输入是一个串，状态一般定义为 <code>dp[i] := 考虑[0..i]上，原问题的解</code>，其中<code>考虑[0..i]上，原问题的解</code>又可以分为两大类，即我们要考虑[0..i]上所有子问题的解（考虑O(n)个子问题的解），还是只考虑考虑[0..i]上常数个子问题的解（考虑O(1)个子问题的解），一般只考虑常数个子问题的解就是考虑 dp[i-1] 或（和）dp[i-2]。单串问题基本上可以分为以下几大类。</p>
-<h4 id="1-最长递增子序列（LIS问题）"><a href="#1-最长递增子序列（LIS问题）" class="headerlink" title="1 最长递增子序列（LIS问题）"></a>1 最长递增子序列（LIS问题）</h4><p>这是最经典的线性动态规划问题，也是最能体现线性动态规划思想的问题之一。</p>
+<p>比如一个立方体，在这样的视角下我们是看不到它的左平面、下平面和后平面的，但是在光栅化的过程中，我们依然会取这个立方体左平面上的三个点组成三角形并画在屏幕上，如果不考虑遮挡关系，那画出来的正方体显然和我们看到的就不一样了。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308174826553.png" alt="image-20220308174826553"></p>
+<p>那如何在光栅化过程中考虑这种遮挡关系，并把这种关系正确的画出来呢？这就是这一节要讨论的内容。</p>
+<p>在开始之前，要先明确一个概念，这一节所说的 Z ，并不是物体的 Z 坐标，<strong>而是代表物体离我们的远近，也就是深度，这个深度永远是正数，而且数值越小离我们越近</strong>。因为之前说了相机指向 -Z 方向，所以如果是 Z 坐标的话，离我们越近的反而数值上越大，这不符合我们的直觉。因此需要重新给出这个深度的概念。</p>
+<h4 id="1-画家算法"><a href="#1-画家算法" class="headerlink" title="1 画家算法"></a>1 画家算法</h4><p>画家算法指的是我们像画家画画一样，从远处往近处画，这样近处的画面自然会遮挡住远处的画面，光栅化的时候也可以这样，我们先对三角形的深度排序，然后从远往近画在屏幕上。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308175526241.png" alt="image-20220308175526241"></p>
+<p>但是这样的算法无法解决下面这种情况：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308175553407.png" alt="image-20220308175553407"></p>
+<p>三角形的遮挡关系往往没有那么简单，因此画家算法大多情况下并不适用。</p>
+<h4 id="2-Z-Buffer"><a href="#2-Z-Buffer" class="headerlink" title="2 Z-Buffer"></a>2 Z-Buffer</h4><p>Z-Buffer的思想非常简单，那就是我们在渲染图形时，除了维护frame-buffer（显示在屏幕上的图）外，再维护一个Z-buffer（深度图），<strong>Z-buffer中存储屏幕上每一个像素当前的最小深度</strong>，在光栅化开始时，Z-buffer中每一个像素的深度都设为无穷大，之后渲染三角形的时候，每次都先判断当前渲染的三角形的深度和Z-buffer中当前像素的深度谁更小（谁离我们更近），如果三角形的深度更小，那么就把三角形的颜色存入frame-buffer中这个像素的位置，同时把Z-buffer中当前像素的最小深度更新一次，这样我们总能保证深度小的颜色遮挡深度大的颜色。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308180155386.png" alt="image-20220308180155386"></p>
+<p>Z-buffer和frame-buffer总是同时渲染的，因此当我们生成一张图片的时候，也就生成了这张图片的深度图。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308180255018.png" alt="image-20220308180255018"></p>
+<p>可以看到深度图中越远的地方像素值越大，越近的地方像素值越小。</p>
+<p>Z-buffer的伪代码如下：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308180341613.png" alt="image-20220308180341613"></p>
+<p>相比于画家算法 O(nlogn) ，Z-buffer只需要 O(n) 的时间复杂度。</p>
 <blockquote>
-<p>问题描述：</p>
-<p>给你一个整数数组 <code>nums</code> ，找到其中最长严格递增子序列的长度。</p>
-<p>子序列 是由数组派生而来的序列，删除（或不删除）数组中的元素而不改变其余元素的顺序。例如，<code>[3,6,2,7] </code>是数组 <code>[0,3,1,6,2,2,7] </code>的子序列。</p>
+<p>为什么是O(n)？</p>
+<p>假设每个三角形只覆盖常数个像素，那么Z-buffer做的就是对每一个三角形判断对应的深度，然后填充像素，因此只需要花费 O(1) 时间，那么有n个三角形，复杂度就是O(n).</p>
 </blockquote>
-<p>我们用$f(i)$表示以nums[i]结尾的子数组的LIS长度，因为子序列需要上升，因此以 nums[i] 结尾的子序列中，nums[i] 之前的数字一定要比 nums[i] 小才行，因此目标就是先找到以此前比 nums[i] 小的各个元素，然后每个所选元素对应一个以它们结尾的最长子序列，从这些子序列中选择最长的，其长度加 1 就是当前的问题的结果。如果此前没有比 nums[i] 小的数字，则当前问题的结果就是 1 。于是可以写出状态转移方程：<br>$$<br>\begin{equation}<br>f(i)&#x3D;\left{<br>\begin{aligned}<br>max(f(i),f(j)+1) &amp; , &amp; nums[i]&gt;nums[j], \<br>1 &amp; , &amp; nums[i]&lt;&#x3D;nums[j].<br>\end{aligned}<br>\right.<br>\end{equation}<br>$$<br>其中$j &lt; i$，显然求解$f(i)$需要遍历所有$f(j)$，因此我们要考虑O(n)个子问题的解。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">lengthOfLIS</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">dp</span><span class="params">(nums.size(),<span class="number">1</span>)</span></span>;</span><br><span class="line">        <span class="type">int</span> ans = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; nums.<span class="built_in">size</span>(); i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt; i; j++)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(nums[j] &lt; nums[i])</span><br><span class="line">                &#123;</span><br><span class="line">                    dp[i] = <span class="built_in">max</span>(dp[i],dp[j] + <span class="number">1</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            ans = <span class="built_in">max</span>(ans, dp[i]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<p><strong>LIS问题及其变体问题：</strong></p>
-<ul>
-<li><a href="https://leetcode-cn.com/problems/longest-increasing-subsequence/">最长递增子序列</a></li>
-<li><a href="https://leetcode-cn.com/problems/number-of-longest-increasing-subsequence/">最长递增子序列的个数</a>：除了维护记录长度的dp数组外，还要维护一个记录子序列个数的cnt数组</li>
-<li><a href="https://leetcode-cn.com/problems/russian-doll-envelopes/">俄罗斯套娃信封问题</a></li>
-<li><a href="https://leetcode-cn.com/problems/largest-divisible-subset/">最大整除子集</a>：动态规划过程类似于最长上升子序列，难点在于还原出子集的所有元素</li>
-</ul>
-<h4 id="2-最大子数组和"><a href="#2-最大子数组和" class="headerlink" title="2 最大子数组和"></a>2 最大子数组和</h4><p>另一个经典单串问题</p>
-<blockquote>
-<p>问题描述：</p>
-<p>给你一个整数数组 <code>nums</code> ，请你找出一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。</p>
-</blockquote>
-<p>同样的思路，我们用 dp[i] 表示以nums[i]结尾的最大子数组和，因为状态的推导是按照 i 从 0 到 n - 1 按顺序推的，推到 dp[i]，时，dp[i - 1], …, dp[0] 已经计算完。因为子数组是连续的，所以子问题 dp[i] 其实只与子问题 dp[i - 1] 有关。如果 [0..i-1] 上以 nums[i-1] 结尾的最大子数组和(缓存在 dp[i-1] )为非负数，则以 nums[i] 结尾的最大子数组和就在 dp[i-1] 的基础上加上 nums[i] 就是 dp[i] 的结果否则以 i 结尾的子数组就不要 i-1 及之前的数，因为选了的话子数组的和只会更小。因此可以写出状态转移方程：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">dp[i] = nums[i] + max(dp[i - 1], 0)</span><br></pre></td></tr></table></figure>
-
-<p>显然这个问题中，我们只要考虑O(1)个子问题的解，因此也没有必要维护 dp 数组了，运用滚动数组的思想，只要记录下来 dp[i-1] 就可以了。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">maxSubArray</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> fi = <span class="number">0</span>;</span><br><span class="line">        <span class="type">int</span> res = INT_MIN;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i&lt;nums.<span class="built_in">size</span>();i++)</span><br><span class="line">        &#123;</span><br><span class="line">            fi = <span class="built_in">max</span>(fi + nums[i], nums[i]);</span><br><span class="line">            res = <span class="built_in">max</span>(res,fi);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<p><strong>最大子数组和及其变体问题：</strong></p>
-<ul>
-<li><a href="https://leetcode-cn.com/problems/maximum-subarray/">最大子数组和</a></li>
-<li><a href="https://leetcode-cn.com/problems/maximum-sum-circular-subarray/solution/huan-xing-shu-zu-zui-da-he-by-bu-luo-bu-7bqj/">环形数组最大和</a></li>
-<li><a href="https://leetcode-cn.com/problems/maximum-product-subarray/solution/cheng-ji-zui-da-zi-shu-zu-by-bu-luo-bu-xvsx/">乘积最大子数组</a></li>
-<li><a href="https://leetcode-cn.com/problems/max-submatrix-lcci/solution/">最大子矩阵</a>：二维转换为一维的典型题目</li>
-<li><a href="https://leetcode-cn.com/problems/max-sum-of-rectangle-no-larger-than-k/">矩形区域不超过 K 的最大数值和</a>：上一题的进阶版</li>
-</ul>
-<h4 id="3-打家劫舍问题"><a href="#3-打家劫舍问题" class="headerlink" title="3 打家劫舍问题"></a>3 打家劫舍问题</h4><p>打家劫舍类似于最大子数组和，但这里的子数组不能连续，也就是不相邻子序列的最大和问题。</p>
-<blockquote>
-<p>问题描述：</p>
-<p>你是一个专业的小偷，计划偷窃沿街的房屋。每间房内都藏有一定的现金，<strong>影响你偷窃的唯一制约因素就是相邻的房屋装有相互连通的防盗系统</strong>，如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警。</p>
-<p>给定一个代表每个房屋存放金额的非负整数数组，计算你不触动警报装置的情况下，一夜之内能够偷窃到的最高金额。</p>
-</blockquote>
-<p>问题的关键在于我们如果偷了第 i 个房间，那么就不能偷第 i-1 个房间，所以 dp[i] 表示到第 i 个房间为止的最大金额，这个最大金额的取值有两种情况，如果我们不偷第 i 个房间，那么 dp[i] &#x3D; dp[i-1]；如果我们偷第 i 个房间， 那么 dp[i] &#x3D; dp[i-2] + num[i]。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">rob</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(nums.<span class="built_in">size</span>() &lt;= <span class="number">2</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> *<span class="built_in">max_element</span>(nums.<span class="built_in">begin</span>(),nums.<span class="built_in">end</span>());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">int</span> dp1 = nums[<span class="number">0</span>];              <span class="comment">//屋子能偷盗的最大金额</span></span><br><span class="line">        <span class="type">int</span> dp2 = <span class="built_in">max</span>(dp1,nums[<span class="number">1</span>]);     <span class="comment">//前一间屋子能偷到的最大金额</span></span><br><span class="line">        <span class="type">int</span> ans = <span class="built_in">max</span>(dp1, dp2);</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">2</span>; i &lt; nums.<span class="built_in">size</span>(); i++)</span><br><span class="line">        &#123;</span><br><span class="line">            ans = <span class="built_in">max</span>(dp1 + nums[i], dp2);</span><br><span class="line">            dp1 = dp2;</span><br><span class="line">            dp2 = ans;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<p><strong>打家劫舍及其变体问题：</strong></p>
-<ul>
-<li><a href="https://leetcode-cn.com/problems/house-robber/">打家劫舍</a></li>
-<li><a href="https://leetcode-cn.com/problems/house-robber-ii/">打家劫舍 II</a>：数组变成了环形，也就是偷了第1个房间就不能偷最后一个房间，在区间 [0, nums.size()-1] 和 [1, nums.size()] 上应用两次打家劫舍的算法即可</li>
-<li><a href="https://leetcode-cn.com/problems/delete-and-earn/solution/">删除并获得点数</a>：难点在于怎么转换成打家劫舍问题</li>
-<li><a href="https://leetcode-cn.com/problems/pizza-with-3n-slices/solution/">3n 块披萨</a>：难点在于动态规划状态的定义，因为一定有 3n 个数，我们最多只能拿其中 n 个数字，所以相当于打家劫舍中我们只能偷 3n 个房间中的 n 个</li>
-</ul>
-<h4 id="4-需要记录两个位置的问题"><a href="#4-需要记录两个位置的问题" class="headerlink" title="4 需要记录两个位置的问题"></a>4 需要记录两个位置的问题</h4><p>有一些单串问题在涉及状态时需要考虑相邻两个元素的情况，因为只考虑最后一个的话无法对状态描述清楚，例如：</p>
-<ul>
-<li><a href="https://leetcode-cn.com/problems/length-of-longest-fibonacci-subsequence/">最长的斐波那契子序列的长度</a>：$dp[i][j]$表示以 $j, i$ 结尾的最长斐波那契子序列长度，转移时在 [0..j] 中找满足条件的 k </li>
-<li><a href="https://leetcode-cn.com/problems/longest-arithmetic-subsequence/">最长等差数列</a>：同上，但是两道题的具体实现细节稍有不同</li>
-</ul>
-<h4 id="5-其他没有显式给定数组的线性动态规划问题"><a href="#5-其他没有显式给定数组的线性动态规划问题" class="headerlink" title="5 其他没有显式给定数组的线性动态规划问题"></a>5 其他没有显式给定数组的线性动态规划问题</h4><p>线性 DP 还有一些问题没有显式的数组，字符串等。此类问题一般没有什么固定的模式，只能通过多做题来积累。</p>
-<ul>
-<li><a href="https://leetcode-cn.com/problems/longest-valid-parentheses/solution/">最长有效括号</a>：这道题最容易想到的是用栈，但其实算法过程比较难做对，用动态规划更简单，但对于状态转移的过程比较难想到</li>
-<li><a href="https://leetcode-cn.com/problems/arithmetic-slices/">等差数列划分</a>：最长等差数列的简单版本，给定的数组是严格递增或递减的，处理起来会简单很多</li>
-<li><a href="https://leetcode-cn.com/problems/decode-ways/">解码方法</a>：关键在于有效数字只有可能是一位或者两位，因此对于任何一个数字，要么本身一位进行编码，要么和前一位组成两位数字进行编码</li>
-<li><a href="https://leetcode-cn.com/problems/palindrome-partitioning/">分割回文串</a>：主要考察的是深搜回溯的方法，但是使用动态规划对字符串预处理可以在O(1)时间内判断回文子串</li>
-<li><a href="https://leetcode-cn.com/problems/palindrome-partitioning-ii/">分割回文串 II</a>：dp[i] 表示以 s[i] 结尾的字符串的最小分割次数，状态转移时如果 s[i] 能与前面的某个位置 j 组成回文子串 s[j…i]，那么dp[i] &#x3D; dp[j] + 1，遍历所有满足条件的 j &lt; i ，dp[i]取这些值里面的最小值，判断回文子串 s[j…i] 时同样可以用分割回文串中的动态规划方法，所以本题进行了两次动态规划，较为复杂。</li>
-<li><a href="https://leetcode-cn.com/problems/delete-operation-for-two-strings/solution/liang-ge-zi-fu-chuan-de-shan-chu-cao-zuo-14uw/">两个字符串的删除操作</a>：转化成LCS问题可以很简单的解决，但还可以用更符合题意的状态定义$dp[i][j]$</li>
-<li><a href="https://leetcode-cn.com/problems/counting-bits/">比特位计数</a>：比较简单</li>
-</ul>
+<p>最后说一下Z-buffer的优势，就是与画三角形的顺序无关，只要维护对了深度信息，画出来的一定是正确是遮挡关系，并且对硬件没有特殊需求，容易实现。</p>
 ]]></content>
       <categories>
-        <category>数据结构与算法</category>
+        <category>计算机图形学</category>
       </categories>
       <tags>
-        <tag>C++</tag>
-        <tag>算法</tag>
-        <tag>动态规划</tag>
+        <tag>计算机图形学</tag>
       </tags>
   </entry>
   <entry>
@@ -686,32 +721,104 @@
       </tags>
   </entry>
   <entry>
-    <title>【计算机图形学】（五）深度缓冲</title>
-    <url>/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/</url>
-    <content><![CDATA[<h3 id="深度缓冲（Z-Buffer）"><a href="#深度缓冲（Z-Buffer）" class="headerlink" title="深度缓冲（Z-Buffer）"></a>深度缓冲（Z-Buffer）</h3><p>到上一篇文章为止，我们基本完成了把三维物体画在二维屏幕上的过程，但在这个过程中，还有一个非常重要的问题没有讨论，那就是在光栅化的时候我们之前的推导都没有考虑Z轴，也就是没有考虑三维物体离我们的远近，但是现实生活中我们看一个三维物体或者场景，由于物体离我们眼睛的距离不同，自然会产生遮挡现象。</p>
-<p><em><span id="more"></span></em></p>
-<p>比如一个立方体，在这样的视角下我们是看不到它的左平面、下平面和后平面的，但是在光栅化的过程中，我们依然会取这个立方体左平面上的三个点组成三角形并画在屏幕上，如果不考虑遮挡关系，那画出来的正方体显然和我们看到的就不一样了。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308174826553.png" alt="image-20220308174826553"></p>
-<p>那如何在光栅化过程中考虑这种遮挡关系，并把这种关系正确的画出来呢？这就是这一节要讨论的内容。</p>
-<p>在开始之前，要先明确一个概念，这一节所说的 Z ，并不是物体的 Z 坐标，<strong>而是代表物体离我们的远近，也就是深度，这个深度永远是正数，而且数值越小离我们越近</strong>。因为之前说了相机指向 -Z 方向，所以如果是 Z 坐标的话，离我们越近的反而数值上越大，这不符合我们的直觉。因此需要重新给出这个深度的概念。</p>
-<h4 id="1-画家算法"><a href="#1-画家算法" class="headerlink" title="1 画家算法"></a>1 画家算法</h4><p>画家算法指的是我们像画家画画一样，从远处往近处画，这样近处的画面自然会遮挡住远处的画面，光栅化的时候也可以这样，我们先对三角形的深度排序，然后从远往近画在屏幕上。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308175526241.png" alt="image-20220308175526241"></p>
-<p>但是这样的算法无法解决下面这种情况：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308175553407.png" alt="image-20220308175553407"></p>
-<p>三角形的遮挡关系往往没有那么简单，因此画家算法大多情况下并不适用。</p>
-<h4 id="2-Z-Buffer"><a href="#2-Z-Buffer" class="headerlink" title="2 Z-Buffer"></a>2 Z-Buffer</h4><p>Z-Buffer的思想非常简单，那就是我们在渲染图形时，除了维护frame-buffer（显示在屏幕上的图）外，再维护一个Z-buffer（深度图），<strong>Z-buffer中存储屏幕上每一个像素当前的最小深度</strong>，在光栅化开始时，Z-buffer中每一个像素的深度都设为无穷大，之后渲染三角形的时候，每次都先判断当前渲染的三角形的深度和Z-buffer中当前像素的深度谁更小（谁离我们更近），如果三角形的深度更小，那么就把三角形的颜色存入frame-buffer中这个像素的位置，同时把Z-buffer中当前像素的最小深度更新一次，这样我们总能保证深度小的颜色遮挡深度大的颜色。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308180155386.png" alt="image-20220308180155386"></p>
-<p>Z-buffer和frame-buffer总是同时渲染的，因此当我们生成一张图片的时候，也就生成了这张图片的深度图。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308180255018.png" alt="image-20220308180255018"></p>
-<p>可以看到深度图中越远的地方像素值越大，越近的地方像素值越小。</p>
-<p>Z-buffer的伪代码如下：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308180341613.png" alt="image-20220308180341613"></p>
-<p>相比于画家算法 O(nlogn) ，Z-buffer只需要 O(n) 的时间复杂度。</p>
-<blockquote>
-<p>为什么是O(n)？</p>
-<p>假设每个三角形只覆盖常数个像素，那么Z-buffer做的就是对每一个三角形判断对应的深度，然后填充像素，因此只需要花费 O(1) 时间，那么有n个三角形，复杂度就是O(n).</p>
-</blockquote>
-<p>最后说一下Z-buffer的优势，就是与画三角形的顺序无关，只要维护对了深度信息，画出来的一定是正确是遮挡关系，并且对硬件没有特殊需求，容易实现。</p>
+    <title>【计算机图形学】（七）纹理映射</title>
+    <url>/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/</url>
+    <content><![CDATA[<h3 id="纹理映射（Texture-Mapping）"><a href="#纹理映射（Texture-Mapping）" class="headerlink" title="纹理映射（Texture Mapping）"></a>纹理映射（Texture Mapping）</h3><p>上一节介绍了着色模型和着色频率，回忆漫反射的计算，漫反射系数 $k_d$ 通常就是物体本身的颜色，但很多时候物体本身的颜色并没有那么简单，大多数情况下，物体上每一个部分的颜色都不同，物体表面具有一定的纹理，比如木质的地板，此时我们在渲染的时候也需要把这样的纹理渲染出来，这就是纹理映射。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/image-20220310165904624.png" alt="image-20220310165904624"></p>
+<h4 id="1-纹理映射"><a href="#1-纹理映射" class="headerlink" title="1 纹理映射"></a>1 纹理映射</h4><p>首先是一个非常简单的结论：每一个三维物体表面上的点，都可以对应一个二维平面上的点。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/image-20220310170619028.png" alt="image-20220310170619028"></p>
+<p>比如一个地球仪，我们把地球仪展开成一个平面，就是世界地图，相反，实际上纹理映射就是把世界地图“贴”到地球仪上。</p>
+<p>因此对于三维物体表面的点，我们都可以把它映射到一个纹理空间中，这个纹理空间和屏幕空间一样，都是二维的，纹理空间的坐标用 $(u,v)$ 来表示，这样我们就把屏幕空间，三维空间和纹理空间联系到了一起，当然通过上图也可以看出来这三个坐标之间的关系：三维空间坐标是联系屏幕空间坐标和纹理空间坐标的桥梁，我们无法直接通过屏幕空间坐标得到对应的纹理空间坐标，因为他们之间不存在一一对应关系，屏幕上一个像素可能对应纹理空间的一个区域。这里不理解也没关系，后面我们就会遇到这种情况。</p>
+<p>于是，最理想的情况下，三维物体上每个点都对应纹理空间的一个点，自然三维空间的三角形也就可以对应纹理图上的一个三角形，我们把这些对应的三角形的颜色都“复制”到三维图形表面的三角形上，也就相当于把一张纹理图“贴”到了模型上。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/image-20220310171049609.png" alt="image-20220310171049609"></p>
+<p>具体怎么做呢？我们对于每一个屏幕上的采样点，可以通过上一次说的三角形重心坐标插值的方法，得到这个采样点的纹理坐标$(u,v)$，然后我们根据纹理坐标直接到纹理图上查询，就可以得到纹理颜色，然后把纹理颜色作为漫反射系数 $k_d$ 去计算颜色就可以了。</p>
+<h4 id="2-纹理过小"><a href="#2-纹理过小" class="headerlink" title="2 纹理过小"></a>2 纹理过小</h4><p>上面我们了解了纹理映射的过程，其实非常简单。但实际上也没有那么简单，我们先考虑一种情况，那就是如果纹理图很小，会发生什么？</p>
+<p>比如我们要在屏幕上画一面 4K 的墙面，但是纹理图只有不到 1K 的分辨率，这个时候屏幕上的多个像素都会映射到纹理图上的同一个像素内，我们把纹理图上的像素称为纹素 <strong>Texel</strong>，如果我们使用最近邻的方式去获得纹理颜色，那么这些像素的颜色就都会是一样的，这相当于把原本低分辨率的图暴力的放大了，于是就会出现下面左边的图这样的效果：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/image-20220310173005265.png" alt="image-20220310173005265"></p>
+<p>因此我们肯定不能用最近邻方法获取纹理颜色值，对于这种问题，自然想到插值，比如最简单的双线性插值。假如屏幕上的一个像素映射到纹理图上的坐标对应红色的点，周围黑色的点是纹素中心：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/image-20220310173834882.png" alt="image-20220310173834882"></p>
+<p>双线性插值选取该点周围最近的四个纹素：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/image-20220310174007656.png" alt="image-20220310174007656"></p>
+<p>计算在水平和垂直两个方向上的相对偏移系数，偏移系数都在0~1之间，我们假设两个纹素之间的距离是 1：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/image-20220310174055457.png" alt="image-20220310174055457"></p>
+<p>然后先做一次水平插值：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/image-20220310174217122.png" alt="image-20220310174217122"></p>
+<p>再做一次竖直插值：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/image-20220310174310943.png" alt="image-20220310174310943"></p>
+<p>一共做了两种线性插值，所以叫做双线性插值。然后将插值的颜色作为该点的纹理颜色返回，这样就可以使得屏幕上的像素过度的更柔和一些，下面中间的图就是双线性插值的结果。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/image-20220310173005265.png" alt="image-20220310173005265"></p>
+<p>当然还可以使用更复杂的双cubic插值，会选取周围16个点做两次cubic插值，效果会更好，当然运算开销也更大，最右边的图把眼角处细微的锯齿都去掉了。</p>
+<h4 id="3-纹理过大"><a href="#3-纹理过大" class="headerlink" title="3 纹理过大"></a>3 纹理过大</h4><p>讨论完了纹理图过小产生的问题，接下来考虑如果纹理图过大又会发生什么呢？</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/image-20220310175039809.png" alt="image-20220310175039809"></p>
+<p>可以看到，当纹理图的分辨率过大时，产生了锯齿和摩尔纹，也就是发生了走样。为什么会走样呢，回顾之前说的走样产生的原因，是因为采样频率跟不上信号变化的频率，当纹理图过大时，屏幕上一个像素对应到纹理图上可能是一片区域：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/image-20220310175322646.png" alt="image-20220310175322646"></p>
+<p>这一片区域中每一个纹素颜色都可能不同，这相当于在一个像素内，信号（也就是颜色）发生了剧烈的变化，这也就是采样频率低于了信号的变化频率，也就发生了走样。此时如果我们用区域内的一个纹素值代表整个区域的颜色显然是不合理的。因此我们要进行纹理映射的反走样。</p>
+<p>反走样之前也讲过，最简单的反走样就是增大采样频率，比如类似于MSAA的超采样，我们可以把一个像素分成好多个像素去映射到纹理图上，然后获取这些子像素的纹理颜色，最后加权整合成像素颜色。效果如下：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/image-20220310175853537.png" alt="image-20220310175853537"></p>
+<p>可以看到效果还不错，但为了得到这样的效果进行了512倍超采样，消耗太大了，如果纹理图更大呢？我们没有办法无穷尽的进行超采样，因此最好是换一种方法。</p>
+<p>反走样是因为采样产生的，那我们可以不直接不采样，如果我们能直接获取到纹理图上某个区域的平均值，就不需要进行采样了。我们直接把像素对应的区域的平均值拿到就可以了。如何做到呢？</p>
+<h5 id="3-1-Mipmap"><a href="#3-1-Mipmap" class="headerlink" title="3.1 Mipmap"></a>3.1 Mipmap</h5><p>Mipmap是一种非常<strong>快速的</strong>，<strong>空间开销很低的</strong>，<strong>近似的</strong>，区域查询方法，但<strong>只能查询方形区域</strong>。</p>
+<p>Mipmap的思想非常简单，我们把一张图片每四个像素计算一个平均值，这样全图计算一次之后，图片尺寸就缩小了一半，这个图片中每个像素的值就是原图一个正方形区域四个像素的平均值，之后继续这样缩小下去，就得到了不同级别的原图的多个像素的平均值构成的图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/image-20220310180712996.png" alt="image-20220310180712996"></p>
+<p>由于每次图片尺寸缩小一半，那么像素数就只有原来的四分之一，所有级别的图加起来所花费的额外存储空间也不过原图大小的三分之一（简单的等比数列求和）。</p>
+<p>接下来就是如何去查询信息了。我们把屏幕空间中的一个点和它水平和垂直方向相邻的点都映射到纹理空间中，就得到了纹理空间中的三个点（也可以是四个，把对角线上相邻的点也映射过去就是四个点，具体看后续是否用得到）；</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/image-20220310181400709.png" alt="image-20220310181400709"></p>
+<p>然后我们计算映射后该点和其他两个点的距离，把这个距离取最大值作为以该点为中心的正方形区域的边长，这样就<strong>近似</strong>得到了屏幕上一个像素在纹理空间中对应的一片正方形区域。然后查询这片区域的平均值即可，查询的级别 $D&#x3D;log_2L$，D取整数。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/image-20220310181820489.png" alt="image-20220310181820489"></p>
+<p>下面是按照上面的算法，一个场景中每个像素要查询的Mipmap的级别可视化的效果：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/image-20220310181932739.png" alt="image-20220310181932739"></p>
+<p>可以发现Mipmap级别 D 取整数会造成屏幕上相邻像素查询的级别可能差别很大，最后渲染出来的图可能会有严重的割裂现象，因此我们希望查询的级别也能平滑过渡，我们希望可以查询 1.8 级的Mipmap，又是平滑过渡，因此又是插值。</p>
+<p>我们可以去查询两个级别的Mipmap，在Mipmap内部使用双线性插值得到两个级别的平均值，然后再将这两个级别进行线性插值得到最终结果，也就是进行了三线性插值：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/image-20220310182407725.png" alt="image-20220310182407725"></p>
+<p>使用三线性插值后，Mipmap级别可视化的效果如下：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/image-20220310182449283.png" alt="image-20220310182449283"></p>
+<p>过度非常平滑，达到了我们想要的效果。</p>
+<p>最后看一下使用Mipmap渲染出来的图片是什么样子：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/image-20220310182543245.png" alt="image-20220310182543245"></p>
+<h5 id="3-2-各向异性过滤"><a href="#3-2-各向异性过滤" class="headerlink" title="3.2 各向异性过滤"></a>3.2 各向异性过滤</h5><p>可以看到Mipmap渲染的图形中，近处的锯齿消失了，但远处产生了过度模糊，这是因为Mipmap只能近似方形区域，而这张图上近处的像素映射到纹理空间中对应的区域非常小，因此无论这个区域是什么形状，近似成正方形都不会有太大的问题，但是远处的一个像素对应到纹理图上可能是很大一片区域，此时这个区域的形状就会对结果产生影响了，如下图所示：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/image-20220310183141960.png" alt="image-20220310183141960"></p>
+<p>区域很大时，如果形状不是正方形而是一个矩形，那我们按照Mipmap的方法实际近似的区域其实是这个矩形的Bounding box，这与原来的矩形区域差别很大，所以Mipmap不能完美的解决走样问题。</p>
+<p>因此现在游戏中使用的更多的是各向异性过滤技术。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/image-20220310183403325.png" alt="image-20220310183403325"></p>
+<p>各向异性过滤是Mipmap的改进，它不仅每次等比例的缩小原图，还会长宽不等比例的去计算Mipmap，这样缩小的图上一个像素对应的就是原图上一个矩形区域内像素的平均值了，然后我们就可以支持矩形的查询了。但斜向的矩形查询仍然存在问题。</p>
+<p>除此之外的反走样方法还有EWA过滤，如下图，是用多个圆形或者椭圆形去近似填充任意几何图形，但是需要多次查询，不过可以查询任意形状的区域。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/image-20220310183733788.png" alt="image-20220310183733788"></p>
+<h4 id="4-纹理的应用"><a href="#4-纹理的应用" class="headerlink" title="4 纹理的应用"></a>4 纹理的应用</h4><p>前面就是纹理映射的全部基本的内容，现在我们要把纹理推广开来。</p>
+<p>纹理不是一张简单的图片。在现代GPU中，纹理就可以理解为<strong>一块可以支持快速范围查询的内存</strong>。而上面我们所说的纹理图，只不过是纹理的一种用法而已，纹理图其实就是把颜色存入这块内存，供我们随时查询，取用。当然我们也可以存别的东西，所以纹理可以有各种各样的用途。</p>
+<h5 id="4-1-环境贴图"><a href="#4-1-环境贴图" class="headerlink" title="4.1 环境贴图"></a>4.1 环境贴图</h5><p>一些光面的物体还会反射环境中的景象，这怎么做到呢？也是利用纹理实现的。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/image-20220310184622644.png" alt="image-20220310184622644"></p>
+<p>我们可以提前把整个环境的图存下来，渲染物体颜色的时候把环境作为一个纹理应用到物体上就可以了。</p>
+<p>我们假设用一个球来存储环境贴图，如下图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/image-20220310184801387.png" alt="image-20220310184801387"></p>
+<p>那把这球的表面展开成平面，就得到了整个场景的环境贴图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/image-20220310184850501.png" alt="image-20220310184850501"></p>
+<p>但我们会发现这张帖图有一点问题，就是边缘会产生扭曲，因为球顶部的面积更小，所以造成了扭曲。因此人们想到用立方体存储不是更好吗？</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/image-20220310185057776.png" alt="image-20220310185057776"></p>
+<p>把球的每一个面“贴到”立方体的每一个面上，就可以用立方体存储整个环境，大概的效果：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/image-20220310185159502.png" alt="image-20220310185159502"></p>
+<h5 id="4-2-凹凸贴图"><a href="#4-2-凹凸贴图" class="headerlink" title="4.2 凹凸贴图"></a>4.2 凹凸贴图</h5><p>有时候我们希望渲染出物体表面凹凸不平的样子：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/image-20220310185306391.png" alt="image-20220310185306391"></p>
+<p>这时我们可以用凹凸贴图来解决。想要造成凹凸的效果，其实就是在计算光照时，将顶点或者平面的法向量向上或者向下移动一定的距离，这样计算出的光照就有明显的明暗变化，在我们看起来也就产生了凹凸的效果，因此我们可以用纹理存储每一个顶点法向量的扰动量，然后再计算光照时取到这个扰动量施加到原本的法向量上去计算光照，就得到了凹凸的效果。具体怎么计算扰动后的法向量呢？</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/image-20220310185709262.png" alt="image-20220310185709262"></p>
+<p>我们先考虑简单的二维情况：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/image-20220310185827357.png" alt="image-20220310185827357"></p>
+<p>假设原本平面的法向量是$(0,1)$，我们可以计算出扰动后的点在曲线上的导数（切线），然后可以直接得到和切线垂直的方向，这就是扰动后的点的法线方向，最后别忘了归一化。</p>
+<p>推广到三维空间中，我们每次计算都把当前点的法向量转换到以这个点为基准的局部坐标系下，这样当前点的法向量就是$(0,0,1)$，然后同样计算在两个方向上的导数：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/image-20220310190221871.png" alt="image-20220310190221871"></p>
+<p>于是扰动后的法线方向就是：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/image-20220310190327571.png" alt="image-20220310190327571"></p>
+<p>最后再从局部坐标系转换回原本的坐标系即可。</p>
+<h5 id="4-3-位移贴图"><a href="#4-3-位移贴图" class="headerlink" title="4.3 位移贴图"></a>4.3 位移贴图</h5><p>使用凹凸贴图可以渲染出凹凸的效果，但是其实只是在计算光照时改变了顶点的法向量，而顶点本身没有发生任何变化，所以我们看到的凹凸效果只是一个假象，很容易看出破绽：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/image-20220310190611021.png" alt="image-20220310190611021"></p>
+<p>凹凸贴图渲染出来的模型边缘还是平滑的。而位移贴图可以渲染出真正凹凸不平的效果。</p>
+<p>位移贴图存储的是每个顶点的位移，也就是它真正改变了点在空间中的位置，这样自然模型的形状也就发生了变化，渲染的效果也会更真实。</p>
+<p>那为什么不直接做一个这样的模型呢？显然这么复杂的模型如果直接在建模的时候就做好，要花费大量的精力，所以位移贴图要方便许多。</p>
+<h5 id="4-4-三维噪声和固体纹理"><a href="#4-4-三维噪声和固体纹理" class="headerlink" title="4.4 三维噪声和固体纹理"></a>4.4 三维噪声和固体纹理</h5><p>有一些纹理比如瓷器上的纹路，是完全不规则并且独一无二的，这时候如果我们给每一个花瓶一个不同的贴图显然是不现实的，因此我们可以给定一个三维程序噪声函数，在计算颜色的时候利用这个噪声函数生成随机的纹路。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/image-20220310191026718.png" alt="image-20220310191026718"></p>
+<p>有时候我们的模型内部也需要有一定的纹理，比如大理石切开之后的纹理，那我们可以把整个大理石的表面和内部的全部纹理信息都存下来，存储成一个三维的纹理，这样对应空间中每一个点都有不同的纹理。</p>
+<h5 id="4-5-环境光遮蔽"><a href="#4-5-环境光遮蔽" class="headerlink" title="4.5 环境光遮蔽"></a>4.5 环境光遮蔽</h5><p>我们在计算shading的时候并不会考虑模型本身对模型光照的影响，比如下面这张图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/image-20220310191426063.png" alt="image-20220310191426063"></p>
+<p>模型本身可能会对光照有一定的遮挡，导致不同部分产生一些阴影，左边的图就是正常着色的结果，可以看到眼眉处没有阴影，显得不是很真实，因此我们可以预先计算模型本身对光照的影响，生成一张阴影纹理图，在之后着色的时候加到着色结果上，就有了更真实的渲染结果，这也是环境光遮蔽的原理。</p>
 ]]></content>
       <categories>
         <category>计算机图形学</category>
