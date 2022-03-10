@@ -1,77 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>【计算机图形学】（二）旋转与四元数</title>
-    <url>/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/</url>
-    <content><![CDATA[<h3 id="旋转与四元数"><a href="#旋转与四元数" class="headerlink" title="旋转与四元数"></a>旋转与四元数</h3><blockquote>
-<p><strong>摘要</strong></p>
-<p>本文主要介绍三维旋转的几类重要表示方式，以及在游戏及其他工程领域最为常用的四元数的相关概念、性质、运算法则和常用公式。</p>
-</blockquote>
-<p><em><span id="more"></span></em></p>
-<h4 id="一、三维旋转变换的表示方式"><a href="#一、三维旋转变换的表示方式" class="headerlink" title="一、三维旋转变换的表示方式"></a>一、三维旋转变换的表示方式</h4><p><strong>1、欧拉角</strong></p>
-<p>直接给出$x$（俯仰）、$y$（偏航）、$z$（滚转）三个轴向的旋转角，优点是表示简单直接，容易理解，但存在万向节死锁的问题（当两个轴重合时，会损失一个自由度）。</p>
-<p><strong>2、轴角</strong></p>
-<p>顾名思义，用一个轴$n$和一个角$\theta$表示旋转，其中轴是旋转轴，默认用一个过坐标原点的三维向量表示，角表示绕这个轴旋转的角度，轴角表示为一个四元组$(x,y,z,\theta)$。</p>
-<p>但轴角也存在明显的缺陷，一方面，因为角度的周期性，任何$2n\pi$的旋转都等价于没有旋转，这在某些情况下是不可接受的；另一方面，由于轴角描述的“四元组”并不是一个空间下的东西，首先$(x,y,z)$是一个3维坐标下的矢量，而$\theta$则是极坐标下的角度，简单的将他们组合到一起并不能保证他们插值结果的稳定性，因为他们无法归一化，所以不能保证最终插值后得到的矢量长度（经过旋转变换后两点之间的距离）相等；此外，轴角形式的旋转不能直接施于点或矢量，必转换为矩阵或者四元数。</p>
-<p><strong>3、矩阵</strong></p>
-<p>计算机图形学中，一般以矩阵形式表示旋转，对于三维空间的点或向量，将其表示为齐次坐标形式，则绕不同旋转轴的旋转矩阵为：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301162321017.png" alt="image-20220301162321017"></p>
-<p>而对于任意旋转，都可以分解为这三个轴的旋转，可以利用<strong>Rodrigues旋转公式</strong>将轴角表示的任意旋转转换为矩阵形式：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301162445459.png" alt="image-20220301162445459"></p>
-<p>矩阵表示法可以直接施加于点或向量，计算相对方便，也叫容易理解，但在实际工程中，如果我们要存储一个对象的旋转参数，就要存储这个对象的旋转矩阵，一共16个浮点数，对空间消耗较大，并且矩阵形式同样无法进行简单的插值，因此在实际的游戏开发及其他工程应用中，存储一个对象的旋转，通常采用四元数的形式。</p>
-<p><strong>4、四元数</strong></p>
-<p>四元数像是轴角表示法的优化版本，但解决了所有轴角可能存在的问题，最大的优势就是便于插值，并且存储时只需要存储4个浮点数，而且求逆、串联等操作比矩阵更方便，相比于轴角和矩阵优势巨大。</p>
-<p>对于四元数的理解，可以看作是有一个实部和三个虚部构成的虚数，描述的是四维空间，具体可以看<a href="https://zhuanlan.zhihu.com/p/53872740">可视化理解四元数</a>。</p>
-<hr>
-<h4 id="二、四元数"><a href="#二、四元数" class="headerlink" title="二、四元数"></a>二、四元数</h4><p>四元数的全部公式和运算法则以及与矩阵等形式的转化，可以查看<a href="https://zhuanlan.zhihu.com/p/97186723">四元数(Quaternions)</a>，这里对常用的关键公式进行总结。</p>
-<p>四元数表示为$(x,y,z,w)$，其中<br>$$<br>x&#x3D;i·q_1·sin(\theta&#x2F;2) \<br>y&#x3D;j·q_2·sin(\theta&#x2F;2) \<br>z&#x3D;k·q_3·sin(\theta&#x2F;2) \<br>w&#x3D;cos(\theta&#x2F;2)<br>$$<br>其中$(iq_1,jq_2,kq_3)$是表示旋转轴的矢量，$\theta$表示绕此轴旋转的角度。对四元数$q_2$左乘一个四元数$q_1$，其作用是将$q_2$拉伸$q_1$的模长，再作用一个特殊的四维旋转。所以我们用<strong>单位四元数</strong>来表示三维空间中的旋转，因为单位四元数模长为1$(w^2+x^2+y^2+z^2&#x3D;1)$，而旋转时必须要保证的就是，一个向量旋转前后模长不变。</p>
-<ul>
-<li>乘法</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301184920885.png" alt="image-20220301184920885"></p>
-<ul>
-<li>标量乘法</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185303072.png" alt="image-20220301185303072"></p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185318122.png" alt="image-20220301185318122"></p>
-<ul>
-<li>加法</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301184949807.png" alt="image-20220301184949807"></p>
-<ul>
-<li>共轭</li>
-</ul>
-<p>$$<br>q&#x3D;(w,x,y,z) \<br>q^*&#x3D;(w,-x,-y,-z)<br>$$</p>
-<ul>
-<li>模</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185026298.png" alt="image-20220301185026298"></p>
-<ul>
-<li>Identity</li>
-</ul>
-<p>$$<br>i&#x3D;(0,0,0,1)<br>$$</p>
-<ul>
-<li>逆</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185208658.png" alt="image-20220301185208658"></p>
-<ul>
-<li>单位四元数表示旋转：单位四元数模为1，因此可以表示为</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185635142.png" alt="image-20220301185635142"></p>
-<p>将一个三维向量$p$写成四元数形式</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185811398.png" alt="image-20220301185811398"></p>
-<p>则运算</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185855191.png" alt="image-20220301185855191"></p>
-<p>表示向量$p$在三维空间中绕轴$u_q$旋转$2\phi$弧度。</p>
-]]></content>
-      <categories>
-        <category>计算机图形学</category>
-      </categories>
-      <tags>
-        <tag>计算机图形学</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>【计算机图形学】（一）变换</title>
     <url>/LycTechStack.github.io/2022/03/02/20200302-%E5%8F%98%E6%8D%A2/</url>
     <content><![CDATA[<h2 id="变换（Transform）"><a href="#变换（Transform）" class="headerlink" title="变换（Transform）"></a>变换（Transform）</h2><blockquote>
@@ -207,36 +136,74 @@
       </tags>
   </entry>
   <entry>
-    <title>【数据结构】二叉树</title>
-    <url>/LycTechStack.github.io/2022/03/03/20220303-%E4%BA%8C%E5%8F%89%E6%A0%91/</url>
-    <content><![CDATA[<h3 id="二叉树"><a href="#二叉树" class="headerlink" title="二叉树"></a>二叉树</h3><blockquote>
+    <title>【计算机图形学】（二）旋转与四元数</title>
+    <url>/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/</url>
+    <content><![CDATA[<h3 id="旋转与四元数"><a href="#旋转与四元数" class="headerlink" title="旋转与四元数"></a>旋转与四元数</h3><blockquote>
 <p><strong>摘要</strong></p>
-<p>本文主要总结与二叉树有关的关键知识以及具有代表性的题目，后续将持续更新。</p>
+<p>本文主要介绍三维旋转的几类重要表示方式，以及在游戏及其他工程领域最为常用的四元数的相关概念、性质、运算法则和常用公式。</p>
 </blockquote>
 <p><em><span id="more"></span></em></p>
-<h4 id="1、前序、中序、后序遍历的迭代算法："><a href="#1、前序、中序、后序遍历的迭代算法：" class="headerlink" title="1、前序、中序、后序遍历的迭代算法："></a>1、前序、中序、后序遍历的迭代算法：</h4><p><strong>对于前序遍历</strong>，遍历顺序为“根、左、右”，因此对于任意一个节点，直接将节点值加入结果列表并入栈，然后遍历左子树，直到节点为空，开始遍历右子树即可，前序遍历代码：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">preorderTraversal</span><span class="params">(TreeNode* root)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; ans;</span><br><span class="line">    stack&lt;TreeNode*&gt; s;</span><br><span class="line">    <span class="keyword">while</span>(root != <span class="literal">nullptr</span> || !s.<span class="built_in">empty</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">while</span>(root)</span><br><span class="line">        &#123;</span><br><span class="line">            ans.<span class="built_in">push_back</span>(root-&gt;val);	<span class="comment">//直接加入结果</span></span><br><span class="line">            s.<span class="built_in">push</span>(root);		<span class="comment">//入栈</span></span><br><span class="line">           	root = root-&gt;left;	<span class="comment">//遍历左子树</span></span><br><span class="line">        &#125;</span><br><span class="line">        root = s.<span class="built_in">top</span>();</span><br><span class="line">        s.<span class="built_in">pop</span>();</span><br><span class="line">        root = root-&gt;right;		<span class="comment">//遍历右子树</span></span><br><span class="line">	&#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>对于中序遍历</strong>，遍历顺序为“左、根、右”，因此只需要将前序遍历的顺序改为，对于任意一个节点，先遍历左子树入栈，直到节点为空，取栈顶节点加入结果列表（此时栈顶节点的左节点为空，因此栈顶结点即为子树的根节点，加入结果列表），然后遍历右子树，中序遍历代码：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">inorderTraversal</span><span class="params">(TreeNode* root)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; ans;</span><br><span class="line">    stack&lt;TreeNode*&gt; s;</span><br><span class="line">    <span class="keyword">while</span>(root != <span class="literal">nullptr</span> || !s.<span class="built_in">empty</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">while</span>(root)</span><br><span class="line">        &#123;</span><br><span class="line">            s.<span class="built_in">push</span>(root);		<span class="comment">//入栈</span></span><br><span class="line">           	root = root-&gt;left;	<span class="comment">//遍历左子树</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//左子树为空此时栈顶结点就作为子树的根节点，加入结果列表，并出栈，然后遍历右子树</span></span><br><span class="line">        root = s.<span class="built_in">top</span>();</span><br><span class="line">        ans.<span class="built_in">push_back</span>(root-&gt;val);</span><br><span class="line">        s.<span class="built_in">pop</span>();</span><br><span class="line">        root = root-&gt;right;		<span class="comment">//遍历右子树</span></span><br><span class="line">	&#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>对于后序遍历</strong>，遍历顺序为“左、右、根”，考虑其和前序遍历顺序“根、左、右”的关系，如果前序遍历时把节点值放入结果的、列表尾部的操作改为插入列表头部，则遍历顺序变为“右、左、根”，此时只需要再将前序遍历时，先遍历左子树在遍历右子树的顺序对调，就可以将遍历顺序改为“左、右、根”，即为后序遍历了，后序遍历代码：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">postorderTraversal</span><span class="params">(TreeNode* root)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; ans;</span><br><span class="line">    stack&lt;TreeNode*&gt; s;</span><br><span class="line">    <span class="keyword">while</span>(root != <span class="literal">nullptr</span> || !s.<span class="built_in">empty</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">while</span>(root)</span><br><span class="line">        &#123;</span><br><span class="line">            ans.<span class="built_in">insert</span>(ans.<span class="built_in">begin</span>(),root-&gt;val);	<span class="comment">//结果插到列表开头</span></span><br><span class="line">            s.<span class="built_in">push</span>(root);		<span class="comment">//入栈</span></span><br><span class="line">           	root = root-&gt;right;	<span class="comment">//先遍历右子树</span></span><br><span class="line">        &#125;</span><br><span class="line">        root = s.<span class="built_in">top</span>();</span><br><span class="line">        s.<span class="built_in">pop</span>();</span><br><span class="line">        root = root-&gt;left;		<span class="comment">//再遍历左子树</span></span><br><span class="line">	&#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="2、层序遍历：使用广度优先搜索即可"><a href="#2、层序遍历：使用广度优先搜索即可" class="headerlink" title="2、层序遍历：使用广度优先搜索即可"></a>2、层序遍历：使用广度优先搜索即可</h4><h4 id="3、构造二叉树："><a href="#3、构造二叉树：" class="headerlink" title="3、构造二叉树："></a>3、构造二叉树：</h4><p><a href="https://leetcode-cn.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/solution/qian-xu-yu-zhong-xu-gou-jian-er-cha-shu-7dznd/">前序与中序构建二叉树</a></p>
-<p><a href="https://leetcode-cn.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/solution/hou-xu-yu-zhong-xu-gou-jian-er-cha-shu-d-kmrr/">后序与中序构建二叉树</a></p>
-<p><a href="https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/solution/">二叉树的序列化与反序列化</a></p>
-<h4 id="4、递归解决二叉树问题："><a href="#4、递归解决二叉树问题：" class="headerlink" title="4、递归解决二叉树问题："></a>4、递归解决二叉树问题：</h4><p><a href="https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/solution/">二叉树的最大深度</a></p>
-<p><a href="https://leetcode-cn.com/problems/symmetric-tree/">对称二叉树</a></p>
-<p><a href="https://leetcode-cn.com/problems/path-sum/solution/">路径总和</a></p>
-<p><a href="https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/">二叉树的最近公共祖先</a></p>
+<h4 id="一、三维旋转变换的表示方式"><a href="#一、三维旋转变换的表示方式" class="headerlink" title="一、三维旋转变换的表示方式"></a>一、三维旋转变换的表示方式</h4><p><strong>1、欧拉角</strong></p>
+<p>直接给出$x$（俯仰）、$y$（偏航）、$z$（滚转）三个轴向的旋转角，优点是表示简单直接，容易理解，但存在万向节死锁的问题（当两个轴重合时，会损失一个自由度）。</p>
+<p><strong>2、轴角</strong></p>
+<p>顾名思义，用一个轴$n$和一个角$\theta$表示旋转，其中轴是旋转轴，默认用一个过坐标原点的三维向量表示，角表示绕这个轴旋转的角度，轴角表示为一个四元组$(x,y,z,\theta)$。</p>
+<p>但轴角也存在明显的缺陷，一方面，因为角度的周期性，任何$2n\pi$的旋转都等价于没有旋转，这在某些情况下是不可接受的；另一方面，由于轴角描述的“四元组”并不是一个空间下的东西，首先$(x,y,z)$是一个3维坐标下的矢量，而$\theta$则是极坐标下的角度，简单的将他们组合到一起并不能保证他们插值结果的稳定性，因为他们无法归一化，所以不能保证最终插值后得到的矢量长度（经过旋转变换后两点之间的距离）相等；此外，轴角形式的旋转不能直接施于点或矢量，必转换为矩阵或者四元数。</p>
+<p><strong>3、矩阵</strong></p>
+<p>计算机图形学中，一般以矩阵形式表示旋转，对于三维空间的点或向量，将其表示为齐次坐标形式，则绕不同旋转轴的旋转矩阵为：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301162321017.png" alt="image-20220301162321017"></p>
+<p>而对于任意旋转，都可以分解为这三个轴的旋转，可以利用<strong>Rodrigues旋转公式</strong>将轴角表示的任意旋转转换为矩阵形式：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301162445459.png" alt="image-20220301162445459"></p>
+<p>矩阵表示法可以直接施加于点或向量，计算相对方便，也叫容易理解，但在实际工程中，如果我们要存储一个对象的旋转参数，就要存储这个对象的旋转矩阵，一共16个浮点数，对空间消耗较大，并且矩阵形式同样无法进行简单的插值，因此在实际的游戏开发及其他工程应用中，存储一个对象的旋转，通常采用四元数的形式。</p>
+<p><strong>4、四元数</strong></p>
+<p>四元数像是轴角表示法的优化版本，但解决了所有轴角可能存在的问题，最大的优势就是便于插值，并且存储时只需要存储4个浮点数，而且求逆、串联等操作比矩阵更方便，相比于轴角和矩阵优势巨大。</p>
+<p>对于四元数的理解，可以看作是有一个实部和三个虚部构成的虚数，描述的是四维空间，具体可以看<a href="https://zhuanlan.zhihu.com/p/53872740">可视化理解四元数</a>。</p>
+<hr>
+<h4 id="二、四元数"><a href="#二、四元数" class="headerlink" title="二、四元数"></a>二、四元数</h4><p>四元数的全部公式和运算法则以及与矩阵等形式的转化，可以查看<a href="https://zhuanlan.zhihu.com/p/97186723">四元数(Quaternions)</a>，这里对常用的关键公式进行总结。</p>
+<p>四元数表示为$(x,y,z,w)$，其中<br>$$<br>x&#x3D;i·q_1·sin(\theta&#x2F;2) \<br>y&#x3D;j·q_2·sin(\theta&#x2F;2) \<br>z&#x3D;k·q_3·sin(\theta&#x2F;2) \<br>w&#x3D;cos(\theta&#x2F;2)<br>$$<br>其中$(iq_1,jq_2,kq_3)$是表示旋转轴的矢量，$\theta$表示绕此轴旋转的角度。对四元数$q_2$左乘一个四元数$q_1$，其作用是将$q_2$拉伸$q_1$的模长，再作用一个特殊的四维旋转。所以我们用<strong>单位四元数</strong>来表示三维空间中的旋转，因为单位四元数模长为1$(w^2+x^2+y^2+z^2&#x3D;1)$，而旋转时必须要保证的就是，一个向量旋转前后模长不变。</p>
+<ul>
+<li>乘法</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301184920885.png" alt="image-20220301184920885"></p>
+<ul>
+<li>标量乘法</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185303072.png" alt="image-20220301185303072"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185318122.png" alt="image-20220301185318122"></p>
+<ul>
+<li>加法</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301184949807.png" alt="image-20220301184949807"></p>
+<ul>
+<li>共轭</li>
+</ul>
+<p>$$<br>q&#x3D;(w,x,y,z) \<br>q^*&#x3D;(w,-x,-y,-z)<br>$$</p>
+<ul>
+<li>模</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185026298.png" alt="image-20220301185026298"></p>
+<ul>
+<li>Identity</li>
+</ul>
+<p>$$<br>i&#x3D;(0,0,0,1)<br>$$</p>
+<ul>
+<li>逆</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185208658.png" alt="image-20220301185208658"></p>
+<ul>
+<li>单位四元数表示旋转：单位四元数模为1，因此可以表示为</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185635142.png" alt="image-20220301185635142"></p>
+<p>将一个三维向量$p$写成四元数形式</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185811398.png" alt="image-20220301185811398"></p>
+<p>则运算</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185855191.png" alt="image-20220301185855191"></p>
+<p>表示向量$p$在三维空间中绕轴$u_q$旋转$2\phi$弧度。</p>
 ]]></content>
       <categories>
-        <category>数据结构与算法</category>
+        <category>计算机图形学</category>
       </categories>
       <tags>
-        <tag>数据结构</tag>
-        <tag>C++</tag>
+        <tag>计算机图形学</tag>
       </tags>
   </entry>
   <entry>
@@ -278,6 +245,39 @@
 </ul>
 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">DFS</span><span class="params">(节点 root，节点 target, unordered_set&lt;节点&gt;&amp; visited)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(root == target) <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    <span class="keyword">for</span>(节点 x : root的所有相邻节点)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(visited.<span class="built_in">count</span>(x)) <span class="keyword">continue</span>;	<span class="comment">//判断是否已经访问过，可选</span></span><br><span class="line">        visited.<span class="built_in">insert</span>(x);	<span class="comment">//可选</span></span><br><span class="line">        <span class="keyword">if</span>(<span class="built_in">DFS</span>(x,target,visited)) <span class="keyword">return</span> <span class="literal">true</span>;   </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+]]></content>
+      <categories>
+        <category>数据结构与算法</category>
+      </categories>
+      <tags>
+        <tag>数据结构</tag>
+        <tag>C++</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>【数据结构】二叉树</title>
+    <url>/LycTechStack.github.io/2022/03/03/20220303-%E4%BA%8C%E5%8F%89%E6%A0%91/</url>
+    <content><![CDATA[<h3 id="二叉树"><a href="#二叉树" class="headerlink" title="二叉树"></a>二叉树</h3><blockquote>
+<p><strong>摘要</strong></p>
+<p>本文主要总结与二叉树有关的关键知识以及具有代表性的题目，后续将持续更新。</p>
+</blockquote>
+<p><em><span id="more"></span></em></p>
+<h4 id="1、前序、中序、后序遍历的迭代算法："><a href="#1、前序、中序、后序遍历的迭代算法：" class="headerlink" title="1、前序、中序、后序遍历的迭代算法："></a>1、前序、中序、后序遍历的迭代算法：</h4><p><strong>对于前序遍历</strong>，遍历顺序为“根、左、右”，因此对于任意一个节点，直接将节点值加入结果列表并入栈，然后遍历左子树，直到节点为空，开始遍历右子树即可，前序遍历代码：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">preorderTraversal</span><span class="params">(TreeNode* root)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; ans;</span><br><span class="line">    stack&lt;TreeNode*&gt; s;</span><br><span class="line">    <span class="keyword">while</span>(root != <span class="literal">nullptr</span> || !s.<span class="built_in">empty</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">while</span>(root)</span><br><span class="line">        &#123;</span><br><span class="line">            ans.<span class="built_in">push_back</span>(root-&gt;val);	<span class="comment">//直接加入结果</span></span><br><span class="line">            s.<span class="built_in">push</span>(root);		<span class="comment">//入栈</span></span><br><span class="line">           	root = root-&gt;left;	<span class="comment">//遍历左子树</span></span><br><span class="line">        &#125;</span><br><span class="line">        root = s.<span class="built_in">top</span>();</span><br><span class="line">        s.<span class="built_in">pop</span>();</span><br><span class="line">        root = root-&gt;right;		<span class="comment">//遍历右子树</span></span><br><span class="line">	&#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>对于中序遍历</strong>，遍历顺序为“左、根、右”，因此只需要将前序遍历的顺序改为，对于任意一个节点，先遍历左子树入栈，直到节点为空，取栈顶节点加入结果列表（此时栈顶节点的左节点为空，因此栈顶结点即为子树的根节点，加入结果列表），然后遍历右子树，中序遍历代码：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">inorderTraversal</span><span class="params">(TreeNode* root)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; ans;</span><br><span class="line">    stack&lt;TreeNode*&gt; s;</span><br><span class="line">    <span class="keyword">while</span>(root != <span class="literal">nullptr</span> || !s.<span class="built_in">empty</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">while</span>(root)</span><br><span class="line">        &#123;</span><br><span class="line">            s.<span class="built_in">push</span>(root);		<span class="comment">//入栈</span></span><br><span class="line">           	root = root-&gt;left;	<span class="comment">//遍历左子树</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//左子树为空此时栈顶结点就作为子树的根节点，加入结果列表，并出栈，然后遍历右子树</span></span><br><span class="line">        root = s.<span class="built_in">top</span>();</span><br><span class="line">        ans.<span class="built_in">push_back</span>(root-&gt;val);</span><br><span class="line">        s.<span class="built_in">pop</span>();</span><br><span class="line">        root = root-&gt;right;		<span class="comment">//遍历右子树</span></span><br><span class="line">	&#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>对于后序遍历</strong>，遍历顺序为“左、右、根”，考虑其和前序遍历顺序“根、左、右”的关系，如果前序遍历时把节点值放入结果的、列表尾部的操作改为插入列表头部，则遍历顺序变为“右、左、根”，此时只需要再将前序遍历时，先遍历左子树在遍历右子树的顺序对调，就可以将遍历顺序改为“左、右、根”，即为后序遍历了，后序遍历代码：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">postorderTraversal</span><span class="params">(TreeNode* root)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; ans;</span><br><span class="line">    stack&lt;TreeNode*&gt; s;</span><br><span class="line">    <span class="keyword">while</span>(root != <span class="literal">nullptr</span> || !s.<span class="built_in">empty</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">while</span>(root)</span><br><span class="line">        &#123;</span><br><span class="line">            ans.<span class="built_in">insert</span>(ans.<span class="built_in">begin</span>(),root-&gt;val);	<span class="comment">//结果插到列表开头</span></span><br><span class="line">            s.<span class="built_in">push</span>(root);		<span class="comment">//入栈</span></span><br><span class="line">           	root = root-&gt;right;	<span class="comment">//先遍历右子树</span></span><br><span class="line">        &#125;</span><br><span class="line">        root = s.<span class="built_in">top</span>();</span><br><span class="line">        s.<span class="built_in">pop</span>();</span><br><span class="line">        root = root-&gt;left;		<span class="comment">//再遍历左子树</span></span><br><span class="line">	&#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="2、层序遍历：使用广度优先搜索即可"><a href="#2、层序遍历：使用广度优先搜索即可" class="headerlink" title="2、层序遍历：使用广度优先搜索即可"></a>2、层序遍历：使用广度优先搜索即可</h4><h4 id="3、构造二叉树："><a href="#3、构造二叉树：" class="headerlink" title="3、构造二叉树："></a>3、构造二叉树：</h4><p><a href="https://leetcode-cn.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/solution/qian-xu-yu-zhong-xu-gou-jian-er-cha-shu-7dznd/">前序与中序构建二叉树</a></p>
+<p><a href="https://leetcode-cn.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/solution/hou-xu-yu-zhong-xu-gou-jian-er-cha-shu-d-kmrr/">后序与中序构建二叉树</a></p>
+<p><a href="https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/solution/">二叉树的序列化与反序列化</a></p>
+<h4 id="4、递归解决二叉树问题："><a href="#4、递归解决二叉树问题：" class="headerlink" title="4、递归解决二叉树问题："></a>4、递归解决二叉树问题：</h4><p><a href="https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/solution/">二叉树的最大深度</a></p>
+<p><a href="https://leetcode-cn.com/problems/symmetric-tree/">对称二叉树</a></p>
+<p><a href="https://leetcode-cn.com/problems/path-sum/solution/">路径总和</a></p>
+<p><a href="https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/">二叉树的最近公共祖先</a></p>
 ]]></content>
       <categories>
         <category>数据结构与算法</category>
@@ -358,90 +358,6 @@
       </categories>
       <tags>
         <tag>计算机图形学</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>【动态规划】（一）线性动态规划之单串问题</title>
-    <url>/LycTechStack.github.io/2022/03/07/20220307-%E7%BA%BF%E6%80%A7%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92-%E5%8D%95%E4%B8%B2/</url>
-    <content><![CDATA[<p>线性动态规划的主要特点是状态的推导是按照问题规模 i 从小到大依次推过去的，较大规模的问题的解依赖较小规模的问题的解。这里问题规模为 i 的含义是考虑前 i 个元素 [0..i] 时问题的解。</p>
-<p>大规模问题的状态只与较小规模的问题有关，而问题规模完全用一个变量 i 表示，i 的大小表示了问题规模的大小，因此从小到大推 i 直至推到 n，就得到了大规模问题的解，这就是线性动态规划的过程。</p>
-<p>按照问题的输入格式，<strong>线性动态规划解决的问题主要是单串，双串，矩阵上的问题</strong>，因为在单串，双串，矩阵上问题规模可以完全用位置表示，并且位置的大小就是问题规模的大小，因此从前往后推位置就相当于从小到大推问题规模。</p>
-<p><em><span id="more"></span></em></p>
-<h3 id="单串问题"><a href="#单串问题" class="headerlink" title="单串问题"></a>单串问题</h3><p>单串 <code>dp[i]</code> 是线性动态规划最简单的一类问题，输入是一个串，状态一般定义为 <code>dp[i] := 考虑[0..i]上，原问题的解</code>，其中<code>考虑[0..i]上，原问题的解</code>又可以分为两大类，即我们要考虑[0..i]上所有子问题的解（考虑O(n)个子问题的解），还是只考虑考虑[0..i]上常数个子问题的解（考虑O(1)个子问题的解），一般只考虑常数个子问题的解就是考虑 dp[i-1] 或（和）dp[i-2]。单串问题基本上可以分为以下几大类。</p>
-<h4 id="1-最长递增子序列（LIS问题）"><a href="#1-最长递增子序列（LIS问题）" class="headerlink" title="1 最长递增子序列（LIS问题）"></a>1 最长递增子序列（LIS问题）</h4><p>这是最经典的线性动态规划问题，也是最能体现线性动态规划思想的问题之一。</p>
-<blockquote>
-<p>问题描述：</p>
-<p>给你一个整数数组 <code>nums</code> ，找到其中最长严格递增子序列的长度。</p>
-<p>子序列 是由数组派生而来的序列，删除（或不删除）数组中的元素而不改变其余元素的顺序。例如，<code>[3,6,2,7] </code>是数组 <code>[0,3,1,6,2,2,7] </code>的子序列。</p>
-</blockquote>
-<p>我们用$f(i)$表示以nums[i]结尾的子数组的LIS长度，因为子序列需要上升，因此以 nums[i] 结尾的子序列中，nums[i] 之前的数字一定要比 nums[i] 小才行，因此目标就是先找到以此前比 nums[i] 小的各个元素，然后每个所选元素对应一个以它们结尾的最长子序列，从这些子序列中选择最长的，其长度加 1 就是当前的问题的结果。如果此前没有比 nums[i] 小的数字，则当前问题的结果就是 1 。于是可以写出状态转移方程：<br>$$<br>\begin{equation}<br>f(i)&#x3D;\left{<br>\begin{aligned}<br>max(f(i),f(j)+1) &amp; , &amp; nums[i]&gt;nums[j], \<br>1 &amp; , &amp; nums[i]&lt;&#x3D;nums[j].<br>\end{aligned}<br>\right.<br>\end{equation}<br>$$<br>其中$j &lt; i$，显然求解$f(i)$需要遍历所有$f(j)$，因此我们要考虑O(n)个子问题的解。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">lengthOfLIS</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">dp</span><span class="params">(nums.size(),<span class="number">1</span>)</span></span>;</span><br><span class="line">        <span class="type">int</span> ans = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; nums.<span class="built_in">size</span>(); i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt; i; j++)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(nums[j] &lt; nums[i])</span><br><span class="line">                &#123;</span><br><span class="line">                    dp[i] = <span class="built_in">max</span>(dp[i],dp[j] + <span class="number">1</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            ans = <span class="built_in">max</span>(ans, dp[i]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<p><strong>LIS问题及其变体问题：</strong></p>
-<ul>
-<li><a href="https://leetcode-cn.com/problems/longest-increasing-subsequence/">最长递增子序列</a></li>
-<li><a href="https://leetcode-cn.com/problems/number-of-longest-increasing-subsequence/">最长递增子序列的个数</a>：除了维护记录长度的dp数组外，还要维护一个记录子序列个数的cnt数组</li>
-<li><a href="https://leetcode-cn.com/problems/russian-doll-envelopes/">俄罗斯套娃信封问题</a></li>
-<li><a href="https://leetcode-cn.com/problems/largest-divisible-subset/">最大整除子集</a>：动态规划过程类似于最长上升子序列，难点在于还原出子集的所有元素</li>
-</ul>
-<h4 id="2-最大子数组和"><a href="#2-最大子数组和" class="headerlink" title="2 最大子数组和"></a>2 最大子数组和</h4><p>另一个经典单串问题</p>
-<blockquote>
-<p>问题描述：</p>
-<p>给你一个整数数组 <code>nums</code> ，请你找出一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。</p>
-</blockquote>
-<p>同样的思路，我们用 dp[i] 表示以nums[i]结尾的最大子数组和，因为状态的推导是按照 i 从 0 到 n - 1 按顺序推的，推到 dp[i]，时，dp[i - 1], …, dp[0] 已经计算完。因为子数组是连续的，所以子问题 dp[i] 其实只与子问题 dp[i - 1] 有关。如果 [0..i-1] 上以 nums[i-1] 结尾的最大子数组和(缓存在 dp[i-1] )为非负数，则以 nums[i] 结尾的最大子数组和就在 dp[i-1] 的基础上加上 nums[i] 就是 dp[i] 的结果否则以 i 结尾的子数组就不要 i-1 及之前的数，因为选了的话子数组的和只会更小。因此可以写出状态转移方程：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">dp[i] = nums[i] + max(dp[i - 1], 0)</span><br></pre></td></tr></table></figure>
-
-<p>显然这个问题中，我们只要考虑O(1)个子问题的解，因此也没有必要维护 dp 数组了，运用滚动数组的思想，只要记录下来 dp[i-1] 就可以了。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">maxSubArray</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> fi = <span class="number">0</span>;</span><br><span class="line">        <span class="type">int</span> res = INT_MIN;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i&lt;nums.<span class="built_in">size</span>();i++)</span><br><span class="line">        &#123;</span><br><span class="line">            fi = <span class="built_in">max</span>(fi + nums[i], nums[i]);</span><br><span class="line">            res = <span class="built_in">max</span>(res,fi);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<p><strong>最大子数组和及其变体问题：</strong></p>
-<ul>
-<li><a href="https://leetcode-cn.com/problems/maximum-subarray/">最大子数组和</a></li>
-<li><a href="https://leetcode-cn.com/problems/maximum-sum-circular-subarray/solution/huan-xing-shu-zu-zui-da-he-by-bu-luo-bu-7bqj/">环形数组最大和</a></li>
-<li><a href="https://leetcode-cn.com/problems/maximum-product-subarray/solution/cheng-ji-zui-da-zi-shu-zu-by-bu-luo-bu-xvsx/">乘积最大子数组</a></li>
-<li><a href="https://leetcode-cn.com/problems/max-submatrix-lcci/solution/">最大子矩阵</a>：二维转换为一维的典型题目</li>
-<li><a href="https://leetcode-cn.com/problems/max-sum-of-rectangle-no-larger-than-k/">矩形区域不超过 K 的最大数值和</a>：上一题的进阶版</li>
-</ul>
-<h4 id="3-打家劫舍问题"><a href="#3-打家劫舍问题" class="headerlink" title="3 打家劫舍问题"></a>3 打家劫舍问题</h4><p>打家劫舍类似于最大子数组和，但这里的子数组不能连续，也就是不相邻子序列的最大和问题。</p>
-<blockquote>
-<p>问题描述：</p>
-<p>你是一个专业的小偷，计划偷窃沿街的房屋。每间房内都藏有一定的现金，<strong>影响你偷窃的唯一制约因素就是相邻的房屋装有相互连通的防盗系统</strong>，如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警。</p>
-<p>给定一个代表每个房屋存放金额的非负整数数组，计算你不触动警报装置的情况下，一夜之内能够偷窃到的最高金额。</p>
-</blockquote>
-<p>问题的关键在于我们如果偷了第 i 个房间，那么就不能偷第 i-1 个房间，所以 dp[i] 表示到第 i 个房间为止的最大金额，这个最大金额的取值有两种情况，如果我们不偷第 i 个房间，那么 dp[i] &#x3D; dp[i-1]；如果我们偷第 i 个房间， 那么 dp[i] &#x3D; dp[i-2] + num[i]。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">rob</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(nums.<span class="built_in">size</span>() &lt;= <span class="number">2</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> *<span class="built_in">max_element</span>(nums.<span class="built_in">begin</span>(),nums.<span class="built_in">end</span>());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">int</span> dp1 = nums[<span class="number">0</span>];              <span class="comment">//屋子能偷盗的最大金额</span></span><br><span class="line">        <span class="type">int</span> dp2 = <span class="built_in">max</span>(dp1,nums[<span class="number">1</span>]);     <span class="comment">//前一间屋子能偷到的最大金额</span></span><br><span class="line">        <span class="type">int</span> ans = <span class="built_in">max</span>(dp1, dp2);</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">2</span>; i &lt; nums.<span class="built_in">size</span>(); i++)</span><br><span class="line">        &#123;</span><br><span class="line">            ans = <span class="built_in">max</span>(dp1 + nums[i], dp2);</span><br><span class="line">            dp1 = dp2;</span><br><span class="line">            dp2 = ans;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<p><strong>打家劫舍及其变体问题：</strong></p>
-<ul>
-<li><a href="https://leetcode-cn.com/problems/house-robber/">打家劫舍</a></li>
-<li><a href="https://leetcode-cn.com/problems/house-robber-ii/">打家劫舍 II</a>：数组变成了环形，也就是偷了第1个房间就不能偷最后一个房间，在区间 [0, nums.size()-1] 和 [1, nums.size()] 上应用两次打家劫舍的算法即可</li>
-<li><a href="https://leetcode-cn.com/problems/delete-and-earn/solution/">删除并获得点数</a>：难点在于怎么转换成打家劫舍问题</li>
-<li><a href="https://leetcode-cn.com/problems/pizza-with-3n-slices/solution/">3n 块披萨</a>：难点在于动态规划状态的定义，因为一定有 3n 个数，我们最多只能拿其中 n 个数字，所以相当于打家劫舍中我们只能偷 3n 个房间中的 n 个</li>
-</ul>
-<h4 id="4-需要记录两个位置的问题"><a href="#4-需要记录两个位置的问题" class="headerlink" title="4 需要记录两个位置的问题"></a>4 需要记录两个位置的问题</h4><p>有一些单串问题在涉及状态时需要考虑相邻两个元素的情况，因为只考虑最后一个的话无法对状态描述清楚，例如：</p>
-<ul>
-<li><a href="https://leetcode-cn.com/problems/length-of-longest-fibonacci-subsequence/">最长的斐波那契子序列的长度</a>：$dp[i][j]$表示以 $j, i$ 结尾的最长斐波那契子序列长度，转移时在 [0..j] 中找满足条件的 k </li>
-<li><a href="https://leetcode-cn.com/problems/longest-arithmetic-subsequence/">最长等差数列</a>：同上，但是两道题的具体实现细节稍有不同</li>
-</ul>
-<h4 id="5-其他没有显式给定数组的线性动态规划问题"><a href="#5-其他没有显式给定数组的线性动态规划问题" class="headerlink" title="5 其他没有显式给定数组的线性动态规划问题"></a>5 其他没有显式给定数组的线性动态规划问题</h4><p>线性 DP 还有一些问题没有显式的数组，字符串等。此类问题一般没有什么固定的模式，只能通过多做题来积累。</p>
-<ul>
-<li><a href="https://leetcode-cn.com/problems/longest-valid-parentheses/solution/">最长有效括号</a>：这道题最容易想到的是用栈，但其实算法过程比较难做对，用动态规划更简单，但对于状态转移的过程比较难想到</li>
-<li><a href="https://leetcode-cn.com/problems/arithmetic-slices/">等差数列划分</a>：最长等差数列的简单版本，给定的数组是严格递增或递减的，处理起来会简单很多</li>
-<li><a href="https://leetcode-cn.com/problems/decode-ways/">解码方法</a>：关键在于有效数字只有可能是一位或者两位，因此对于任何一个数字，要么本身一位进行编码，要么和前一位组成两位数字进行编码</li>
-<li><a href="https://leetcode-cn.com/problems/palindrome-partitioning/">分割回文串</a>：主要考察的是深搜回溯的方法，但是使用动态规划对字符串预处理可以在O(1)时间内判断回文子串</li>
-<li><a href="https://leetcode-cn.com/problems/palindrome-partitioning-ii/">分割回文串 II</a>：dp[i] 表示以 s[i] 结尾的字符串的最小分割次数，状态转移时如果 s[i] 能与前面的某个位置 j 组成回文子串 s[j…i]，那么dp[i] &#x3D; dp[j] + 1，遍历所有满足条件的 j &lt; i ，dp[i]取这些值里面的最小值，判断回文子串 s[j…i] 时同样可以用分割回文串中的动态规划方法，所以本题进行了两次动态规划，较为复杂。</li>
-<li><a href="https://leetcode-cn.com/problems/delete-operation-for-two-strings/solution/liang-ge-zi-fu-chuan-de-shan-chu-cao-zuo-14uw/">两个字符串的删除操作</a>：转化成LCS问题可以很简单的解决，但还可以用更符合题意的状态定义$dp[i][j]$</li>
-<li><a href="https://leetcode-cn.com/problems/counting-bits/">比特位计数</a>：比较简单</li>
-</ul>
-]]></content>
-      <categories>
-        <category>数据结构与算法</category>
-      </categories>
-      <tags>
-        <tag>C++</tag>
-        <tag>算法</tag>
-        <tag>动态规划</tag>
       </tags>
   </entry>
   <entry>
@@ -586,6 +502,90 @@
       </tags>
   </entry>
   <entry>
+    <title>【动态规划】（一）线性动态规划之单串问题</title>
+    <url>/LycTechStack.github.io/2022/03/07/20220307-%E7%BA%BF%E6%80%A7%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92-%E5%8D%95%E4%B8%B2/</url>
+    <content><![CDATA[<p>线性动态规划的主要特点是状态的推导是按照问题规模 i 从小到大依次推过去的，较大规模的问题的解依赖较小规模的问题的解。这里问题规模为 i 的含义是考虑前 i 个元素 [0..i] 时问题的解。</p>
+<p>大规模问题的状态只与较小规模的问题有关，而问题规模完全用一个变量 i 表示，i 的大小表示了问题规模的大小，因此从小到大推 i 直至推到 n，就得到了大规模问题的解，这就是线性动态规划的过程。</p>
+<p>按照问题的输入格式，<strong>线性动态规划解决的问题主要是单串，双串，矩阵上的问题</strong>，因为在单串，双串，矩阵上问题规模可以完全用位置表示，并且位置的大小就是问题规模的大小，因此从前往后推位置就相当于从小到大推问题规模。</p>
+<p><em><span id="more"></span></em></p>
+<h3 id="单串问题"><a href="#单串问题" class="headerlink" title="单串问题"></a>单串问题</h3><p>单串 <code>dp[i]</code> 是线性动态规划最简单的一类问题，输入是一个串，状态一般定义为 <code>dp[i] := 考虑[0..i]上，原问题的解</code>，其中<code>考虑[0..i]上，原问题的解</code>又可以分为两大类，即我们要考虑[0..i]上所有子问题的解（考虑O(n)个子问题的解），还是只考虑考虑[0..i]上常数个子问题的解（考虑O(1)个子问题的解），一般只考虑常数个子问题的解就是考虑 dp[i-1] 或（和）dp[i-2]。单串问题基本上可以分为以下几大类。</p>
+<h4 id="1-最长递增子序列（LIS问题）"><a href="#1-最长递增子序列（LIS问题）" class="headerlink" title="1 最长递增子序列（LIS问题）"></a>1 最长递增子序列（LIS问题）</h4><p>这是最经典的线性动态规划问题，也是最能体现线性动态规划思想的问题之一。</p>
+<blockquote>
+<p>问题描述：</p>
+<p>给你一个整数数组 <code>nums</code> ，找到其中最长严格递增子序列的长度。</p>
+<p>子序列 是由数组派生而来的序列，删除（或不删除）数组中的元素而不改变其余元素的顺序。例如，<code>[3,6,2,7] </code>是数组 <code>[0,3,1,6,2,2,7] </code>的子序列。</p>
+</blockquote>
+<p>我们用$f(i)$表示以nums[i]结尾的子数组的LIS长度，因为子序列需要上升，因此以 nums[i] 结尾的子序列中，nums[i] 之前的数字一定要比 nums[i] 小才行，因此目标就是先找到以此前比 nums[i] 小的各个元素，然后每个所选元素对应一个以它们结尾的最长子序列，从这些子序列中选择最长的，其长度加 1 就是当前的问题的结果。如果此前没有比 nums[i] 小的数字，则当前问题的结果就是 1 。于是可以写出状态转移方程：<br>$$<br>\begin{equation}<br>f(i)&#x3D;\left{<br>\begin{aligned}<br>max(f(i),f(j)+1) &amp; , &amp; nums[i]&gt;nums[j], \<br>1 &amp; , &amp; nums[i]&lt;&#x3D;nums[j].<br>\end{aligned}<br>\right.<br>\end{equation}<br>$$<br>其中$j &lt; i$，显然求解$f(i)$需要遍历所有$f(j)$，因此我们要考虑O(n)个子问题的解。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">lengthOfLIS</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">dp</span><span class="params">(nums.size(),<span class="number">1</span>)</span></span>;</span><br><span class="line">        <span class="type">int</span> ans = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; nums.<span class="built_in">size</span>(); i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt; i; j++)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(nums[j] &lt; nums[i])</span><br><span class="line">                &#123;</span><br><span class="line">                    dp[i] = <span class="built_in">max</span>(dp[i],dp[j] + <span class="number">1</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            ans = <span class="built_in">max</span>(ans, dp[i]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p><strong>LIS问题及其变体问题：</strong></p>
+<ul>
+<li><a href="https://leetcode-cn.com/problems/longest-increasing-subsequence/">最长递增子序列</a></li>
+<li><a href="https://leetcode-cn.com/problems/number-of-longest-increasing-subsequence/">最长递增子序列的个数</a>：除了维护记录长度的dp数组外，还要维护一个记录子序列个数的cnt数组</li>
+<li><a href="https://leetcode-cn.com/problems/russian-doll-envelopes/">俄罗斯套娃信封问题</a></li>
+<li><a href="https://leetcode-cn.com/problems/largest-divisible-subset/">最大整除子集</a>：动态规划过程类似于最长上升子序列，难点在于还原出子集的所有元素</li>
+</ul>
+<h4 id="2-最大子数组和"><a href="#2-最大子数组和" class="headerlink" title="2 最大子数组和"></a>2 最大子数组和</h4><p>另一个经典单串问题</p>
+<blockquote>
+<p>问题描述：</p>
+<p>给你一个整数数组 <code>nums</code> ，请你找出一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。</p>
+</blockquote>
+<p>同样的思路，我们用 dp[i] 表示以nums[i]结尾的最大子数组和，因为状态的推导是按照 i 从 0 到 n - 1 按顺序推的，推到 dp[i]，时，dp[i - 1], …, dp[0] 已经计算完。因为子数组是连续的，所以子问题 dp[i] 其实只与子问题 dp[i - 1] 有关。如果 [0..i-1] 上以 nums[i-1] 结尾的最大子数组和(缓存在 dp[i-1] )为非负数，则以 nums[i] 结尾的最大子数组和就在 dp[i-1] 的基础上加上 nums[i] 就是 dp[i] 的结果否则以 i 结尾的子数组就不要 i-1 及之前的数，因为选了的话子数组的和只会更小。因此可以写出状态转移方程：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">dp[i] = nums[i] + max(dp[i - 1], 0)</span><br></pre></td></tr></table></figure>
+
+<p>显然这个问题中，我们只要考虑O(1)个子问题的解，因此也没有必要维护 dp 数组了，运用滚动数组的思想，只要记录下来 dp[i-1] 就可以了。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">maxSubArray</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> fi = <span class="number">0</span>;</span><br><span class="line">        <span class="type">int</span> res = INT_MIN;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i&lt;nums.<span class="built_in">size</span>();i++)</span><br><span class="line">        &#123;</span><br><span class="line">            fi = <span class="built_in">max</span>(fi + nums[i], nums[i]);</span><br><span class="line">            res = <span class="built_in">max</span>(res,fi);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p><strong>最大子数组和及其变体问题：</strong></p>
+<ul>
+<li><a href="https://leetcode-cn.com/problems/maximum-subarray/">最大子数组和</a></li>
+<li><a href="https://leetcode-cn.com/problems/maximum-sum-circular-subarray/solution/huan-xing-shu-zu-zui-da-he-by-bu-luo-bu-7bqj/">环形数组最大和</a></li>
+<li><a href="https://leetcode-cn.com/problems/maximum-product-subarray/solution/cheng-ji-zui-da-zi-shu-zu-by-bu-luo-bu-xvsx/">乘积最大子数组</a></li>
+<li><a href="https://leetcode-cn.com/problems/max-submatrix-lcci/solution/">最大子矩阵</a>：二维转换为一维的典型题目</li>
+<li><a href="https://leetcode-cn.com/problems/max-sum-of-rectangle-no-larger-than-k/">矩形区域不超过 K 的最大数值和</a>：上一题的进阶版</li>
+</ul>
+<h4 id="3-打家劫舍问题"><a href="#3-打家劫舍问题" class="headerlink" title="3 打家劫舍问题"></a>3 打家劫舍问题</h4><p>打家劫舍类似于最大子数组和，但这里的子数组不能连续，也就是不相邻子序列的最大和问题。</p>
+<blockquote>
+<p>问题描述：</p>
+<p>你是一个专业的小偷，计划偷窃沿街的房屋。每间房内都藏有一定的现金，<strong>影响你偷窃的唯一制约因素就是相邻的房屋装有相互连通的防盗系统</strong>，如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警。</p>
+<p>给定一个代表每个房屋存放金额的非负整数数组，计算你不触动警报装置的情况下，一夜之内能够偷窃到的最高金额。</p>
+</blockquote>
+<p>问题的关键在于我们如果偷了第 i 个房间，那么就不能偷第 i-1 个房间，所以 dp[i] 表示到第 i 个房间为止的最大金额，这个最大金额的取值有两种情况，如果我们不偷第 i 个房间，那么 dp[i] &#x3D; dp[i-1]；如果我们偷第 i 个房间， 那么 dp[i] &#x3D; dp[i-2] + num[i]。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">rob</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(nums.<span class="built_in">size</span>() &lt;= <span class="number">2</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> *<span class="built_in">max_element</span>(nums.<span class="built_in">begin</span>(),nums.<span class="built_in">end</span>());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">int</span> dp1 = nums[<span class="number">0</span>];              <span class="comment">//屋子能偷盗的最大金额</span></span><br><span class="line">        <span class="type">int</span> dp2 = <span class="built_in">max</span>(dp1,nums[<span class="number">1</span>]);     <span class="comment">//前一间屋子能偷到的最大金额</span></span><br><span class="line">        <span class="type">int</span> ans = <span class="built_in">max</span>(dp1, dp2);</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">2</span>; i &lt; nums.<span class="built_in">size</span>(); i++)</span><br><span class="line">        &#123;</span><br><span class="line">            ans = <span class="built_in">max</span>(dp1 + nums[i], dp2);</span><br><span class="line">            dp1 = dp2;</span><br><span class="line">            dp2 = ans;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p><strong>打家劫舍及其变体问题：</strong></p>
+<ul>
+<li><a href="https://leetcode-cn.com/problems/house-robber/">打家劫舍</a></li>
+<li><a href="https://leetcode-cn.com/problems/house-robber-ii/">打家劫舍 II</a>：数组变成了环形，也就是偷了第1个房间就不能偷最后一个房间，在区间 [0, nums.size()-1] 和 [1, nums.size()] 上应用两次打家劫舍的算法即可</li>
+<li><a href="https://leetcode-cn.com/problems/delete-and-earn/solution/">删除并获得点数</a>：难点在于怎么转换成打家劫舍问题</li>
+<li><a href="https://leetcode-cn.com/problems/pizza-with-3n-slices/solution/">3n 块披萨</a>：难点在于动态规划状态的定义，因为一定有 3n 个数，我们最多只能拿其中 n 个数字，所以相当于打家劫舍中我们只能偷 3n 个房间中的 n 个</li>
+</ul>
+<h4 id="4-需要记录两个位置的问题"><a href="#4-需要记录两个位置的问题" class="headerlink" title="4 需要记录两个位置的问题"></a>4 需要记录两个位置的问题</h4><p>有一些单串问题在涉及状态时需要考虑相邻两个元素的情况，因为只考虑最后一个的话无法对状态描述清楚，例如：</p>
+<ul>
+<li><a href="https://leetcode-cn.com/problems/length-of-longest-fibonacci-subsequence/">最长的斐波那契子序列的长度</a>：$dp[i][j]$表示以 $j, i$ 结尾的最长斐波那契子序列长度，转移时在 [0..j] 中找满足条件的 k </li>
+<li><a href="https://leetcode-cn.com/problems/longest-arithmetic-subsequence/">最长等差数列</a>：同上，但是两道题的具体实现细节稍有不同</li>
+</ul>
+<h4 id="5-其他没有显式给定数组的线性动态规划问题"><a href="#5-其他没有显式给定数组的线性动态规划问题" class="headerlink" title="5 其他没有显式给定数组的线性动态规划问题"></a>5 其他没有显式给定数组的线性动态规划问题</h4><p>线性 DP 还有一些问题没有显式的数组，字符串等。此类问题一般没有什么固定的模式，只能通过多做题来积累。</p>
+<ul>
+<li><a href="https://leetcode-cn.com/problems/longest-valid-parentheses/solution/">最长有效括号</a>：这道题最容易想到的是用栈，但其实算法过程比较难做对，用动态规划更简单，但对于状态转移的过程比较难想到</li>
+<li><a href="https://leetcode-cn.com/problems/arithmetic-slices/">等差数列划分</a>：最长等差数列的简单版本，给定的数组是严格递增或递减的，处理起来会简单很多</li>
+<li><a href="https://leetcode-cn.com/problems/decode-ways/">解码方法</a>：关键在于有效数字只有可能是一位或者两位，因此对于任何一个数字，要么本身一位进行编码，要么和前一位组成两位数字进行编码</li>
+<li><a href="https://leetcode-cn.com/problems/palindrome-partitioning/">分割回文串</a>：主要考察的是深搜回溯的方法，但是使用动态规划对字符串预处理可以在O(1)时间内判断回文子串</li>
+<li><a href="https://leetcode-cn.com/problems/palindrome-partitioning-ii/">分割回文串 II</a>：dp[i] 表示以 s[i] 结尾的字符串的最小分割次数，状态转移时如果 s[i] 能与前面的某个位置 j 组成回文子串 s[j…i]，那么dp[i] &#x3D; dp[j] + 1，遍历所有满足条件的 j &lt; i ，dp[i]取这些值里面的最小值，判断回文子串 s[j…i] 时同样可以用分割回文串中的动态规划方法，所以本题进行了两次动态规划，较为复杂。</li>
+<li><a href="https://leetcode-cn.com/problems/delete-operation-for-two-strings/solution/liang-ge-zi-fu-chuan-de-shan-chu-cao-zuo-14uw/">两个字符串的删除操作</a>：转化成LCS问题可以很简单的解决，但还可以用更符合题意的状态定义$dp[i][j]$</li>
+<li><a href="https://leetcode-cn.com/problems/counting-bits/">比特位计数</a>：比较简单</li>
+</ul>
+]]></content>
+      <categories>
+        <category>数据结构与算法</category>
+      </categories>
+      <tags>
+        <tag>C++</tag>
+        <tag>算法</tag>
+        <tag>动态规划</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>【计算机图形学】（五）深度缓冲</title>
     <url>/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/</url>
     <content><![CDATA[<h3 id="深度缓冲（Z-Buffer）"><a href="#深度缓冲（Z-Buffer）" class="headerlink" title="深度缓冲（Z-Buffer）"></a>深度缓冲（Z-Buffer）</h3><p>到上一篇文章为止，我们基本完成了把三维物体画在二维屏幕上的过程，但在这个过程中，还有一个非常重要的问题没有讨论，那就是在光栅化的时候我们之前的推导都没有考虑Z轴，也就是没有考虑三维物体离我们的远近，但是现实生活中我们看一个三维物体或者场景，由于物体离我们眼睛的距离不同，自然会产生遮挡现象。</p>
@@ -721,10 +721,47 @@
       </tags>
   </entry>
   <entry>
+    <title>20220310-图形管线</title>
+    <url>/LycTechStack.github.io/2022/03/10/20220310-%E5%9B%BE%E5%BD%A2%E7%AE%A1%E7%BA%BF/</url>
+    <content><![CDATA[<h3 id="图形管线（Graphics-Pipeline）"><a href="#图形管线（Graphics-Pipeline）" class="headerlink" title="图形管线（Graphics Pipeline）"></a>图形管线（Graphics Pipeline）</h3><p>这一节将对前面的所有内容做一个总结，因为图形管线就是由前面的所有内容组成的一个图形渲染流水线，空间中的点经过图形管线就被渲染到屏幕上成为图形。</p>
+<p>图形管线是基于物体顺序渲染的一系列绘制操作的序列。相对于基于物体顺序渲染还有基于图像顺序渲染，会在之后会讲到。基于物体顺序渲染由于其极高的运行效率而统治了图形学的渲染方法，从早期人们提出了软件图形管线后，图形管线的流程思路又被硬件优化内置到显卡中成为硬件图形管线，这两个管线后来呈现出并行关系，负责不同的事务。</p>
+<p>图形管线的主要流程如下：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E5%9B%BE%E5%BD%A2%E7%AE%A1%E7%BA%BF/image-20220310201713743.png" alt="image-20220310201713743"></p>
+<h4 id="1-顶点数据处理"><a href="#1-顶点数据处理" class="headerlink" title="1 顶点数据处理"></a>1 顶点数据处理</h4><p>输入图形管线的是三维空间中的顶点，这些输入的顶点数据不止有坐标，还包括纹理坐标、顶点法线和顶点颜色等各种属性，顶点数据处理就是对这些属性数据进行处理，首先把顶点连成空间中的一个个面，可以是三角形也可以是四边形，这里我们就用常用的三角形，空间中的三角形称为<strong>图元</strong>。</p>
+<p>之后就是经过各种矩阵变换把三维映射到二维屏幕上，在变换的时候还会进行一步重要的操作，叫做视体裁剪，视体就是指透视投影近平面和远平面组成的四棱台。这需要回顾透视投影部分的内容。</p>
+<p>透视投影有一个重要的性质就是它会将直线映射为直线，平面映射为平面，线段映射为线段，并且保留了所有点的排序正确，这保证了三角形正确映射为三角形。</p>
+<p>但是经过透视投影矩阵，原本的 $z$ 将会被映射为 $z’&#x3D;n+f-nf&#x2F;z$。于是我们就会发现在这个映射中，正的 $z$ 值会被映射到负 $z$ 上，负的 $z$  值被映射到正 $z$  上，当我们要渲染的物体都在视体内时自然还能正确投影到屏幕上，但是一旦出现了跨越 $z&#x3D;0$ 的线段，线段就会有一部分被映射到正负无穷因而被撕裂。</p>
+<p>详细来看其实是下面的图所导致的。下图所表示经过透视投影处理后的 $z$ 值情况，可以看到由于视体标准化的原因 $n+f$ 是真正意义上的 0 点，$z$ 值在 $n+f$ 的位置发生的翻转，这个翻转导致了图的下半部分的三角形 $c$ 点经过透视投影后出现在了另一个方向，这将会导致光栅化的时候绘制出错误三角形。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E5%9B%BE%E5%BD%A2%E7%AE%A1%E7%BA%BF/q3tenh9i8t.png" alt="q3tenh9i8t"></p>
+<p>观察上面的图我们还可以发现在视体中的部分(也就是z&#x3D;n到z&#x3D;f的区域)，经过透视投影后也会保持原来的顺序和位置，因而解决这个问题的方法就很直观了，在透视投影前就先将视体之外的面片裁剪掉，这就是视体裁剪。视体裁剪除了防止撕裂外还有一个显而易见的好处就是减少了后面进行投影变换时需要处理的顶点数量，而且减少掉的内容本来就在视体之外所以不会影响到最终的画面。</p>
+<p>具体如何进行裁剪，我们可以根据视体的顶点坐标计算出六个平面的方程，然后将空间中的点带入视体面方程，但平面方程计算比较复杂，更多关于裁剪的内容可以查看本篇的参考内容。</p>
+<h4 id="2-曲面细分"><a href="#2-曲面细分" class="headerlink" title="2 曲面细分"></a>2 曲面细分</h4><p>曲面细分是利用镶嵌化处理技术对三角面进行细分，以此来增加物体表面的三角面的数量，是渲染管线一个可选的阶段。它由外壳着色器(Hull Shader)、镶嵌器(Tessellator)和域着色器(Domain Shader)构成，其中外壳着色器和域着色器是可编程的，而镶嵌器是由硬件管理的。我们可以借助曲面细分的技术实现细节层次(Level-of-Detail)的机制，使得离摄像机越近的物体具有更加丰富的细节，而远离摄像机的物体具有较少的细节。</p>
+<h4 id="3-光栅化"><a href="#3-光栅化" class="headerlink" title="3 光栅化"></a>3 光栅化</h4><p>经过前面的处理我们得到了许多图元，并且最后通过视口变换变换到了屏幕坐标系下，然后就是进行光栅化，光栅化阶段会把图元变成屏幕坐标系中的离散的片元，片元可以理解为像素，但它与像素的区别在于片元拥有比像素更多的信息，例如深度值，法线，纹理坐标等信息。因此片元只是尺度和像素相同，但片元还不能直接显示到屏幕，一个像素会有很多个候选片元，这些片元还要经过一系列计算才能决定哪些片元显示在屏幕上。</p>
+<h4 id="4-片元处理"><a href="#4-片元处理" class="headerlink" title="4 片元处理"></a>4 片元处理</h4><p>片元处理阶段会对各个片元计算深度、颜色等属性信息，这里用到的就是三角形重心坐标插值，计算颜色还要用到纹理映射，因为片元相当于一个像素，所以这里的着色频率相当于是对每一个像素计算着色，也就是Phong Shading。有的图形管线也会在顶点处理时进行着色，也就是进行Gouraud Shading，但效果肯定不如逐片元着色好。</p>
+<h4 id="5-混合测试"><a href="#5-混合测试" class="headerlink" title="5 混合测试"></a>5 混合测试</h4><p>经过片元处理我们就得到了所有片元的颜色，最后就是要选择哪些片元能够显示在屏幕上，这里要经过一系列的混合测试，比如深度测试，也就是要用到之前说过的Z-Buffer，选择深度小的片元进行显示，当然除了深度测试之外还有切测试、Alpha测试、模板测试等等。</p>
+<h4 id="6-Shader"><a href="#6-Shader" class="headerlink" title="6 Shader"></a>6 Shader</h4><p>刚才说到过，在图形管线中我们可以选择在顶点处理阶段进行着色或者在片元处理阶段进行着色，而且我们还可以对着色进行专门的编程，控制GPU对对一个着色点执行什么样的着色操作，这就是Shader。</p>
+<p>Shader（着色器）是指一组供计算机图形资源在执行渲染任务时使用的指令，用于计算图像的颜色或明暗。通俗地说，着色器告诉电脑如何用特有的一种方法去绘制物体。</p>
+<p>关于Shader，后面会有专门的文章详细的讲解。</p>
+<h4 id="7-参考"><a href="#7-参考" class="headerlink" title="7 参考"></a>7 参考</h4><ul>
+<li><a href="https://cloud.tencent.com/developer/article/1685227">【笔记】《计算机图形学》(8)——图形管线 - 云+社区 - 腾讯云 (tencent.com)</a></li>
+<li><a href="https://positiveczp.github.io/%E7%BB%86%E8%AF%B4%E5%9B%BE%E5%BD%A2%E5%AD%A6%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF.html">细说图形渲染管线</a></li>
+<li><a href="https://www.jianshu.com/p/7e701d7bfd79">写给大家看的“透视除法” —— 齐次坐标和投影 - 简书 (jianshu.com)</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/102758967">一篇文章彻底弄懂齐次裁剪 - 知乎 (zhihu.com)</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>计算机图形学</category>
+      </categories>
+      <tags>
+        <tag>计算机图形学</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>【计算机图形学】（七）纹理映射</title>
     <url>/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/</url>
     <content><![CDATA[<h3 id="纹理映射（Texture-Mapping）"><a href="#纹理映射（Texture-Mapping）" class="headerlink" title="纹理映射（Texture Mapping）"></a>纹理映射（Texture Mapping）</h3><p>上一节介绍了着色模型和着色频率，回忆漫反射的计算，漫反射系数 $k_d$ 通常就是物体本身的颜色，但很多时候物体本身的颜色并没有那么简单，大多数情况下，物体上每一个部分的颜色都不同，物体表面具有一定的纹理，比如木质的地板，此时我们在渲染的时候也需要把这样的纹理渲染出来，这就是纹理映射。</p>
 <p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/image-20220310165904624.png" alt="image-20220310165904624"></p>
+<p><em><span id="more"></span></em></p>
 <h4 id="1-纹理映射"><a href="#1-纹理映射" class="headerlink" title="1 纹理映射"></a>1 纹理映射</h4><p>首先是一个非常简单的结论：每一个三维物体表面上的点，都可以对应一个二维平面上的点。</p>
 <p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/image-20220310170619028.png" alt="image-20220310170619028"></p>
 <p>比如一个地球仪，我们把地球仪展开成一个平面，就是世界地图，相反，实际上纹理映射就是把世界地图“贴”到地球仪上。</p>
