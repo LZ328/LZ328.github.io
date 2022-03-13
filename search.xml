@@ -1,77 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>【计算机图形学】（二）旋转与四元数</title>
-    <url>/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/</url>
-    <content><![CDATA[<h3 id="旋转与四元数"><a href="#旋转与四元数" class="headerlink" title="旋转与四元数"></a>旋转与四元数</h3><blockquote>
-<p><strong>摘要</strong></p>
-<p>本文主要介绍三维旋转的几类重要表示方式，以及在游戏及其他工程领域最为常用的四元数的相关概念、性质、运算法则和常用公式。</p>
-</blockquote>
-<p><em><span id="more"></span></em></p>
-<h4 id="一、三维旋转变换的表示方式"><a href="#一、三维旋转变换的表示方式" class="headerlink" title="一、三维旋转变换的表示方式"></a>一、三维旋转变换的表示方式</h4><p><strong>1、欧拉角</strong></p>
-<p>直接给出$x$（俯仰）、$y$（偏航）、$z$（滚转）三个轴向的旋转角，优点是表示简单直接，容易理解，但存在万向节死锁的问题（当两个轴重合时，会损失一个自由度）。</p>
-<p><strong>2、轴角</strong></p>
-<p>顾名思义，用一个轴$n$和一个角$\theta$表示旋转，其中轴是旋转轴，默认用一个过坐标原点的三维向量表示，角表示绕这个轴旋转的角度，轴角表示为一个四元组$(x,y,z,\theta)$。</p>
-<p>但轴角也存在明显的缺陷，一方面，因为角度的周期性，任何$2n\pi$的旋转都等价于没有旋转，这在某些情况下是不可接受的；另一方面，由于轴角描述的“四元组”并不是一个空间下的东西，首先$(x,y,z)$是一个3维坐标下的矢量，而$\theta$则是极坐标下的角度，简单的将他们组合到一起并不能保证他们插值结果的稳定性，因为他们无法归一化，所以不能保证最终插值后得到的矢量长度（经过旋转变换后两点之间的距离）相等；此外，轴角形式的旋转不能直接施于点或矢量，必转换为矩阵或者四元数。</p>
-<p><strong>3、矩阵</strong></p>
-<p>计算机图形学中，一般以矩阵形式表示旋转，对于三维空间的点或向量，将其表示为齐次坐标形式，则绕不同旋转轴的旋转矩阵为：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301162321017.png" alt="image-20220301162321017"></p>
-<p>而对于任意旋转，都可以分解为这三个轴的旋转，可以利用<strong>Rodrigues旋转公式</strong>将轴角表示的任意旋转转换为矩阵形式：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301162445459.png" alt="image-20220301162445459"></p>
-<p>矩阵表示法可以直接施加于点或向量，计算相对方便，也叫容易理解，但在实际工程中，如果我们要存储一个对象的旋转参数，就要存储这个对象的旋转矩阵，一共16个浮点数，对空间消耗较大，并且矩阵形式同样无法进行简单的插值，因此在实际的游戏开发及其他工程应用中，存储一个对象的旋转，通常采用四元数的形式。</p>
-<p><strong>4、四元数</strong></p>
-<p>四元数像是轴角表示法的优化版本，但解决了所有轴角可能存在的问题，最大的优势就是便于插值，并且存储时只需要存储4个浮点数，而且求逆、串联等操作比矩阵更方便，相比于轴角和矩阵优势巨大。</p>
-<p>对于四元数的理解，可以看作是有一个实部和三个虚部构成的虚数，描述的是四维空间，具体可以看<a href="https://zhuanlan.zhihu.com/p/53872740">可视化理解四元数</a>。</p>
-<hr>
-<h4 id="二、四元数"><a href="#二、四元数" class="headerlink" title="二、四元数"></a>二、四元数</h4><p>四元数的全部公式和运算法则以及与矩阵等形式的转化，可以查看<a href="https://zhuanlan.zhihu.com/p/97186723">四元数(Quaternions)</a>，这里对常用的关键公式进行总结。</p>
-<p>四元数表示为$(x,y,z,w)$，其中<br>$$<br>x&#x3D;i·q_1·sin(\theta&#x2F;2) \<br>y&#x3D;j·q_2·sin(\theta&#x2F;2) \<br>z&#x3D;k·q_3·sin(\theta&#x2F;2) \<br>w&#x3D;cos(\theta&#x2F;2)<br>$$<br>其中$(iq_1,jq_2,kq_3)$是表示旋转轴的矢量，$\theta$表示绕此轴旋转的角度。对四元数$q_2$左乘一个四元数$q_1$，其作用是将$q_2$拉伸$q_1$的模长，再作用一个特殊的四维旋转。所以我们用<strong>单位四元数</strong>来表示三维空间中的旋转，因为单位四元数模长为1$(w^2+x^2+y^2+z^2&#x3D;1)$，而旋转时必须要保证的就是，一个向量旋转前后模长不变。</p>
-<ul>
-<li>乘法</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301184920885.png" alt="image-20220301184920885"></p>
-<ul>
-<li>标量乘法</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185303072.png" alt="image-20220301185303072"></p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185318122.png" alt="image-20220301185318122"></p>
-<ul>
-<li>加法</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301184949807.png" alt="image-20220301184949807"></p>
-<ul>
-<li>共轭</li>
-</ul>
-<p>$$<br>q&#x3D;(w,x,y,z) \<br>q^*&#x3D;(w,-x,-y,-z)<br>$$</p>
-<ul>
-<li>模</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185026298.png" alt="image-20220301185026298"></p>
-<ul>
-<li>Identity</li>
-</ul>
-<p>$$<br>i&#x3D;(0,0,0,1)<br>$$</p>
-<ul>
-<li>逆</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185208658.png" alt="image-20220301185208658"></p>
-<ul>
-<li>单位四元数表示旋转：单位四元数模为1，因此可以表示为</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185635142.png" alt="image-20220301185635142"></p>
-<p>将一个三维向量$p$写成四元数形式</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185811398.png" alt="image-20220301185811398"></p>
-<p>则运算</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185855191.png" alt="image-20220301185855191"></p>
-<p>表示向量$p$在三维空间中绕轴$u_q$旋转$2\phi$弧度。</p>
-]]></content>
-      <categories>
-        <category>计算机图形学</category>
-      </categories>
-      <tags>
-        <tag>计算机图形学</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>【计算机图形学】（一）变换</title>
     <url>/LycTechStack.github.io/2022/03/02/20200302-%E5%8F%98%E6%8D%A2/</url>
     <content><![CDATA[<h2 id="变换（Transform）"><a href="#变换（Transform）" class="headerlink" title="变换（Transform）"></a>变换（Transform）</h2><blockquote>
@@ -207,36 +136,74 @@
       </tags>
   </entry>
   <entry>
-    <title>【数据结构】二叉树</title>
-    <url>/LycTechStack.github.io/2022/03/03/20220303-%E4%BA%8C%E5%8F%89%E6%A0%91/</url>
-    <content><![CDATA[<h3 id="二叉树"><a href="#二叉树" class="headerlink" title="二叉树"></a>二叉树</h3><blockquote>
+    <title>【计算机图形学】（二）旋转与四元数</title>
+    <url>/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/</url>
+    <content><![CDATA[<h3 id="旋转与四元数"><a href="#旋转与四元数" class="headerlink" title="旋转与四元数"></a>旋转与四元数</h3><blockquote>
 <p><strong>摘要</strong></p>
-<p>本文主要总结与二叉树有关的关键知识以及具有代表性的题目，后续将持续更新。</p>
+<p>本文主要介绍三维旋转的几类重要表示方式，以及在游戏及其他工程领域最为常用的四元数的相关概念、性质、运算法则和常用公式。</p>
 </blockquote>
 <p><em><span id="more"></span></em></p>
-<h4 id="1、前序、中序、后序遍历的迭代算法："><a href="#1、前序、中序、后序遍历的迭代算法：" class="headerlink" title="1、前序、中序、后序遍历的迭代算法："></a>1、前序、中序、后序遍历的迭代算法：</h4><p><strong>对于前序遍历</strong>，遍历顺序为“根、左、右”，因此对于任意一个节点，直接将节点值加入结果列表并入栈，然后遍历左子树，直到节点为空，开始遍历右子树即可，前序遍历代码：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">preorderTraversal</span><span class="params">(TreeNode* root)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; ans;</span><br><span class="line">    stack&lt;TreeNode*&gt; s;</span><br><span class="line">    <span class="keyword">while</span>(root != <span class="literal">nullptr</span> || !s.<span class="built_in">empty</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">while</span>(root)</span><br><span class="line">        &#123;</span><br><span class="line">            ans.<span class="built_in">push_back</span>(root-&gt;val);	<span class="comment">//直接加入结果</span></span><br><span class="line">            s.<span class="built_in">push</span>(root);		<span class="comment">//入栈</span></span><br><span class="line">           	root = root-&gt;left;	<span class="comment">//遍历左子树</span></span><br><span class="line">        &#125;</span><br><span class="line">        root = s.<span class="built_in">top</span>();</span><br><span class="line">        s.<span class="built_in">pop</span>();</span><br><span class="line">        root = root-&gt;right;		<span class="comment">//遍历右子树</span></span><br><span class="line">	&#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>对于中序遍历</strong>，遍历顺序为“左、根、右”，因此只需要将前序遍历的顺序改为，对于任意一个节点，先遍历左子树入栈，直到节点为空，取栈顶节点加入结果列表（此时栈顶节点的左节点为空，因此栈顶结点即为子树的根节点，加入结果列表），然后遍历右子树，中序遍历代码：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">inorderTraversal</span><span class="params">(TreeNode* root)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; ans;</span><br><span class="line">    stack&lt;TreeNode*&gt; s;</span><br><span class="line">    <span class="keyword">while</span>(root != <span class="literal">nullptr</span> || !s.<span class="built_in">empty</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">while</span>(root)</span><br><span class="line">        &#123;</span><br><span class="line">            s.<span class="built_in">push</span>(root);		<span class="comment">//入栈</span></span><br><span class="line">           	root = root-&gt;left;	<span class="comment">//遍历左子树</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//左子树为空此时栈顶结点就作为子树的根节点，加入结果列表，并出栈，然后遍历右子树</span></span><br><span class="line">        root = s.<span class="built_in">top</span>();</span><br><span class="line">        ans.<span class="built_in">push_back</span>(root-&gt;val);</span><br><span class="line">        s.<span class="built_in">pop</span>();</span><br><span class="line">        root = root-&gt;right;		<span class="comment">//遍历右子树</span></span><br><span class="line">	&#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>对于后序遍历</strong>，遍历顺序为“左、右、根”，考虑其和前序遍历顺序“根、左、右”的关系，如果前序遍历时把节点值放入结果的、列表尾部的操作改为插入列表头部，则遍历顺序变为“右、左、根”，此时只需要再将前序遍历时，先遍历左子树在遍历右子树的顺序对调，就可以将遍历顺序改为“左、右、根”，即为后序遍历了，后序遍历代码：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">postorderTraversal</span><span class="params">(TreeNode* root)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; ans;</span><br><span class="line">    stack&lt;TreeNode*&gt; s;</span><br><span class="line">    <span class="keyword">while</span>(root != <span class="literal">nullptr</span> || !s.<span class="built_in">empty</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">while</span>(root)</span><br><span class="line">        &#123;</span><br><span class="line">            ans.<span class="built_in">insert</span>(ans.<span class="built_in">begin</span>(),root-&gt;val);	<span class="comment">//结果插到列表开头</span></span><br><span class="line">            s.<span class="built_in">push</span>(root);		<span class="comment">//入栈</span></span><br><span class="line">           	root = root-&gt;right;	<span class="comment">//先遍历右子树</span></span><br><span class="line">        &#125;</span><br><span class="line">        root = s.<span class="built_in">top</span>();</span><br><span class="line">        s.<span class="built_in">pop</span>();</span><br><span class="line">        root = root-&gt;left;		<span class="comment">//再遍历左子树</span></span><br><span class="line">	&#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="2、层序遍历：使用广度优先搜索即可"><a href="#2、层序遍历：使用广度优先搜索即可" class="headerlink" title="2、层序遍历：使用广度优先搜索即可"></a>2、层序遍历：使用广度优先搜索即可</h4><h4 id="3、构造二叉树："><a href="#3、构造二叉树：" class="headerlink" title="3、构造二叉树："></a>3、构造二叉树：</h4><p><a href="https://leetcode-cn.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/solution/qian-xu-yu-zhong-xu-gou-jian-er-cha-shu-7dznd/">前序与中序构建二叉树</a></p>
-<p><a href="https://leetcode-cn.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/solution/hou-xu-yu-zhong-xu-gou-jian-er-cha-shu-d-kmrr/">后序与中序构建二叉树</a></p>
-<p><a href="https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/solution/">二叉树的序列化与反序列化</a></p>
-<h4 id="4、递归解决二叉树问题："><a href="#4、递归解决二叉树问题：" class="headerlink" title="4、递归解决二叉树问题："></a>4、递归解决二叉树问题：</h4><p><a href="https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/solution/">二叉树的最大深度</a></p>
-<p><a href="https://leetcode-cn.com/problems/symmetric-tree/">对称二叉树</a></p>
-<p><a href="https://leetcode-cn.com/problems/path-sum/solution/">路径总和</a></p>
-<p><a href="https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/">二叉树的最近公共祖先</a></p>
+<h4 id="一、三维旋转变换的表示方式"><a href="#一、三维旋转变换的表示方式" class="headerlink" title="一、三维旋转变换的表示方式"></a>一、三维旋转变换的表示方式</h4><p><strong>1、欧拉角</strong></p>
+<p>直接给出$x$（俯仰）、$y$（偏航）、$z$（滚转）三个轴向的旋转角，优点是表示简单直接，容易理解，但存在万向节死锁的问题（当两个轴重合时，会损失一个自由度）。</p>
+<p><strong>2、轴角</strong></p>
+<p>顾名思义，用一个轴$n$和一个角$\theta$表示旋转，其中轴是旋转轴，默认用一个过坐标原点的三维向量表示，角表示绕这个轴旋转的角度，轴角表示为一个四元组$(x,y,z,\theta)$。</p>
+<p>但轴角也存在明显的缺陷，一方面，因为角度的周期性，任何$2n\pi$的旋转都等价于没有旋转，这在某些情况下是不可接受的；另一方面，由于轴角描述的“四元组”并不是一个空间下的东西，首先$(x,y,z)$是一个3维坐标下的矢量，而$\theta$则是极坐标下的角度，简单的将他们组合到一起并不能保证他们插值结果的稳定性，因为他们无法归一化，所以不能保证最终插值后得到的矢量长度（经过旋转变换后两点之间的距离）相等；此外，轴角形式的旋转不能直接施于点或矢量，必转换为矩阵或者四元数。</p>
+<p><strong>3、矩阵</strong></p>
+<p>计算机图形学中，一般以矩阵形式表示旋转，对于三维空间的点或向量，将其表示为齐次坐标形式，则绕不同旋转轴的旋转矩阵为：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301162321017.png" alt="image-20220301162321017"></p>
+<p>而对于任意旋转，都可以分解为这三个轴的旋转，可以利用<strong>Rodrigues旋转公式</strong>将轴角表示的任意旋转转换为矩阵形式：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301162445459.png" alt="image-20220301162445459"></p>
+<p>矩阵表示法可以直接施加于点或向量，计算相对方便，也叫容易理解，但在实际工程中，如果我们要存储一个对象的旋转参数，就要存储这个对象的旋转矩阵，一共16个浮点数，对空间消耗较大，并且矩阵形式同样无法进行简单的插值，因此在实际的游戏开发及其他工程应用中，存储一个对象的旋转，通常采用四元数的形式。</p>
+<p><strong>4、四元数</strong></p>
+<p>四元数像是轴角表示法的优化版本，但解决了所有轴角可能存在的问题，最大的优势就是便于插值，并且存储时只需要存储4个浮点数，而且求逆、串联等操作比矩阵更方便，相比于轴角和矩阵优势巨大。</p>
+<p>对于四元数的理解，可以看作是有一个实部和三个虚部构成的虚数，描述的是四维空间，具体可以看<a href="https://zhuanlan.zhihu.com/p/53872740">可视化理解四元数</a>。</p>
+<hr>
+<h4 id="二、四元数"><a href="#二、四元数" class="headerlink" title="二、四元数"></a>二、四元数</h4><p>四元数的全部公式和运算法则以及与矩阵等形式的转化，可以查看<a href="https://zhuanlan.zhihu.com/p/97186723">四元数(Quaternions)</a>，这里对常用的关键公式进行总结。</p>
+<p>四元数表示为$(x,y,z,w)$，其中<br>$$<br>x&#x3D;i·q_1·sin(\theta&#x2F;2) \<br>y&#x3D;j·q_2·sin(\theta&#x2F;2) \<br>z&#x3D;k·q_3·sin(\theta&#x2F;2) \<br>w&#x3D;cos(\theta&#x2F;2)<br>$$<br>其中$(iq_1,jq_2,kq_3)$是表示旋转轴的矢量，$\theta$表示绕此轴旋转的角度。对四元数$q_2$左乘一个四元数$q_1$，其作用是将$q_2$拉伸$q_1$的模长，再作用一个特殊的四维旋转。所以我们用<strong>单位四元数</strong>来表示三维空间中的旋转，因为单位四元数模长为1$(w^2+x^2+y^2+z^2&#x3D;1)$，而旋转时必须要保证的就是，一个向量旋转前后模长不变。</p>
+<ul>
+<li>乘法</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301184920885.png" alt="image-20220301184920885"></p>
+<ul>
+<li>标量乘法</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185303072.png" alt="image-20220301185303072"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185318122.png" alt="image-20220301185318122"></p>
+<ul>
+<li>加法</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301184949807.png" alt="image-20220301184949807"></p>
+<ul>
+<li>共轭</li>
+</ul>
+<p>$$<br>q&#x3D;(w,x,y,z) \<br>q^*&#x3D;(w,-x,-y,-z)<br>$$</p>
+<ul>
+<li>模</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185026298.png" alt="image-20220301185026298"></p>
+<ul>
+<li>Identity</li>
+</ul>
+<p>$$<br>i&#x3D;(0,0,0,1)<br>$$</p>
+<ul>
+<li>逆</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185208658.png" alt="image-20220301185208658"></p>
+<ul>
+<li>单位四元数表示旋转：单位四元数模为1，因此可以表示为</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185635142.png" alt="image-20220301185635142"></p>
+<p>将一个三维向量$p$写成四元数形式</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185811398.png" alt="image-20220301185811398"></p>
+<p>则运算</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185855191.png" alt="image-20220301185855191"></p>
+<p>表示向量$p$在三维空间中绕轴$u_q$旋转$2\phi$弧度。</p>
 ]]></content>
       <categories>
-        <category>数据结构与算法</category>
+        <category>计算机图形学</category>
       </categories>
       <tags>
-        <tag>数据结构</tag>
-        <tag>C++</tag>
+        <tag>计算机图形学</tag>
       </tags>
   </entry>
   <entry>
@@ -278,6 +245,39 @@
 </ul>
 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">DFS</span><span class="params">(节点 root，节点 target, unordered_set&lt;节点&gt;&amp; visited)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(root == target) <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    <span class="keyword">for</span>(节点 x : root的所有相邻节点)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(visited.<span class="built_in">count</span>(x)) <span class="keyword">continue</span>;	<span class="comment">//判断是否已经访问过，可选</span></span><br><span class="line">        visited.<span class="built_in">insert</span>(x);	<span class="comment">//可选</span></span><br><span class="line">        <span class="keyword">if</span>(<span class="built_in">DFS</span>(x,target,visited)) <span class="keyword">return</span> <span class="literal">true</span>;   </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+]]></content>
+      <categories>
+        <category>数据结构与算法</category>
+      </categories>
+      <tags>
+        <tag>数据结构</tag>
+        <tag>C++</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>【数据结构】二叉树</title>
+    <url>/LycTechStack.github.io/2022/03/03/20220303-%E4%BA%8C%E5%8F%89%E6%A0%91/</url>
+    <content><![CDATA[<h3 id="二叉树"><a href="#二叉树" class="headerlink" title="二叉树"></a>二叉树</h3><blockquote>
+<p><strong>摘要</strong></p>
+<p>本文主要总结与二叉树有关的关键知识以及具有代表性的题目，后续将持续更新。</p>
+</blockquote>
+<p><em><span id="more"></span></em></p>
+<h4 id="1、前序、中序、后序遍历的迭代算法："><a href="#1、前序、中序、后序遍历的迭代算法：" class="headerlink" title="1、前序、中序、后序遍历的迭代算法："></a>1、前序、中序、后序遍历的迭代算法：</h4><p><strong>对于前序遍历</strong>，遍历顺序为“根、左、右”，因此对于任意一个节点，直接将节点值加入结果列表并入栈，然后遍历左子树，直到节点为空，开始遍历右子树即可，前序遍历代码：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">preorderTraversal</span><span class="params">(TreeNode* root)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; ans;</span><br><span class="line">    stack&lt;TreeNode*&gt; s;</span><br><span class="line">    <span class="keyword">while</span>(root != <span class="literal">nullptr</span> || !s.<span class="built_in">empty</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">while</span>(root)</span><br><span class="line">        &#123;</span><br><span class="line">            ans.<span class="built_in">push_back</span>(root-&gt;val);	<span class="comment">//直接加入结果</span></span><br><span class="line">            s.<span class="built_in">push</span>(root);		<span class="comment">//入栈</span></span><br><span class="line">           	root = root-&gt;left;	<span class="comment">//遍历左子树</span></span><br><span class="line">        &#125;</span><br><span class="line">        root = s.<span class="built_in">top</span>();</span><br><span class="line">        s.<span class="built_in">pop</span>();</span><br><span class="line">        root = root-&gt;right;		<span class="comment">//遍历右子树</span></span><br><span class="line">	&#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>对于中序遍历</strong>，遍历顺序为“左、根、右”，因此只需要将前序遍历的顺序改为，对于任意一个节点，先遍历左子树入栈，直到节点为空，取栈顶节点加入结果列表（此时栈顶节点的左节点为空，因此栈顶结点即为子树的根节点，加入结果列表），然后遍历右子树，中序遍历代码：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">inorderTraversal</span><span class="params">(TreeNode* root)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; ans;</span><br><span class="line">    stack&lt;TreeNode*&gt; s;</span><br><span class="line">    <span class="keyword">while</span>(root != <span class="literal">nullptr</span> || !s.<span class="built_in">empty</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">while</span>(root)</span><br><span class="line">        &#123;</span><br><span class="line">            s.<span class="built_in">push</span>(root);		<span class="comment">//入栈</span></span><br><span class="line">           	root = root-&gt;left;	<span class="comment">//遍历左子树</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//左子树为空此时栈顶结点就作为子树的根节点，加入结果列表，并出栈，然后遍历右子树</span></span><br><span class="line">        root = s.<span class="built_in">top</span>();</span><br><span class="line">        ans.<span class="built_in">push_back</span>(root-&gt;val);</span><br><span class="line">        s.<span class="built_in">pop</span>();</span><br><span class="line">        root = root-&gt;right;		<span class="comment">//遍历右子树</span></span><br><span class="line">	&#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>对于后序遍历</strong>，遍历顺序为“左、右、根”，考虑其和前序遍历顺序“根、左、右”的关系，如果前序遍历时把节点值放入结果的、列表尾部的操作改为插入列表头部，则遍历顺序变为“右、左、根”，此时只需要再将前序遍历时，先遍历左子树在遍历右子树的顺序对调，就可以将遍历顺序改为“左、右、根”，即为后序遍历了，后序遍历代码：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">postorderTraversal</span><span class="params">(TreeNode* root)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; ans;</span><br><span class="line">    stack&lt;TreeNode*&gt; s;</span><br><span class="line">    <span class="keyword">while</span>(root != <span class="literal">nullptr</span> || !s.<span class="built_in">empty</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">while</span>(root)</span><br><span class="line">        &#123;</span><br><span class="line">            ans.<span class="built_in">insert</span>(ans.<span class="built_in">begin</span>(),root-&gt;val);	<span class="comment">//结果插到列表开头</span></span><br><span class="line">            s.<span class="built_in">push</span>(root);		<span class="comment">//入栈</span></span><br><span class="line">           	root = root-&gt;right;	<span class="comment">//先遍历右子树</span></span><br><span class="line">        &#125;</span><br><span class="line">        root = s.<span class="built_in">top</span>();</span><br><span class="line">        s.<span class="built_in">pop</span>();</span><br><span class="line">        root = root-&gt;left;		<span class="comment">//再遍历左子树</span></span><br><span class="line">	&#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="2、层序遍历：使用广度优先搜索即可"><a href="#2、层序遍历：使用广度优先搜索即可" class="headerlink" title="2、层序遍历：使用广度优先搜索即可"></a>2、层序遍历：使用广度优先搜索即可</h4><h4 id="3、构造二叉树："><a href="#3、构造二叉树：" class="headerlink" title="3、构造二叉树："></a>3、构造二叉树：</h4><p><a href="https://leetcode-cn.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/solution/qian-xu-yu-zhong-xu-gou-jian-er-cha-shu-7dznd/">前序与中序构建二叉树</a></p>
+<p><a href="https://leetcode-cn.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/solution/hou-xu-yu-zhong-xu-gou-jian-er-cha-shu-d-kmrr/">后序与中序构建二叉树</a></p>
+<p><a href="https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/solution/">二叉树的序列化与反序列化</a></p>
+<h4 id="4、递归解决二叉树问题："><a href="#4、递归解决二叉树问题：" class="headerlink" title="4、递归解决二叉树问题："></a>4、递归解决二叉树问题：</h4><p><a href="https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/solution/">二叉树的最大深度</a></p>
+<p><a href="https://leetcode-cn.com/problems/symmetric-tree/">对称二叉树</a></p>
+<p><a href="https://leetcode-cn.com/problems/path-sum/solution/">路径总和</a></p>
+<p><a href="https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/">二叉树的最近公共祖先</a></p>
 ]]></content>
       <categories>
         <category>数据结构与算法</category>
