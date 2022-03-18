@@ -1,112 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>【计算机图形学】（二）旋转与四元数</title>
-    <url>/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/</url>
-    <content><![CDATA[<h3 id="旋转与四元数"><a href="#旋转与四元数" class="headerlink" title="旋转与四元数"></a>旋转与四元数</h3><blockquote>
-<p><strong>摘要</strong></p>
-<p>本文主要介绍三维旋转的几类重要表示方式，以及在游戏及其他工程领域最为常用的四元数的相关概念、性质、运算法则和常用公式。</p>
-</blockquote>
-<p><em><span id="more"></span></em></p>
-<h4 id="一、三维旋转变换的表示方式"><a href="#一、三维旋转变换的表示方式" class="headerlink" title="一、三维旋转变换的表示方式"></a>一、三维旋转变换的表示方式</h4><p><strong>1、欧拉角</strong></p>
-<p>直接给出$x$（俯仰）、$y$（偏航）、$z$（滚转）三个轴向的旋转角，优点是表示简单直接，容易理解，但存在万向节死锁的问题（当两个轴重合时，会损失一个自由度）。</p>
-<p><strong>2、轴角</strong></p>
-<p>顾名思义，用一个轴$n$和一个角$\theta$表示旋转，其中轴是旋转轴，默认用一个过坐标原点的三维向量表示，角表示绕这个轴旋转的角度，轴角表示为一个四元组$(x,y,z,\theta)$。</p>
-<p>但轴角也存在明显的缺陷，一方面，因为角度的周期性，任何$2n\pi$的旋转都等价于没有旋转，这在某些情况下是不可接受的；另一方面，由于轴角描述的“四元组”并不是一个空间下的东西，首先$(x,y,z)$是一个3维坐标下的矢量，而$\theta$则是极坐标下的角度，简单的将他们组合到一起并不能保证他们插值结果的稳定性，因为他们无法归一化，所以不能保证最终插值后得到的矢量长度（经过旋转变换后两点之间的距离）相等；此外，轴角形式的旋转不能直接施于点或矢量，必转换为矩阵或者四元数。</p>
-<p><strong>3、矩阵</strong></p>
-<p>计算机图形学中，一般以矩阵形式表示旋转，对于三维空间的点或向量，将其表示为齐次坐标形式，则绕不同旋转轴的旋转矩阵为：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301162321017.png" alt="image-20220301162321017"></p>
-<p>而对于任意旋转，都可以分解为这三个轴的旋转，可以利用<strong>Rodrigues旋转公式</strong>将轴角表示的任意旋转转换为矩阵形式：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301162445459.png" alt="image-20220301162445459"></p>
-<p>矩阵表示法可以直接施加于点或向量，计算相对方便，也叫容易理解，但在实际工程中，如果我们要存储一个对象的旋转参数，就要存储这个对象的旋转矩阵，一共16个浮点数，对空间消耗较大，并且矩阵形式同样无法进行简单的插值，因此在实际的游戏开发及其他工程应用中，存储一个对象的旋转，通常采用四元数的形式。</p>
-<p><strong>4、四元数</strong></p>
-<p>四元数像是轴角表示法的优化版本，但解决了所有轴角可能存在的问题，最大的优势就是便于插值，并且存储时只需要存储4个浮点数，而且求逆、串联等操作比矩阵更方便，相比于轴角和矩阵优势巨大。</p>
-<p>对于四元数的理解，可以看作是有一个实部和三个虚部构成的虚数，描述的是四维空间，具体可以看<a href="https://zhuanlan.zhihu.com/p/53872740">可视化理解四元数</a>。</p>
-<hr>
-<h4 id="二、四元数"><a href="#二、四元数" class="headerlink" title="二、四元数"></a>二、四元数</h4><p>四元数的全部公式和运算法则以及与矩阵等形式的转化，可以查看<a href="https://zhuanlan.zhihu.com/p/97186723">四元数(Quaternions)</a>，这里对常用的关键公式进行总结。</p>
-<p>四元数表示为$(x,y,z,w)$，其中<br>$$<br>x&#x3D;i·q_1·sin(\theta&#x2F;2) \<br>y&#x3D;j·q_2·sin(\theta&#x2F;2) \<br>z&#x3D;k·q_3·sin(\theta&#x2F;2) \<br>w&#x3D;cos(\theta&#x2F;2)<br>$$<br>其中$(iq_1,jq_2,kq_3)$是表示旋转轴的矢量，$\theta$表示绕此轴旋转的角度。对四元数$q_2$左乘一个四元数$q_1$，其作用是将$q_2$拉伸$q_1$的模长，再作用一个特殊的四维旋转。所以我们用<strong>单位四元数</strong>来表示三维空间中的旋转，因为单位四元数模长为1$(w^2+x^2+y^2+z^2&#x3D;1)$，而旋转时必须要保证的就是，一个向量旋转前后模长不变。</p>
-<ul>
-<li>乘法</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301184920885.png" alt="image-20220301184920885"></p>
-<ul>
-<li>标量乘法</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185303072.png" alt="image-20220301185303072"></p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185318122.png" alt="image-20220301185318122"></p>
-<ul>
-<li>加法</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301184949807.png" alt="image-20220301184949807"></p>
-<ul>
-<li>共轭</li>
-</ul>
-<p>$$<br>q&#x3D;(w,x,y,z) \<br>q^*&#x3D;(w,-x,-y,-z)<br>$$</p>
-<ul>
-<li>模</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185026298.png" alt="image-20220301185026298"></p>
-<ul>
-<li>Identity</li>
-</ul>
-<p>$$<br>i&#x3D;(0,0,0,1)<br>$$</p>
-<ul>
-<li>逆</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185208658.png" alt="image-20220301185208658"></p>
-<ul>
-<li>单位四元数表示旋转：单位四元数模为1，因此可以表示为</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185635142.png" alt="image-20220301185635142"></p>
-<p>将一个三维向量$p$写成四元数形式</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185811398.png" alt="image-20220301185811398"></p>
-<p>则运算</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185855191.png" alt="image-20220301185855191"></p>
-<p>表示向量$p$在三维空间中绕轴$u_q$旋转$2\phi$弧度。</p>
-]]></content>
-      <categories>
-        <category>计算机图形学</category>
-      </categories>
-      <tags>
-        <tag>计算机图形学</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>【数据结构】二叉树</title>
-    <url>/LycTechStack.github.io/2022/03/03/20220303-%E4%BA%8C%E5%8F%89%E6%A0%91/</url>
-    <content><![CDATA[<h3 id="二叉树"><a href="#二叉树" class="headerlink" title="二叉树"></a>二叉树</h3><blockquote>
-<p><strong>摘要</strong></p>
-<p>本文主要总结与二叉树有关的关键知识以及具有代表性的题目，后续将持续更新。</p>
-</blockquote>
-<p><em><span id="more"></span></em></p>
-<h4 id="1、前序、中序、后序遍历的迭代算法："><a href="#1、前序、中序、后序遍历的迭代算法：" class="headerlink" title="1、前序、中序、后序遍历的迭代算法："></a>1、前序、中序、后序遍历的迭代算法：</h4><p><strong>对于前序遍历</strong>，遍历顺序为“根、左、右”，因此对于任意一个节点，直接将节点值加入结果列表并入栈，然后遍历左子树，直到节点为空，开始遍历右子树即可，前序遍历代码：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">preorderTraversal</span><span class="params">(TreeNode* root)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; ans;</span><br><span class="line">    stack&lt;TreeNode*&gt; s;</span><br><span class="line">    <span class="keyword">while</span>(root != <span class="literal">nullptr</span> || !s.<span class="built_in">empty</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">while</span>(root)</span><br><span class="line">        &#123;</span><br><span class="line">            ans.<span class="built_in">push_back</span>(root-&gt;val);	<span class="comment">//直接加入结果</span></span><br><span class="line">            s.<span class="built_in">push</span>(root);		<span class="comment">//入栈</span></span><br><span class="line">           	root = root-&gt;left;	<span class="comment">//遍历左子树</span></span><br><span class="line">        &#125;</span><br><span class="line">        root = s.<span class="built_in">top</span>();</span><br><span class="line">        s.<span class="built_in">pop</span>();</span><br><span class="line">        root = root-&gt;right;		<span class="comment">//遍历右子树</span></span><br><span class="line">	&#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>对于中序遍历</strong>，遍历顺序为“左、根、右”，因此只需要将前序遍历的顺序改为，对于任意一个节点，先遍历左子树入栈，直到节点为空，取栈顶节点加入结果列表（此时栈顶节点的左节点为空，因此栈顶结点即为子树的根节点，加入结果列表），然后遍历右子树，中序遍历代码：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">inorderTraversal</span><span class="params">(TreeNode* root)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; ans;</span><br><span class="line">    stack&lt;TreeNode*&gt; s;</span><br><span class="line">    <span class="keyword">while</span>(root != <span class="literal">nullptr</span> || !s.<span class="built_in">empty</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">while</span>(root)</span><br><span class="line">        &#123;</span><br><span class="line">            s.<span class="built_in">push</span>(root);		<span class="comment">//入栈</span></span><br><span class="line">           	root = root-&gt;left;	<span class="comment">//遍历左子树</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//左子树为空此时栈顶结点就作为子树的根节点，加入结果列表，并出栈，然后遍历右子树</span></span><br><span class="line">        root = s.<span class="built_in">top</span>();</span><br><span class="line">        ans.<span class="built_in">push_back</span>(root-&gt;val);</span><br><span class="line">        s.<span class="built_in">pop</span>();</span><br><span class="line">        root = root-&gt;right;		<span class="comment">//遍历右子树</span></span><br><span class="line">	&#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>对于后序遍历</strong>，遍历顺序为“左、右、根”，考虑其和前序遍历顺序“根、左、右”的关系，如果前序遍历时把节点值放入结果的、列表尾部的操作改为插入列表头部，则遍历顺序变为“右、左、根”，此时只需要再将前序遍历时，先遍历左子树在遍历右子树的顺序对调，就可以将遍历顺序改为“左、右、根”，即为后序遍历了，后序遍历代码：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">postorderTraversal</span><span class="params">(TreeNode* root)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; ans;</span><br><span class="line">    stack&lt;TreeNode*&gt; s;</span><br><span class="line">    <span class="keyword">while</span>(root != <span class="literal">nullptr</span> || !s.<span class="built_in">empty</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">while</span>(root)</span><br><span class="line">        &#123;</span><br><span class="line">            ans.<span class="built_in">insert</span>(ans.<span class="built_in">begin</span>(),root-&gt;val);	<span class="comment">//结果插到列表开头</span></span><br><span class="line">            s.<span class="built_in">push</span>(root);		<span class="comment">//入栈</span></span><br><span class="line">           	root = root-&gt;right;	<span class="comment">//先遍历右子树</span></span><br><span class="line">        &#125;</span><br><span class="line">        root = s.<span class="built_in">top</span>();</span><br><span class="line">        s.<span class="built_in">pop</span>();</span><br><span class="line">        root = root-&gt;left;		<span class="comment">//再遍历左子树</span></span><br><span class="line">	&#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="2、层序遍历：使用广度优先搜索即可"><a href="#2、层序遍历：使用广度优先搜索即可" class="headerlink" title="2、层序遍历：使用广度优先搜索即可"></a>2、层序遍历：使用广度优先搜索即可</h4><h4 id="3、构造二叉树："><a href="#3、构造二叉树：" class="headerlink" title="3、构造二叉树："></a>3、构造二叉树：</h4><p><a href="https://leetcode-cn.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/solution/qian-xu-yu-zhong-xu-gou-jian-er-cha-shu-7dznd/">前序与中序构建二叉树</a></p>
-<p><a href="https://leetcode-cn.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/solution/hou-xu-yu-zhong-xu-gou-jian-er-cha-shu-d-kmrr/">后序与中序构建二叉树</a></p>
-<p><a href="https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/solution/">二叉树的序列化与反序列化</a></p>
-<h4 id="4、递归解决二叉树问题："><a href="#4、递归解决二叉树问题：" class="headerlink" title="4、递归解决二叉树问题："></a>4、递归解决二叉树问题：</h4><p><a href="https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/solution/">二叉树的最大深度</a></p>
-<p><a href="https://leetcode-cn.com/problems/symmetric-tree/">对称二叉树</a></p>
-<p><a href="https://leetcode-cn.com/problems/path-sum/solution/">路径总和</a></p>
-<p><a href="https://leetcode-cn.com/problems/path-sum-ii/">路径总和 II</a>：广搜方法值得注意，用哈希表记录每个结点的父节点，找到一条路径后从叶子节点往回找父节点就可以还原出一条路径</p>
-<p><a href="https://leetcode-cn.com/problems/path-sum-iii/">路径总和 III</a>：双重递归</p>
-<p><a href="https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/">二叉树的最近公共祖先</a></p>
-]]></content>
-      <categories>
-        <category>数据结构与算法</category>
-      </categories>
-      <tags>
-        <tag>数据结构</tag>
-        <tag>C++</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>【计算机图形学】（一）变换</title>
     <url>/LycTechStack.github.io/2022/03/02/20200302-%E5%8F%98%E6%8D%A2/</url>
     <content><![CDATA[<h2 id="变换（Transform）"><a href="#变换（Transform）" class="headerlink" title="变换（Transform）"></a>变换（Transform）</h2><blockquote>
@@ -242,56 +136,31 @@
       </tags>
   </entry>
   <entry>
-    <title>【数据结构】线性数据结构</title>
-    <url>/LycTechStack.github.io/2022/03/02/20220303-%E7%BA%BF%E6%80%A7%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/</url>
-    <content><![CDATA[<h3 id="线性数据结构"><a href="#线性数据结构" class="headerlink" title="线性数据结构"></a>线性数据结构</h3><blockquote>
+    <title>【数据结构】二叉树</title>
+    <url>/LycTechStack.github.io/2022/03/03/20220303-%E4%BA%8C%E5%8F%89%E6%A0%91/</url>
+    <content><![CDATA[<h3 id="二叉树"><a href="#二叉树" class="headerlink" title="二叉树"></a>二叉树</h3><blockquote>
 <p><strong>摘要</strong></p>
-<p>对LeetCode上各种线性数据结构相关的题目做了一个分类整理，主要内容来源于LeetCode官方学习内容，这里只是一个记录和梳理，后序将持续更新。</p>
+<p>本文主要总结与二叉树有关的关键知识以及具有代表性的题目，后续将持续更新。</p>
 </blockquote>
 <p><em><span id="more"></span></em></p>
-<h4 id="1、数组和字符串"><a href="#1、数组和字符串" class="headerlink" title="1、数组和字符串"></a>1、<a href="https://leetcode-cn.com/leetbook/detail/array-and-string/">数组和字符串</a></h4><h5 id="二分查找"><a href="#二分查找" class="headerlink" title="二分查找"></a>二分查找</h5><p>一般用于给定的数组是有序的，或先手动排序</p>
-<p><a href="https://leetcode-cn.com/problems/search-insert-position/solution/">搜索插入位置</a></p>
-<p><a href="https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array/solution/">寻找旋转排序数组中的最小值</a></p>
-<h5 id="首尾双指针"><a href="#首尾双指针" class="headerlink" title="首尾双指针"></a>首尾双指针</h5><p><a href="https://leetcode-cn.com/problems/two-sum-ii-input-array-is-sorted/solution/">两数之和 II - 输入有序数组</a></p>
-<h5 id="快慢双指针"><a href="#快慢双指针" class="headerlink" title="快慢双指针"></a>快慢双指针</h5><p><a href="https://leetcode-cn.com/problems/remove-element/solution/">移除元素</a><br><a href="https://leetcode-cn.com/problems/max-consecutive-ones/solution/">最大连续 1 的个数</a><br><a href="https://leetcode-cn.com/problems/minimum-size-subarray-sum/solution/">长度最小的子数组</a><br><a href="https://leetcode-cn.com/problems/remove-duplicates-from-sorted-array/solution/">删除有序数组中的重复项</a><br><a href="https://leetcode-cn.com/problems/move-zeroes/solution/">移动零</a></p>
-<h5 id="滑动窗口"><a href="#滑动窗口" class="headerlink" title="滑动窗口"></a>滑动窗口</h5><p><a href="https://leetcode-cn.com/problems/maximum-average-subarray-i/solution/">子数组最大平均数</a><br><a href="https://leetcode-cn.com/problems/maximum-points-you-can-obtain-from-cards/solution/">可获得的最大点数</a><br><a href="https://leetcode-cn.com/problems/grumpy-bookstore-owner/solution/">爱生气的书店老板</a><br><a href="https://leetcode-cn.com/problems/maximum-number-of-vowels-in-a-substring-of-given-length/solution/">定长子串中元音的最大数目</a><br><a href="https://leetcode-cn.com/problems/minimum-operations-to-reduce-x-to-zero/submissions/">将 x 减到 0 的最小操作数</a><br><a href="https://leetcode-cn.com/problems/minimum-window-substring/solution/hua-dong-chuang-kou-you-hua-jie-fa-by-bu-1i5e/">最小覆盖子串</a></p>
-<h5 id="字符串匹配KMP算法"><a href="#字符串匹配KMP算法" class="headerlink" title="字符串匹配KMP算法"></a><a href="https://leetcode-cn.com/leetbook/read/array-and-string/cpoo6/">字符串匹配KMP算法</a></h5><p>关键在于构建next数组的方法</p>
-<h5 id="二维数组"><a href="#二维数组" class="headerlink" title="二维数组"></a><a href="https://leetcode-cn.com/leetbook/read/array-and-string/y1nke/">二维数组</a></h5><p>一般就是矩阵问题，矩阵问题后面在动态规划和其他算法问题中也会经常遇到。</p>
-<p><a href="https://leetcode-cn.com/problems/rotate-matrix-lcci/">旋转矩阵</a></p>
-<p><a href="https://leetcode-cn.com/problems/zero-matrix-lcci/">零矩阵</a></p>
-<p><a href="https://leetcode-cn.com/problems/diagonal-traverse/">对角线遍历</a></p>
-<h4 id="2、链表"><a href="#2、链表" class="headerlink" title="2、链表"></a>2、<a href="https://leetcode-cn.com/leetbook/detail/linked-list/">链表</a></h4><h5 id="递归"><a href="#递归" class="headerlink" title="递归"></a>递归</h5><p>链表的很多问题都可以用递归，典型问题比如：<a href="https://leetcode-cn.com/problems/swap-nodes-in-pairs/solution/hua-jie-suan-fa-24-liang-liang-jiao-huan-lian-biao/">两两交换链表中的节点</a></p>
-<h5 id="快慢指针"><a href="#快慢指针" class="headerlink" title="快慢指针"></a>快慢指针</h5><p><a href="https://leetcode-cn.com/problems/linked-list-cycle-ii/solution/">环形链表II</a><br><a href="https://leetcode-cn.com/problems/intersection-of-two-linked-lists/solution/">相交链表</a></p>
-<h5 id="经典问题"><a href="#经典问题" class="headerlink" title="经典问题"></a>经典问题</h5><p><a href="https://leetcode-cn.com/problems/reverse-linked-list/">反转链表</a><br><a href="https://leetcode-cn.com/problems/palindrome-linked-list/solution/">回文链表</a></p>
-<blockquote>
-<p><strong>一般处理链表问题时在原链表前加一个虚节点就可以避免对头节点的特殊判断</strong></p>
-</blockquote>
-<h4 id="3、队列"><a href="#3、队列" class="headerlink" title="3、队列"></a>3、队列</h4><h5 id="广搜BFS"><a href="#广搜BFS" class="headerlink" title="广搜BFS"></a><a href="https://leetcode-cn.com/leetbook/read/queue-stack/kc5ge/">广搜BFS</a></h5><p>广度优先搜索一般用来二叉树的层序遍历、求最短路径、最小数量之类的题目。<br><a href="https://leetcode-cn.com/problems/walls-and-gates/">墙与门</a><br><a href="https://leetcode-cn.com/problems/number-of-islands/">岛屿数量</a><br><a href="https://leetcode-cn.com/problems/open-the-lock/">打开转盘锁</a></p>
-<ul>
-<li>广度优先搜索模板：<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">BFS</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	queue&lt;<span class="type">int</span>&gt; q;</span><br><span class="line">    unordered_set&lt;节点或状态&gt; map;	<span class="comment">//可选，看是否需要重复入队</span></span><br><span class="line">    <span class="type">int</span> step = <span class="number">0</span>;</span><br><span class="line">    q.<span class="built_in">push</span>(根节点或状态);</span><br><span class="line">    <span class="keyword">while</span>(!q.<span class="built_in">empty</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        ++step;</span><br><span class="line">        <span class="type">int</span> size = q.<span class="built_in">size</span>();</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; size; i++)	<span class="comment">//遍历当前层所有节点并扩展相邻节点</span></span><br><span class="line">        &#123;</span><br><span class="line">            节点或状态 cur = q.<span class="built_in">front</span>();	<span class="comment">//取队列头节点</span></span><br><span class="line">            <span class="keyword">if</span>(cur == 目标节点或状态)	<span class="keyword">return</span> step;</span><br><span class="line">            <span class="keyword">for</span>(节点 x : cur的所有相邻节点)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(map.<span class="built_in">count</span>(x)) <span class="keyword">continue</span>;	<span class="comment">//判断是否已经访问过，可选</span></span><br><span class="line">                q.<span class="built_in">push</span>(x);</span><br><span class="line">                map.<span class="built_in">insert</span>(x);	<span class="comment">//可选</span></span><br><span class="line">            &#125;</span><br><span class="line">            q.<span class="built_in">pop</span>();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> step;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="4、栈"><a href="#4、栈" class="headerlink" title="4、栈"></a>4、栈</h4></li>
-</ul>
-<h5 id="深搜DFS"><a href="#深搜DFS" class="headerlink" title="深搜DFS"></a>深搜DFS</h5><p>一般能用广搜的也能用深搜，但是深搜不能保证是最短路径或者最小数量，深搜还用于二叉树的前中后序遍历。<br><a href="https://leetcode-cn.com/problems/keys-and-rooms/solution/yao-chi-he-fang-jian-shen-sou-he-yan-sou-nn8j/">钥匙和房间</a><br><a href="https://leetcode-cn.com/problems/flood-fill/solution/tu-xiang-xuan-ran-dfshe-bfs-by-bu-luo-bu-2tg4/">图像渲染</a><br>以及上面可以用BFS做的题</p>
-<ul>
-<li>DFS模板（非递归，类似于上面的BFS）</li>
-</ul>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">DFS</span><span class="params">(节点 root，节点 target)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	stack&lt;<span class="type">int</span>&gt; s;</span><br><span class="line">    unordered_set&lt;节点&gt; visited;	<span class="comment">//可选，看是否需要重复入栈</span></span><br><span class="line">    s.<span class="built_in">push</span>(root);</span><br><span class="line">    visited.<span class="built_in">insert</span>(root);</span><br><span class="line">    <span class="keyword">while</span>(!s.<span class="built_in">empty</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        节点 cur = q.<span class="built_in">top</span>();	<span class="comment">//取栈顶节点</span></span><br><span class="line">        <span class="keyword">if</span>(cur == target) <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        <span class="keyword">for</span>(节点 x : cur的所有相邻节点)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span>(visited.<span class="built_in">count</span>(x)) <span class="keyword">continue</span>;	<span class="comment">//判断是否已经访问过，可选</span></span><br><span class="line">            q.<span class="built_in">push</span>(x);</span><br><span class="line">            visited.<span class="built_in">insert</span>(x);	<span class="comment">//可选</span></span><br><span class="line">        &#125;</span><br><span class="line">        q.<span class="built_in">pop</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="1、前序、中序、后序遍历的迭代算法："><a href="#1、前序、中序、后序遍历的迭代算法：" class="headerlink" title="1、前序、中序、后序遍历的迭代算法："></a>1、前序、中序、后序遍历的迭代算法：</h4><p><strong>对于前序遍历</strong>，遍历顺序为“根、左、右”，因此对于任意一个节点，直接将节点值加入结果列表并入栈，然后遍历左子树，直到节点为空，开始遍历右子树即可，前序遍历代码：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">preorderTraversal</span><span class="params">(TreeNode* root)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; ans;</span><br><span class="line">    stack&lt;TreeNode*&gt; s;</span><br><span class="line">    <span class="keyword">while</span>(root != <span class="literal">nullptr</span> || !s.<span class="built_in">empty</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">while</span>(root)</span><br><span class="line">        &#123;</span><br><span class="line">            ans.<span class="built_in">push_back</span>(root-&gt;val);	<span class="comment">//直接加入结果</span></span><br><span class="line">            s.<span class="built_in">push</span>(root);		<span class="comment">//入栈</span></span><br><span class="line">           	root = root-&gt;left;	<span class="comment">//遍历左子树</span></span><br><span class="line">        &#125;</span><br><span class="line">        root = s.<span class="built_in">top</span>();</span><br><span class="line">        s.<span class="built_in">pop</span>();</span><br><span class="line">        root = root-&gt;right;		<span class="comment">//遍历右子树</span></span><br><span class="line">	&#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<ul>
-<li>DFS模板（递归）</li>
-</ul>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">DFS</span><span class="params">(节点 root，节点 target, unordered_set&lt;节点&gt;&amp; visited)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(root == target) <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    <span class="keyword">for</span>(节点 x : root的所有相邻节点)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(visited.<span class="built_in">count</span>(x)) <span class="keyword">continue</span>;	<span class="comment">//判断是否已经访问过，可选</span></span><br><span class="line">        visited.<span class="built_in">insert</span>(x);	<span class="comment">//可选</span></span><br><span class="line">        <span class="keyword">if</span>(<span class="built_in">DFS</span>(x,target,visited)) <span class="keyword">return</span> <span class="literal">true</span>;   </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>对于中序遍历</strong>，遍历顺序为“左、根、右”，因此只需要将前序遍历的顺序改为，对于任意一个节点，先遍历左子树入栈，直到节点为空，取栈顶节点加入结果列表（此时栈顶节点的左节点为空，因此栈顶结点即为子树的根节点，加入结果列表），然后遍历右子树，中序遍历代码：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">inorderTraversal</span><span class="params">(TreeNode* root)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; ans;</span><br><span class="line">    stack&lt;TreeNode*&gt; s;</span><br><span class="line">    <span class="keyword">while</span>(root != <span class="literal">nullptr</span> || !s.<span class="built_in">empty</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">while</span>(root)</span><br><span class="line">        &#123;</span><br><span class="line">            s.<span class="built_in">push</span>(root);		<span class="comment">//入栈</span></span><br><span class="line">           	root = root-&gt;left;	<span class="comment">//遍历左子树</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//左子树为空此时栈顶结点就作为子树的根节点，加入结果列表，并出栈，然后遍历右子树</span></span><br><span class="line">        root = s.<span class="built_in">top</span>();</span><br><span class="line">        ans.<span class="built_in">push_back</span>(root-&gt;val);</span><br><span class="line">        s.<span class="built_in">pop</span>();</span><br><span class="line">        root = root-&gt;right;		<span class="comment">//遍历右子树</span></span><br><span class="line">	&#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h5 id="单调栈"><a href="#单调栈" class="headerlink" title="单调栈"></a>单调栈</h5><p>单调栈也是一种重要的数据结构，在实际解题中经常用到，简单来说单调栈内的元素保证是严格单调递增或递减的，如果一个新的元素和栈顶元素不满足这种单调关系，就将栈顶元素出栈并进行一定的操作，直到满足单调关系，将新元素入栈。</p>
-<p>之前的题目中也遇到过一些比较简单的单调栈问题，这里以两道困难题目加深对单调栈的理解。</p>
-<p><a href="https://leetcode-cn.com/problems/largest-rectangle-in-histogram/">柱状图中最大的矩形</a></p>
-<p><a href="https://leetcode-cn.com/problems/maximal-rectangle/">最大矩形</a></p>
-<p>但这两道题较为困难，能够加深对单调栈的理解。柱状图中的最大矩形的思路简单来说就是遍历每一根柱子，分别找到其左边和右边离它最近的高度低于它的柱子作为左右边界，在这两个边界范围内的所有柱子的高度都高于当前柱子，因此所形成的矩形面积就是当前柱子高度乘以边界长度。寻找柱子边界的过程就是利用单调栈实现的，并且优化过后只需要遍历一次就可以找到左边界和右边界。关于单调栈的思路如何得到以及优化具体细节可以查看<a href="https://leetcode-cn.com/problems/largest-rectangle-in-histogram/solution/zhu-zhuang-tu-zhong-zui-da-de-ju-xing-by-leetcode-/">柱状图中最大的矩形 官方题解</a>。</p>
-<p>最大矩形是一道更为困难的题目，但是如果理解了柱状图问题，再看最大矩形就不是很困难了。因为我们可以对矩阵每一行的每一个位置都求出这个位置上方连续的1的个数（包含这个位置本身），这样每一行都形成了一个柱状图，再按照柱状图的解法计算最大矩形面积即可，遍历完矩阵所有行也就得到了全局最大矩形。更多细节在代码中：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">maximalRectangle</span><span class="params">(vector&lt;vector&lt;<span class="type">char</span>&gt;&gt;&amp; matrix)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> m = matrix.<span class="built_in">size</span>(), n = matrix[<span class="number">0</span>].<span class="built_in">size</span>();</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">height</span><span class="params">(n, <span class="number">0</span>)</span></span>;     <span class="comment">//记录每一行每个位置上方连续的1的个数（包含本身）</span></span><br><span class="line">        <span class="type">int</span> ans = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; m; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">left</span><span class="params">(n)</span>, <span class="title">right</span><span class="params">(n, n)</span></span>;	<span class="comment">//每一行遍历开始都要重置right数组的初始值为n</span></span><br><span class="line">            <span class="comment">//计算每个格子上方连续1的个数，形成柱状图</span></span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt; n; ++j)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(i == <span class="number">0</span>)</span><br><span class="line">                &#123;</span><br><span class="line">                    height[j] = matrix[i][j] - <span class="string">&#x27;0&#x27;</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                &#123;</span><br><span class="line">                    height[j] = matrix[i][j] == <span class="string">&#x27;1&#x27;</span> ? height[j] + <span class="number">1</span> : <span class="number">0</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//计算直到当前行的柱状图最大矩形</span></span><br><span class="line">            stack&lt;<span class="type">int</span>&gt; mono;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt; n; ++j)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">while</span>(!mono.<span class="built_in">empty</span>() &amp;&amp; height[mono.<span class="built_in">top</span>()] &gt;= height[j])	<span class="comment">//注意更新右边界的判断条件是&#x27;&gt;=&#x27;</span></span><br><span class="line">                &#123;</span><br><span class="line">                    right[mono.<span class="built_in">top</span>()] = j;</span><br><span class="line">                    mono.<span class="built_in">pop</span>();</span><br><span class="line">                &#125;</span><br><span class="line">                left[j] = mono.<span class="built_in">empty</span>() ? <span class="number">-1</span> : mono.<span class="built_in">top</span>();</span><br><span class="line">                mono.<span class="built_in">push</span>(j);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//更新结果</span></span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt; n; ++j)</span><br><span class="line">            &#123;</span><br><span class="line">                ans = <span class="built_in">max</span>(ans, height[j] * (right[j] - left[j] - <span class="number">1</span>));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p><strong>对于后序遍历</strong>，遍历顺序为“左、右、根”，考虑其和前序遍历顺序“根、左、右”的关系，如果前序遍历时把节点值放入结果的、列表尾部的操作改为插入列表头部，则遍历顺序变为“右、左、根”，此时只需要再将前序遍历时，先遍历左子树在遍历右子树的顺序对调，就可以将遍历顺序改为“左、右、根”，即为后序遍历了，后序遍历代码：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">postorderTraversal</span><span class="params">(TreeNode* root)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; ans;</span><br><span class="line">    stack&lt;TreeNode*&gt; s;</span><br><span class="line">    <span class="keyword">while</span>(root != <span class="literal">nullptr</span> || !s.<span class="built_in">empty</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">while</span>(root)</span><br><span class="line">        &#123;</span><br><span class="line">            ans.<span class="built_in">insert</span>(ans.<span class="built_in">begin</span>(),root-&gt;val);	<span class="comment">//结果插到列表开头</span></span><br><span class="line">            s.<span class="built_in">push</span>(root);		<span class="comment">//入栈</span></span><br><span class="line">           	root = root-&gt;right;	<span class="comment">//先遍历右子树</span></span><br><span class="line">        &#125;</span><br><span class="line">        root = s.<span class="built_in">top</span>();</span><br><span class="line">        s.<span class="built_in">pop</span>();</span><br><span class="line">        root = root-&gt;left;		<span class="comment">//再遍历左子树</span></span><br><span class="line">	&#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-
-
+<h4 id="2、层序遍历：使用广度优先搜索即可"><a href="#2、层序遍历：使用广度优先搜索即可" class="headerlink" title="2、层序遍历：使用广度优先搜索即可"></a>2、层序遍历：使用广度优先搜索即可</h4><h4 id="3、构造二叉树："><a href="#3、构造二叉树：" class="headerlink" title="3、构造二叉树："></a>3、构造二叉树：</h4><p><a href="https://leetcode-cn.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/solution/qian-xu-yu-zhong-xu-gou-jian-er-cha-shu-7dznd/">前序与中序构建二叉树</a></p>
+<p><a href="https://leetcode-cn.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/solution/hou-xu-yu-zhong-xu-gou-jian-er-cha-shu-d-kmrr/">后序与中序构建二叉树</a></p>
+<p><a href="https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/solution/">二叉树的序列化与反序列化</a></p>
+<h4 id="4、递归解决二叉树问题："><a href="#4、递归解决二叉树问题：" class="headerlink" title="4、递归解决二叉树问题："></a>4、递归解决二叉树问题：</h4><p><a href="https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/solution/">二叉树的最大深度</a></p>
+<p><a href="https://leetcode-cn.com/problems/symmetric-tree/">对称二叉树</a></p>
+<p><a href="https://leetcode-cn.com/problems/path-sum/solution/">路径总和</a></p>
+<p><a href="https://leetcode-cn.com/problems/path-sum-ii/">路径总和 II</a>：广搜方法值得注意，用哈希表记录每个结点的父节点，找到一条路径后从叶子节点往回找父节点就可以还原出一条路径</p>
+<p><a href="https://leetcode-cn.com/problems/path-sum-iii/">路径总和 III</a>：双重递归</p>
+<p><a href="https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/">二叉树的最近公共祖先</a></p>
 ]]></content>
       <categories>
         <category>数据结构与算法</category>
@@ -299,79 +168,6 @@
       <tags>
         <tag>数据结构</tag>
         <tag>C++</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>【计算机图形学】（三）光栅化</title>
-    <url>/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/</url>
-    <content><![CDATA[<h3 id="光栅化（Rasteriztion）"><a href="#光栅化（Rasteriztion）" class="headerlink" title="光栅化（Rasteriztion）"></a>光栅化（Rasteriztion）</h3><p>首先回顾一下MVP变换的过程（之前的文章中没有提到坐标系的概念，这里回顾的时候顺便提一下图形学中的各个坐标系的转换，其实就是之前的各种变换）：</p>
-<ul>
-<li>为了得到从某一个视角看到的物体的样子，我们首先要对相机和物体进行相机变换（View &#x2F; Camera Transformation），将相机的三个方向轴与世界坐标系对齐，并移到坐标原点（这一步是将相机坐标系转换到世界坐标系，或者反着说，将世界坐标系转到相机坐标系，因为相机就是我们的眼睛，是观察物体的坐标系）</li>
-<li>然后对物体做同样的变换以使得相机和物体不发生相对运动</li>
-<li>最后进行投影变换，无论是正交投影还是透视投影，最终物体都被投影到一个单位立方体中（这个过程是从相机坐标系到透视坐标系的过程）</li>
-</ul>
-<p>接下来的问题就是如何将这个投影绘制在屏幕上，形成图形，这个过程就是<strong>光栅化</strong>的过程。</p>
-<p><em><span id="more"></span></em></p>
-<h4 id="1-屏幕的定义"><a href="#1-屏幕的定义" class="headerlink" title="1 屏幕的定义"></a>1 屏幕的定义</h4><p>屏幕可以看作是一个二维矩阵，矩阵中的每一个元素存储的是像素值，屏幕显示图形的过程，就是遍历整个数组，显示对应像素值的过程。这个二维数组的大小也就是常说的分辨率。</p>
-<p>为了简化后面的推导，这里我们把每一个像素简单的抽象成为一个方格，并且这个方格中的颜色是一致的，如下图所示：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/image-20220306172222268.png" alt="image-20220306172222268"></p>
-<p>蓝色像素的坐标是 (2, 1) ，这个像素的中心点的坐标是 (2.5, 1.5) ，也就是像素 (x, y) 的中心点坐标是 (x+0.5, y+0.5) .</p>
-<p>这里的屏幕坐标系原点定义在了左下角，通常计算机中屏幕原点在左上角，这个定义不影响后面的推导。</p>
-<h4 id="2-视口变换"><a href="#2-视口变换" class="headerlink" title="2 视口变换"></a>2 视口变换</h4><p>有了屏幕的定义，我们想要把投影后的立方体显示在屏幕上，接下来要做的一步叫做<strong>视口变换</strong>，也就是将立方体转换到屏幕空间中，只有先转换到屏幕空间中，才能进一步计算屏幕空间中的点（像素）都应该是什么颜色。</p>
-<p>这是一个3D空间到2D空间的转换，因此我们先考虑简化的情况，也就是不考虑Z方向，即不考虑3D空间中的远近、遮挡等关系，先只将XY平面转换到屏幕平面上，这个过程很简单，只要将立方体的XY平面映射到和屏幕一样的比例就可以。也就是把 [-1, 1] 映射到 [0, width] 和 [0, height]上。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/image-20220306173109581.png" alt="image-20220306173109581"></p>
-<p>同时还要进行平移，因为透视坐标系中原点是在 (0,0) 的位置，我们当然希望这个原点在屏幕的中央，而屏幕的左下角是原点，所以需要把透视坐标原点平移(width&#x2F;2, height&#x2F;2).</p>
-<p>这样就完成了从透视坐标系到屏幕坐标系的转换。</p>
-<h4 id="3-光栅化"><a href="#3-光栅化" class="headerlink" title="3 光栅化"></a>3 光栅化</h4><p>在介绍光栅化之前，有必要再次重申一下我们现在在干嘛。</p>
-<p>我们的目标是把一个三维的物体显示在二维的屏幕上，那么我们首先做的就是坐标转换，之前的所有变换都是在做坐标转换，直到视口变换，我们终于完成了从三维坐标到二维坐标的映射；下一步就是计算三维物体顶点的颜色，我们得知道这个三维物体每个部分原来是什么颜色，才能把它显示在二维屏幕上，这个过程会通过UV贴图的颜色，结合光照，透明度等等，计算出模型每个顶点的具体颜色（R, G, B），这里我们先不管；最后就是在二维平面上绘制，所谓绘制也就是把这个二维平面填上颜色，前面说了，屏幕就是存储像素值的二维数组，所以绘制也就是计算每一个像素的颜色，然后屏幕根据这个数组就能显示出三维场景了。</p>
-<p>OK，光栅化就是在屏幕上填充颜色的过程，但是根据什么来填颜色呢，就根据之前计算出来的三维物体上的顶点颜色来填。我们每次从三维物体上取三个点，映射到二维空间，形成一个三角形，这个三角形的颜色取决于三个顶点的颜色，具体有几种取法：</p>
-<ul>
-<li>三个顶点颜色取平均值</li>
-<li>取某一个顶点的颜色</li>
-<li>三个顶点颜色渐变</li>
-</ul>
-<p>使用哪种取法可以根据实际需求来定，不是我们目前讨论的关键。</p>
-<blockquote>
-<p><strong>为什么是三角形？</strong></p>
-<p>因为三角形是最最基本的几何图形，任何多边形都可以拆分成若干三角形，并且三角形有许多优秀的性质，比如对于图形的内外有严格的定义，再比如很好进行插值运算，上面三角形颜色取三个顶点颜色的渐变就是三角形优势的体现之一。</p>
-</blockquote>
-<p>有了这个三角形之后，我们要做的事情就很简单了，判断每一个像素是否在这个三角形内部，如果在内部，就填上三角形的颜色。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/image-20220306180614301.png" alt="image-20220306180614301"></p>
-<p>这个过程其实是一个<strong>采样</strong>的过程，采样这个概念非常重要，简单而不严谨的来说就是定义一个函数，计算每个采样点在这个函数上的值就是采样。这里的函数就是判断一个点 (x, y) 是否在给定的三角形内部，那么如何实现这个函数的功能呢？</p>
-<p>最简单的方法就是<strong>向量叉乘</strong>，如下图所示：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/image-20220306180926083.png" alt="image-20220306180926083"></p>
-<p>对于点 P，计算向量$\vec{AB}$与向量$\vec{AP}$的叉乘，得到的方向朝向屏幕外，这意味着点 P 在 AB 的左边，同理计算向量$\vec{BC}$与向量$\vec{BP}$的叉乘，得到的向量方向也是朝向屏幕外，这意味着点 P 在 BC 的左边，同样计算向量$\vec{CA}$与向量$\vec{CP}$的叉乘，得到的向量方向还是朝向屏幕外，这意味着点 P 在 CA 的左边，于是我们可以判定点 P 在三角形 ABC 的内部。</p>
-<p>如果三个叉乘得到的某一个向量方向朝屏幕内，就说明点 P 在某一条边的右侧，那么点 P 一定在三角形ABC外部。这里给出C++版本代码：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">  Vector3f* _v存储三角形的三个顶点坐标，顶点顺序为逆时针</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="type">static</span> <span class="type">bool</span> <span class="title">insideTriangle</span><span class="params">(<span class="type">int</span> x, <span class="type">int</span> y, <span class="type">const</span> Vector3f* _v)</span></span></span><br><span class="line"><span class="function"></span>&#123;   </span><br><span class="line">    <span class="comment">//用像素中心坐标判断</span></span><br><span class="line">    <span class="function">Vector3f <span class="title">p</span><span class="params">(<span class="type">float</span>(x) + <span class="number">0.5</span>, <span class="type">float</span>(y) + <span class="number">0.5</span>, <span class="number">1</span>)</span></span>;</span><br><span class="line">    <span class="comment">//向量AB和AC叉乘的纵坐标</span></span><br><span class="line">    <span class="type">float</span> signofTrig = (_v[<span class="number">1</span>].<span class="built_in">x</span>() - _v[<span class="number">0</span>].<span class="built_in">x</span>()) * (_v[<span class="number">2</span>].<span class="built_in">y</span>() - _v[<span class="number">0</span>].<span class="built_in">y</span>()) - (_v[<span class="number">1</span>].<span class="built_in">y</span>() - _v[<span class="number">0</span>].<span class="built_in">y</span>()) * (_v[<span class="number">2</span>].<span class="built_in">x</span>() - _v[<span class="number">0</span>].<span class="built_in">x</span>());</span><br><span class="line">    <span class="comment">//向量AB和AP叉乘的纵坐标</span></span><br><span class="line">    <span class="type">float</span> signOfAB = (_v[<span class="number">1</span>].<span class="built_in">x</span>() - _v[<span class="number">0</span>].<span class="built_in">x</span>()) * (p.<span class="built_in">y</span>() - _v[<span class="number">0</span>].<span class="built_in">y</span>()) - (_v[<span class="number">1</span>].<span class="built_in">y</span>() - _v[<span class="number">0</span>].<span class="built_in">y</span>()) * (p.<span class="built_in">x</span>() - _v[<span class="number">0</span>].<span class="built_in">x</span>());</span><br><span class="line">    <span class="comment">//向量CA和CP叉乘的纵坐标</span></span><br><span class="line">    <span class="type">float</span> signOfCA = (_v[<span class="number">0</span>].<span class="built_in">x</span>() - _v[<span class="number">2</span>].<span class="built_in">x</span>()) * (p.<span class="built_in">y</span>() - _v[<span class="number">2</span>].<span class="built_in">y</span>()) - (_v[<span class="number">0</span>].<span class="built_in">y</span>() - _v[<span class="number">2</span>].<span class="built_in">y</span>()) * (p.<span class="built_in">x</span>() - _v[<span class="number">2</span>].<span class="built_in">x</span>());</span><br><span class="line">    <span class="comment">//向量BC和BP叉乘的纵坐标</span></span><br><span class="line">    <span class="type">float</span> signOfBC = (_v[<span class="number">2</span>].<span class="built_in">x</span>() - _v[<span class="number">1</span>].<span class="built_in">x</span>()) * (p.<span class="built_in">y</span>() - _v[<span class="number">2</span>].<span class="built_in">y</span>()) - (_v[<span class="number">2</span>].<span class="built_in">y</span>() - _v[<span class="number">1</span>].<span class="built_in">y</span>()) * (p.<span class="built_in">x</span>() - _v[<span class="number">2</span>].<span class="built_in">x</span>());</span><br><span class="line">    <span class="type">bool</span> d1 = (signOfAB * signofTrig &gt; <span class="number">0</span>);</span><br><span class="line">    <span class="type">bool</span> d2 = (signOfCA * signofTrig &gt; <span class="number">0</span>);</span><br><span class="line">    <span class="type">bool</span> d3 = (signOfBC * signofTrig &gt; <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">return</span> d1 &amp;&amp; d2 &amp;&amp; d3;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>利用这个方法就可以判断任意一个点是否在三角形内部了，当然还可以算出三条边的方程，带入 P 点坐标得到三个值，判断同号异号，本质上和向量叉乘是一样的。</p>
-<blockquote>
-<p>如果一个点在三角形边缘怎么算？</p>
-<p>这个可以根据需求自己规定，而且几乎所有的图形API，比如OpenGL、DirectX都对这种情况有明确的规定，无需担心。</p>
-</blockquote>
-<p>到此我们其实就完成了光栅化的过程。总结一下：</p>
-<ul>
-<li>取三个点构成三角形并计算三角形颜色</li>
-<li>判断屏幕上每一个像素是否在三角形内部，在则上色</li>
-</ul>
-<p>这个过程很简单，但存在许多问题，比如按照上面的流程，我们的代码应该这样写：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/image-20220306182055653.png" alt="image-20220306182055653"></p>
-<p>显然十分暴力，对于下大多数情况来说，我们完全不必遍历所有像素点，使用一个Bounding Box就可以大幅降低时间复杂度：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/image-20220306182158250.png" alt="image-20220306182158250"></p>
-<p>但这还不够，如果三角形非常细长，而且还刚好倾斜45°左右，那么实际上它也只占整个Bounding Box很少一部分，于是我们可以进一步改进：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/image-20220306182343897.png" alt="image-20220306182343897"></p>
-<p>先算出每一行的起点坐标，逐行扫描，遇到不在三角形内部的点就开始扫描下一行。</p>
-<p>现在我们来看一下光栅化之后的结果是什么样的：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/image-20220306182649751.png" alt="image-20220306182649751"></p>
-<p>而我们想得到的样子却是这样：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/image-20220306182717888.png" alt="image-20220306182717888"></p>
-<p>不能说毫无关系，但确实不是一个东西，这是因为我们现在得到的光栅化结果有太多的<strong>锯齿</strong>了，更专业一点的说法就是我们的光栅化过程使得图形<strong>走样（Aliasing）</strong>了，因此我们必须对光栅化的过程进行<strong>抗锯齿</strong>，更准确的说法叫做<strong>反走样</strong>。关于反走样将在下一篇文章中进行详细介绍。</p>
-]]></content>
-      <categories>
-        <category>计算机图形学</category>
-      </categories>
-      <tags>
-        <tag>计算机图形学</tag>
       </tags>
   </entry>
   <entry>
@@ -516,6 +312,210 @@
       </tags>
   </entry>
   <entry>
+    <title>【计算机图形学】（二）旋转与四元数</title>
+    <url>/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/</url>
+    <content><![CDATA[<h3 id="旋转与四元数"><a href="#旋转与四元数" class="headerlink" title="旋转与四元数"></a>旋转与四元数</h3><blockquote>
+<p><strong>摘要</strong></p>
+<p>本文主要介绍三维旋转的几类重要表示方式，以及在游戏及其他工程领域最为常用的四元数的相关概念、性质、运算法则和常用公式。</p>
+</blockquote>
+<p><em><span id="more"></span></em></p>
+<h4 id="一、三维旋转变换的表示方式"><a href="#一、三维旋转变换的表示方式" class="headerlink" title="一、三维旋转变换的表示方式"></a>一、三维旋转变换的表示方式</h4><p><strong>1、欧拉角</strong></p>
+<p>直接给出$x$（俯仰）、$y$（偏航）、$z$（滚转）三个轴向的旋转角，优点是表示简单直接，容易理解，但存在万向节死锁的问题（当两个轴重合时，会损失一个自由度）。</p>
+<p><strong>2、轴角</strong></p>
+<p>顾名思义，用一个轴$n$和一个角$\theta$表示旋转，其中轴是旋转轴，默认用一个过坐标原点的三维向量表示，角表示绕这个轴旋转的角度，轴角表示为一个四元组$(x,y,z,\theta)$。</p>
+<p>但轴角也存在明显的缺陷，一方面，因为角度的周期性，任何$2n\pi$的旋转都等价于没有旋转，这在某些情况下是不可接受的；另一方面，由于轴角描述的“四元组”并不是一个空间下的东西，首先$(x,y,z)$是一个3维坐标下的矢量，而$\theta$则是极坐标下的角度，简单的将他们组合到一起并不能保证他们插值结果的稳定性，因为他们无法归一化，所以不能保证最终插值后得到的矢量长度（经过旋转变换后两点之间的距离）相等；此外，轴角形式的旋转不能直接施于点或矢量，必转换为矩阵或者四元数。</p>
+<p><strong>3、矩阵</strong></p>
+<p>计算机图形学中，一般以矩阵形式表示旋转，对于三维空间的点或向量，将其表示为齐次坐标形式，则绕不同旋转轴的旋转矩阵为：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301162321017.png" alt="image-20220301162321017"></p>
+<p>而对于任意旋转，都可以分解为这三个轴的旋转，可以利用<strong>Rodrigues旋转公式</strong>将轴角表示的任意旋转转换为矩阵形式：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301162445459.png" alt="image-20220301162445459"></p>
+<p>矩阵表示法可以直接施加于点或向量，计算相对方便，也叫容易理解，但在实际工程中，如果我们要存储一个对象的旋转参数，就要存储这个对象的旋转矩阵，一共16个浮点数，对空间消耗较大，并且矩阵形式同样无法进行简单的插值，因此在实际的游戏开发及其他工程应用中，存储一个对象的旋转，通常采用四元数的形式。</p>
+<p><strong>4、四元数</strong></p>
+<p>四元数像是轴角表示法的优化版本，但解决了所有轴角可能存在的问题，最大的优势就是便于插值，并且存储时只需要存储4个浮点数，而且求逆、串联等操作比矩阵更方便，相比于轴角和矩阵优势巨大。</p>
+<p>对于四元数的理解，可以看作是有一个实部和三个虚部构成的虚数，描述的是四维空间，具体可以看<a href="https://zhuanlan.zhihu.com/p/53872740">可视化理解四元数</a>。</p>
+<hr>
+<h4 id="二、四元数"><a href="#二、四元数" class="headerlink" title="二、四元数"></a>二、四元数</h4><p>四元数的全部公式和运算法则以及与矩阵等形式的转化，可以查看<a href="https://zhuanlan.zhihu.com/p/97186723">四元数(Quaternions)</a>，这里对常用的关键公式进行总结。</p>
+<p>四元数表示为$(x,y,z,w)$，其中<br>$$<br>x&#x3D;i·q_1·sin(\theta&#x2F;2) \<br>y&#x3D;j·q_2·sin(\theta&#x2F;2) \<br>z&#x3D;k·q_3·sin(\theta&#x2F;2) \<br>w&#x3D;cos(\theta&#x2F;2)<br>$$<br>其中$(iq_1,jq_2,kq_3)$是表示旋转轴的矢量，$\theta$表示绕此轴旋转的角度。对四元数$q_2$左乘一个四元数$q_1$，其作用是将$q_2$拉伸$q_1$的模长，再作用一个特殊的四维旋转。所以我们用<strong>单位四元数</strong>来表示三维空间中的旋转，因为单位四元数模长为1$(w^2+x^2+y^2+z^2&#x3D;1)$，而旋转时必须要保证的就是，一个向量旋转前后模长不变。</p>
+<ul>
+<li>乘法</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301184920885.png" alt="image-20220301184920885"></p>
+<ul>
+<li>标量乘法</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185303072.png" alt="image-20220301185303072"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185318122.png" alt="image-20220301185318122"></p>
+<ul>
+<li>加法</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301184949807.png" alt="image-20220301184949807"></p>
+<ul>
+<li>共轭</li>
+</ul>
+<p>$$<br>q&#x3D;(w,x,y,z) \<br>q^*&#x3D;(w,-x,-y,-z)<br>$$</p>
+<ul>
+<li>模</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185026298.png" alt="image-20220301185026298"></p>
+<ul>
+<li>Identity</li>
+</ul>
+<p>$$<br>i&#x3D;(0,0,0,1)<br>$$</p>
+<ul>
+<li>逆</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185208658.png" alt="image-20220301185208658"></p>
+<ul>
+<li>单位四元数表示旋转：单位四元数模为1，因此可以表示为</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185635142.png" alt="image-20220301185635142"></p>
+<p>将一个三维向量$p$写成四元数形式</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185811398.png" alt="image-20220301185811398"></p>
+<p>则运算</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185855191.png" alt="image-20220301185855191"></p>
+<p>表示向量$p$在三维空间中绕轴$u_q$旋转$2\phi$弧度。</p>
+]]></content>
+      <categories>
+        <category>计算机图形学</category>
+      </categories>
+      <tags>
+        <tag>计算机图形学</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>【数据结构】线性数据结构</title>
+    <url>/LycTechStack.github.io/2022/03/02/20220303-%E7%BA%BF%E6%80%A7%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/</url>
+    <content><![CDATA[<h3 id="线性数据结构"><a href="#线性数据结构" class="headerlink" title="线性数据结构"></a>线性数据结构</h3><blockquote>
+<p><strong>摘要</strong></p>
+<p>对LeetCode上各种线性数据结构相关的题目做了一个分类整理，主要内容来源于LeetCode官方学习内容，这里只是一个记录和梳理，后序将持续更新。</p>
+</blockquote>
+<p><em><span id="more"></span></em></p>
+<h4 id="1、数组和字符串"><a href="#1、数组和字符串" class="headerlink" title="1、数组和字符串"></a>1、<a href="https://leetcode-cn.com/leetbook/detail/array-and-string/">数组和字符串</a></h4><h5 id="二分查找"><a href="#二分查找" class="headerlink" title="二分查找"></a>二分查找</h5><p>一般用于给定的数组是有序的，或先手动排序</p>
+<p><a href="https://leetcode-cn.com/problems/search-insert-position/solution/">搜索插入位置</a></p>
+<p><a href="https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array/solution/">寻找旋转排序数组中的最小值</a></p>
+<h5 id="首尾双指针"><a href="#首尾双指针" class="headerlink" title="首尾双指针"></a>首尾双指针</h5><p><a href="https://leetcode-cn.com/problems/two-sum-ii-input-array-is-sorted/solution/">两数之和 II - 输入有序数组</a></p>
+<h5 id="快慢双指针"><a href="#快慢双指针" class="headerlink" title="快慢双指针"></a>快慢双指针</h5><p><a href="https://leetcode-cn.com/problems/remove-element/solution/">移除元素</a><br><a href="https://leetcode-cn.com/problems/max-consecutive-ones/solution/">最大连续 1 的个数</a><br><a href="https://leetcode-cn.com/problems/minimum-size-subarray-sum/solution/">长度最小的子数组</a><br><a href="https://leetcode-cn.com/problems/remove-duplicates-from-sorted-array/solution/">删除有序数组中的重复项</a><br><a href="https://leetcode-cn.com/problems/move-zeroes/solution/">移动零</a></p>
+<h5 id="滑动窗口"><a href="#滑动窗口" class="headerlink" title="滑动窗口"></a>滑动窗口</h5><p><a href="https://leetcode-cn.com/problems/maximum-average-subarray-i/solution/">子数组最大平均数</a><br><a href="https://leetcode-cn.com/problems/maximum-points-you-can-obtain-from-cards/solution/">可获得的最大点数</a><br><a href="https://leetcode-cn.com/problems/grumpy-bookstore-owner/solution/">爱生气的书店老板</a><br><a href="https://leetcode-cn.com/problems/maximum-number-of-vowels-in-a-substring-of-given-length/solution/">定长子串中元音的最大数目</a><br><a href="https://leetcode-cn.com/problems/minimum-operations-to-reduce-x-to-zero/submissions/">将 x 减到 0 的最小操作数</a><br><a href="https://leetcode-cn.com/problems/minimum-window-substring/solution/hua-dong-chuang-kou-you-hua-jie-fa-by-bu-1i5e/">最小覆盖子串</a></p>
+<h5 id="字符串匹配KMP算法"><a href="#字符串匹配KMP算法" class="headerlink" title="字符串匹配KMP算法"></a><a href="https://leetcode-cn.com/leetbook/read/array-and-string/cpoo6/">字符串匹配KMP算法</a></h5><p>关键在于构建next数组的方法</p>
+<h5 id="二维数组"><a href="#二维数组" class="headerlink" title="二维数组"></a><a href="https://leetcode-cn.com/leetbook/read/array-and-string/y1nke/">二维数组</a></h5><p>一般就是矩阵问题，矩阵问题后面在动态规划和其他算法问题中也会经常遇到。</p>
+<p><a href="https://leetcode-cn.com/problems/rotate-matrix-lcci/">旋转矩阵</a></p>
+<p><a href="https://leetcode-cn.com/problems/zero-matrix-lcci/">零矩阵</a></p>
+<p><a href="https://leetcode-cn.com/problems/diagonal-traverse/">对角线遍历</a></p>
+<h4 id="2、链表"><a href="#2、链表" class="headerlink" title="2、链表"></a>2、<a href="https://leetcode-cn.com/leetbook/detail/linked-list/">链表</a></h4><h5 id="递归"><a href="#递归" class="headerlink" title="递归"></a>递归</h5><p>链表的很多问题都可以用递归，典型问题比如：<a href="https://leetcode-cn.com/problems/swap-nodes-in-pairs/solution/hua-jie-suan-fa-24-liang-liang-jiao-huan-lian-biao/">两两交换链表中的节点</a></p>
+<h5 id="快慢指针"><a href="#快慢指针" class="headerlink" title="快慢指针"></a>快慢指针</h5><p><a href="https://leetcode-cn.com/problems/linked-list-cycle-ii/solution/">环形链表II</a><br><a href="https://leetcode-cn.com/problems/intersection-of-two-linked-lists/solution/">相交链表</a></p>
+<h5 id="经典问题"><a href="#经典问题" class="headerlink" title="经典问题"></a>经典问题</h5><p><a href="https://leetcode-cn.com/problems/reverse-linked-list/">反转链表</a><br><a href="https://leetcode-cn.com/problems/palindrome-linked-list/solution/">回文链表</a></p>
+<blockquote>
+<p><strong>一般处理链表问题时在原链表前加一个虚节点就可以避免对头节点的特殊判断</strong></p>
+</blockquote>
+<h4 id="3、队列"><a href="#3、队列" class="headerlink" title="3、队列"></a>3、队列</h4><h5 id="广搜BFS"><a href="#广搜BFS" class="headerlink" title="广搜BFS"></a><a href="https://leetcode-cn.com/leetbook/read/queue-stack/kc5ge/">广搜BFS</a></h5><p>广度优先搜索一般用来二叉树的层序遍历、求最短路径、最小数量之类的题目。<br><a href="https://leetcode-cn.com/problems/walls-and-gates/">墙与门</a><br><a href="https://leetcode-cn.com/problems/number-of-islands/">岛屿数量</a><br><a href="https://leetcode-cn.com/problems/open-the-lock/">打开转盘锁</a></p>
+<ul>
+<li>广度优先搜索模板：<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">BFS</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	queue&lt;<span class="type">int</span>&gt; q;</span><br><span class="line">    unordered_set&lt;节点或状态&gt; map;	<span class="comment">//可选，看是否需要重复入队</span></span><br><span class="line">    <span class="type">int</span> step = <span class="number">0</span>;</span><br><span class="line">    q.<span class="built_in">push</span>(根节点或状态);</span><br><span class="line">    <span class="keyword">while</span>(!q.<span class="built_in">empty</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        ++step;</span><br><span class="line">        <span class="type">int</span> size = q.<span class="built_in">size</span>();</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; size; i++)	<span class="comment">//遍历当前层所有节点并扩展相邻节点</span></span><br><span class="line">        &#123;</span><br><span class="line">            节点或状态 cur = q.<span class="built_in">front</span>();	<span class="comment">//取队列头节点</span></span><br><span class="line">            <span class="keyword">if</span>(cur == 目标节点或状态)	<span class="keyword">return</span> step;</span><br><span class="line">            <span class="keyword">for</span>(节点 x : cur的所有相邻节点)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(map.<span class="built_in">count</span>(x)) <span class="keyword">continue</span>;	<span class="comment">//判断是否已经访问过，可选</span></span><br><span class="line">                q.<span class="built_in">push</span>(x);</span><br><span class="line">                map.<span class="built_in">insert</span>(x);	<span class="comment">//可选</span></span><br><span class="line">            &#125;</span><br><span class="line">            q.<span class="built_in">pop</span>();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> step;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="4、栈"><a href="#4、栈" class="headerlink" title="4、栈"></a>4、栈</h4></li>
+</ul>
+<h5 id="深搜DFS"><a href="#深搜DFS" class="headerlink" title="深搜DFS"></a>深搜DFS</h5><p>一般能用广搜的也能用深搜，但是深搜不能保证是最短路径或者最小数量，深搜还用于二叉树的前中后序遍历。<br><a href="https://leetcode-cn.com/problems/keys-and-rooms/solution/yao-chi-he-fang-jian-shen-sou-he-yan-sou-nn8j/">钥匙和房间</a><br><a href="https://leetcode-cn.com/problems/flood-fill/solution/tu-xiang-xuan-ran-dfshe-bfs-by-bu-luo-bu-2tg4/">图像渲染</a><br>以及上面可以用BFS做的题</p>
+<ul>
+<li>DFS模板（非递归，类似于上面的BFS）</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">DFS</span><span class="params">(节点 root，节点 target)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	stack&lt;<span class="type">int</span>&gt; s;</span><br><span class="line">    unordered_set&lt;节点&gt; visited;	<span class="comment">//可选，看是否需要重复入栈</span></span><br><span class="line">    s.<span class="built_in">push</span>(root);</span><br><span class="line">    visited.<span class="built_in">insert</span>(root);</span><br><span class="line">    <span class="keyword">while</span>(!s.<span class="built_in">empty</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        节点 cur = q.<span class="built_in">top</span>();	<span class="comment">//取栈顶节点</span></span><br><span class="line">        <span class="keyword">if</span>(cur == target) <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        <span class="keyword">for</span>(节点 x : cur的所有相邻节点)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span>(visited.<span class="built_in">count</span>(x)) <span class="keyword">continue</span>;	<span class="comment">//判断是否已经访问过，可选</span></span><br><span class="line">            q.<span class="built_in">push</span>(x);</span><br><span class="line">            visited.<span class="built_in">insert</span>(x);	<span class="comment">//可选</span></span><br><span class="line">        &#125;</span><br><span class="line">        q.<span class="built_in">pop</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>DFS模板（递归）</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">DFS</span><span class="params">(节点 root，节点 target, unordered_set&lt;节点&gt;&amp; visited)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(root == target) <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    <span class="keyword">for</span>(节点 x : root的所有相邻节点)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(visited.<span class="built_in">count</span>(x)) <span class="keyword">continue</span>;	<span class="comment">//判断是否已经访问过，可选</span></span><br><span class="line">        visited.<span class="built_in">insert</span>(x);	<span class="comment">//可选</span></span><br><span class="line">        <span class="keyword">if</span>(<span class="built_in">DFS</span>(x,target,visited)) <span class="keyword">return</span> <span class="literal">true</span>;   </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="单调栈"><a href="#单调栈" class="headerlink" title="单调栈"></a>单调栈</h5><p>单调栈也是一种重要的数据结构，在实际解题中经常用到，简单来说单调栈内的元素保证是严格单调递增或递减的，如果一个新的元素和栈顶元素不满足这种单调关系，就将栈顶元素出栈并进行一定的操作，直到满足单调关系，将新元素入栈。</p>
+<p>之前的题目中也遇到过一些比较简单的单调栈问题，这里以两道困难题目加深对单调栈的理解。</p>
+<p><a href="https://leetcode-cn.com/problems/largest-rectangle-in-histogram/">柱状图中最大的矩形</a></p>
+<p><a href="https://leetcode-cn.com/problems/maximal-rectangle/">最大矩形</a></p>
+<p>但这两道题较为困难，能够加深对单调栈的理解。柱状图中的最大矩形的思路简单来说就是遍历每一根柱子，分别找到其左边和右边离它最近的高度低于它的柱子作为左右边界，在这两个边界范围内的所有柱子的高度都高于当前柱子，因此所形成的矩形面积就是当前柱子高度乘以边界长度。寻找柱子边界的过程就是利用单调栈实现的，并且优化过后只需要遍历一次就可以找到左边界和右边界。关于单调栈的思路如何得到以及优化具体细节可以查看<a href="https://leetcode-cn.com/problems/largest-rectangle-in-histogram/solution/zhu-zhuang-tu-zhong-zui-da-de-ju-xing-by-leetcode-/">柱状图中最大的矩形 官方题解</a>。</p>
+<p>最大矩形是一道更为困难的题目，但是如果理解了柱状图问题，再看最大矩形就不是很困难了。因为我们可以对矩阵每一行的每一个位置都求出这个位置上方连续的1的个数（包含这个位置本身），这样每一行都形成了一个柱状图，再按照柱状图的解法计算最大矩形面积即可，遍历完矩阵所有行也就得到了全局最大矩形。更多细节在代码中：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">maximalRectangle</span><span class="params">(vector&lt;vector&lt;<span class="type">char</span>&gt;&gt;&amp; matrix)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> m = matrix.<span class="built_in">size</span>(), n = matrix[<span class="number">0</span>].<span class="built_in">size</span>();</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">height</span><span class="params">(n, <span class="number">0</span>)</span></span>;     <span class="comment">//记录每一行每个位置上方连续的1的个数（包含本身）</span></span><br><span class="line">        <span class="type">int</span> ans = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; m; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">left</span><span class="params">(n)</span>, <span class="title">right</span><span class="params">(n, n)</span></span>;	<span class="comment">//每一行遍历开始都要重置right数组的初始值为n</span></span><br><span class="line">            <span class="comment">//计算每个格子上方连续1的个数，形成柱状图</span></span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt; n; ++j)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(i == <span class="number">0</span>)</span><br><span class="line">                &#123;</span><br><span class="line">                    height[j] = matrix[i][j] - <span class="string">&#x27;0&#x27;</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                &#123;</span><br><span class="line">                    height[j] = matrix[i][j] == <span class="string">&#x27;1&#x27;</span> ? height[j] + <span class="number">1</span> : <span class="number">0</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//计算直到当前行的柱状图最大矩形</span></span><br><span class="line">            stack&lt;<span class="type">int</span>&gt; mono;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt; n; ++j)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">while</span>(!mono.<span class="built_in">empty</span>() &amp;&amp; height[mono.<span class="built_in">top</span>()] &gt;= height[j])	<span class="comment">//注意更新右边界的判断条件是&#x27;&gt;=&#x27;</span></span><br><span class="line">                &#123;</span><br><span class="line">                    right[mono.<span class="built_in">top</span>()] = j;</span><br><span class="line">                    mono.<span class="built_in">pop</span>();</span><br><span class="line">                &#125;</span><br><span class="line">                left[j] = mono.<span class="built_in">empty</span>() ? <span class="number">-1</span> : mono.<span class="built_in">top</span>();</span><br><span class="line">                mono.<span class="built_in">push</span>(j);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//更新结果</span></span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt; n; ++j)</span><br><span class="line">            &#123;</span><br><span class="line">                ans = <span class="built_in">max</span>(ans, height[j] * (right[j] - left[j] - <span class="number">1</span>));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+
+
+]]></content>
+      <categories>
+        <category>数据结构与算法</category>
+      </categories>
+      <tags>
+        <tag>数据结构</tag>
+        <tag>C++</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>【计算机图形学】（三）光栅化</title>
+    <url>/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/</url>
+    <content><![CDATA[<h3 id="光栅化（Rasteriztion）"><a href="#光栅化（Rasteriztion）" class="headerlink" title="光栅化（Rasteriztion）"></a>光栅化（Rasteriztion）</h3><p>首先回顾一下MVP变换的过程（之前的文章中没有提到坐标系的概念，这里回顾的时候顺便提一下图形学中的各个坐标系的转换，其实就是之前的各种变换）：</p>
+<ul>
+<li>为了得到从某一个视角看到的物体的样子，我们首先要对相机和物体进行相机变换（View &#x2F; Camera Transformation），将相机的三个方向轴与世界坐标系对齐，并移到坐标原点（这一步是将相机坐标系转换到世界坐标系，或者反着说，将世界坐标系转到相机坐标系，因为相机就是我们的眼睛，是观察物体的坐标系）</li>
+<li>然后对物体做同样的变换以使得相机和物体不发生相对运动</li>
+<li>最后进行投影变换，无论是正交投影还是透视投影，最终物体都被投影到一个单位立方体中（这个过程是从相机坐标系到透视坐标系的过程）</li>
+</ul>
+<p>接下来的问题就是如何将这个投影绘制在屏幕上，形成图形，这个过程就是<strong>光栅化</strong>的过程。</p>
+<p><em><span id="more"></span></em></p>
+<h4 id="1-屏幕的定义"><a href="#1-屏幕的定义" class="headerlink" title="1 屏幕的定义"></a>1 屏幕的定义</h4><p>屏幕可以看作是一个二维矩阵，矩阵中的每一个元素存储的是像素值，屏幕显示图形的过程，就是遍历整个数组，显示对应像素值的过程。这个二维数组的大小也就是常说的分辨率。</p>
+<p>为了简化后面的推导，这里我们把每一个像素简单的抽象成为一个方格，并且这个方格中的颜色是一致的，如下图所示：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/image-20220306172222268.png" alt="image-20220306172222268"></p>
+<p>蓝色像素的坐标是 (2, 1) ，这个像素的中心点的坐标是 (2.5, 1.5) ，也就是像素 (x, y) 的中心点坐标是 (x+0.5, y+0.5) .</p>
+<p>这里的屏幕坐标系原点定义在了左下角，通常计算机中屏幕原点在左上角，这个定义不影响后面的推导。</p>
+<h4 id="2-视口变换"><a href="#2-视口变换" class="headerlink" title="2 视口变换"></a>2 视口变换</h4><p>有了屏幕的定义，我们想要把投影后的立方体显示在屏幕上，接下来要做的一步叫做<strong>视口变换</strong>，也就是将立方体转换到屏幕空间中，只有先转换到屏幕空间中，才能进一步计算屏幕空间中的点（像素）都应该是什么颜色。</p>
+<p>这是一个3D空间到2D空间的转换，因此我们先考虑简化的情况，也就是不考虑Z方向，即不考虑3D空间中的远近、遮挡等关系，先只将XY平面转换到屏幕平面上，这个过程很简单，只要将立方体的XY平面映射到和屏幕一样的比例就可以。也就是把 [-1, 1] 映射到 [0, width] 和 [0, height]上。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/image-20220306173109581.png" alt="image-20220306173109581"></p>
+<p>同时还要进行平移，因为透视坐标系中原点是在 (0,0) 的位置，我们当然希望这个原点在屏幕的中央，而屏幕的左下角是原点，所以需要把透视坐标原点平移(width&#x2F;2, height&#x2F;2).</p>
+<p>这样就完成了从透视坐标系到屏幕坐标系的转换。</p>
+<h4 id="3-光栅化"><a href="#3-光栅化" class="headerlink" title="3 光栅化"></a>3 光栅化</h4><p>在介绍光栅化之前，有必要再次重申一下我们现在在干嘛。</p>
+<p>我们的目标是把一个三维的物体显示在二维的屏幕上，那么我们首先做的就是坐标转换，之前的所有变换都是在做坐标转换，直到视口变换，我们终于完成了从三维坐标到二维坐标的映射；下一步就是计算三维物体顶点的颜色，我们得知道这个三维物体每个部分原来是什么颜色，才能把它显示在二维屏幕上，这个过程会通过UV贴图的颜色，结合光照，透明度等等，计算出模型每个顶点的具体颜色（R, G, B），这里我们先不管；最后就是在二维平面上绘制，所谓绘制也就是把这个二维平面填上颜色，前面说了，屏幕就是存储像素值的二维数组，所以绘制也就是计算每一个像素的颜色，然后屏幕根据这个数组就能显示出三维场景了。</p>
+<p>OK，光栅化就是在屏幕上填充颜色的过程，但是根据什么来填颜色呢，就根据之前计算出来的三维物体上的顶点颜色来填。我们每次从三维物体上取三个点，映射到二维空间，形成一个三角形，这个三角形的颜色取决于三个顶点的颜色，具体有几种取法：</p>
+<ul>
+<li>三个顶点颜色取平均值</li>
+<li>取某一个顶点的颜色</li>
+<li>三个顶点颜色渐变</li>
+</ul>
+<p>使用哪种取法可以根据实际需求来定，不是我们目前讨论的关键。</p>
+<blockquote>
+<p><strong>为什么是三角形？</strong></p>
+<p>因为三角形是最最基本的几何图形，任何多边形都可以拆分成若干三角形，并且三角形有许多优秀的性质，比如对于图形的内外有严格的定义，再比如很好进行插值运算，上面三角形颜色取三个顶点颜色的渐变就是三角形优势的体现之一。</p>
+</blockquote>
+<p>有了这个三角形之后，我们要做的事情就很简单了，判断每一个像素是否在这个三角形内部，如果在内部，就填上三角形的颜色。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/image-20220306180614301.png" alt="image-20220306180614301"></p>
+<p>这个过程其实是一个<strong>采样</strong>的过程，采样这个概念非常重要，简单而不严谨的来说就是定义一个函数，计算每个采样点在这个函数上的值就是采样。这里的函数就是判断一个点 (x, y) 是否在给定的三角形内部，那么如何实现这个函数的功能呢？</p>
+<p>最简单的方法就是<strong>向量叉乘</strong>，如下图所示：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/image-20220306180926083.png" alt="image-20220306180926083"></p>
+<p>对于点 P，计算向量$\vec{AB}$与向量$\vec{AP}$的叉乘，得到的方向朝向屏幕外，这意味着点 P 在 AB 的左边，同理计算向量$\vec{BC}$与向量$\vec{BP}$的叉乘，得到的向量方向也是朝向屏幕外，这意味着点 P 在 BC 的左边，同样计算向量$\vec{CA}$与向量$\vec{CP}$的叉乘，得到的向量方向还是朝向屏幕外，这意味着点 P 在 CA 的左边，于是我们可以判定点 P 在三角形 ABC 的内部。</p>
+<p>如果三个叉乘得到的某一个向量方向朝屏幕内，就说明点 P 在某一条边的右侧，那么点 P 一定在三角形ABC外部。这里给出C++版本代码：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">  Vector3f* _v存储三角形的三个顶点坐标，顶点顺序为逆时针</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="type">static</span> <span class="type">bool</span> <span class="title">insideTriangle</span><span class="params">(<span class="type">int</span> x, <span class="type">int</span> y, <span class="type">const</span> Vector3f* _v)</span></span></span><br><span class="line"><span class="function"></span>&#123;   </span><br><span class="line">    <span class="comment">//用像素中心坐标判断</span></span><br><span class="line">    <span class="function">Vector3f <span class="title">p</span><span class="params">(<span class="type">float</span>(x) + <span class="number">0.5</span>, <span class="type">float</span>(y) + <span class="number">0.5</span>, <span class="number">1</span>)</span></span>;</span><br><span class="line">    <span class="comment">//向量AB和AC叉乘的纵坐标</span></span><br><span class="line">    <span class="type">float</span> signofTrig = (_v[<span class="number">1</span>].<span class="built_in">x</span>() - _v[<span class="number">0</span>].<span class="built_in">x</span>()) * (_v[<span class="number">2</span>].<span class="built_in">y</span>() - _v[<span class="number">0</span>].<span class="built_in">y</span>()) - (_v[<span class="number">1</span>].<span class="built_in">y</span>() - _v[<span class="number">0</span>].<span class="built_in">y</span>()) * (_v[<span class="number">2</span>].<span class="built_in">x</span>() - _v[<span class="number">0</span>].<span class="built_in">x</span>());</span><br><span class="line">    <span class="comment">//向量AB和AP叉乘的纵坐标</span></span><br><span class="line">    <span class="type">float</span> signOfAB = (_v[<span class="number">1</span>].<span class="built_in">x</span>() - _v[<span class="number">0</span>].<span class="built_in">x</span>()) * (p.<span class="built_in">y</span>() - _v[<span class="number">0</span>].<span class="built_in">y</span>()) - (_v[<span class="number">1</span>].<span class="built_in">y</span>() - _v[<span class="number">0</span>].<span class="built_in">y</span>()) * (p.<span class="built_in">x</span>() - _v[<span class="number">0</span>].<span class="built_in">x</span>());</span><br><span class="line">    <span class="comment">//向量CA和CP叉乘的纵坐标</span></span><br><span class="line">    <span class="type">float</span> signOfCA = (_v[<span class="number">0</span>].<span class="built_in">x</span>() - _v[<span class="number">2</span>].<span class="built_in">x</span>()) * (p.<span class="built_in">y</span>() - _v[<span class="number">2</span>].<span class="built_in">y</span>()) - (_v[<span class="number">0</span>].<span class="built_in">y</span>() - _v[<span class="number">2</span>].<span class="built_in">y</span>()) * (p.<span class="built_in">x</span>() - _v[<span class="number">2</span>].<span class="built_in">x</span>());</span><br><span class="line">    <span class="comment">//向量BC和BP叉乘的纵坐标</span></span><br><span class="line">    <span class="type">float</span> signOfBC = (_v[<span class="number">2</span>].<span class="built_in">x</span>() - _v[<span class="number">1</span>].<span class="built_in">x</span>()) * (p.<span class="built_in">y</span>() - _v[<span class="number">2</span>].<span class="built_in">y</span>()) - (_v[<span class="number">2</span>].<span class="built_in">y</span>() - _v[<span class="number">1</span>].<span class="built_in">y</span>()) * (p.<span class="built_in">x</span>() - _v[<span class="number">2</span>].<span class="built_in">x</span>());</span><br><span class="line">    <span class="type">bool</span> d1 = (signOfAB * signofTrig &gt; <span class="number">0</span>);</span><br><span class="line">    <span class="type">bool</span> d2 = (signOfCA * signofTrig &gt; <span class="number">0</span>);</span><br><span class="line">    <span class="type">bool</span> d3 = (signOfBC * signofTrig &gt; <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">return</span> d1 &amp;&amp; d2 &amp;&amp; d3;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>利用这个方法就可以判断任意一个点是否在三角形内部了，当然还可以算出三条边的方程，带入 P 点坐标得到三个值，判断同号异号，本质上和向量叉乘是一样的。</p>
+<blockquote>
+<p>如果一个点在三角形边缘怎么算？</p>
+<p>这个可以根据需求自己规定，而且几乎所有的图形API，比如OpenGL、DirectX都对这种情况有明确的规定，无需担心。</p>
+</blockquote>
+<p>到此我们其实就完成了光栅化的过程。总结一下：</p>
+<ul>
+<li>取三个点构成三角形并计算三角形颜色</li>
+<li>判断屏幕上每一个像素是否在三角形内部，在则上色</li>
+</ul>
+<p>这个过程很简单，但存在许多问题，比如按照上面的流程，我们的代码应该这样写：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/image-20220306182055653.png" alt="image-20220306182055653"></p>
+<p>显然十分暴力，对于下大多数情况来说，我们完全不必遍历所有像素点，使用一个Bounding Box就可以大幅降低时间复杂度：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/image-20220306182158250.png" alt="image-20220306182158250"></p>
+<p>但这还不够，如果三角形非常细长，而且还刚好倾斜45°左右，那么实际上它也只占整个Bounding Box很少一部分，于是我们可以进一步改进：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/image-20220306182343897.png" alt="image-20220306182343897"></p>
+<p>先算出每一行的起点坐标，逐行扫描，遇到不在三角形内部的点就开始扫描下一行。</p>
+<p>现在我们来看一下光栅化之后的结果是什么样的：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/image-20220306182649751.png" alt="image-20220306182649751"></p>
+<p>而我们想得到的样子却是这样：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/image-20220306182717888.png" alt="image-20220306182717888"></p>
+<p>不能说毫无关系，但确实不是一个东西，这是因为我们现在得到的光栅化结果有太多的<strong>锯齿</strong>了，更专业一点的说法就是我们的光栅化过程使得图形<strong>走样（Aliasing）</strong>了，因此我们必须对光栅化的过程进行<strong>抗锯齿</strong>，更准确的说法叫做<strong>反走样</strong>。关于反走样将在下一篇文章中进行详细介绍。</p>
+]]></content>
+      <categories>
+        <category>计算机图形学</category>
+      </categories>
+      <tags>
+        <tag>计算机图形学</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>【动态规划】（一）线性动态规划之单串问题</title>
     <url>/LycTechStack.github.io/2022/03/07/20220307-%E7%BA%BF%E6%80%A7%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92-%E5%8D%95%E4%B8%B2/</url>
     <content><![CDATA[<p>线性动态规划的主要特点是状态的推导是按照问题规模 i 从小到大依次推过去的，较大规模的问题的解依赖较小规模的问题的解。这里问题规模为 i 的含义是考虑前 i 个元素 [0..i] 时问题的解。</p>
@@ -597,6 +597,41 @@
         <tag>C++</tag>
         <tag>算法</tag>
         <tag>动态规划</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>【计算机图形学】（五）深度缓冲</title>
+    <url>/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/</url>
+    <content><![CDATA[<h3 id="深度缓冲（Z-Buffer）"><a href="#深度缓冲（Z-Buffer）" class="headerlink" title="深度缓冲（Z-Buffer）"></a>深度缓冲（Z-Buffer）</h3><p>到上一篇文章为止，我们基本完成了把三维物体画在二维屏幕上的过程，但在这个过程中，还有一个非常重要的问题没有讨论，那就是在光栅化的时候我们之前的推导都没有考虑Z轴，也就是没有考虑三维物体离我们的远近，但是现实生活中我们看一个三维物体或者场景，由于物体离我们眼睛的距离不同，自然会产生遮挡现象。</p>
+<p><em><span id="more"></span></em></p>
+<p>比如一个立方体，在这样的视角下我们是看不到它的左平面、下平面和后平面的，但是在光栅化的过程中，我们依然会取这个立方体左平面上的三个点组成三角形并画在屏幕上，如果不考虑遮挡关系，那画出来的正方体显然和我们看到的就不一样了。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308174826553.png" alt="image-20220308174826553"></p>
+<p>那如何在光栅化过程中考虑这种遮挡关系，并把这种关系正确的画出来呢？这就是这一节要讨论的内容。</p>
+<p>在开始之前，要先明确一个概念，这一节所说的 Z ，并不是物体的 Z 坐标，<strong>而是代表物体离我们的远近，也就是深度，这个深度永远是正数，而且数值越小离我们越近</strong>。因为之前说了相机指向 -Z 方向，所以如果是 Z 坐标的话，离我们越近的反而数值上越大，这不符合我们的直觉。因此需要重新给出这个深度的概念。</p>
+<h4 id="1-画家算法"><a href="#1-画家算法" class="headerlink" title="1 画家算法"></a>1 画家算法</h4><p>画家算法指的是我们像画家画画一样，从远处往近处画，这样近处的画面自然会遮挡住远处的画面，光栅化的时候也可以这样，我们先对三角形的深度排序，然后从远往近画在屏幕上。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308175526241.png" alt="image-20220308175526241"></p>
+<p>但是这样的算法无法解决下面这种情况：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308175553407.png" alt="image-20220308175553407"></p>
+<p>三角形的遮挡关系往往没有那么简单，因此画家算法大多情况下并不适用。</p>
+<h4 id="2-Z-Buffer"><a href="#2-Z-Buffer" class="headerlink" title="2 Z-Buffer"></a>2 Z-Buffer</h4><p>Z-Buffer的思想非常简单，那就是我们在渲染图形时，除了维护frame-buffer（显示在屏幕上的图）外，再维护一个Z-buffer（深度图），<strong>Z-buffer中存储屏幕上每一个像素当前的最小深度</strong>，在光栅化开始时，Z-buffer中每一个像素的深度都设为无穷大，之后渲染三角形的时候，每次都先判断当前渲染的三角形的深度和Z-buffer中当前像素的深度谁更小（谁离我们更近），如果三角形的深度更小，那么就把三角形的颜色存入frame-buffer中这个像素的位置，同时把Z-buffer中当前像素的最小深度更新一次，这样我们总能保证深度小的颜色遮挡深度大的颜色。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308180155386.png" alt="image-20220308180155386"></p>
+<p>Z-buffer和frame-buffer总是同时渲染的，因此当我们生成一张图片的时候，也就生成了这张图片的深度图。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308180255018.png" alt="image-20220308180255018"></p>
+<p>可以看到深度图中越远的地方像素值越大，越近的地方像素值越小。</p>
+<p>Z-buffer的伪代码如下：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308180341613.png" alt="image-20220308180341613"></p>
+<p>相比于画家算法 O(nlogn) ，Z-buffer只需要 O(n) 的时间复杂度。</p>
+<blockquote>
+<p>为什么是O(n)？</p>
+<p>假设每个三角形只覆盖常数个像素，那么Z-buffer做的就是对每一个三角形判断对应的深度，然后填充像素，因此只需要花费 O(1) 时间，那么有n个三角形，复杂度就是O(n).</p>
+</blockquote>
+<p>最后说一下Z-buffer的优势，就是与画三角形的顺序无关，只要维护对了深度信息，画出来的一定是正确是遮挡关系，并且对硬件没有特殊需求，容易实现。</p>
+]]></content>
+      <categories>
+        <category>计算机图形学</category>
+      </categories>
+      <tags>
+        <tag>计算机图形学</tag>
       </tags>
   </entry>
   <entry>
@@ -691,41 +726,6 @@
 </ul>
 <p>下面是这三种着色策略的对比，可以看出，当模型片面不够多时，Flat shading的效果较差，但随着模型复杂度的提升，Flat shading的效果并不差，并且由于不需要插值运算，当模型足够精细时，使用Flat shading是性价比更高的。</p>
 <p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/09/20220309-%E7%9D%80%E8%89%B2/image-20220309192158594.png" alt="image-20220309192158594"></p>
-]]></content>
-      <categories>
-        <category>计算机图形学</category>
-      </categories>
-      <tags>
-        <tag>计算机图形学</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>【计算机图形学】（五）深度缓冲</title>
-    <url>/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/</url>
-    <content><![CDATA[<h3 id="深度缓冲（Z-Buffer）"><a href="#深度缓冲（Z-Buffer）" class="headerlink" title="深度缓冲（Z-Buffer）"></a>深度缓冲（Z-Buffer）</h3><p>到上一篇文章为止，我们基本完成了把三维物体画在二维屏幕上的过程，但在这个过程中，还有一个非常重要的问题没有讨论，那就是在光栅化的时候我们之前的推导都没有考虑Z轴，也就是没有考虑三维物体离我们的远近，但是现实生活中我们看一个三维物体或者场景，由于物体离我们眼睛的距离不同，自然会产生遮挡现象。</p>
-<p><em><span id="more"></span></em></p>
-<p>比如一个立方体，在这样的视角下我们是看不到它的左平面、下平面和后平面的，但是在光栅化的过程中，我们依然会取这个立方体左平面上的三个点组成三角形并画在屏幕上，如果不考虑遮挡关系，那画出来的正方体显然和我们看到的就不一样了。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308174826553.png" alt="image-20220308174826553"></p>
-<p>那如何在光栅化过程中考虑这种遮挡关系，并把这种关系正确的画出来呢？这就是这一节要讨论的内容。</p>
-<p>在开始之前，要先明确一个概念，这一节所说的 Z ，并不是物体的 Z 坐标，<strong>而是代表物体离我们的远近，也就是深度，这个深度永远是正数，而且数值越小离我们越近</strong>。因为之前说了相机指向 -Z 方向，所以如果是 Z 坐标的话，离我们越近的反而数值上越大，这不符合我们的直觉。因此需要重新给出这个深度的概念。</p>
-<h4 id="1-画家算法"><a href="#1-画家算法" class="headerlink" title="1 画家算法"></a>1 画家算法</h4><p>画家算法指的是我们像画家画画一样，从远处往近处画，这样近处的画面自然会遮挡住远处的画面，光栅化的时候也可以这样，我们先对三角形的深度排序，然后从远往近画在屏幕上。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308175526241.png" alt="image-20220308175526241"></p>
-<p>但是这样的算法无法解决下面这种情况：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308175553407.png" alt="image-20220308175553407"></p>
-<p>三角形的遮挡关系往往没有那么简单，因此画家算法大多情况下并不适用。</p>
-<h4 id="2-Z-Buffer"><a href="#2-Z-Buffer" class="headerlink" title="2 Z-Buffer"></a>2 Z-Buffer</h4><p>Z-Buffer的思想非常简单，那就是我们在渲染图形时，除了维护frame-buffer（显示在屏幕上的图）外，再维护一个Z-buffer（深度图），<strong>Z-buffer中存储屏幕上每一个像素当前的最小深度</strong>，在光栅化开始时，Z-buffer中每一个像素的深度都设为无穷大，之后渲染三角形的时候，每次都先判断当前渲染的三角形的深度和Z-buffer中当前像素的深度谁更小（谁离我们更近），如果三角形的深度更小，那么就把三角形的颜色存入frame-buffer中这个像素的位置，同时把Z-buffer中当前像素的最小深度更新一次，这样我们总能保证深度小的颜色遮挡深度大的颜色。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308180155386.png" alt="image-20220308180155386"></p>
-<p>Z-buffer和frame-buffer总是同时渲染的，因此当我们生成一张图片的时候，也就生成了这张图片的深度图。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308180255018.png" alt="image-20220308180255018"></p>
-<p>可以看到深度图中越远的地方像素值越大，越近的地方像素值越小。</p>
-<p>Z-buffer的伪代码如下：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308180341613.png" alt="image-20220308180341613"></p>
-<p>相比于画家算法 O(nlogn) ，Z-buffer只需要 O(n) 的时间复杂度。</p>
-<blockquote>
-<p>为什么是O(n)？</p>
-<p>假设每个三角形只覆盖常数个像素，那么Z-buffer做的就是对每一个三角形判断对应的深度，然后填充像素，因此只需要花费 O(1) 时间，那么有n个三角形，复杂度就是O(n).</p>
-</blockquote>
-<p>最后说一下Z-buffer的优势，就是与画三角形的顺序无关，只要维护对了深度信息，画出来的一定是正确是遮挡关系，并且对硬件没有特殊需求，容易实现。</p>
 ]]></content>
       <categories>
         <category>计算机图形学</category>
@@ -924,6 +924,66 @@
       </categories>
       <tags>
         <tag>计算机图形学</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>【计算机图形学】（十二）辐射度量学基础</title>
+    <url>/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/</url>
+    <content><![CDATA[<h3 id="辐射度量学（Radiometry）"><a href="#辐射度量学（Radiometry）" class="headerlink" title="辐射度量学（Radiometry）"></a>辐射度量学（Radiometry）</h3><p>上一节我们学习了 Whitted 风格光线追踪的基本原理和优化结构，Whitted 风格光线追踪是基于布林冯光照模型的渲染方式，回顾布林冯光照模型，其中有一个概念我们一直不清楚，那就是所有光照公式中的光照强度 $I$ 是如何定义的，光照强度到底是什么，是从哪里来的，又要用什么去衡量？并且上一节中我们也看到了，其实利用 Whitted 风格光线追踪渲染出来的图片并没有想象中那么真实，这是因为我们从头到尾都没有准确的对光照进行度量和描述，所有公式中的光都是抽象的，简化的结果。因此也无法解释上面的一系列问题。</p>
+<p>从这一节开始我们将学习更为先进的路径追踪技术，路径追踪技术是基于辐射度量学的光线追踪算法，而<strong>辐射度量学是可以准确描述光线的空间属性的体系，可以保证在物理上绝对正确的情况下进行各种光照的计算。</strong></p>
+<p><em><span id="more"></span></em></p>
+<p>为了之后更好的学习，这一节首先介绍基础辐射度量学的各种概念和公式，由于许多概念没有太准确的中文翻译，所以这一节中的概念只能在保留英文原词的基础上尽可能的加以说明。</p>
+<h4 id="1-Radiant-Energy-和-Flux（Power）"><a href="#1-Radiant-Energy-和-Flux（Power）" class="headerlink" title="1 Radiant Energy 和 Flux（Power）"></a>1 Radiant Energy 和 Flux（Power）</h4><p>Radiant Energy 简单来说就是指光线的能量，物理上能量的单位是焦耳（J），所以 Radiant Energy 的单位自然也是焦耳。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318150152632.png" alt="image-20220318150152632"></p>
+<p>Radiant Flux 物理上叫做辐射通量，也称为功率（Power），是指单位时间内，放射、反射、折射或者接收到的光的能量，物理上功率的单位一般是瓦特（W），光学中有一个专门的单位<strong>流明（lm）</strong>。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318150419583.png" alt="image-20220318150419583"></p>
+<p>辐射通量还可以理解为一个光源放射出光线，在单位时间内通过一个平面的光线的数量，这样理解更符合”通量“这个概念，但辐射通量（功率）用我们生活上的经验来理解指的其实就是”亮度“，比如我们买灯泡，功率越大肯定就越亮，所以 Radiant Flux 描述的就是光的亮度，<strong>因此功率就代表光的强度。后文中提到的所有光的强度指的都是辐射通量，也就是功率。</strong></p>
+<h4 id="2-Radiant-Intensity"><a href="#2-Radiant-Intensity" class="headerlink" title="2 Radiant Intensity"></a>2 Radiant Intensity</h4><p>之前我们一直不知道如何描述一个点光源向四面八方辐射出的光线的强度，因为我们不知道如何定义空间中任意一个方向。回顾平面中我们是如何定义任意一个方向的：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318151148501.png" alt="image-20220318151148501"></p>
+<p>显然是用角度来定义的，一个单位圆就可以定义平面中任意一个方向，高中知识也告诉我们这个角度等于弧长除以半径，因为整个圆的周长是 $2\pi r$，所以角度最大就是 $2\pi$，单位是弧度（radians）。那这个概念能不能推广到空间中呢？当然可以。</p>
+<p>空间中的一个单位球就可以定义任意一个方向，从圆心向球面投射出一块小的区域 A ，当这个区域足够小的时候这个锥体就指示了一个方向，我们用这个椎体的面积除以球的半径的平方就得到了类似于二维中的角度，我们把这个角度称为<strong>立体角（Solid Angle）</strong>，因为球的表面积是 $4\pi r^2$，所以立体角最大是 $4\pi$，单位是 sr（steradians）.</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318151731669.png" alt="image-20220318151731669"></p>
+<p>Radiant Intensity 就是用来描述<strong>一个点光源放射出的单位立体角上的光的强度</strong>的物理量。<strong>所谓单位立体角，我们永远可以理解为它就是一个方向。</strong>这句话非常关键，对于后面其他概念的理解很有帮助。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318151022165.png" alt="image-20220318151022165"></p>
+<p>根据上面的公式，Radiant Intensity 的单位是（lm &#x2F; sr），有一个专门的名字叫做 candela，candela 也是国际标准单位之一。</p>
+<p>其中微分立体角 $d\omega$ 如何表述呢？可以利用微积分知识得到另一个表达式，考虑空间中的单位球体：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318152452914.png" alt="image-20220318152452914"></p>
+<p>实际上之前定义空间中任意一个方向我们更为熟悉的方式是用角度 $\theta$ 和 $\phi$ 来唯一确定球上任意一个半径方向，也就指示了空间中任意一个方向，其中 $\theta$ 是半径与 Z 轴的夹角， $\phi$ 是半径绕 Z 轴旋转的角度。那么考虑一个单位立体角，假设这个立体角是半径分别在 $\theta$ 和 $\phi$ 方向上移动 $d\theta$ 和 $d\phi$ 角度形成的，于是它对应球面上一个非常小的矩形 $dA$，我们要计算这个矩形的面积就要求出它的两个边长，矩形垂直的边长对应的就是以 $r$ 为半径的圆上的一段圆弧，圆弧对应的角度是 $d\theta$ ，所以矩形的垂直边长就是 $r·d\theta$，同理矩形水平的边长对应的是以 $r·sin\theta$ 为半径的圆上的一段圆弧，圆弧对应的角度是 $d\phi$ ，所以矩形的水平边长就是 $r·sin\theta ·d\phi$，因此可以得到微分矩形的面积：<br>$$<br>\begin{align}<br>dA &amp;&#x3D;(r·d\theta)(r·sin\theta ·d\phi) \<br>&amp;&#x3D;r^2 sin\theta \ d\theta \ d\phi<br>\end{align}<br>$$<br>于是微分立体角就是：<br>$$<br>d\omega &#x3D; \frac{dA}{r^2} &#x3D; sin\theta \ d\theta \ d\phi<br>$$<br>之前说过，因为立体角表示的是整个球面上某一块的面积与半径平方的比值，所以立体角最大就是 $4\pi$，因此在球面上对所有立体角 $\omega$ 积分一定得到的是 $4\pi$，整个球面对 $\omega$ 积分实际上就是对 $\theta$ 在 $[0,\pi]$， $\phi$ 在 $[0,2\pi]$ 上积分，就是一个简单的二重积分：<br>$$<br>\begin{align}<br>\Omega &amp;&#x3D; \int_{S^2} d \omega \<br>&amp;&#x3D;\int_{0}^{2\pi} \int_{0}^{\pi} sin\theta \ d\theta \ d\phi \<br>&amp;&#x3D; 4\pi<br>\end{align}<br>$$<br>现在再回顾 Radiant Intensity 的定义，Radiant Intensity 描述的就是一个点光源朝四面八方辐射出去的光的通量（功率）。如果我们假设一个点光源向各个方向辐射出的强度是相同的，那么每个单位立体角上的强度就是一样的，假设为 $I$，则光源本身的强度 $\Phi$ 相当于每个单位立体角上的强度 $I$ 的积分：<br>$$<br>\begin{align}<br>\Phi &amp;&#x3D; \int_{S^2} I \ d\omega \<br>&amp;&#x3D; 4\pi I<br>\end{align}<br>$$<br>因此每个单位立体角上的强度 $I$ 就是：<br>$$<br>I &#x3D; \frac{\Phi}{4\pi} \ (candelas)<br>$$<br>比如一个 LED 灯泡的功率是 815 流明，那么它的 Radiant Intensity 就是：<br>$$<br>Intensity &#x3D; \frac{815 \ lm}{4\pi \ sr} &#x3D; 65 \ candelas<br>$$</p>
+<h4 id="3-Irradiance"><a href="#3-Irradiance" class="headerlink" title="3 Irradiance"></a>3 Irradiance</h4><p>Intensity 是用来描述一个光源发出的光的强度的物理量，那自然要有一个物理量用来描述一个点接收的光有多少，Irradiance 表示<strong>单位面积入射的光的强度</strong>，单位是 $lm &#x2F; m^2$，也有一个专门的名字叫做 lux。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318160656284.png" alt="image-20220318160656284"></p>
+<p>这里的单位面积指的是<strong>投影单位面积</strong>，我们规定只有光线和这个面垂直，才去计算 Irradiance，因此如果这个面和光线入射方向不垂直，那就把这个面投影到垂直的方向上再计算，实际上这也是之前布林冯光照模型中用到的 Lambert’s 余弦定理的原理。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318161132535.png" alt="image-20220318161132535"></p>
+<p>因此一个表面和入射光的夹角越接近直角，它单位面积接收到的光的能量就越大。</p>
+<p>利用 Irradiance 还可以解释布林冯光照模型中光的强度随距离衰减为什么是 $I&#x2F;r^2$。回顾当时的一张图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318161604597.png" alt="image-20220318161604597"></p>
+<p>现在我们用辐射度量学的角度来理解这张图，如果光源的强度是 $\Phi$，假设光源向四面八方都是均匀辐射的，在光源处有一个单位球面把光源包起来，那么这个球面上每一处的 Irradiance 就是光源的强度除以球的表面积，单位球半径为1，因此：<br>$$<br>E &#x3D; \frac{\Phi}{4\pi}<br>$$<br>而距离光源半径为 $r$ 的球面上每一处的 Irradiance 就是：<br>$$<br>E’ &#x3D; \frac{\Phi}{4\pi r^2} &#x3D; \frac{E}{r^2}<br>$$<br>所以之前说的光的强度随距离衰减实际上是 Irradiance 在随着距离衰减。</p>
+<h4 id="4-Radiance"><a href="#4-Radiance" class="headerlink" title="4 Radiance"></a>4 Radiance</h4><p>到目前为止，我们已经有了描述光源发出的光的强度的物理量 Intensity 和描述单位面积接收到的光的强度的物理量 Irradiance，接下来就是最重要的一个概念——Radiance，Radiance 是用来描述光线的物理量，而我们后续渲染时的所有计算都是基于光线的计算，所以说 Radiance 是最重要的一个概念。</p>
+<p>Radiance 定义为<strong>单位立体角、单位投影面积上发射、反射、折射或入射的光的强度</strong>。单位是 $lm&#x2F;(sr·m^2)$，也有一个专门的名字叫做尼特（nit）。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318162959095.png" alt="image-20220318162959095"></p>
+<p>虽然已经有了心理准备，但这个概念还是太过抽象了。不过我们可以一点一点拆开来看。从上面的公式可以看到，实际上 Radiance 就是单位立体角、单位面积的光的强度。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318163414923.png" alt="image-20220318163414923"></p>
+<p>回顾 Radiant Intensity 的定义，Radiant Intensity 是单位立体角上的光的强度，那么 Radiance 不就是单位面积上的 Radiant Intensity 吗；同理，Irradiance 是单位面积上的光的强度，那么 Radiance 不也可以是单位立体角上的 Irradiance 吗。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318163639208.png" alt="image-20220318163639208"></p>
+<p>现在我们在抽象上好像明白 Radiance 是什么了，接下来分别分析一下这两种说法对应的都是什么物理意义。</p>
+<ul>
+<li>Radiance 相当于单位面积上的 Radiant Intensity，Radiant Intensity 是指一个点光源放射出的单位立体角上的强度，所以Radiance就是<strong>一个光源单位面积上放射出的单位立体角的上的光的强度</strong>。之前说过，单位立体角我们永远可以理解为它就是一个方向，因此上面这句话就可以理解成<strong>一个光源单位面积上放射出的某个方向上的光的强度</strong>。这相当于我们不考虑整个光源向某个方向放射出的能量有多少，而是只考虑光源上的某一个单位平面向某个方向放射出的能量有多少，同样这里的单位面积一定是投影单位面积。因此从这个角度来说，<strong>Radiance 表示的是沿着某个立体角表示的方向 $\omega$ 离开单位平面 dA 的光的强度</strong>。这里的”离开“自然可以代表发射、反射、折射等等。</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318164148266.png" alt="image-20220318164148266"></p>
+<ul>
+<li>Radiance 相当于单位立体角上的 Irradiance，Irradiance 表示单位面积入射的光的强度，单位立体角又表示方向，所以Radiance 就是单位面积在某个方向上入射的光的强度。也就是一个单位平面从四面八方都会接收到光，但 Radiance 只表示这个单位平面接收到的从某个方向 $\omega$ 入射来的光的强度。</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318165844563.png" alt="image-20220318165844563"></p>
+<p>下面的图有助于更进一步理解 Radiance 和 Irradiance 的关系：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318170234173.png" alt="image-20220318170234173"></p>
+<p>Irradiance 是单位平面 $dA$ 从各个方向接收到的全部的光的强度，Radiance 是单位平面 $dA$ 从单位立体角 $d\omega$ 方向接收到的光的强度，因此对 Radiance 在半球面的各个方向 $d\omega$ 上积分，得到的就是各个方向接收到的光的强度的总和，也就是 Irradiance 。</p>
+<p>这样一来我们就可以理解 Radiance 的物理含义了，同时也就明白为什么开头说 Radiance 是表示光线的物理量，因为它既有方向，又有大小。</p>
+]]></content>
+      <categories>
+        <category>计算机图形学</category>
+      </categories>
+      <tags>
+        <tag>计算机图形学</tag>
+        <tag>光线追踪</tag>
       </tags>
   </entry>
   <entry>
@@ -1519,111 +1579,6 @@
       </tags>
   </entry>
   <entry>
-    <title>【动态规划】（四）线性动态规划之矩阵和无串问题</title>
-    <url>/LycTechStack.github.io/2022/03/15/20220315-%E7%BA%BF%E6%80%A7%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92-%E7%9F%A9%E9%98%B5%E5%92%8C%E6%97%A0%E4%B8%B2/</url>
-    <content><![CDATA[<h3 id="1-矩阵问题"><a href="#1-矩阵问题" class="headerlink" title="1 矩阵问题"></a>1 矩阵问题</h3><p>除了数组和字符串外，矩阵也是一种线性结构，很多一维数组或字符串的问题可以推广到二维，因此矩阵上也有一些经典的动态规划问题，矩阵上的动态规划问题，基本的状态设计就是用二维变量 (i, j) 共同表示以 (0, 0) 为左上角，(i, j) 为右下角的子问题。因此矩阵问题的状态定义和双串 $dp[i][j]$ 类似，状态的推导方向以及推导公式与双串相同，但是物理意义不一样，且求解时所需的子问题的变化相对更多。</p>
-<p><em><span id="more"></span></em></p>
-<h4 id="三角形最小路径和"><a href="#三角形最小路径和" class="headerlink" title="三角形最小路径和"></a><a href="https://leetcode-cn.com/problems/triangle/">三角形最小路径和</a></h4><blockquote>
-<p>问题描述：</p>
-<p>给定一个三角形 triangle ，找出自顶向下的最小路径和。</p>
-<p>每一步只能移动到下一行中相邻的结点上。相邻的结点 在这里指的是 下标 与 上一层结点下标 相同或者等于 上一层结点下标 + 1 的两个结点。也就是说，如果正位于当前行的下标 i ，那么下一步可以移动到下一行的下标 i 或 i + 1 。</p>
-</blockquote>
-<p>题目中都写出来状态该如何转移了，这里就不赘述了，主要讲一下优化的思路。先观察正常思路的代码：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">minimumTotal</span><span class="params">(vector&lt;vector&lt;<span class="type">int</span>&gt;&gt;&amp; triangle)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> n = triangle.<span class="built_in">size</span>();</span><br><span class="line">        vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; dp = triangle;</span><br><span class="line">        <span class="type">int</span> ans = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">1</span>; i &lt; n; ++i) </span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt; triangle[i].<span class="built_in">size</span>(); ++j)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(j == i) dp[i][j] += dp[i<span class="number">-1</span>][j<span class="number">-1</span>];</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(j == <span class="number">0</span>) dp[i][j] += dp[i<span class="number">-1</span>][j];</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(j &gt; <span class="number">0</span>) dp[i][j] += <span class="built_in">min</span>(dp[i<span class="number">-1</span>][j], dp[i<span class="number">-1</span>][j<span class="number">-1</span>]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> *<span class="built_in">min_element</span>(dp[n<span class="number">-1</span>].<span class="built_in">begin</span>(), dp[n<span class="number">-1</span>].<span class="built_in">end</span>());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<p>可以看出 $dp[i][j]$ 只与 $dp[i-1][j]$ 和 $dp[i-1][j-1]$ 有关，因此可以利用滚动数组优化，我们只需要一个 n 大小的数组，n是三角形的层数，然后一定需要一个变量记录 $dp[i-1][j-1]$，每次$dp[j]$更新时， $dp[i-1][j]$ 就是当前的更新的位置$dp[j]$，同时需要把没更新之前的$dp[j]$记下来，作为下一次更新时的 $dp[i-1][j-1]$。对于两个特殊位置：每一次层的开头要直接把 $dp[j]$ 记下来作为下一次的$dp[i-1][j-1]$；每一层的结尾不需要记录任何数直接更新即可。优化后的代码：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">minimumTotal</span><span class="params">(vector&lt;vector&lt;<span class="type">int</span>&gt;&gt;&amp; triangle)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> n = triangle.<span class="built_in">size</span>();</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">dp</span><span class="params">(n)</span></span>;</span><br><span class="line">        dp[<span class="number">0</span>] = triangle[<span class="number">0</span>][<span class="number">0</span>];</span><br><span class="line">        <span class="type">int</span> last = dp[<span class="number">0</span>];   <span class="comment">//记录dp[i-1][j-1]</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">1</span>; i &lt; n; ++i) </span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt; triangle[i].<span class="built_in">size</span>(); ++j)</span><br><span class="line">            &#123; </span><br><span class="line">                <span class="keyword">if</span>(j == i)</span><br><span class="line">                &#123;</span><br><span class="line">                    dp[j] = triangle[i][j] + last;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(j == <span class="number">0</span>) </span><br><span class="line">                &#123;</span><br><span class="line">                    last = dp[j];</span><br><span class="line">                    dp[j] = triangle[i][j] + dp[j];</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(j &gt; <span class="number">0</span>)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="type">int</span> temp = dp[j];</span><br><span class="line">                    dp[j] =  triangle[i][j] + <span class="built_in">min</span>(dp[j], last);</span><br><span class="line">                    last = temp;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> *<span class="built_in">min_element</span>(dp.<span class="built_in">begin</span>(), dp.<span class="built_in">end</span>());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<h4 id="下降路径最小和"><a href="#下降路径最小和" class="headerlink" title="下降路径最小和"></a><a href="https://leetcode-cn.com/problems/minimum-falling-path-sum/">下降路径最小和</a></h4><blockquote>
-<p>问题描述：</p>
-<p>给你一个 n x n 的 方形 整数数组 matrix ，请你找出并返回通过 matrix 的下降路径 的 最小和 。</p>
-<p>下降路径 可以从第一行中的任何元素开始，并从每一行中选择一个元素。在下一行选择的元素和当前行所选元素最多相隔一列（即位于正下方或者沿对角线向左或者向右的第一个元素）。具体来说，位置 (row, col) 的下一个元素应当是 (row + 1, col - 1)、(row + 1, col) 或者 (row + 1, col + 1) 。</p>
-</blockquote>
-<p>类似于三角路经最小和，思路不赘述。<a href="https://leetcode-cn.com/problems/minimum-falling-path-sum-ii/">下降路径最小和 II</a>是本题的进阶版本，难度不大，但优化起来比较困难，可以了解。</p>
-<p>优化时的细节：可以申请数组长度为n+2，这样可以免去边界的判断，同时要注意变量的更新顺序。优化后的代码：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">minFallingPathSum</span><span class="params">(vector&lt;vector&lt;<span class="type">int</span>&gt;&gt;&amp; matrix)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> n = matrix.<span class="built_in">size</span>();</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">dp</span><span class="params">(n+<span class="number">2</span>, <span class="number">0</span>)</span></span>;	<span class="comment">//第一层全初始化为0</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//从第二层开始辅助位置都要设为最大值，不能还是0了</span></span><br><span class="line">            <span class="keyword">if</span>(i &gt; <span class="number">1</span>) dp[<span class="number">0</span>] = dp[n+<span class="number">1</span>] = INT_MAX;</span><br><span class="line">            <span class="comment">//每一层起始记录dp[i-1][j-1]、dp[i-1][j]、dp[i-1][j+1]</span></span><br><span class="line">            <span class="type">int</span> left = dp[<span class="number">0</span>], mid = dp[<span class="number">1</span>], right = dp[<span class="number">2</span>];</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">1</span>; j &lt;= n; ++j)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">//之后每次更新，dp[i-1][j+1]就是dp[j+1]</span></span><br><span class="line">                right = dp[j+<span class="number">1</span>];</span><br><span class="line">                <span class="type">int</span> choose = <span class="built_in">min</span>(left, <span class="built_in">min</span>(mid, right));</span><br><span class="line">                dp[j] = matrix[i<span class="number">-1</span>][j<span class="number">-1</span>] + choose;</span><br><span class="line">                <span class="comment">//当前的mid是下一个位置的left，当前的right是下个位置的mid</span></span><br><span class="line">                left = mid;</span><br><span class="line">                mid = right;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//返回时注意不要包含辅助的位置，取中间n个数求最小值</span></span><br><span class="line">        <span class="keyword">return</span> *<span class="built_in">min_element</span>(dp.<span class="built_in">begin</span>()+<span class="number">1</span>, dp.<span class="built_in">end</span>()<span class="number">-1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<h4 id="最小路径和"><a href="#最小路径和" class="headerlink" title="最小路径和"></a><a href="https://leetcode-cn.com/problems/minimum-path-sum/">最小路径和</a></h4><blockquote>
-<p>问题描述：</p>
-<p>给定一个包含非负整数的 <code>m x n</code> 网格 <code>grid</code> ，请找出一条从左上角到右下角的路径，使得路径上的数字总和为最小。</p>
-<p><strong>说明：</strong>每次只能向下或者向右移动一步。</p>
-</blockquote>
-<p>最经典的矩阵动态规划问题，难度不大，直接给出优化后的代码：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">minPathSum</span><span class="params">(vector&lt;vector&lt;<span class="type">int</span>&gt;&gt;&amp; grid)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> m = grid.<span class="built_in">size</span>();</span><br><span class="line">        <span class="type">int</span> n = grid[<span class="number">0</span>].<span class="built_in">size</span>();</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">dp</span><span class="params">(n+<span class="number">1</span>, INT_MAX)</span></span>;</span><br><span class="line">        dp[<span class="number">1</span>] = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">1</span>; i &lt;= m; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">1</span>; j &lt;= n; ++j)</span><br><span class="line">            &#123;</span><br><span class="line">                dp[j] = grid[i<span class="number">-1</span>][j<span class="number">-1</span>] + <span class="built_in">min</span>(dp[j<span class="number">-1</span>], dp[j]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[n];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<h4 id="地下城游戏"><a href="#地下城游戏" class="headerlink" title="地下城游戏"></a><a href="https://leetcode-cn.com/problems/dungeon-game/">地下城游戏</a></h4><blockquote>
-<p>问题描述：</p>
-<p>一些恶魔抓住了公主（P）并将她关在了地下城的右下角。地下城是由 M x N 个房间组成的二维网格。我们英勇的骑士（K）最初被安置在左上角的房间里，他必须穿过地下城并通过对抗恶魔来拯救公主。</p>
-<p>骑士的初始健康点数为一个正整数。如果他的健康点数在某一时刻降至 0 或以下，他会立即死亡。</p>
-<p>有些房间由恶魔守卫，因此骑士在进入这些房间时会失去健康点数（若房间里的值为负整数，则表示骑士将损失健康点数）；其他房间要么是空的（房间里的值为 0），要么包含增加骑士健康点数的魔法球（若房间里的值为正整数，则表示骑士将增加健康点数）。</p>
-<p>为了尽快到达公主，骑士决定每次只向右或向下移动一步。</p>
-<p>编写一个函数来计算确保骑士能够拯救到公主所需的最低初始健康点数。</p>
-</blockquote>
-<p>这是一道非常巧妙的题。按照最小路径和的思路我们定义状态 $dp[i][j]$ 表示从左上角到 $(i,j)$ 所需的最低初始生命，初始值为1，至少要有1点初始生命，之后每到一个格子只要用$dp[i-1][j]$和$dp[i][j-1]$中的最小值减去当前格子的值就可以，这个思路对于一般情况似乎没什么问题，但是如果我们在某一个格子恢复了大量生命，减去当前的格子的值再取最小那么当前格子的状态$dp[i][j]$就会是负数，这不符合我们的状态定义，这说明我们要么状态转移错了，要么状态定义错了。</p>
-<p>显然按照上面的状态定义，我们的状态转移没有问题，但是计算出的值不对，说明我们的状态定义有问题。这是因为在这个问题中我们不止要考虑每一个格子上原问题的解（最低初始生命），还要考虑我们走到这个格子的时候的当前生命值，也就是路径总和，回复大量生命值的时候我们的初始最低生命还是那么多，但是当前生命值增加了，意味着下一个格子我们可能不需要增加初始最低生命就可以到达，但是按照上面的状态定义，我们无法同时考虑初始最低生命和当前生命值，也就无法向下一状态正确传递信息。</p>
-<p>上面的解释比较抽象，下面我们举个例子来说明，就用题目的示例：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/15/20220315-%E7%BA%BF%E6%80%A7%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92-%E7%9F%A9%E9%98%B5%E5%92%8C%E6%97%A0%E4%B8%B2/image-20220314142502341.png" alt="image-20220314142502341"></p>
-<p>如果按照上面的状态定义，当我们到左下角 10 这个格子的时候，这个格子的状态 $dp[2][0] &#x3D; 8 - 10&#x3D;-2$，那么下一次到 30 格子的时候就会变成 -32，最终到达右下角的时候最低初始生命就会是-27，显然是不合理的。正确的情况是到达左下角格子 10 的时候虽然恢复了很多生命值，但是我们想要到达这里也至少还是需要8点初始生命值，那如果直接传递 8 这个状态，到右下角的时候通过-2、-5、10、30这条路径的最低初始生命值就是 8 - (-5) &#x3D; 13，依然是错误的，通过这条路径到达 右下角所需的初始最低生命就应该是8.</p>
-<p>因此这样的状态定义是不对的，无法正确传递有效信息，这是因为有两个同样重要的参数在影响后一步的选择：一个是最低初始生命，一个是当前生命（路径总和），而这不符合动态规划的<strong>无后效性</strong>，因此不能使用这样的状态定义。</p>
-<p>那如果改变一下定义，状态 $dp[i][j]$ 表示从 $(i,j)$ 到右下角所需的最低初始生命，我们从终点往起点推，这时我们的每一步都已经保证能到达终点，也就不需要考虑当前生命值了，只要关注从当前位置到终点的最低初始生命值即可。这时当我们再遇到回复大量生命值的格子，计算出的值是负的，这说明从这个格子到终点的生命值已经足够多了，只要我们在这个格子的时候是活着的（生命值为1）就能到达终点，因此直接将当前各自状态置 1 即可。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">calculateMinimumHP</span><span class="params">(vector&lt;vector&lt;<span class="type">int</span>&gt;&gt;&amp; dungeon)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> n = dungeon.<span class="built_in">size</span>(), m = dungeon[<span class="number">0</span>].<span class="built_in">size</span>();</span><br><span class="line">        vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">dp</span>(n + <span class="number">1</span>, <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(m + <span class="number">1</span>, INT_MAX));</span><br><span class="line">        dp[n][m - <span class="number">1</span>] = dp[n - <span class="number">1</span>][m] = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = n - <span class="number">1</span>; i &gt;= <span class="number">0</span>; --i) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> j = m - <span class="number">1</span>; j &gt;= <span class="number">0</span>; --j) &#123;</span><br><span class="line">                <span class="type">int</span> minn = <span class="built_in">min</span>(dp[i + <span class="number">1</span>][j], dp[i][j + <span class="number">1</span>]);</span><br><span class="line">                dp[i][j] = <span class="built_in">max</span>(minn - dungeon[i][j], <span class="number">1</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[<span class="number">0</span>][<span class="number">0</span>];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>在上一节双串问题中，状态 $dp[i][j]$ 无论表示从 0 到 i 和 j 的状态还是表示从 i 和 j 到 n - 1 的状态，都可以得出答案，但通过这道题我们发现，有时这两种状态定义并不等价，当从前往后推导无法解决问题时，可以试试从后向前推导。</p>
-<h4 id="统计全为-1-的正方形子矩阵"><a href="#统计全为-1-的正方形子矩阵" class="headerlink" title="统计全为 1 的正方形子矩阵"></a><a href="https://leetcode-cn.com/problems/count-square-submatrices-with-all-ones/solution/">统计全为 1 的正方形子矩阵</a></h4><blockquote>
-<p>题目描述：<br>给你一个 <code>m * n</code> 的矩阵，矩阵中的元素不是 <code>0</code> 就是 <code>1</code>，请你统计并返回其中完全由 <code>1</code> 组成的 <strong>正方形</strong> 子矩阵的个数。</p>
-</blockquote>
-<p>我们用 $dp[i][j]$ 表示以 (i, j) 为右下角，且只包含 1 的正方形的边长最大值，假设这个值为 a ，同时这个值也是以 (i, j) 为右下角，且只包含 1 的正方形的个数（边长为1，2，…，a）的正方形各一个。因此算出所有 $dp[i][j]$ 后累加起来就是全部子矩阵个数。</p>
-<p>那么如何计算 $dp[i][j]$ 中的每个元素值呢？对于每个位置 (i, j)，检查在矩阵中该位置的值：</p>
-<ul>
-<li><p>如果该位置的值是 0，则 $dp[i][j]&#x3D;0$，因为当前位置不可能在由 1 组成的正方形中；</p>
-</li>
-<li><p>如果该位置的值是 1，则 $dp[i][j]$ 的值由其上方、左方和左上方的三个相邻位置的 $dp$ 值决定。具体而言，当前位置的元素值等于三个相邻位置的元素中的最小值加 1，状态转移方程如下：<br>$$<br>dp[i][j] &#x3D; min(dp[i][j-1],dp[i-1][j],dp[i-1][j-1])+1<br>$$</p>
-</li>
-</ul>
-<p>关于这个状态转移方程的推导和证明比较复杂，可以参考<a href="https://leetcode-cn.com/problems/count-square-submatrices-with-all-ones/solution/">统计全为 1 的正方形子矩阵官方题解</a>。</p>
-<p>边界条件，如果 i 和 j 中至少有一个为 0，则以位置 (i, j) 为右下角的最大正方形的边长只能是 1。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">countSquares</span><span class="params">(vector&lt;vector&lt;<span class="type">int</span>&gt;&gt;&amp; matrix)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> m = matrix.<span class="built_in">size</span>(), n = matrix[<span class="number">0</span>].<span class="built_in">size</span>();</span><br><span class="line">        vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">f</span>(m, <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(n));</span><br><span class="line">        <span class="type">int</span> ans = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; m; ++i) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">0</span>; j &lt; n; ++j) &#123;</span><br><span class="line">                <span class="keyword">if</span> (i == <span class="number">0</span> || j == <span class="number">0</span>) &#123;</span><br><span class="line">                    f[i][j] = matrix[i][j];</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (matrix[i][j] == <span class="number">0</span>) &#123;</span><br><span class="line">                    f[i][j] = <span class="number">0</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> &#123;</span><br><span class="line">                    f[i][j] = <span class="built_in">min</span>(<span class="built_in">min</span>(f[i][j - <span class="number">1</span>], f[i - <span class="number">1</span>][j]), f[i - <span class="number">1</span>][j - <span class="number">1</span>]) + <span class="number">1</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                ans += f[i][j];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<h4 id="最大正方形"><a href="#最大正方形" class="headerlink" title="最大正方形"></a><a href="https://leetcode-cn.com/problems/maximal-square/">最大正方形</a></h4><blockquote>
-<p>问题描述：</p>
-<p>给你一个 <code>m * n</code> 的矩阵，矩阵中的元素不是 <code>0</code> 就是 <code>1</code>，请你统计并返回其中完全由 <code>1</code> 组成的 <strong>正方形</strong> 的最大面积。</p>
-</blockquote>
-<p>这是上一题的简化版，直接给出代码：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">maximalSquare</span><span class="params">(vector&lt;vector&lt;<span class="type">char</span>&gt;&gt;&amp; matrix)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> m = matrix.<span class="built_in">size</span>(), n = matrix[<span class="number">0</span>].<span class="built_in">size</span>();</span><br><span class="line">        vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">dp</span>(m, <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(n));</span><br><span class="line">        <span class="type">int</span> ans = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; m; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt; n; ++j)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(i == <span class="number">0</span> || j == <span class="number">0</span>)</span><br><span class="line">                &#123;</span><br><span class="line">                    dp[i][j] = matrix[i][j] - <span class="string">&#x27;0&#x27;</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(matrix[i][j] == <span class="string">&#x27;0&#x27;</span>) </span><br><span class="line">                &#123;</span><br><span class="line">                    dp[i][j] = <span class="number">0</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span>&#123;</span><br><span class="line">                    dp[i][j] = <span class="built_in">min</span>(dp[i<span class="number">-1</span>][j<span class="number">-1</span>], <span class="built_in">min</span>(dp[i<span class="number">-1</span>][j], dp[i][j<span class="number">-1</span>])) + <span class="number">1</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                ans = <span class="built_in">max</span>(ans, dp[i][j]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans * ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-无串线性问题"><a href="#2-无串线性问题" class="headerlink" title="2 无串线性问题"></a>2 无串线性问题</h3><p>线性动态规划有一类问题是没有显式的数组或字符串的。但在计算中依然可以分成若干子问题，且有动态规划的三条性质。因此也可以用动态规划来解。</p>
-<h4 id="只有两个键的键盘"><a href="#只有两个键的键盘" class="headerlink" title="只有两个键的键盘"></a><a href="https://leetcode-cn.com/problems/2-keys-keyboard/">只有两个键的键盘</a></h4><p>其实是质因数分解，用动态规划也不难，但需要额外空间。</p>
-<h4 id="丑数-II"><a href="#丑数-II" class="headerlink" title="丑数 II"></a><a href="https://leetcode-cn.com/problems/ugly-number-ii/">丑数 II</a></h4><p>比较奇特的动态规划，很巧妙。也可以用优先队列（堆）去做，但空间复杂度更高</p>
-<h4 id="完全平方数"><a href="#完全平方数" class="headerlink" title="完全平方数"></a><a href="https://leetcode-cn.com/problems/perfect-squares/">完全平方数</a></h4><p>之前用广搜做过，但广搜太暴力，空间复杂度也高，这次试试动态规划，实际上核心思路和广搜一样。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">numSquares</span><span class="params">(<span class="type">int</span> n)</span> </span>&#123;</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">dp</span><span class="params">(n+<span class="number">1</span>, INT_MAX)</span></span>;</span><br><span class="line">        dp[<span class="number">0</span>] = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">1</span>; j * j &lt;= i; ++j)</span><br><span class="line">            &#123;</span><br><span class="line">                dp[i] = <span class="built_in">min</span>(dp[i], dp[i-j*j] + <span class="number">1</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[n];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<h4 id="整数拆分"><a href="#整数拆分" class="headerlink" title="整数拆分"></a><a href="https://leetcode-cn.com/problems/integer-break/">整数拆分</a></h4><p>和完全平方数思路差不多，转移时要考虑的情况稍微复杂一点。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">integerBreak</span><span class="params">(<span class="type">int</span> n)</span> </span>&#123;</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">dp</span><span class="params">(n+<span class="number">1</span>, <span class="number">0</span>)</span></span>;</span><br><span class="line">        dp[<span class="number">1</span>] = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">2</span>; i &lt;= n; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">1</span>; j &lt; i; ++j)</span><br><span class="line">            &#123;</span><br><span class="line">                dp[i] = <span class="built_in">max</span>(dp[i], <span class="built_in">max</span>(dp[j] * (i - j), j * (i - j)));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[n];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<p>当然这是最直观暴力的动态规划做法，还有进一步优化的空间，以及时空复杂度都只需要 O(1) 的数学方法，具体可看<a href="https://leetcode-cn.com/problems/integer-break/solution/zheng-shu-chai-fen-by-leetcode-solution/">官方题解</a>。</p>
-<h3 id="3-线性动态规划总结"><a href="#3-线性动态规划总结" class="headerlink" title="3 线性动态规划总结"></a>3 线性动态规划总结</h3><p>到此为止线性动态规划的几大类就都整理完了，线性动态规划是动态规划中最基础的一类，它的状态一般物理意义很明确，易于分析。在初学动态规划时，通过线性动态规划的大量练习，可以不断加深动态规划的概念理解，例如动态规划中最重要的三个概念：最优子结构，重复子问题，无后效性。下面对动态规划的三个基本概念做个简要回顾，在线性动态规划的题目练习中可以不断地加深理解，之后再学习其它的动态规划类型就会容易很多。</p>
-<ul>
-<li>最优子结构：如果问题的最优解所包含的子问题的解也是最优的，就称该问题具有最优子结构。</li>
-<li>无后效性：即某阶段状态一旦确定，就不受这个状态以后决策的影响。也就是说，某状态以后的过程不会影响以前的状态，只与当前状态有关。</li>
-<li>重复子问题：即子问题之间是不独立的，一个子问题在下一阶段决策中可能被多次使用到。（该性质并不是动态规划适用的必要条件，但是如果没有这条性质，动态规划算法同其他算法相比就不具备优势）<br>线性动态规划是动态规划中变化最多的一类。</li>
-</ul>
-<p>首先线性动态规划针对的问题是最常见的数组，字符串，矩阵等，这三种数据结构本身就是线性的，因此出现这些类型的输入的时候，如果要用到动态规划，首先考虑线性动态规划就很合理了，因此很多问题不论最后正解是不是线性动态规划，都会首先想一下线性动态规划是否可行。</p>
-<p>其次由于大部分问题的数据都是以这三种形式给出的，因此题目的变化会非常多，很多常见的输入形式以及问题都非常经典，都存在经典的状态设计。因此不考虑一些比较 Trick 的解法，仅仅是经典问题的经典状态设计，就比其它种类的动态规划问题多很多了。</p>
-<p>例如单个数组或字符串上设计一维状态，两个数组或字符串上设计两维状态，以及矩阵上设计两维状态等等，同时以上三种情况的状态设计都有可能再加上额外的指标的状态，就是前面例题中的 state，这里面变化就很多了，比如有的题目在 state 这一维上要使用二分，贪心的策略，有的题目需要 DP 状态与数据结构配合来解决问题。</p>
-<p>除此之外还有一类问题没有显式的数组，字符串，但是在求解的时候依然满足前面提到的动态规划三条基本概念，可以用动态规划求解，这种问题通常也是线性动态规划。</p>
-<p>如此多的变化仅仅这几篇中列举的题目是远远不够的，因此还要多见多练多记。</p>
-<p>下一篇开始讨论动态规划另一大类问题：前缀和。</p>
-]]></content>
-      <categories>
-        <category>数据结构与算法</category>
-      </categories>
-      <tags>
-        <tag>C++</tag>
-        <tag>算法</tag>
-        <tag>动态规划</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>【计算机图形学】（十一）Whitted 风格光线追踪</title>
     <url>/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/</url>
     <content><![CDATA[<p>从这一节开始我们将了解图形学中的光线追踪（Ray Tracing）技术，包括经典的 Whitted 风格光线追踪技术和一系列较为先进的前沿光线追踪技术。并且在之后的高质量实时渲染专题中还会进一步学习最新的商业实时光线追踪技术。</p>
@@ -1801,6 +1756,111 @@
       <tags>
         <tag>计算机图形学</tag>
         <tag>光线追踪</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>【动态规划】（四）线性动态规划之矩阵和无串问题</title>
+    <url>/LycTechStack.github.io/2022/03/15/20220315-%E7%BA%BF%E6%80%A7%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92-%E7%9F%A9%E9%98%B5%E5%92%8C%E6%97%A0%E4%B8%B2/</url>
+    <content><![CDATA[<h3 id="1-矩阵问题"><a href="#1-矩阵问题" class="headerlink" title="1 矩阵问题"></a>1 矩阵问题</h3><p>除了数组和字符串外，矩阵也是一种线性结构，很多一维数组或字符串的问题可以推广到二维，因此矩阵上也有一些经典的动态规划问题，矩阵上的动态规划问题，基本的状态设计就是用二维变量 (i, j) 共同表示以 (0, 0) 为左上角，(i, j) 为右下角的子问题。因此矩阵问题的状态定义和双串 $dp[i][j]$ 类似，状态的推导方向以及推导公式与双串相同，但是物理意义不一样，且求解时所需的子问题的变化相对更多。</p>
+<p><em><span id="more"></span></em></p>
+<h4 id="三角形最小路径和"><a href="#三角形最小路径和" class="headerlink" title="三角形最小路径和"></a><a href="https://leetcode-cn.com/problems/triangle/">三角形最小路径和</a></h4><blockquote>
+<p>问题描述：</p>
+<p>给定一个三角形 triangle ，找出自顶向下的最小路径和。</p>
+<p>每一步只能移动到下一行中相邻的结点上。相邻的结点 在这里指的是 下标 与 上一层结点下标 相同或者等于 上一层结点下标 + 1 的两个结点。也就是说，如果正位于当前行的下标 i ，那么下一步可以移动到下一行的下标 i 或 i + 1 。</p>
+</blockquote>
+<p>题目中都写出来状态该如何转移了，这里就不赘述了，主要讲一下优化的思路。先观察正常思路的代码：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">minimumTotal</span><span class="params">(vector&lt;vector&lt;<span class="type">int</span>&gt;&gt;&amp; triangle)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> n = triangle.<span class="built_in">size</span>();</span><br><span class="line">        vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; dp = triangle;</span><br><span class="line">        <span class="type">int</span> ans = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">1</span>; i &lt; n; ++i) </span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt; triangle[i].<span class="built_in">size</span>(); ++j)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(j == i) dp[i][j] += dp[i<span class="number">-1</span>][j<span class="number">-1</span>];</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(j == <span class="number">0</span>) dp[i][j] += dp[i<span class="number">-1</span>][j];</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(j &gt; <span class="number">0</span>) dp[i][j] += <span class="built_in">min</span>(dp[i<span class="number">-1</span>][j], dp[i<span class="number">-1</span>][j<span class="number">-1</span>]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> *<span class="built_in">min_element</span>(dp[n<span class="number">-1</span>].<span class="built_in">begin</span>(), dp[n<span class="number">-1</span>].<span class="built_in">end</span>());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>可以看出 $dp[i][j]$ 只与 $dp[i-1][j]$ 和 $dp[i-1][j-1]$ 有关，因此可以利用滚动数组优化，我们只需要一个 n 大小的数组，n是三角形的层数，然后一定需要一个变量记录 $dp[i-1][j-1]$，每次$dp[j]$更新时， $dp[i-1][j]$ 就是当前的更新的位置$dp[j]$，同时需要把没更新之前的$dp[j]$记下来，作为下一次更新时的 $dp[i-1][j-1]$。对于两个特殊位置：每一次层的开头要直接把 $dp[j]$ 记下来作为下一次的$dp[i-1][j-1]$；每一层的结尾不需要记录任何数直接更新即可。优化后的代码：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">minimumTotal</span><span class="params">(vector&lt;vector&lt;<span class="type">int</span>&gt;&gt;&amp; triangle)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> n = triangle.<span class="built_in">size</span>();</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">dp</span><span class="params">(n)</span></span>;</span><br><span class="line">        dp[<span class="number">0</span>] = triangle[<span class="number">0</span>][<span class="number">0</span>];</span><br><span class="line">        <span class="type">int</span> last = dp[<span class="number">0</span>];   <span class="comment">//记录dp[i-1][j-1]</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">1</span>; i &lt; n; ++i) </span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt; triangle[i].<span class="built_in">size</span>(); ++j)</span><br><span class="line">            &#123; </span><br><span class="line">                <span class="keyword">if</span>(j == i)</span><br><span class="line">                &#123;</span><br><span class="line">                    dp[j] = triangle[i][j] + last;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(j == <span class="number">0</span>) </span><br><span class="line">                &#123;</span><br><span class="line">                    last = dp[j];</span><br><span class="line">                    dp[j] = triangle[i][j] + dp[j];</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(j &gt; <span class="number">0</span>)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="type">int</span> temp = dp[j];</span><br><span class="line">                    dp[j] =  triangle[i][j] + <span class="built_in">min</span>(dp[j], last);</span><br><span class="line">                    last = temp;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> *<span class="built_in">min_element</span>(dp.<span class="built_in">begin</span>(), dp.<span class="built_in">end</span>());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h4 id="下降路径最小和"><a href="#下降路径最小和" class="headerlink" title="下降路径最小和"></a><a href="https://leetcode-cn.com/problems/minimum-falling-path-sum/">下降路径最小和</a></h4><blockquote>
+<p>问题描述：</p>
+<p>给你一个 n x n 的 方形 整数数组 matrix ，请你找出并返回通过 matrix 的下降路径 的 最小和 。</p>
+<p>下降路径 可以从第一行中的任何元素开始，并从每一行中选择一个元素。在下一行选择的元素和当前行所选元素最多相隔一列（即位于正下方或者沿对角线向左或者向右的第一个元素）。具体来说，位置 (row, col) 的下一个元素应当是 (row + 1, col - 1)、(row + 1, col) 或者 (row + 1, col + 1) 。</p>
+</blockquote>
+<p>类似于三角路经最小和，思路不赘述。<a href="https://leetcode-cn.com/problems/minimum-falling-path-sum-ii/">下降路径最小和 II</a>是本题的进阶版本，难度不大，但优化起来比较困难，可以了解。</p>
+<p>优化时的细节：可以申请数组长度为n+2，这样可以免去边界的判断，同时要注意变量的更新顺序。优化后的代码：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">minFallingPathSum</span><span class="params">(vector&lt;vector&lt;<span class="type">int</span>&gt;&gt;&amp; matrix)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> n = matrix.<span class="built_in">size</span>();</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">dp</span><span class="params">(n+<span class="number">2</span>, <span class="number">0</span>)</span></span>;	<span class="comment">//第一层全初始化为0</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//从第二层开始辅助位置都要设为最大值，不能还是0了</span></span><br><span class="line">            <span class="keyword">if</span>(i &gt; <span class="number">1</span>) dp[<span class="number">0</span>] = dp[n+<span class="number">1</span>] = INT_MAX;</span><br><span class="line">            <span class="comment">//每一层起始记录dp[i-1][j-1]、dp[i-1][j]、dp[i-1][j+1]</span></span><br><span class="line">            <span class="type">int</span> left = dp[<span class="number">0</span>], mid = dp[<span class="number">1</span>], right = dp[<span class="number">2</span>];</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">1</span>; j &lt;= n; ++j)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">//之后每次更新，dp[i-1][j+1]就是dp[j+1]</span></span><br><span class="line">                right = dp[j+<span class="number">1</span>];</span><br><span class="line">                <span class="type">int</span> choose = <span class="built_in">min</span>(left, <span class="built_in">min</span>(mid, right));</span><br><span class="line">                dp[j] = matrix[i<span class="number">-1</span>][j<span class="number">-1</span>] + choose;</span><br><span class="line">                <span class="comment">//当前的mid是下一个位置的left，当前的right是下个位置的mid</span></span><br><span class="line">                left = mid;</span><br><span class="line">                mid = right;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//返回时注意不要包含辅助的位置，取中间n个数求最小值</span></span><br><span class="line">        <span class="keyword">return</span> *<span class="built_in">min_element</span>(dp.<span class="built_in">begin</span>()+<span class="number">1</span>, dp.<span class="built_in">end</span>()<span class="number">-1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h4 id="最小路径和"><a href="#最小路径和" class="headerlink" title="最小路径和"></a><a href="https://leetcode-cn.com/problems/minimum-path-sum/">最小路径和</a></h4><blockquote>
+<p>问题描述：</p>
+<p>给定一个包含非负整数的 <code>m x n</code> 网格 <code>grid</code> ，请找出一条从左上角到右下角的路径，使得路径上的数字总和为最小。</p>
+<p><strong>说明：</strong>每次只能向下或者向右移动一步。</p>
+</blockquote>
+<p>最经典的矩阵动态规划问题，难度不大，直接给出优化后的代码：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">minPathSum</span><span class="params">(vector&lt;vector&lt;<span class="type">int</span>&gt;&gt;&amp; grid)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> m = grid.<span class="built_in">size</span>();</span><br><span class="line">        <span class="type">int</span> n = grid[<span class="number">0</span>].<span class="built_in">size</span>();</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">dp</span><span class="params">(n+<span class="number">1</span>, INT_MAX)</span></span>;</span><br><span class="line">        dp[<span class="number">1</span>] = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">1</span>; i &lt;= m; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">1</span>; j &lt;= n; ++j)</span><br><span class="line">            &#123;</span><br><span class="line">                dp[j] = grid[i<span class="number">-1</span>][j<span class="number">-1</span>] + <span class="built_in">min</span>(dp[j<span class="number">-1</span>], dp[j]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[n];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h4 id="地下城游戏"><a href="#地下城游戏" class="headerlink" title="地下城游戏"></a><a href="https://leetcode-cn.com/problems/dungeon-game/">地下城游戏</a></h4><blockquote>
+<p>问题描述：</p>
+<p>一些恶魔抓住了公主（P）并将她关在了地下城的右下角。地下城是由 M x N 个房间组成的二维网格。我们英勇的骑士（K）最初被安置在左上角的房间里，他必须穿过地下城并通过对抗恶魔来拯救公主。</p>
+<p>骑士的初始健康点数为一个正整数。如果他的健康点数在某一时刻降至 0 或以下，他会立即死亡。</p>
+<p>有些房间由恶魔守卫，因此骑士在进入这些房间时会失去健康点数（若房间里的值为负整数，则表示骑士将损失健康点数）；其他房间要么是空的（房间里的值为 0），要么包含增加骑士健康点数的魔法球（若房间里的值为正整数，则表示骑士将增加健康点数）。</p>
+<p>为了尽快到达公主，骑士决定每次只向右或向下移动一步。</p>
+<p>编写一个函数来计算确保骑士能够拯救到公主所需的最低初始健康点数。</p>
+</blockquote>
+<p>这是一道非常巧妙的题。按照最小路径和的思路我们定义状态 $dp[i][j]$ 表示从左上角到 $(i,j)$ 所需的最低初始生命，初始值为1，至少要有1点初始生命，之后每到一个格子只要用$dp[i-1][j]$和$dp[i][j-1]$中的最小值减去当前格子的值就可以，这个思路对于一般情况似乎没什么问题，但是如果我们在某一个格子恢复了大量生命，减去当前的格子的值再取最小那么当前格子的状态$dp[i][j]$就会是负数，这不符合我们的状态定义，这说明我们要么状态转移错了，要么状态定义错了。</p>
+<p>显然按照上面的状态定义，我们的状态转移没有问题，但是计算出的值不对，说明我们的状态定义有问题。这是因为在这个问题中我们不止要考虑每一个格子上原问题的解（最低初始生命），还要考虑我们走到这个格子的时候的当前生命值，也就是路径总和，回复大量生命值的时候我们的初始最低生命还是那么多，但是当前生命值增加了，意味着下一个格子我们可能不需要增加初始最低生命就可以到达，但是按照上面的状态定义，我们无法同时考虑初始最低生命和当前生命值，也就无法向下一状态正确传递信息。</p>
+<p>上面的解释比较抽象，下面我们举个例子来说明，就用题目的示例：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/15/20220315-%E7%BA%BF%E6%80%A7%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92-%E7%9F%A9%E9%98%B5%E5%92%8C%E6%97%A0%E4%B8%B2/image-20220314142502341.png" alt="image-20220314142502341"></p>
+<p>如果按照上面的状态定义，当我们到左下角 10 这个格子的时候，这个格子的状态 $dp[2][0] &#x3D; 8 - 10&#x3D;-2$，那么下一次到 30 格子的时候就会变成 -32，最终到达右下角的时候最低初始生命就会是-27，显然是不合理的。正确的情况是到达左下角格子 10 的时候虽然恢复了很多生命值，但是我们想要到达这里也至少还是需要8点初始生命值，那如果直接传递 8 这个状态，到右下角的时候通过-2、-5、10、30这条路径的最低初始生命值就是 8 - (-5) &#x3D; 13，依然是错误的，通过这条路径到达 右下角所需的初始最低生命就应该是8.</p>
+<p>因此这样的状态定义是不对的，无法正确传递有效信息，这是因为有两个同样重要的参数在影响后一步的选择：一个是最低初始生命，一个是当前生命（路径总和），而这不符合动态规划的<strong>无后效性</strong>，因此不能使用这样的状态定义。</p>
+<p>那如果改变一下定义，状态 $dp[i][j]$ 表示从 $(i,j)$ 到右下角所需的最低初始生命，我们从终点往起点推，这时我们的每一步都已经保证能到达终点，也就不需要考虑当前生命值了，只要关注从当前位置到终点的最低初始生命值即可。这时当我们再遇到回复大量生命值的格子，计算出的值是负的，这说明从这个格子到终点的生命值已经足够多了，只要我们在这个格子的时候是活着的（生命值为1）就能到达终点，因此直接将当前各自状态置 1 即可。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">calculateMinimumHP</span><span class="params">(vector&lt;vector&lt;<span class="type">int</span>&gt;&gt;&amp; dungeon)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> n = dungeon.<span class="built_in">size</span>(), m = dungeon[<span class="number">0</span>].<span class="built_in">size</span>();</span><br><span class="line">        vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">dp</span>(n + <span class="number">1</span>, <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(m + <span class="number">1</span>, INT_MAX));</span><br><span class="line">        dp[n][m - <span class="number">1</span>] = dp[n - <span class="number">1</span>][m] = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = n - <span class="number">1</span>; i &gt;= <span class="number">0</span>; --i) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> j = m - <span class="number">1</span>; j &gt;= <span class="number">0</span>; --j) &#123;</span><br><span class="line">                <span class="type">int</span> minn = <span class="built_in">min</span>(dp[i + <span class="number">1</span>][j], dp[i][j + <span class="number">1</span>]);</span><br><span class="line">                dp[i][j] = <span class="built_in">max</span>(minn - dungeon[i][j], <span class="number">1</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[<span class="number">0</span>][<span class="number">0</span>];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>在上一节双串问题中，状态 $dp[i][j]$ 无论表示从 0 到 i 和 j 的状态还是表示从 i 和 j 到 n - 1 的状态，都可以得出答案，但通过这道题我们发现，有时这两种状态定义并不等价，当从前往后推导无法解决问题时，可以试试从后向前推导。</p>
+<h4 id="统计全为-1-的正方形子矩阵"><a href="#统计全为-1-的正方形子矩阵" class="headerlink" title="统计全为 1 的正方形子矩阵"></a><a href="https://leetcode-cn.com/problems/count-square-submatrices-with-all-ones/solution/">统计全为 1 的正方形子矩阵</a></h4><blockquote>
+<p>题目描述：<br>给你一个 <code>m * n</code> 的矩阵，矩阵中的元素不是 <code>0</code> 就是 <code>1</code>，请你统计并返回其中完全由 <code>1</code> 组成的 <strong>正方形</strong> 子矩阵的个数。</p>
+</blockquote>
+<p>我们用 $dp[i][j]$ 表示以 (i, j) 为右下角，且只包含 1 的正方形的边长最大值，假设这个值为 a ，同时这个值也是以 (i, j) 为右下角，且只包含 1 的正方形的个数（边长为1，2，…，a）的正方形各一个。因此算出所有 $dp[i][j]$ 后累加起来就是全部子矩阵个数。</p>
+<p>那么如何计算 $dp[i][j]$ 中的每个元素值呢？对于每个位置 (i, j)，检查在矩阵中该位置的值：</p>
+<ul>
+<li><p>如果该位置的值是 0，则 $dp[i][j]&#x3D;0$，因为当前位置不可能在由 1 组成的正方形中；</p>
+</li>
+<li><p>如果该位置的值是 1，则 $dp[i][j]$ 的值由其上方、左方和左上方的三个相邻位置的 $dp$ 值决定。具体而言，当前位置的元素值等于三个相邻位置的元素中的最小值加 1，状态转移方程如下：<br>$$<br>dp[i][j] &#x3D; min(dp[i][j-1],dp[i-1][j],dp[i-1][j-1])+1<br>$$</p>
+</li>
+</ul>
+<p>关于这个状态转移方程的推导和证明比较复杂，可以参考<a href="https://leetcode-cn.com/problems/count-square-submatrices-with-all-ones/solution/">统计全为 1 的正方形子矩阵官方题解</a>。</p>
+<p>边界条件，如果 i 和 j 中至少有一个为 0，则以位置 (i, j) 为右下角的最大正方形的边长只能是 1。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">countSquares</span><span class="params">(vector&lt;vector&lt;<span class="type">int</span>&gt;&gt;&amp; matrix)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> m = matrix.<span class="built_in">size</span>(), n = matrix[<span class="number">0</span>].<span class="built_in">size</span>();</span><br><span class="line">        vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">f</span>(m, <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(n));</span><br><span class="line">        <span class="type">int</span> ans = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; m; ++i) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">0</span>; j &lt; n; ++j) &#123;</span><br><span class="line">                <span class="keyword">if</span> (i == <span class="number">0</span> || j == <span class="number">0</span>) &#123;</span><br><span class="line">                    f[i][j] = matrix[i][j];</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (matrix[i][j] == <span class="number">0</span>) &#123;</span><br><span class="line">                    f[i][j] = <span class="number">0</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> &#123;</span><br><span class="line">                    f[i][j] = <span class="built_in">min</span>(<span class="built_in">min</span>(f[i][j - <span class="number">1</span>], f[i - <span class="number">1</span>][j]), f[i - <span class="number">1</span>][j - <span class="number">1</span>]) + <span class="number">1</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                ans += f[i][j];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h4 id="最大正方形"><a href="#最大正方形" class="headerlink" title="最大正方形"></a><a href="https://leetcode-cn.com/problems/maximal-square/">最大正方形</a></h4><blockquote>
+<p>问题描述：</p>
+<p>给你一个 <code>m * n</code> 的矩阵，矩阵中的元素不是 <code>0</code> 就是 <code>1</code>，请你统计并返回其中完全由 <code>1</code> 组成的 <strong>正方形</strong> 的最大面积。</p>
+</blockquote>
+<p>这是上一题的简化版，直接给出代码：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">maximalSquare</span><span class="params">(vector&lt;vector&lt;<span class="type">char</span>&gt;&gt;&amp; matrix)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> m = matrix.<span class="built_in">size</span>(), n = matrix[<span class="number">0</span>].<span class="built_in">size</span>();</span><br><span class="line">        vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">dp</span>(m, <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(n));</span><br><span class="line">        <span class="type">int</span> ans = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; m; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt; n; ++j)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(i == <span class="number">0</span> || j == <span class="number">0</span>)</span><br><span class="line">                &#123;</span><br><span class="line">                    dp[i][j] = matrix[i][j] - <span class="string">&#x27;0&#x27;</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(matrix[i][j] == <span class="string">&#x27;0&#x27;</span>) </span><br><span class="line">                &#123;</span><br><span class="line">                    dp[i][j] = <span class="number">0</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span>&#123;</span><br><span class="line">                    dp[i][j] = <span class="built_in">min</span>(dp[i<span class="number">-1</span>][j<span class="number">-1</span>], <span class="built_in">min</span>(dp[i<span class="number">-1</span>][j], dp[i][j<span class="number">-1</span>])) + <span class="number">1</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                ans = <span class="built_in">max</span>(ans, dp[i][j]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans * ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-无串线性问题"><a href="#2-无串线性问题" class="headerlink" title="2 无串线性问题"></a>2 无串线性问题</h3><p>线性动态规划有一类问题是没有显式的数组或字符串的。但在计算中依然可以分成若干子问题，且有动态规划的三条性质。因此也可以用动态规划来解。</p>
+<h4 id="只有两个键的键盘"><a href="#只有两个键的键盘" class="headerlink" title="只有两个键的键盘"></a><a href="https://leetcode-cn.com/problems/2-keys-keyboard/">只有两个键的键盘</a></h4><p>其实是质因数分解，用动态规划也不难，但需要额外空间。</p>
+<h4 id="丑数-II"><a href="#丑数-II" class="headerlink" title="丑数 II"></a><a href="https://leetcode-cn.com/problems/ugly-number-ii/">丑数 II</a></h4><p>比较奇特的动态规划，很巧妙。也可以用优先队列（堆）去做，但空间复杂度更高</p>
+<h4 id="完全平方数"><a href="#完全平方数" class="headerlink" title="完全平方数"></a><a href="https://leetcode-cn.com/problems/perfect-squares/">完全平方数</a></h4><p>之前用广搜做过，但广搜太暴力，空间复杂度也高，这次试试动态规划，实际上核心思路和广搜一样。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">numSquares</span><span class="params">(<span class="type">int</span> n)</span> </span>&#123;</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">dp</span><span class="params">(n+<span class="number">1</span>, INT_MAX)</span></span>;</span><br><span class="line">        dp[<span class="number">0</span>] = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">1</span>; j * j &lt;= i; ++j)</span><br><span class="line">            &#123;</span><br><span class="line">                dp[i] = <span class="built_in">min</span>(dp[i], dp[i-j*j] + <span class="number">1</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[n];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h4 id="整数拆分"><a href="#整数拆分" class="headerlink" title="整数拆分"></a><a href="https://leetcode-cn.com/problems/integer-break/">整数拆分</a></h4><p>和完全平方数思路差不多，转移时要考虑的情况稍微复杂一点。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">integerBreak</span><span class="params">(<span class="type">int</span> n)</span> </span>&#123;</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">dp</span><span class="params">(n+<span class="number">1</span>, <span class="number">0</span>)</span></span>;</span><br><span class="line">        dp[<span class="number">1</span>] = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">2</span>; i &lt;= n; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">1</span>; j &lt; i; ++j)</span><br><span class="line">            &#123;</span><br><span class="line">                dp[i] = <span class="built_in">max</span>(dp[i], <span class="built_in">max</span>(dp[j] * (i - j), j * (i - j)));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[n];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>当然这是最直观暴力的动态规划做法，还有进一步优化的空间，以及时空复杂度都只需要 O(1) 的数学方法，具体可看<a href="https://leetcode-cn.com/problems/integer-break/solution/zheng-shu-chai-fen-by-leetcode-solution/">官方题解</a>。</p>
+<h3 id="3-线性动态规划总结"><a href="#3-线性动态规划总结" class="headerlink" title="3 线性动态规划总结"></a>3 线性动态规划总结</h3><p>到此为止线性动态规划的几大类就都整理完了，线性动态规划是动态规划中最基础的一类，它的状态一般物理意义很明确，易于分析。在初学动态规划时，通过线性动态规划的大量练习，可以不断加深动态规划的概念理解，例如动态规划中最重要的三个概念：最优子结构，重复子问题，无后效性。下面对动态规划的三个基本概念做个简要回顾，在线性动态规划的题目练习中可以不断地加深理解，之后再学习其它的动态规划类型就会容易很多。</p>
+<ul>
+<li>最优子结构：如果问题的最优解所包含的子问题的解也是最优的，就称该问题具有最优子结构。</li>
+<li>无后效性：即某阶段状态一旦确定，就不受这个状态以后决策的影响。也就是说，某状态以后的过程不会影响以前的状态，只与当前状态有关。</li>
+<li>重复子问题：即子问题之间是不独立的，一个子问题在下一阶段决策中可能被多次使用到。（该性质并不是动态规划适用的必要条件，但是如果没有这条性质，动态规划算法同其他算法相比就不具备优势）<br>线性动态规划是动态规划中变化最多的一类。</li>
+</ul>
+<p>首先线性动态规划针对的问题是最常见的数组，字符串，矩阵等，这三种数据结构本身就是线性的，因此出现这些类型的输入的时候，如果要用到动态规划，首先考虑线性动态规划就很合理了，因此很多问题不论最后正解是不是线性动态规划，都会首先想一下线性动态规划是否可行。</p>
+<p>其次由于大部分问题的数据都是以这三种形式给出的，因此题目的变化会非常多，很多常见的输入形式以及问题都非常经典，都存在经典的状态设计。因此不考虑一些比较 Trick 的解法，仅仅是经典问题的经典状态设计，就比其它种类的动态规划问题多很多了。</p>
+<p>例如单个数组或字符串上设计一维状态，两个数组或字符串上设计两维状态，以及矩阵上设计两维状态等等，同时以上三种情况的状态设计都有可能再加上额外的指标的状态，就是前面例题中的 state，这里面变化就很多了，比如有的题目在 state 这一维上要使用二分，贪心的策略，有的题目需要 DP 状态与数据结构配合来解决问题。</p>
+<p>除此之外还有一类问题没有显式的数组，字符串，但是在求解的时候依然满足前面提到的动态规划三条基本概念，可以用动态规划求解，这种问题通常也是线性动态规划。</p>
+<p>如此多的变化仅仅这几篇中列举的题目是远远不够的，因此还要多见多练多记。</p>
+<p>下一篇开始讨论动态规划另一大类问题：前缀和。</p>
+]]></content>
+      <categories>
+        <category>数据结构与算法</category>
+      </categories>
+      <tags>
+        <tag>C++</tag>
+        <tag>算法</tag>
+        <tag>动态规划</tag>
       </tags>
   </entry>
 </search>
