@@ -45,7 +45,7 @@
 <meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318165844563.png">
 <meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318170234173.png">
 <meta property="article:published_time" content="2022-03-18T09:28:07.000Z">
-<meta property="article:modified_time" content="2022-03-18T10:18:46.947Z">
+<meta property="article:modified_time" content="2022-03-18T10:23:47.435Z">
 <meta property="article:author" content="Lyc">
 <meta property="article:tag" content="计算机图形学">
 <meta property="article:tag" content="光线追踪">
@@ -240,7 +240,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2022-03-18 17:28:07 / 修改时间：18:18:46" itemprop="dateCreated datePublished" datetime="2022-03-18T17:28:07+08:00">2022-03-18</time>
+              <time title="创建时间：2022-03-18 17:28:07 / 修改时间：18:23:47" itemprop="dateCreated datePublished" datetime="2022-03-18T17:28:07+08:00">2022-03-18</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -303,7 +303,7 @@
 <p>根据上面的公式，Radiant Intensity 的单位是（lm &#x2F; sr），有一个专门的名字叫做 candela，candela 也是国际标准单位之一。</p>
 <p>其中微分立体角 $d\omega$ 如何表述呢？可以利用微积分知识得到另一个表达式，考虑空间中的单位球体：</p>
 <p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318152452914.png" alt="image-20220318152452914"></p>
-<p>实际上之前定义空间中任意一个方向我们更为熟悉的方式是用角度 $\theta$ 和 $\phi$ 来唯一确定球上任意一个半径方向，也就指示了空间中任意一个方向，其中 $\theta$ 是半径与 Z 轴的夹角， $\phi$ 是半径绕 Z 轴旋转的角度。那么考虑一个单位立体角，假设这个立体角是半径分别在 $\theta$ 和 $\phi$ 方向上移动 $d\theta$ 和 $d\phi$ 角度形成的，于是它对应球面上一个非常小的矩形 $dA$，我们要计算这个矩形的面积就要求出它的两个边长，矩形垂直的边长对应的就是以 $r$ 为半径的圆上的一段圆弧，圆弧对应的角度是 $d\theta$ ，所以矩形的垂直边长就是 $r·d\theta$，同理矩形水平的边长对应的是以 $r·sin\theta$ 为半径的圆上的一段圆弧，圆弧对应的角度是 $d\phi$ ，所以矩形的水平边长就是 $r·sin\theta ·d\phi$，因此可以得到微分矩形的面积：<br>$$<br>\begin{split}<br>dA &amp;&#x3D;(r·d\theta)(r·sin\theta ·d\phi) \<br>&amp;&#x3D; r^&amp;2 sin\theta \ d\theta \ d\phi<br>\end{split}<br>$$<br>于是微分立体角就是：<br>$$<br>d\omega &#x3D; \frac{dA}{r^2} &#x3D; sin\theta \ d\theta \ d\phi<br>$$<br>之前说过，因为立体角表示的是整个球面上某一块的面积与半径平方的比值，所以立体角最大就是 $4\pi$，因此在球面上对所有立体角 $\omega$ 积分一定得到的是 $4\pi$，整个球面对 $\omega$ 积分实际上就是对 $\theta$ 在 $[0,\pi]$， $\phi$ 在 $[0,2\pi]$ 上积分，就是一个简单的二重积分：<br>$$<br>\begin{align}<br>\Omega &amp;&#x3D; \int_{S^2} d \omega \<br>&amp;&#x3D;\int_{0}^{2\pi} \int_{0}^{\pi} sin\theta \ d\theta \ d\phi \<br>&amp;&#x3D; 4\pi<br>\end{align}<br>$$<br>现在再回顾 Radiant Intensity 的定义，Radiant Intensity 描述的就是一个点光源朝四面八方辐射出去的光的通量（功率）。如果我们假设一个点光源向各个方向辐射出的强度是相同的，那么每个单位立体角上的强度就是一样的，假设为 $I$，则光源本身的强度 $\Phi$ 相当于每个单位立体角上的强度 $I$ 的积分：<br>$$<br>\begin{align}<br>\Phi &amp;&#x3D; \int_{S^2} I \ d\omega \<br>&amp;&#x3D; 4\pi I<br>\end{align}<br>$$<br>因此每个单位立体角上的强度 $I$ 就是：<br>$$<br>I &#x3D; \frac{\Phi}{4\pi} \ (candelas)<br>$$<br>比如一个 LED 灯泡的功率是 815 流明，那么它的 Radiant Intensity 就是：<br>$$<br>Intensity &#x3D; \frac{815 \ lm}{4\pi \ sr} &#x3D; 65 \ candelas<br>$$</p>
+<p>实际上之前定义空间中任意一个方向我们更为熟悉的方式是用角度 $\theta$ 和 $\phi$ 来唯一确定球上任意一个半径方向，也就指示了空间中任意一个方向，其中 $\theta$ 是半径与 Z 轴的夹角， $\phi$ 是半径绕 Z 轴旋转的角度。那么考虑一个单位立体角，假设这个立体角是半径分别在 $\theta$ 和 $\phi$ 方向上移动 $d\theta$ 和 $d\phi$ 角度形成的，于是它对应球面上一个非常小的矩形 $dA$，我们要计算这个矩形的面积就要求出它的两个边长，矩形垂直的边长对应的就是以 $r$ 为半径的圆上的一段圆弧，圆弧对应的角度是 $d\theta$ ，所以矩形的垂直边长就是 $r·d\theta$，同理矩形水平的边长对应的是以 $r·sin\theta$ 为半径的圆上的一段圆弧，圆弧对应的角度是 $d\phi$ ，所以矩形的水平边长就是 $r·sin\theta ·d\phi$，因此可以得到微分矩形的面积：<br>$$<br>\begin{split}<br>dA &amp;&#x3D; (r·d\theta)(r·sin\theta ·d\phi) \<br>&amp;&#x3D; r^2 sin\theta \ d\theta \ d\phi<br>\end{split}<br>$$<br>于是微分立体角就是：<br>$$<br>d\omega &#x3D; \frac{dA}{r^2} &#x3D; sin\theta \ d\theta \ d\phi<br>$$<br>之前说过，因为立体角表示的是整个球面上某一块的面积与半径平方的比值，所以立体角最大就是 $4\pi$，因此在球面上对所有立体角 $\omega$ 积分一定得到的是 $4\pi$，整个球面对 $\omega$ 积分实际上就是对 $\theta$ 在 $[0,\pi]$， $\phi$ 在 $[0,2\pi]$ 上积分，就是一个简单的二重积分：<br>$$<br>\begin{split}<br>\Omega &amp;&#x3D; \int_{S^2} d \omega \<br>&amp;&#x3D;\int_{0}^{2\pi} \int_{0}^{\pi} sin\theta \ d\theta \ d\phi \<br>&amp;&#x3D; 4\pi<br>\end{split}<br>$$<br>现在再回顾 Radiant Intensity 的定义，Radiant Intensity 描述的就是一个点光源朝四面八方辐射出去的光的通量（功率）。如果我们假设一个点光源向各个方向辐射出的强度是相同的，那么每个单位立体角上的强度就是一样的，假设为 $I$，则光源本身的强度 $\Phi$ 相当于每个单位立体角上的强度 $I$ 的积分：<br>$$<br>\begin{split}<br>\Phi &amp;&#x3D; \int_{S^2} I \ d\omega \<br>&amp;&#x3D; 4\pi I<br>\end{split}<br>$$<br>因此每个单位立体角上的强度 $I$ 就是：<br>$$<br>I &#x3D; \frac{\Phi}{4\pi} \ (candelas)<br>$$<br>比如一个 LED 灯泡的功率是 815 流明，那么它的 Radiant Intensity 就是：<br>$$<br>Intensity &#x3D; \frac{815 \ lm}{4\pi \ sr} &#x3D; 65 \ candelas<br>$$</p>
 <h4 id="3-Irradiance"><a href="#3-Irradiance" class="headerlink" title="3 Irradiance"></a>3 Irradiance</h4><p>Intensity 是用来描述一个光源发出的光的强度的物理量，那自然要有一个物理量用来描述一个点接收的光有多少，Irradiance 表示<strong>单位面积入射的光的强度</strong>，单位是 $lm &#x2F; m^2$，也有一个专门的名字叫做 lux。</p>
 <p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318160656284.png" alt="image-20220318160656284"></p>
 <p>这里的单位面积指的是<strong>投影单位面积</strong>，我们规定只有光线和这个面垂直，才去计算 Irradiance，因此如果这个面和光线入射方向不垂直，那就把这个面投影到垂直的方向上再计算，实际上这也是之前布林冯光照模型中用到的 Lambert’s 余弦定理的原理。</p>
@@ -391,10 +391,10 @@
       <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\03\20200303-旋转与四元数\" rel="bookmark">【计算机图形学】（二）旋转与四元数</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\06\20220306-光栅化\" rel="bookmark">【计算机图形学】（三）光栅化</a></div>
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\06\20220306-反走样\" rel="bookmark">【计算机图形学】（四）反走样</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\06\20220306-反走样\" rel="bookmark">【计算机图形学】（四）反走样</a></div>
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\06\20220306-光栅化\" rel="bookmark">【计算机图形学】（三）光栅化</a></div>
     </li>
   </ul>
 
