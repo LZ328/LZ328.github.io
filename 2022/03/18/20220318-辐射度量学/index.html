@@ -29,28 +29,28 @@
 <meta property="og:site_name" content="LycTechStack">
 <meta property="og:description" content="辐射度量学（Radiometry）上一节我们学习了 Whitted 风格光线追踪的基本原理和优化结构，Whitted 风格光线追踪是基于布林冯光照模型的渲染方式，回顾布林冯光照模型，其中有一个概念我们一直不清楚，那就是所有光照公式中的光照强度 $I$ 是如何定义的，光照强度到底是什么，是从哪里来的，又要用什么去衡量？并且上一节中我们也看到了，其实利用 Whitted 风格光线追踪渲染出来的图片并没">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220318150152632.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220318150419583.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220318151148501.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220318151731669.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220318151022165.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220318152452914.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220318160656284.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220318161132535.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220318161604597.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220318162959095.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220318163414923.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220318163639208.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220318164148266.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220318165844563.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220318170234173.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318150152632.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318150419583.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318151148501.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318151731669.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318151022165.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318152452914.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318160656284.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318161132535.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318161604597.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318162959095.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318163414923.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318163639208.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318164148266.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318165844563.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318170234173.png">
 <meta property="article:published_time" content="2022-03-18T09:28:07.000Z">
 <meta property="article:modified_time" content="2022-03-19T07:20:27.112Z">
 <meta property="article:author" content="Lyc">
 <meta property="article:tag" content="计算机图形学">
 <meta property="article:tag" content="光线追踪">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220318150152632.png">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318150152632.png">
 
 <link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/">
 
@@ -271,7 +271,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>4.4k</span>
+              <span>4.5k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -295,72 +295,47 @@
 <p><em><span id="more"></span></em></p>
 <p>为了之后更好的学习，这一节首先介绍基础辐射度量学的各种概念和公式，由于许多概念没有太准确的中文翻译，所以这一节中的概念只能在保留英文原词的基础上尽可能的加以说明。</p>
 <h4 id="1-Radiant-Energy-和-Flux（Power）"><a href="#1-Radiant-Energy-和-Flux（Power）" class="headerlink" title="1 Radiant Energy 和 Flux（Power）"></a>1 Radiant Energy 和 Flux（Power）</h4><p>Radiant Energy 简单来说就是指光线的能量，物理上能量的单位是焦耳（J），所以 Radiant Energy 的单位自然也是焦耳。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220318150152632.png" alt="image-20220318150152632"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318150152632.png" alt="image-20220318150152632"></p>
 <p>Radiant Flux 物理上叫做辐射通量，也称为功率（Power），是指单位时间内，放射、反射、折射或者接收到的光的能量，物理上功率的单位一般是瓦特（W），光学中有一个专门的单位<strong>流明（lm）</strong>。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220318150419583.png" alt="image-20220318150419583"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318150419583.png" alt="image-20220318150419583"></p>
 <p>辐射通量还可以理解为一个光源放射出光线，在单位时间内通过一个平面的光线的数量，这样理解更符合”通量“这个概念，但辐射通量（功率）用我们生活上的经验来理解指的其实就是”亮度“，比如我们买灯泡，功率越大肯定就越亮，所以 Radiant Flux 描述的就是光的亮度，<strong>因此功率就代表光的强度。后文中提到的所有光的强度指的都是辐射通量，也就是功率。</strong></p>
 <h4 id="2-Radiant-Intensity"><a href="#2-Radiant-Intensity" class="headerlink" title="2 Radiant Intensity"></a>2 Radiant Intensity</h4><p>之前我们一直不知道如何描述一个点光源向四面八方辐射出的光线的强度，因为我们不知道如何定义空间中任意一个方向。回顾平面中我们是如何定义任意一个方向的：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220318151148501.png" alt="image-20220318151148501"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318151148501.png" alt="image-20220318151148501"></p>
 <p>显然是用角度来定义的，一个单位圆就可以定义平面中任意一个方向，高中知识也告诉我们这个角度等于弧长除以半径，因为整个圆的周长是 $2\pi r$，所以角度最大就是 $2\pi$，单位是弧度（radians）。那这个概念能不能推广到空间中呢？当然可以。</p>
 <p>空间中的一个单位球就可以定义任意一个方向，从圆心向球面投射出一块小的区域 A ，当这个区域足够小的时候这个锥体就指示了一个方向，我们用这个椎体的面积除以球的半径的平方就得到了类似于二维中的角度，我们把这个角度称为<strong>立体角（Solid Angle）</strong>，因为球的表面积是 $4\pi r^2$，所以立体角最大是 $4\pi$，单位是 sr（steradians）.</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220318151731669.png" alt="image-20220318151731669"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318151731669.png" alt="image-20220318151731669"></p>
 <p>Radiant Intensity 就是用来描述<strong>一个点光源放射出的单位立体角上的光的强度</strong>的物理量。<strong>所谓单位立体角，我们永远可以理解为它就是一个方向。</strong>这句话非常关键，对于后面其他概念的理解很有帮助。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220318151022165.png" alt="image-20220318151022165"></p>
-<p>根据上面的公式，Radiant Intensity 的单位是（lm / sr），有一个专门的名字叫做 candela，candela 也是国际标准单位之一。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318151022165.png" alt="image-20220318151022165"></p>
+<p>根据上面的公式，Radiant Intensity 的单位是（lm &#x2F; sr），有一个专门的名字叫做 candela，candela 也是国际标准单位之一。</p>
 <p>其中微分立体角 $d\omega$ 如何表述呢？可以利用微积分知识得到另一个表达式，考虑空间中的单位球体：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220318152452914.png" alt="image-20220318152452914"></p>
-<p>实际上之前定义空间中任意一个方向我们更为熟悉的方式是用角度 $\theta$ 和 $\phi$ 来唯一确定球上任意一个半径方向，也就指示了空间中任意一个方向，其中 $\theta$ 是半径与 Z 轴的夹角， $\phi$ 是半径绕 Z 轴旋转的角度。那么考虑一个单位立体角，假设这个立体角是半径分别在 $\theta$ 和 $\phi$ 方向上移动 $d\theta$ 和 $d\phi$ 角度形成的，于是它对应球面上一个非常小的矩形 $dA$，我们要计算这个矩形的面积就要求出它的两个边长，矩形垂直的边长对应的就是以 $r$ 为半径的圆上的一段圆弧，圆弧对应的角度是 $d\theta$ ，所以矩形的垂直边长就是 $r·d\theta$，同理矩形水平的边长对应的是以 $r·sin\theta$ 为半径的圆上的一段圆弧，圆弧对应的角度是 $d\phi$ ，所以矩形的水平边长就是 $r·sin\theta ·d\phi$，因此可以得到微分矩形的面积：</p>
-<script type="math/tex; mode=display">
-\begin{split}
-dA &= (r·d\theta)(r·sin\theta ·d\phi) \\\\
-&= r^2 sin\theta \ d\theta \ d\phi
-\end{split}</script><p>于是微分立体角就是：</p>
-<script type="math/tex; mode=display">
-d\omega = \frac{dA}{r^2} = sin\theta \ d\theta \ d\phi</script><p>之前说过，因为立体角表示的是整个球面上某一块的面积与半径平方的比值，所以立体角最大就是 $4\pi$，因此在球面上对所有立体角 $\omega$ 积分一定得到的是 $4\pi$，整个球面对 $\omega$ 积分实际上就是对 $\theta$ 在 $[0,\pi]$， $\phi$ 在 $[0,2\pi]$ 上积分，就是一个简单的二重积分：</p>
-<script type="math/tex; mode=display">
-\begin{split}
-\Omega &= \int_{S^2} d \omega \\\\
-&=\int_{0}^{2\pi} \int_{0}^{\pi} sin\theta \ d\theta \ d\phi \\\\
-&= 4\pi
-\end{split}</script><p>现在再回顾 Radiant Intensity 的定义，Radiant Intensity 描述的就是一个点光源朝四面八方辐射出去的光的通量（功率）。如果我们假设一个点光源向各个方向辐射出的强度是相同的，那么每个单位立体角上的强度就是一样的，假设为 $I$，则光源本身的强度 $\Phi$ 相当于每个单位立体角上的强度 $I$ 的积分：</p>
-<script type="math/tex; mode=display">
-\begin{split}
-\Phi &= \int_{S^2} I \ d\omega \\
-&= 4\pi I
-\end{split}</script><p>因此每个单位立体角上的强度 $I$ 就是：</p>
-<script type="math/tex; mode=display">
-I = \frac{\Phi}{4\pi} \ (candelas)</script><p>比如一个 LED 灯泡的功率是 815 流明，那么它的 Radiant Intensity 就是：</p>
-<script type="math/tex; mode=display">
-Intensity = \frac{815 \ lm}{4\pi \ sr} = 65 \ candelas</script><h4 id="3-Irradiance"><a href="#3-Irradiance" class="headerlink" title="3 Irradiance"></a>3 Irradiance</h4><p>Intensity 是用来描述一个光源发出的光的强度的物理量，那自然要有一个物理量用来描述一个点接收的光有多少，Irradiance 表示<strong>单位面积入射的光的强度</strong>，单位是 $lm / m^2$，也有一个专门的名字叫做 lux。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220318160656284.png" alt="image-20220318160656284"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318152452914.png" alt="image-20220318152452914"></p>
+<p>实际上之前定义空间中任意一个方向我们更为熟悉的方式是用角度 $\theta$ 和 $\phi$ 来唯一确定球上任意一个半径方向，也就指示了空间中任意一个方向，其中 $\theta$ 是半径与 Z 轴的夹角， $\phi$ 是半径绕 Z 轴旋转的角度。那么考虑一个单位立体角，假设这个立体角是半径分别在 $\theta$ 和 $\phi$ 方向上移动 $d\theta$ 和 $d\phi$ 角度形成的，于是它对应球面上一个非常小的矩形 $dA$，我们要计算这个矩形的面积就要求出它的两个边长，矩形垂直的边长对应的就是以 $r$ 为半径的圆上的一段圆弧，圆弧对应的角度是 $d\theta$ ，所以矩形的垂直边长就是 $r·d\theta$，同理矩形水平的边长对应的是以 $r·sin\theta$ 为半径的圆上的一段圆弧，圆弧对应的角度是 $d\phi$ ，所以矩形的水平边长就是 $r·sin\theta ·d\phi$，因此可以得到微分矩形的面积：<br>$$<br>\begin{split}<br>dA &amp;&#x3D; (r·d\theta)(r·sin\theta ·d\phi) \\<br>&amp;&#x3D; r^2 sin\theta \ d\theta \ d\phi<br>\end{split}<br>$$<br>于是微分立体角就是：<br>$$<br>d\omega &#x3D; \frac{dA}{r^2} &#x3D; sin\theta \ d\theta \ d\phi<br>$$<br>之前说过，因为立体角表示的是整个球面上某一块的面积与半径平方的比值，所以立体角最大就是 $4\pi$，因此在球面上对所有立体角 $\omega$ 积分一定得到的是 $4\pi$，整个球面对 $\omega$ 积分实际上就是对 $\theta$ 在 $[0,\pi]$， $\phi$ 在 $[0,2\pi]$ 上积分，就是一个简单的二重积分：<br>$$<br>\begin{split}<br>\Omega &amp;&#x3D; \int_{S^2} d \omega \\<br>&amp;&#x3D;\int_{0}^{2\pi} \int_{0}^{\pi} sin\theta \ d\theta \ d\phi \\<br>&amp;&#x3D; 4\pi<br>\end{split}<br>$$<br>现在再回顾 Radiant Intensity 的定义，Radiant Intensity 描述的就是一个点光源朝四面八方辐射出去的光的通量（功率）。如果我们假设一个点光源向各个方向辐射出的强度是相同的，那么每个单位立体角上的强度就是一样的，假设为 $I$，则光源本身的强度 $\Phi$ 相当于每个单位立体角上的强度 $I$ 的积分：<br>$$<br>\begin{split}<br>\Phi &amp;&#x3D; \int_{S^2} I \ d\omega \<br>&amp;&#x3D; 4\pi I<br>\end{split}<br>$$<br>因此每个单位立体角上的强度 $I$ 就是：<br>$$<br>I &#x3D; \frac{\Phi}{4\pi} \ (candelas)<br>$$<br>比如一个 LED 灯泡的功率是 815 流明，那么它的 Radiant Intensity 就是：<br>$$<br>Intensity &#x3D; \frac{815 \ lm}{4\pi \ sr} &#x3D; 65 \ candelas<br>$$</p>
+<h4 id="3-Irradiance"><a href="#3-Irradiance" class="headerlink" title="3 Irradiance"></a>3 Irradiance</h4><p>Intensity 是用来描述一个光源发出的光的强度的物理量，那自然要有一个物理量用来描述一个点接收的光有多少，Irradiance 表示<strong>单位面积入射的光的强度</strong>，单位是 $lm &#x2F; m^2$，也有一个专门的名字叫做 lux。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318160656284.png" alt="image-20220318160656284"></p>
 <p>这里的单位面积指的是<strong>投影单位面积</strong>，我们规定只有光线和这个面垂直，才去计算 Irradiance，因此如果这个面和光线入射方向不垂直，那就把这个面投影到垂直的方向上再计算，实际上这也是之前布林冯光照模型中用到的 Lambert’s 余弦定理的原理。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220318161132535.png" alt="image-20220318161132535"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318161132535.png" alt="image-20220318161132535"></p>
 <p>因此一个表面和入射光的夹角越接近直角，它单位面积接收到的光的能量就越大。</p>
-<p>利用 Irradiance 还可以解释布林冯光照模型中光的强度随距离衰减为什么是 $I/r^2$。回顾当时的一张图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220318161604597.png" alt="image-20220318161604597"></p>
-<p>现在我们用辐射度量学的角度来理解这张图，如果光源的强度是 $\Phi$，假设光源向四面八方都是均匀辐射的，在光源处有一个单位球面把光源包起来，那么这个球面上每一处的 Irradiance 就是光源的强度除以球的表面积，单位球半径为1，因此：</p>
-<script type="math/tex; mode=display">
-E = \frac{\Phi}{4\pi}</script><p>而距离光源半径为 $r$ 的球面上每一处的 Irradiance 就是：</p>
-<script type="math/tex; mode=display">
-E' = \frac{\Phi}{4\pi r^2} = \frac{E}{r^2}</script><p>所以之前说的光的强度随距离衰减实际上是 Irradiance 在随着距离衰减。</p>
+<p>利用 Irradiance 还可以解释布林冯光照模型中光的强度随距离衰减为什么是 $I&#x2F;r^2$。回顾当时的一张图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318161604597.png" alt="image-20220318161604597"></p>
+<p>现在我们用辐射度量学的角度来理解这张图，如果光源的强度是 $\Phi$，假设光源向四面八方都是均匀辐射的，在光源处有一个单位球面把光源包起来，那么这个球面上每一处的 Irradiance 就是光源的强度除以球的表面积，单位球半径为1，因此：<br>$$<br>E &#x3D; \frac{\Phi}{4\pi}<br>$$<br>而距离光源半径为 $r$ 的球面上每一处的 Irradiance 就是：<br>$$<br>E’ &#x3D; \frac{\Phi}{4\pi r^2} &#x3D; \frac{E}{r^2}<br>$$<br>所以之前说的光的强度随距离衰减实际上是 Irradiance 在随着距离衰减。</p>
 <h4 id="4-Radiance"><a href="#4-Radiance" class="headerlink" title="4 Radiance"></a>4 Radiance</h4><p>到目前为止，我们已经有了描述光源发出的光的强度的物理量 Intensity 和描述单位面积接收到的光的强度的物理量 Irradiance，接下来就是最重要的一个概念——Radiance，Radiance 是用来描述光线的物理量，而我们后续渲染时的所有计算都是基于光线的计算，所以说 Radiance 是最重要的一个概念。</p>
-<p>Radiance 定义为<strong>单位立体角、单位投影面积上发射、反射、折射或入射的光的强度</strong>。单位是 $lm/(sr·m^2)$，也有一个专门的名字叫做尼特（nit）。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220318162959095.png" alt="image-20220318162959095"></p>
+<p>Radiance 定义为<strong>单位立体角、单位投影面积上发射、反射、折射或入射的光的强度</strong>。单位是 $lm&#x2F;(sr·m^2)$，也有一个专门的名字叫做尼特（nit）。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318162959095.png" alt="image-20220318162959095"></p>
 <p>虽然已经有了心理准备，但这个概念还是太过抽象了。不过我们可以一点一点拆开来看。从上面的公式可以看到，实际上 Radiance 就是单位立体角、单位面积的光的强度。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220318163414923.png" alt="image-20220318163414923"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318163414923.png" alt="image-20220318163414923"></p>
 <p>回顾 Radiant Intensity 的定义，Radiant Intensity 是单位立体角上的光的强度，那么 Radiance 不就是单位面积上的 Radiant Intensity 吗；同理，Irradiance 是单位面积上的光的强度，那么 Radiance 不也可以是单位立体角上的 Irradiance 吗。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220318163639208.png" alt="image-20220318163639208"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318163639208.png" alt="image-20220318163639208"></p>
 <p>现在我们在抽象上好像明白 Radiance 是什么了，接下来分别分析一下这两种说法对应的都是什么物理意义。</p>
 <ul>
 <li>Radiance 相当于单位面积上的 Radiant Intensity，Radiant Intensity 是指一个点光源放射出的单位立体角上的强度，所以Radiance就是<strong>一个光源单位面积上放射出的单位立体角的上的光的强度</strong>。之前说过，单位立体角我们永远可以理解为它就是一个方向，因此上面这句话就可以理解成<strong>一个光源单位面积上放射出的某个方向上的光的强度</strong>。这相当于我们不考虑整个光源向某个方向放射出的能量有多少，而是只考虑光源上的某一个单位平面向某个方向放射出的能量有多少，同样这里的单位面积一定是投影单位面积。因此从这个角度来说，<strong>Radiance 表示的是沿着某个立体角表示的方向 $\omega$ 离开单位平面 dA 的光的强度</strong>。这里的”离开“自然可以代表发射、反射、折射等等。</li>
 </ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220318164148266.png" alt="image-20220318164148266"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318164148266.png" alt="image-20220318164148266"></p>
 <ul>
 <li>Radiance 相当于单位立体角上的 Irradiance，Irradiance 表示单位面积入射的光的强度，单位立体角又表示方向，所以Radiance 就是单位面积在某个方向上入射的光的强度。也就是一个单位平面从四面八方都会接收到光，但 Radiance 只表示这个单位平面接收到的从某个方向 $\omega$ 入射来的光的强度。</li>
 </ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220318165844563.png" alt="image-20220318165844563"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318165844563.png" alt="image-20220318165844563"></p>
 <p>下面的图有助于更进一步理解 Radiance 和 Irradiance 的关系：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220318170234173.png" alt="image-20220318170234173"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318170234173.png" alt="image-20220318170234173"></p>
 <p>Irradiance 是单位平面 $dA$ 从各个方向接收到的全部的光的强度，Radiance 是单位平面 $dA$ 从单位立体角 $d\omega$ 方向接收到的光的强度，因此对 Radiance 在半球面的各个方向 $d\omega$ 上积分，得到的就是各个方向接收到的光的强度的总和，也就是 Irradiance 。</p>
 <p>这样一来我们就可以理解 Radiance 的物理含义了，同时也就明白为什么开头说 Radiance 是表示光线的物理量，因为它既有方向，又有大小。</p>
 
@@ -413,10 +388,10 @@ E' = \frac{\Phi}{4\pi r^2} = \frac{E}{r^2}</script><p>所以之前说的光的�
   <div class="popular-posts-header">相关文章</div>
   <ul class="popular-posts">
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\24\20220324-材质\" rel="bookmark">【计算机图形学】（十四）材质</a></div>
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\24\20220324-渲染和材质前沿\" rel="bookmark">【计算机图形学】（十五）高级渲染和材质概述</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\24\20220324-渲染和材质前沿\" rel="bookmark">【计算机图形学】（十五）高级渲染和材质概述</a></div>
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\24\20220324-材质\" rel="bookmark">【计算机图形学】（十四）材质</a></div>
     </li>
     <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\17\20220317-Whitted风格光线追踪\" rel="bookmark">【计算机图形学】（十一）Whitted 风格光线追踪</a></div>
@@ -582,13 +557,13 @@ E' = \frac{\Phi}{4\pi r^2} = \frac{E}{r^2}</script><p>所以之前说的光的�
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">157k</span>
+    <span title="站点总字数">161k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">2:23</span>
+    <span title="站点阅读时长">2:27</span>
 </div>
 
         
