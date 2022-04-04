@@ -195,6 +195,107 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/LycTechStack.github.io/images/avatar.png">
+      <meta itemprop="name" content="Lyc">
+      <meta itemprop="description" content="从零开始的个人学习总结和技术经验分享，主要内容包括C++、数据结构、算法、计算机图形学、3D数学、实时渲染、游戏引擎等等，希望未来能真正踏入图形/引擎开发的大门！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LycTechStack">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/" class="post-title-link" itemprop="url">【计算机图形学】（十二）辐射度量学基础</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-03-18 17:28:07" itemprop="dateCreated datePublished" datetime="2022-03-18T17:28:07+08:00">2022-03-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-19 15:20:27" itemprop="dateModified" datetime="2022-03-19T15:20:27+08:00">2022-03-19</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/LycTechStack.github.io/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/" itemprop="url" rel="index"><span itemprop="name">计算机图形学</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="辐射度量学（Radiometry）"><a href="#辐射度量学（Radiometry）" class="headerlink" title="辐射度量学（Radiometry）"></a>辐射度量学（Radiometry）</h3><p>上一节我们学习了 Whitted 风格光线追踪的基本原理和优化结构，Whitted 风格光线追踪是基于布林冯光照模型的渲染方式，回顾布林冯光照模型，其中有一个概念我们一直不清楚，那就是所有光照公式中的光照强度 $I$ 是如何定义的，光照强度到底是什么，是从哪里来的，又要用什么去衡量？并且上一节中我们也看到了，其实利用 Whitted 风格光线追踪渲染出来的图片并没有想象中那么真实，这是因为我们从头到尾都没有准确的对光照进行度量和描述，所有公式中的光都是抽象的，简化的结果。因此也无法解释上面的一系列问题。</p>
+<p>从这一节开始我们将学习更为先进的路径追踪技术，路径追踪技术是基于辐射度量学的光线追踪算法，而<strong>辐射度量学是可以准确描述光线的空间属性的体系，可以保证在物理上绝对正确的情况下进行各种光照的计算。</strong></p>
+<p><em></em></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <div>
+    
+    </div>
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1051,100 +1152,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/LycTechStack.github.io/images/avatar.png">
-      <meta itemprop="name" content="Lyc">
-      <meta itemprop="description" content="从零开始的个人学习总结和技术经验分享，主要内容包括C++、数据结构、算法、计算机图形学、3D数学、实时渲染、游戏引擎等等，希望未来能真正踏入图形/引擎开发的大门！">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LycTechStack">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/" class="post-title-link" itemprop="url">【计算机图形学】（五）深度缓冲</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2022-03-08 18:15:14 / 修改时间：18:19:34" itemprop="dateCreated datePublished" datetime="2022-03-08T18:15:14+08:00">2022-03-08</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/LycTechStack.github.io/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/" itemprop="url" rel="index"><span itemprop="name">计算机图形学</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>1.2k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="深度缓冲（Z-Buffer）"><a href="#深度缓冲（Z-Buffer）" class="headerlink" title="深度缓冲（Z-Buffer）"></a>深度缓冲（Z-Buffer）</h3><p>到上一篇文章为止，我们基本完成了把三维物体画在二维屏幕上的过程，但在这个过程中，还有一个非常重要的问题没有讨论，那就是在光栅化的时候我们之前的推导都没有考虑Z轴，也就是没有考虑三维物体离我们的远近，但是现实生活中我们看一个三维物体或者场景，由于物体离我们眼睛的距离不同，自然会产生遮挡现象。</p>
-<p><em></em></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <div>
-    
-    </div>
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1216,7 +1223,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/LycTechStack.github.io/archives/">
         
-          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-count">28</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1274,13 +1281,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">192k</span>
+    <span title="站点总字数">223k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">2:54</span>
+    <span title="站点阅读时长">3:23</span>
 </div>
 
         
