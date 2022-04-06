@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/LycTechStack.github.io/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/LycTechStack.github.io/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/LycTechStack.github.io/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/LycTechStack.github.io/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/LycTechStack.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="/LycTechStack.github.io/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/LycTechStack.github.io/lib/pace/pace-theme-minimal.min.css">
+  <script src="/LycTechStack.github.io/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lz328.github.io","root":"/LycTechStack.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":5,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="优先队列（Priority Queue）是计算机科学中的一类抽象数据类型。优先队列中的每个元素都有各自的优先级，优先级最高的元素最先得到服务；优先级相同的元素按照其在优先队列中的顺序得到服务。堆（Heap）是一种数据结构，是实现优先队列的一种方式。所以堆并不等同于优先队列。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【数据结构】优先队列和堆">
+<meta property="og:url" content="https://lz328.github.io/LycTechStack.github.io/2022/04/06/20220406-%E4%BC%98%E5%85%88%E9%98%9F%E5%88%97%E5%92%8C%E5%A0%86/index.html">
+<meta property="og:site_name" content="LycTechStack">
+<meta property="og:description" content="优先队列（Priority Queue）是计算机科学中的一类抽象数据类型。优先队列中的每个元素都有各自的优先级，优先级最高的元素最先得到服务；优先级相同的元素按照其在优先队列中的顺序得到服务。堆（Heap）是一种数据结构，是实现优先队列的一种方式。所以堆并不等同于优先队列。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/04/06/20220406-%E4%BC%98%E5%85%88%E9%98%9F%E5%88%97%E5%92%8C%E5%A0%86/1610956684-VBPCQt-image.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/04/06/20220406-%E4%BC%98%E5%85%88%E9%98%9F%E5%88%97%E5%92%8C%E5%A0%86/1609834142-VnDgJC-%E5%B9%BB%E7%81%AF%E7%89%871.jpg">
+<meta property="article:published_time" content="2022-04-06T12:30:11.000Z">
+<meta property="article:modified_time" content="2022-04-06T12:32:44.957Z">
+<meta property="article:author" content="Lyc">
+<meta property="article:tag" content="数据结构">
+<meta property="article:tag" content="C++">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2022/04/06/20220406-%E4%BC%98%E5%85%88%E9%98%9F%E5%88%97%E5%92%8C%E5%A0%86/1610956684-VBPCQt-image.png">
+
+<link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/04/06/20220406-%E4%BC%98%E5%85%88%E9%98%9F%E5%88%97%E5%92%8C%E5%A0%86/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>【数据结构】优先队列和堆 | LycTechStack</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/LycTechStack.github.io/atom.xml" title="LycTechStack" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/LycTechStack.github.io/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LycTechStack</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Lyc的个人成长技术栈</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/LycTechStack.github.io/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/LycTechStack.github.io/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/LycTechStack.github.io/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/LycTechStack.github.io/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/LycTechStack.github.io/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://lz328.github.io/LycTechStack.github.io/2022/04/06/20220406-%E4%BC%98%E5%85%88%E9%98%9F%E5%88%97%E5%92%8C%E5%A0%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/LycTechStack.github.io/images/avatar.png">
+      <meta itemprop="name" content="Lyc">
+      <meta itemprop="description" content="从零开始的个人学习总结和技术经验分享，主要内容包括C++、数据结构、算法、计算机图形学、3D数学、实时渲染、游戏引擎等等，希望未来能真正踏入图形/引擎开发的大门！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LycTechStack">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【数据结构】优先队列和堆
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-04-06 20:30:11 / 修改时间：20:32:44" itemprop="dateCreated datePublished" datetime="2022-04-06T20:30:11+08:00">2022-04-06</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/LycTechStack.github.io/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>8.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>8 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><strong>优先队列（Priority Queue）</strong>是计算机科学中的一类<strong>抽象数据类型</strong>。优先队列中的每个元素都有各自的优先级，优先级最高的元素最先得到服务；优先级相同的元素按照其在优先队列中的顺序得到服务。<strong>堆（Heap）</strong>是一种数据结构，是<strong>实现优先队列的一种方式</strong>。所以堆并不等同于优先队列。</p>
+<p><em><span id="more"></span></em></p>
+<p>优先队列还有其他的实现方式，比如数组和链表。但是，这些实现方式只能保证插入操作和删除操作中的一种操作可以在 <em>O(1)</em> 的时间复杂度内完成，而另外一个操作则需要在 <em>O(N)</em> 的时间复杂度内完成。堆能够使优先队列的插入操作在 <em>O(log N)</em> 的时间复杂度内完成，删除操作在 <em>O(log N)</em> 的时间复杂度内完成。</p>
+<h3 id="1-堆的定义和基本操作"><a href="#1-堆的定义和基本操作" class="headerlink" title="1 堆的定义和基本操作"></a>1 堆的定义和基本操作</h3><p>堆是一种特殊的二叉树，满足以下两个条件：</p>
+<ul>
+<li>是完全二叉树，所谓完全二叉树是指叶子节点只能出现在最下层和次下层的二叉树，树中每一个结点的编号都和满二叉树一一对应</li>
+<li>每一个节点的值都必须<strong>大于等于或者小于等于</strong>其孩子节点的值</li>
+</ul>
+<p>堆具有以下特点：</p>
+<ul>
+<li>可以在 <em>O(logN)</em> 的时间复杂度内向堆中插入元素；</li>
+<li>可以在 <em>O(logN)</em> 的时间复杂度内在堆中删除元素；</li>
+<li>可以在 <em>O(1)</em> 的时间复杂度内获取堆中最大或最小的元素；</li>
+</ul>
+<p>堆分为小顶堆和大顶堆两类：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/06/20220406-%E4%BC%98%E5%85%88%E9%98%9F%E5%88%97%E5%92%8C%E5%A0%86/1610956684-VBPCQt-image.png" alt="1610956684-VBPCQt-image"></p>
+<p>堆的基本操作有插入（在堆中插入一个元素同时保持堆的性质不变）、删除（删除堆顶元素同时保持堆的性质不变）和获取堆顶元素。</p>
+<p>在 C++ 中已经有内置方法实现了堆，所以一般来说并不需要我们去实现一个堆 。我们只需要掌握堆在 C++ 中的常用方法，使我们能灵活的运用堆去解决问题即可。</p>
+<p>C++ STL 实现了对存储在数组或 vector 中的元素进行堆操作的函数，包括创建堆和堆的基本操作：</p>
+<ul>
+<li>创建堆：make_heap(<strong>_First, _Last, _Comp</strong>)，默认是大顶堆</li>
+<li>在堆中添加元素：push_heap(<strong>_First,  _Last, _Comp</strong>)，该函数实际上是用来调整堆序的，要先在 vector 中 push_back 一个元素到尾部，然后再使用 push_heap，例如：</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">max_heap.<span class="built_in">push_back</span>(<span class="number">15</span>);</span><br><span class="line"><span class="built_in">push_heap</span>(max_heap.<span class="built_in">begin</span>(), max_heap.<span class="built_in">end</span>());</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>在堆中删除元素：pop_heap(<strong>_First, _Last, _Comp</strong>)，该函数是删除原本的堆顶元素，并将该元素放到 vector 末尾，用 vector 原来的末尾元素作为新的堆顶元素，因此该函数执行完毕后要取走原本的堆顶元素还要使用 vector.pop_back()，例如：</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//取出了堆顶元素（也叫删除堆顶元素），放到了底层容器的末尾，原来末尾的元素替代堆顶，end迭代器减1，重新siftdown了堆</span></span><br><span class="line"><span class="built_in">pop_heap</span>(max_heap.<span class="built_in">begin</span>(), max_heap.<span class="built_in">end</span>());</span><br><span class="line"><span class="comment">//从底层容器（数组或vector）中删除了元素</span></span><br><span class="line">max_heap.<span class="built_in">pop_back</span>();</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>堆排序：sort_heap(<strong>_First, _Last, _Comp</strong>)，既然每次 pop_heap 可以获得堆顶的元素（假如是大顶堆，每次都获得最大的元素，取出放到了底层容器的末尾），那么我们持续对整个 heap 做 pop_heap 操作，每次将操作的范围向前缩减一个元素（就是每次 end 迭代器减 1 ）。最终我们可以获得一个递增的序列。</li>
+</ul>
+<p>下面是基本使用示例：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;algorithm&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">printHeap</span><span class="params">(vector&lt;<span class="type">int</span>&gt; &amp;v)</span></span>&#123;</span><br><span class="line">    <span class="keyword">for</span>(vector&lt;<span class="type">int</span>&gt;::iterator it= v.<span class="built_in">begin</span>();it!=v.<span class="built_in">end</span>();++it)&#123;</span><br><span class="line">        cout&lt;&lt; *it &lt;&lt;<span class="string">&quot; &quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;\n&quot;</span>&lt;&lt;endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; min=&#123;<span class="number">10</span>,<span class="number">30</span>,<span class="number">22</span>,<span class="number">6</span>,<span class="number">15</span>,<span class="number">9</span>&#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//建立小顶堆</span></span><br><span class="line">    <span class="built_in">make_heap</span>(min.<span class="built_in">begin</span>(), min.<span class="built_in">end</span>(), <span class="built_in">greater</span>&lt;<span class="type">int</span>&gt;());</span><br><span class="line">    <span class="built_in">printHeap</span>(min);<span class="comment">//6 10 9 30 15 22</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//插入元素</span></span><br><span class="line">    min.<span class="built_in">push_back</span>(<span class="number">20</span>);</span><br><span class="line">    <span class="built_in">push_heap</span>(min.<span class="built_in">begin</span>(),min.<span class="built_in">end</span>(), <span class="built_in">greater</span>&lt;<span class="type">int</span>&gt;()); <span class="comment">//该算法前提：必须在堆的条件下</span></span><br><span class="line">    <span class="built_in">printHeap</span>(min); <span class="comment">//6 10 9 30 15 22 20  仍为小顶堆</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//删除堆顶元素</span></span><br><span class="line">    <span class="built_in">pop_heap</span>(min.<span class="built_in">begin</span>(),min.<span class="built_in">end</span>(), <span class="built_in">greater</span>&lt;<span class="type">int</span>&gt;());</span><br><span class="line">    <span class="built_in">printHeap</span>(min);<span class="comment">//9 10 20 30 15 22 6  不为小顶堆 这个pop_heap操作后，实际上是把堆顶元素放到了末尾</span></span><br><span class="line">    min.<span class="built_in">pop_back</span>();<span class="comment">//这才彻底在底层vector数据容器中删除</span></span><br><span class="line">    <span class="built_in">printHeap</span>(min);<span class="comment">//9 10 20 30 15 22  仍为小顶堆</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//堆排序  保持greater，小顶堆，得到的是降序</span></span><br><span class="line">    <span class="built_in">sort_heap</span>(min.<span class="built_in">begin</span>(),min.<span class="built_in">end</span>(), <span class="built_in">greater</span>&lt;<span class="type">int</span>&gt;()); <span class="comment">//试了用less，结果杂乱无章</span></span><br><span class="line">    <span class="built_in">printHeap</span>(min);<span class="comment">//30 22 20 15 10 9 注意结果是降序的哦!!!其实是调用了很多次pop_heap(...,greater..)，每一次都把小顶堆堆顶的元素往末尾放，每放一次end迭代器减1</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果把上面code里所有的第三个参数改为<code>less&lt;int&gt;()</code>，就是大顶堆和排序为升序。</p>
+<p>C++ 中还有优先队列的实现，和普通队列的用法类似，只是在创建时略有不同：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//默认按照元素从大到小的顺序出队</span></span><br><span class="line">priority_queue&lt;<span class="type">int</span>&gt; q;   　　</span><br><span class="line"><span class="comment">//按照元素从小到大的顺序出队，第二个参数是容器类型</span></span><br><span class="line">priority_queue&lt;<span class="type">int</span>,vector&lt;<span class="type">int</span>&gt;, greater&lt;<span class="type">int</span>&gt; &gt; q; </span><br><span class="line"><span class="comment">//自定义优先级</span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">cmp</span> &#123;     </span><br><span class="line">　　<span class="function"><span class="keyword">operator</span> <span class="title">bool</span> <span class="params">()</span><span class="params">(<span class="type">int</span> x, <span class="type">int</span> y)</span>     </span></span><br><span class="line"><span class="function">　　</span>&#123;        </span><br><span class="line">　　　　 <span class="keyword">return</span>　x &gt; y;</span><br><span class="line">　　&#125;</span><br><span class="line">&#125;;</span><br><span class="line">priority_queue&lt;<span class="type">int</span>, vector&lt;<span class="type">int</span>&gt;, cmp&gt; q;</span><br><span class="line"><span class="comment">//结构体声明，重载 &lt; 运算符</span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">node</span> &#123;     </span><br><span class="line">　　<span class="type">int</span> x, y;     </span><br><span class="line">　　<span class="keyword">friend</span> <span class="type">bool</span> <span class="keyword">operator</span> &lt; (node a, node b)     </span><br><span class="line">　　&#123;         </span><br><span class="line">　　　　<span class="keyword">return</span> a.x &gt; b.x;    <span class="comment">//结构体中，x小的优先级高     </span></span><br><span class="line">　　&#125;</span><br><span class="line">&#125;;</span><br><span class="line">priority_queue&lt;node&gt;q;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-堆的应用"><a href="#2-堆的应用" class="headerlink" title="2 堆的应用"></a>2 堆的应用</h3><h4 id="2-1-堆排序"><a href="#2-1-堆排序" class="headerlink" title="2.1 堆排序"></a>2.1 堆排序</h4><p>C++ 中已经提供了堆排序，我们也已经了解了堆排序的过程，之后会在专门的排序算法专题中再次学习堆排序。</p>
+<h4 id="2-2-Top-K-问题"><a href="#2-2-Top-K-问题" class="headerlink" title="2.2 Top K 问题"></a>2.2 Top K 问题</h4><p>Top K 问题是最经典的用堆（优先队列）解决的问题。</p>
+<h5 id="最小的k个数"><a href="#最小的k个数" class="headerlink" title="最小的k个数"></a><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/zui-xiao-de-kge-shu-lcof/">最小的k个数</a></h5><blockquote>
+<p>输入整数数组 <code>arr</code> ，找出其中最小的 <code>k</code> 个数。例如，输入4、5、1、6、2、7、3、8这8个数字，则最小的4个数字是1、2、3、4。</p>
+</blockquote>
+<p>一种解法是创建小顶堆，然后取 k 次堆顶元素：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">getLeastNumbers</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; arr, <span class="type">int</span> k)</span> </span>&#123;</span><br><span class="line">        vector&lt;<span class="type">int</span>&gt; ans;</span><br><span class="line">        <span class="built_in">make_heap</span>(arr.<span class="built_in">begin</span>(), arr.<span class="built_in">end</span>(), <span class="built_in">greater</span>&lt;<span class="type">int</span>&gt;());</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; k; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">pop_heap</span>(arr.<span class="built_in">begin</span>(), arr.<span class="built_in">end</span>(), <span class="built_in">greater</span>&lt;<span class="type">int</span>&gt;());</span><br><span class="line">            ans.<span class="built_in">push_back</span>(arr.<span class="built_in">back</span>());</span><br><span class="line">            arr.<span class="built_in">pop_back</span>();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>这种方法调用了 K 次删除操作，因此时间复杂度是 O(KlogN)。</p>
+<p>另一种解法是创建大顶堆，向堆中添加元素，当堆中有 K 个元素时，每次添加元素前与堆顶元素对比，如果当前元素比堆顶元素大则舍弃，如果当前元素比堆顶元素小，则删除堆顶元素并将当前元素加入堆，这样遍历完整个数组后，堆中的元素就是最小的 k 个元素。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">getLeastNumbers</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; arr, <span class="type">int</span> k)</span> </span>&#123;</span><br><span class="line">        vector&lt;<span class="type">int</span>&gt; ans;</span><br><span class="line">        <span class="keyword">if</span>(k == <span class="number">0</span>) <span class="keyword">return</span> ans;</span><br><span class="line">        <span class="built_in">make_heap</span>(ans.<span class="built_in">begin</span>(), ans.<span class="built_in">end</span>(), <span class="built_in">less</span>&lt;<span class="type">int</span>&gt;());</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; arr.<span class="built_in">size</span>(); ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span>(k &gt; <span class="number">0</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                ans.<span class="built_in">push_back</span>(arr[i]);</span><br><span class="line">                <span class="built_in">push_heap</span>(ans.<span class="built_in">begin</span>(), ans.<span class="built_in">end</span>(), <span class="built_in">less</span>&lt;<span class="type">int</span>&gt;());</span><br><span class="line">                --k;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(arr[i] &lt; ans[<span class="number">0</span>])</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="built_in">pop_heap</span>(ans.<span class="built_in">begin</span>(), ans.<span class="built_in">end</span>(), <span class="built_in">less</span>&lt;<span class="type">int</span>&gt;());</span><br><span class="line">                    ans.<span class="built_in">pop_back</span>();</span><br><span class="line">                    ans.<span class="built_in">push_back</span>(arr[i]);</span><br><span class="line">                    <span class="built_in">push_heap</span>(ans.<span class="built_in">begin</span>(), ans.<span class="built_in">end</span>(), <span class="built_in">less</span>&lt;<span class="type">int</span>&gt;());</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>最坏情况下每一次都要替换堆顶元素，因此时间复杂度为 O(NlogK)。可以看出使用堆的实现会使代码显得非常繁琐，因此一般使用优先队列编码：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">getLeastNumbers</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; arr, <span class="type">int</span> k)</span> </span>&#123;</span><br><span class="line">        vector&lt;<span class="type">int</span>&gt; ans;</span><br><span class="line">        <span class="keyword">if</span> (k == <span class="number">0</span>)  <span class="keyword">return</span> ans;</span><br><span class="line">        priority_queue&lt;<span class="type">int</span>&gt; q;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; k; ++i) &#123;</span><br><span class="line">            q.<span class="built_in">push</span>(arr[i]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = k; i &lt; arr.<span class="built_in">size</span>(); ++i) &#123;</span><br><span class="line">            <span class="keyword">if</span> (q.<span class="built_in">top</span>() &gt; arr[i]) &#123;</span><br><span class="line">                q.<span class="built_in">pop</span>();</span><br><span class="line">                q.<span class="built_in">push</span>(arr[i]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; k; ++i) &#123;</span><br><span class="line">            ans.<span class="built_in">push_back</span>(q.<span class="built_in">top</span>());</span><br><span class="line">            q.<span class="built_in">pop</span>();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>当然由于 STL 的 priority_queue 内部实际上也是使用堆实现的，因此效率不如我们直接调用堆函数高。但使用起来更方便，更符合 STL 一般容器的常规用法。</p>
+<h5 id="数组中的第K个最大元素"><a href="#数组中的第K个最大元素" class="headerlink" title="数组中的第K个最大元素"></a><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/kth-largest-element-in-an-array/">数组中的第K个最大元素</a></h5><blockquote>
+<p>给定整数数组 <code>nums</code> 和整数 <code>k</code>，请返回数组中第 <code>k</code> 个最大的元素。</p>
+<p>请注意，你需要找的是数组排序后的第 <code>k</code> 个最大的元素，而不是第 <code>k</code> 个不同的元素。</p>
+</blockquote>
+<p>找的最大元素用小顶堆，算法同上，这次我们只需要输出堆顶元素即可：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">findKthLargest</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums, <span class="type">int</span> k)</span> </span>&#123;</span><br><span class="line">        priority_queue&lt;<span class="type">int</span>, vector&lt;<span class="type">int</span>&gt;, greater&lt;<span class="type">int</span>&gt;&gt; q;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; nums.<span class="built_in">size</span>(); ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span>(k &gt; <span class="number">0</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                q.<span class="built_in">push</span>(nums[i]);</span><br><span class="line">                --k;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(nums[i] &gt;= q.<span class="built_in">top</span>())</span><br><span class="line">                &#123;</span><br><span class="line">                    q.<span class="built_in">pop</span>();</span><br><span class="line">                    q.<span class="built_in">push</span>(nums[i]);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> q.<span class="built_in">top</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h5 id="数据流中的第-K-大元素"><a href="#数据流中的第-K-大元素" class="headerlink" title="数据流中的第 K 大元素"></a><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/kth-largest-element-in-a-stream/">数据流中的第 K 大元素</a></h5><blockquote>
+<p>设计一个找到数据流中第 k 大元素的类（class）。注意是排序后的第 k 大元素，不是第 k 个不同的元素。</p>
+<p>请实现 KthLargest 类：</p>
+<ul>
+<li><code>KthLargest(int k, int[] nums)</code> 使用整数 k 和整数流 nums 初始化对象。</li>
+<li><code>int add(int val)</code> 将 val 插入数据流 nums 后，返回当前数据流中第 k 大的元素。</li>
+</ul>
+</blockquote>
+<p>我们使用优先队列直接解决：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">KthLargest</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    priority_queue&lt;<span class="type">int</span>, vector&lt;<span class="type">int</span>&gt;, greater&lt;<span class="type">int</span>&gt;&gt; q;</span><br><span class="line">    <span class="type">int</span> k;</span><br><span class="line">    <span class="built_in">KthLargest</span>(<span class="type">int</span> k, vector&lt;<span class="type">int</span>&gt;&amp; nums) &#123;</span><br><span class="line">        <span class="keyword">this</span>-&gt;k = k;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">auto</span>&amp; x: nums) &#123;</span><br><span class="line">            <span class="built_in">add</span>(x);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">add</span><span class="params">(<span class="type">int</span> val)</span> </span>&#123;</span><br><span class="line">        q.<span class="built_in">push</span>(val);</span><br><span class="line">        <span class="keyword">if</span> (q.<span class="built_in">size</span>() &gt; k) &#123;</span><br><span class="line">            q.<span class="built_in">pop</span>();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> q.<span class="built_in">top</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>在上面的问题中我们都直接使用了 STL 提供的堆的实现，接下来借这道题，我们来自己手写一个堆的实现。</p>
+<h5 id="自己实现一个堆"><a href="#自己实现一个堆" class="headerlink" title="自己实现一个堆"></a>自己实现一个堆</h5><p>首先根据之前学习的堆的基本知识我们知道，堆是一个完全二叉树，但是在编程语言中并不是用二叉树来实现堆的，而是用一个数组来实现。这是因为堆中父节点和子节点之间的编号是有一定的关系的：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/06/20220406-%E4%BC%98%E5%85%88%E9%98%9F%E5%88%97%E5%92%8C%E5%A0%86/1609834142-VnDgJC-%E5%B9%BB%E7%81%AF%E7%89%871.jpg" alt="1609834142-VnDgJC-幻灯片1"></p>
+<p>从上图可以看出堆中父节点和子节点的编号的关系：</p>
+<ul>
+<li>已知一个节点编号 index ，它的父节点的编号为 ：</li>
+</ul>
+<p>$$<br>index_{parent} &#x3D; \lfloor \frac{index-1}{2} \rfloor<br>$$</p>
+<ul>
+<li>已知一个节点编号 index ，它的左孩子节点的编号为 ：</li>
+</ul>
+<p>$$<br>index_{leftchild} &#x3D; 2 \times index + 1<br>$$</p>
+<ul>
+<li>已知一个节点编号 index ，它的右孩子节点的编号为 ：</li>
+</ul>
+<p>$$<br>index_{rightchild} &#x3D; 2\times index + 2<br>$$</p>
+<p>有了这个关系我们可以轻松的在一个数组中找到给定节点的父节点和孩子节点，接下来考虑如何实现堆的基本操作：插入和删除元素。</p>
+<ul>
+<li>向堆中插入一个元素：我们只需要把该元素插入数组末尾，然后不停的向上调整该元素的位置直到符合堆的要求</li>
+<li>在堆中删除一个元素：我们把当前堆顶和末尾元素交换，然后将新的堆顶元素向下调整位置直到符合堆的要求</li>
+</ul>
+<p>具体的过程可以看<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/kth-largest-element-in-a-stream/solution/python-dong-hua-shou-xie-shi-xian-dui-by-ypz2/">手写堆实现动画</a>，更方便理解。</p>
+<p>因此为了达成上面的操作，我们需要写两个调整元素位置的函数，以及其他基本功能。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Heap</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; heap;</span><br><span class="line">    <span class="type">bool</span> greater = <span class="number">0</span>;   <span class="comment">//默认为大顶堆</span></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">BuildHeap</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums, <span class="type">int</span> greater = <span class="number">0</span>)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>-&gt;greater = greater;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> x : nums)</span><br><span class="line">        &#123;</span><br><span class="line">            heap.<span class="built_in">push_back</span>(x);</span><br><span class="line">            <span class="built_in">AdjustUp</span>(heap.<span class="built_in">size</span>() - <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">size</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> heap.<span class="built_in">size</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">top</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> heap[<span class="number">0</span>];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">compare</span><span class="params">(<span class="type">int</span> i, <span class="type">int</span> j)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> greater ? heap[i] &lt; heap[j] : heap[i] &gt; heap[j];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">swap</span><span class="params">(<span class="type">int</span> i, <span class="type">int</span> j)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="type">int</span> temp = heap[i];</span><br><span class="line">        heap[i] = heap[j];</span><br><span class="line">        heap[j] = temp;</span><br><span class="line">    &#125;</span><br><span class="line">	<span class="comment">// 向下调整节点</span></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">AdjustDown</span><span class="params">(<span class="type">int</span> index)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">//如果有孩子节点</span></span><br><span class="line">        <span class="keyword">while</span>(index * <span class="number">2</span> + <span class="number">1</span> &lt; heap.<span class="built_in">size</span>())</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="type">int</span> largest = index;</span><br><span class="line">            <span class="type">int</span> leftchild = <span class="number">2</span> * index + <span class="number">1</span>;</span><br><span class="line">            <span class="type">int</span> rightchild = <span class="number">2</span> * index + <span class="number">2</span>;</span><br><span class="line">            <span class="keyword">if</span>(<span class="built_in">compare</span>(leftchild, largest)) largest = leftchild;</span><br><span class="line">            <span class="keyword">if</span>(rightchild &lt; heap.<span class="built_in">size</span>() &amp;&amp; <span class="built_in">compare</span>(rightchild, largest)) largest = rightchild;</span><br><span class="line">            <span class="keyword">if</span>(largest == index) <span class="keyword">break</span>; <span class="comment">//如果当前根节点已经是当前子树最大或最小的节点则调整完毕</span></span><br><span class="line">            <span class="built_in">swap</span>(largest, index);</span><br><span class="line">            index = largest;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">	<span class="comment">//向上调整节点</span></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">AdjustUp</span><span class="params">(<span class="type">int</span> index)</span></span></span><br><span class="line"><span class="function">    </span>&#123;    </span><br><span class="line">        <span class="keyword">while</span>(index)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="type">int</span> parent = (index - <span class="number">1</span>) / <span class="number">2</span>;</span><br><span class="line">            <span class="keyword">if</span>(<span class="built_in">compare</span>(parent, index)) <span class="keyword">break</span>;</span><br><span class="line">            <span class="built_in">swap</span>(index, parent);</span><br><span class="line">            index = parent;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">	<span class="comment">//插入元素</span></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">push</span><span class="params">(<span class="type">int</span> val)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        heap.<span class="built_in">push_back</span>(val);</span><br><span class="line">        <span class="built_in">AdjustUp</span>(heap.<span class="built_in">size</span>() - <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">	<span class="comment">//删除元素</span></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">pop</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="built_in">swap</span>(<span class="number">0</span>, heap.<span class="built_in">size</span>() - <span class="number">1</span>);</span><br><span class="line">        heap.<span class="built_in">pop_back</span>();</span><br><span class="line">        <span class="built_in">AdjustDown</span>(<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h5 id="前-K-个高频元素"><a href="#前-K-个高频元素" class="headerlink" title="前 K 个高频元素"></a><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/top-k-frequent-elements/">前 K 个高频元素</a></h5><blockquote>
+<p>给你一个整数数组 <code>nums</code> 和一个整数 <code>k</code> ，请你返回其中出现频率前 <code>k</code> 高的元素。你可以按 <strong>任意顺序</strong> 返回答案。</p>
+</blockquote>
+<p>哈希表统计频数即可，主要是学习C++优先队列如何自定义比较函数：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>: </span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">cmp</span>&#123;</span><br><span class="line">        <span class="function"><span class="type">bool</span> <span class="title">operator</span><span class="params">()</span> <span class="params">(pair&lt;<span class="type">int</span>, <span class="type">int</span>&gt;&amp; x, pair&lt;<span class="type">int</span>, <span class="type">int</span>&gt;&amp; y)</span></span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> x.second &gt; y.second;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">topKFrequent</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums, <span class="type">int</span> k)</span> </span>&#123;</span><br><span class="line">        unordered_map&lt;<span class="type">int</span>, <span class="type">int</span>&gt; map;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span>&amp; x : nums)</span><br><span class="line">        &#123;</span><br><span class="line">            ++map[x];</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        priority_queue&lt;pair&lt;<span class="type">int</span>, <span class="type">int</span>&gt;, vector&lt;pair&lt;<span class="type">int</span>, <span class="type">int</span>&gt;&gt;, cmp&gt; q;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">auto</span>&amp; [num, count] : map)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span>(q.<span class="built_in">size</span>() == k)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(count &gt; q.<span class="built_in">top</span>().second)</span><br><span class="line">                &#123;</span><br><span class="line">                    q.<span class="built_in">pop</span>();</span><br><span class="line">                    q.<span class="built_in">push</span>(<span class="built_in">pair</span>(num, count));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> q.<span class="built_in">push</span>(<span class="built_in">pair</span>(num, count));</span><br><span class="line">        &#125;</span><br><span class="line">        vector&lt;<span class="type">int</span>&gt; ans;</span><br><span class="line">        <span class="keyword">while</span>(!q.<span class="built_in">empty</span>())</span><br><span class="line">        &#123;</span><br><span class="line">            ans.<span class="built_in">push_back</span>(q.<span class="built_in">top</span>().first);</span><br><span class="line">            q.<span class="built_in">pop</span>();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>上面是定义了一个结构体，在结构体中定义比较函数，构造优先队列时相当于传入函数对象。还可以用下面的方法：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">static</span> <span class="type">bool</span> <span class="title">cmp</span><span class="params">(pair&lt;<span class="type">int</span>, <span class="type">int</span>&gt;&amp; m, pair&lt;<span class="type">int</span>, <span class="type">int</span>&gt;&amp; n)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">return</span> m.second &gt; n.second;</span><br><span class="line">&#125;</span><br><span class="line">priority_queue&lt;pair&lt;<span class="type">int</span>, <span class="type">int</span>&gt;, vector&lt;pair&lt;<span class="type">int</span>, <span class="type">int</span>&gt;&gt;, <span class="keyword">decltype</span>(cmp)&gt; <span class="built_in">q</span>(cmp);</span><br></pre></td></tr></table></figure>
+
+<p>decltype 函数用于获取函数指针，传入的是函数的地址。</p>
+
+    </div>
+
+    
+    
+    
+
+    <div>
+    
+      <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">---- 本文结束 <i class="fa fa-trophy"></i> 知识又增加了亿点点！----</div>
+    
+</div>
+<br />
+<div>
+  <div>
+    <fieldset
+        style="
+            border: 1px dashed #C0C0C0;
+            padding: 10px;
+            border-radius: 5px;
+            line-height: 2em;
+            color: #6d6d6d;
+        ">
+        <legend
+            align="center"
+            style="
+                width: 30%;
+                text-align: center;
+                color: #6d6d6d;
+                border: 1px dashed #C0C0C0;
+                border-radius: 5px;
+            ">
+            文章版权声明
+        </legend>
+        1、博客名称：<font color="#37c6c0">LycTechStack</font><br />
+        2、博客网址：<font color="#37c6c0">https://lz328.github.io/LycTechStack.github.io/</font><br />
+        3、本博客的文章部分内容可能来源于网络，仅供大家学习与参考，如有侵权，请联系博主进行删除处理。<br />
+        4、本博客所有文章版权归博主所有，如需转载请标明出处。<br />
+    </fieldset>
+  </div>
+</div>
+
+    
+    </div>
+      
+  <div class="popular-posts-header">相关文章</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\03\20220303-二叉树\" rel="bookmark">【数据结构】二叉树</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\02\20220303-线性数据结构\" rel="bookmark">【数据结构】线性数据结构</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\07\20220307-线性动态规划-单串\" rel="bookmark">【动态规划】（一）线性动态规划之单串问题</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\10\20220310-线性动态规划-带维度单串\" rel="bookmark">【动态规划】（二）线性动态规划之带维度单串问题</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\12\20220312-线性动态规划-双串\" rel="bookmark">【动态规划】（三）线性动态规划之双串问题</a></div>
+    </li>
+  </ul>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/LycTechStack.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag"># 数据结构</a>
+              <a href="/LycTechStack.github.io/tags/C/" rel="tag"># C++</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/LycTechStack.github.io/2022/04/05/20220405-%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95/" rel="prev" title="【算法】贪心算法">
+      <i class="fa fa-chevron-left"></i> 【算法】贪心算法
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%A0%86%E7%9A%84%E5%AE%9A%E4%B9%89%E5%92%8C%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C"><span class="nav-text">1 堆的定义和基本操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%A0%86%E7%9A%84%E5%BA%94%E7%94%A8"><span class="nav-text">2 堆的应用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E5%A0%86%E6%8E%92%E5%BA%8F"><span class="nav-text">2.1 堆排序</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-Top-K-%E9%97%AE%E9%A2%98"><span class="nav-text">2.2 Top K 问题</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%9C%80%E5%B0%8F%E7%9A%84k%E4%B8%AA%E6%95%B0"><span class="nav-text">最小的k个数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%95%B0%E7%BB%84%E4%B8%AD%E7%9A%84%E7%AC%ACK%E4%B8%AA%E6%9C%80%E5%A4%A7%E5%85%83%E7%B4%A0"><span class="nav-text">数组中的第K个最大元素</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E6%B5%81%E4%B8%AD%E7%9A%84%E7%AC%AC-K-%E5%A4%A7%E5%85%83%E7%B4%A0"><span class="nav-text">数据流中的第 K 大元素</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%87%AA%E5%B7%B1%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E5%A0%86"><span class="nav-text">自己实现一个堆</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%89%8D-K-%E4%B8%AA%E9%AB%98%E9%A2%91%E5%85%83%E7%B4%A0"><span class="nav-text">前 K 个高频元素</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Lyc"
+      src="/LycTechStack.github.io/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Lyc</p>
+  <div class="site-description" itemprop="description">从零开始的个人学习总结和技术经验分享，主要内容包括C++、数据结构、算法、计算机图形学、3D数学、实时渲染、游戏引擎等等，希望未来能真正踏入图形/引擎开发的大门！</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/LycTechStack.github.io/archives/">
+        
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/LycTechStack.github.io/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/LycTechStack.github.io/tags/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/LZ328/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;LZ328&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:27487358@qq.com" title="E-Mail → mailto:27487358@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2021 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heartbeat"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lyc</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">248k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">3:46</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="/LycTechStack.github.io/lib/canvas-ribbon/canvas-ribbon.js"></script>
+  <script src="/LycTechStack.github.io/lib/anime.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/pjax/pjax.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4/dist/browser/pangu.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/velocity/velocity.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/LycTechStack.github.io/js/utils.js"></script>
+
+<script src="/LycTechStack.github.io/js/motion.js"></script>
+
+
+<script src="/LycTechStack.github.io/js/schemes/pisces.js"></script>
+
+
+<script src="/LycTechStack.github.io/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/LycTechStack.github.io/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '09aa5d8a5587f012a8af',
+      clientSecret: '7f7ec08f02d74e1865e57b5f03a982047700b547',
+      repo        : 'LycTechStack.github.io',
+      owner       : 'LZ328',
+      admin       : ['LZ328'],
+      id          : 'fa1b785968b028f37363fb54ba74fcb9',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+    </div>
+  
+</body>
+</html>
