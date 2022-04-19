@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/LycTechStack.github.io/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/LycTechStack.github.io/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/LycTechStack.github.io/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/LycTechStack.github.io/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/LycTechStack.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="/LycTechStack.github.io/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/LycTechStack.github.io/lib/pace/pace-theme-minimal.min.css">
+  <script src="/LycTechStack.github.io/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lz328.github.io","root":"/LycTechStack.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":5,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="噪声在游戏领域的应用极为广泛，能帮助我们产生更加真实的纹理、特效等。之前在 Shader 的学习中，我们就使用过噪声纹理，并在最后提到了这些噪声纹理来自于哪里，著名的 Perlin 噪声就是其中之一。Perlin 噪声由于计算量小，效果好而被广泛应用，它的发明者 Ken Perlin 凭借这一算法还获得了当年的奥斯卡科技成果奖。这一节我们在光线追踪器中自己实现 Perlin 噪声。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【RayTracer】（十二）Perlin噪声">
+<meta property="og:url" content="https://lz328.github.io/LycTechStack.github.io/2022/04/19/20220419-RayTracer-Perlin%E5%99%AA%E5%A3%B0/index.html">
+<meta property="og:site_name" content="LycTechStack">
+<meta property="og:description" content="噪声在游戏领域的应用极为广泛，能帮助我们产生更加真实的纹理、特效等。之前在 Shader 的学习中，我们就使用过噪声纹理，并在最后提到了这些噪声纹理来自于哪里，著名的 Perlin 噪声就是其中之一。Perlin 噪声由于计算量小，效果好而被广泛应用，它的发明者 Ken Perlin 凭借这一算法还获得了当年的奥斯卡科技成果奖。这一节我们在光线追踪器中自己实现 Perlin 噪声。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/04/19/20220419-RayTracer-Perlin%E5%99%AA%E5%A3%B0/20151218110535114.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/04/19/20220419-RayTracer-Perlin%E5%99%AA%E5%A3%B0/PerlinNoise.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/04/19/20220419-RayTracer-Perlin%E5%99%AA%E5%A3%B0/PerlinNoise2-16503697126921.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/04/19/20220419-RayTracer-Perlin%E5%99%AA%E5%A3%B0/PerlinNoise3.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/04/19/20220419-RayTracer-Perlin%E5%99%AA%E5%A3%B0/PerlinNoise4.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/04/19/20220419-RayTracer-Perlin%E5%99%AA%E5%A3%B0/PerlinNoise5.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/04/19/20220419-RayTracer-Perlin%E5%99%AA%E5%A3%B0/PerlinNoise6.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/04/19/20220419-RayTracer-Perlin%E5%99%AA%E5%A3%B0/PerlinNoise7.png">
+<meta property="article:published_time" content="2022-04-19T12:48:53.000Z">
+<meta property="article:modified_time" content="2022-04-19T12:57:57.839Z">
+<meta property="article:author" content="Lyc">
+<meta property="article:tag" content="计算机图形学">
+<meta property="article:tag" content="C++">
+<meta property="article:tag" content="光线追踪">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2022/04/19/20220419-RayTracer-Perlin%E5%99%AA%E5%A3%B0/20151218110535114.png">
+
+<link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/04/19/20220419-RayTracer-Perlin%E5%99%AA%E5%A3%B0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>【RayTracer】（十二）Perlin噪声 | LycTechStack</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/LycTechStack.github.io/atom.xml" title="LycTechStack" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/LycTechStack.github.io/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LycTechStack</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Lyc的个人成长技术栈</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/LycTechStack.github.io/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/LycTechStack.github.io/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/LycTechStack.github.io/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/LycTechStack.github.io/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/LycTechStack.github.io/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://lz328.github.io/LycTechStack.github.io/2022/04/19/20220419-RayTracer-Perlin%E5%99%AA%E5%A3%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/LycTechStack.github.io/images/avatar.png">
+      <meta itemprop="name" content="Lyc">
+      <meta itemprop="description" content="从零开始的个人学习总结和技术经验分享，主要内容包括C++、数据结构、算法、计算机图形学、3D数学、实时渲染、游戏引擎等等，希望未来能真正踏入图形/引擎开发的大门！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LycTechStack">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【RayTracer】（十二）Perlin噪声
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-04-19 20:48:53 / 修改时间：20:57:57" itemprop="dateCreated datePublished" datetime="2022-04-19T20:48:53+08:00">2022-04-19</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/LycTechStack.github.io/categories/RayTracer/" itemprop="url" rel="index"><span itemprop="name">RayTracer</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>11k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>10 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>噪声在游戏领域的应用极为广泛，能帮助我们产生更加真实的纹理、特效等。之前在 Shader 的学习中，我们就使用过噪声纹理，并在最后提到了这些噪声纹理来自于哪里，著名的 Perlin 噪声就是其中之一。Perlin 噪声由于计算量小，效果好而被广泛应用，它的发明者 Ken Perlin 凭借这一算法还获得了当年的奥斯卡科技成果奖。这一节我们在光线追踪器中自己实现 Perlin 噪声。</p>
+<p><em><span id="more"></span></em></p>
+<h3 id="1-Perlin-噪声原理"><a href="#1-Perlin-噪声原理" class="headerlink" title="1 Perlin 噪声原理"></a>1 Perlin 噪声原理</h3><p>Perlin 噪声的产生是由于，如果我们用完全随机的噪声，比如白噪声，生成的纹理或者效果会显得非常不自然，因为很多真实世界中看似没有规律的事物，实际上是存在一定规律的，只是看起来是杂乱无章的。因此 Perlin 噪声诞生了，Perlin 噪声是一个非常强大算法，经常用于程序生成随机内容，在游戏和其他像电影、动画等多媒体领域广泛应用。在游戏领域，Perlin 噪声可以用于生成波形，起伏不平的材质或者纹理。Perlin 噪声绝大部分应用在二维，三维层面上，但某种意义上也能拓展到四维。Perlin 噪声在一维层面上可用于卷轴地形、模拟手绘线条等，在二维或三维上用于生成随机地形，火焰燃烧特效，水和云等等。如果将 Perlin 噪声拓展到四维层面，即 w 轴代表时间，就能利用 Perlin 噪声生成动画。</p>
+<p>Perlin噪声实现需要三个步骤：</p>
+<ul>
+<li>定义一个晶格结构，每个晶格的顶点有一个“伪随机”的梯度向量。所谓“伪随机”是指，对于给定的输入得到的值是一样的，因此并不是真正的随机。但并不影响效果，因为只要相同的值离得足够远，就看不出来是伪随机。对于二维的 Perlin 噪声来说，晶格结构就是一个平面网格，三维的就是一个立方体网格。</li>
+<li>输入一个点（二维的话就是二维坐标，三维就是三维坐标），我们找到和它相邻的那些晶格顶点（二维下有4个，三维下有8个），计算该点到各个晶格顶点的距离向量，再分别与顶点上的梯度向量做点乘，得到二维下 4 个，三维下 8 个点乘结果。</li>
+<li>使用缓和曲线（ease curves）来计算它们的权重和。在原始的 Perlin 噪声实现中，缓和曲线是 $s(t)&#x3D;3t^2−2t^3$，在2002年的论文中，Perlin 改进为 $s(t)&#x3D;6t^5−15t^4+10t^3$。</li>
+</ul>
+<blockquote>
+<p>这里简单解释一下，为什么不直接使用线性插值，即 $s(t) &#x3D; t$。直接使用的线性插值的话，它的一阶导在晶格顶点处（即 t &#x3D; 0 或 t &#x3D; 1）不为 0，会造成明显的不连续性。 $s(t)&#x3D;3t^2−2t^3$ 在一阶导满足连续性， $s(t)&#x3D;6t^5−15t^4+10t^3$ 在二阶导上仍然满足连续性。</p>
+</blockquote>
+<p>下图描述了前两个步骤：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/19/20220419-RayTracer-Perlin%E5%99%AA%E5%A3%B0/20151218110535114.png" alt="20151218110535114"></p>
+<h3 id="2-实现"><a href="#2-实现" class="headerlink" title="2 实现"></a>2 实现</h3><p>我们从简到繁一步一步实现 Perlin 噪声，首先实现一个简化版本。Perlin 噪声函数实际上就是对于一个给定的输入点，输出一个 double 类型的噪声值，这个值是伪随机的，也就是说对于相同的给定点，得到的值会是一样的。因此我们实现一个 Perlin 噪声类，在类中根据以上步骤计算噪声值。</p>
+<p>在具体实现中，我们使用 256 个晶格，但是先不去计算每个晶格顶点的随机梯度向量，也不去计算给定的点和周围八个晶格顶点的距离向量和随机梯度向量的点乘，我们直接随机生成这些点乘结果存在一个查找表中（只是这样理解，因为点乘也只是一个数字而已，但实际上这是一种并不正确的简化，之后会正确的实现），然后根据给定点的坐标去查找点乘结果，然后将这些点乘结果利用三线性插值结合起来。</p>
+<p>在查找的时候，我们预先计算一个随机排列数组 P[n]，P[n] 里面存储的是打乱后的 0<del>255 的排列值，然后我们根据给定点的坐标作为索引，到 P[n] 中找到一个 0</del>255 的下标，用这个下标取到查找表中对应的点乘结果。对于三维空间，我们要分别计算三个维度的 P[n] 数组，然后将三个下标值加起来并限制在  0~255 的范围，再去查找对应的点乘结果，作为一个顶点的点乘，这样查找八次即可。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">* Perlin噪声类</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">pragma</span> once</span></span><br><span class="line"><span class="meta">#<span class="keyword">ifndef</span> PERLIN_H</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PERLIN_H</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;utilities.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">perlin</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">perlin</span>() &#123;</span><br><span class="line">        <span class="comment">// 生成随机点乘结果</span></span><br><span class="line">        ranfloat = <span class="keyword">new</span> <span class="type">double</span>[point_count];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; point_count; ++i) &#123;</span><br><span class="line">            ranfloat[i] = <span class="built_in">random_double</span>();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 生成三个维度的P[n]数组</span></span><br><span class="line">        perm_x = <span class="built_in">perlin_generate_perm</span>();</span><br><span class="line">        perm_y = <span class="built_in">perlin_generate_perm</span>();</span><br><span class="line">        perm_z = <span class="built_in">perlin_generate_perm</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ~<span class="built_in">perlin</span>() &#123;</span><br><span class="line">        <span class="keyword">delete</span>[] ranfloat;</span><br><span class="line">        <span class="keyword">delete</span>[] perm_x;</span><br><span class="line">        <span class="keyword">delete</span>[] perm_y;</span><br><span class="line">        <span class="keyword">delete</span>[] perm_z;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Perlin 噪声函数，给定三维空间一点，返回噪声值</span></span><br><span class="line">    <span class="function"><span class="type">double</span> <span class="title">noise</span><span class="params">(<span class="type">const</span> point3&amp; p)</span> <span class="type">const</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 三个维度坐标的小数部分相当于到一个单位立方体各个维度的距离，作为插值的系数</span></span><br><span class="line">        <span class="keyword">auto</span> u = p.<span class="built_in">x</span>() - <span class="built_in">floor</span>(p.<span class="built_in">x</span>());</span><br><span class="line">        <span class="keyword">auto</span> v = p.<span class="built_in">y</span>() - <span class="built_in">floor</span>(p.<span class="built_in">y</span>());</span><br><span class="line">        <span class="keyword">auto</span> w = p.<span class="built_in">z</span>() - <span class="built_in">floor</span>(p.<span class="built_in">z</span>());</span><br><span class="line">        <span class="comment">// 三个维度坐标的整数部分，用于到P[n]数组中找到查找表下标</span></span><br><span class="line">        <span class="keyword">auto</span> i = <span class="built_in">static_cast</span>&lt;<span class="type">int</span>&gt;(<span class="built_in">floor</span>(p.<span class="built_in">x</span>()));</span><br><span class="line">        <span class="keyword">auto</span> j = <span class="built_in">static_cast</span>&lt;<span class="type">int</span>&gt;(<span class="built_in">floor</span>(p.<span class="built_in">y</span>()));</span><br><span class="line">        <span class="keyword">auto</span> k = <span class="built_in">static_cast</span>&lt;<span class="type">int</span>&gt;(<span class="built_in">floor</span>(p.<span class="built_in">z</span>()));</span><br><span class="line">        <span class="comment">// 存储离该点最近的八个晶格顶点的随机梯度向量和到该点的距离向量的点乘结果</span></span><br><span class="line">        <span class="type">double</span> c[<span class="number">2</span>][<span class="number">2</span>][<span class="number">2</span>];</span><br><span class="line">        <span class="comment">// 到查找表中查找八个点乘结果</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> di = <span class="number">0</span>; di &lt; <span class="number">2</span>; di++)</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> dj = <span class="number">0</span>; dj &lt; <span class="number">2</span>; dj++)</span><br><span class="line">                <span class="keyword">for</span> (<span class="type">int</span> dk = <span class="number">0</span>; dk &lt; <span class="number">2</span>; dk++)</span><br><span class="line">                    <span class="comment">// 异或是不进位加法，相当于把三个P[n]数组中的下标加起来并限制在0~255之间，避免下标越界</span></span><br><span class="line">                    c[di][dj][dk] = ranfloat[</span><br><span class="line">                        perm_x[(i + di) &amp; <span class="number">255</span>] ^</span><br><span class="line">                            perm_y[(j + dj) &amp; <span class="number">255</span>] ^</span><br><span class="line">                            perm_z[(k + dk) &amp; <span class="number">255</span>]</span><br><span class="line">                    ];</span><br><span class="line">        <span class="comment">// 对八个点乘结果三线性插值</span></span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">trilinear_interp</span>(c, u, v, w);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="type">static</span> <span class="type">const</span> <span class="type">int</span> point_count = <span class="number">256</span>;</span><br><span class="line">    <span class="type">double</span>* ranfloat;   <span class="comment">// 存储随机点乘结果的查找表</span></span><br><span class="line">    <span class="type">int</span>* perm_x;        <span class="comment">// x维度的P[n]数组</span></span><br><span class="line">    <span class="type">int</span>* perm_y;        <span class="comment">// y维度的P[n]数组</span></span><br><span class="line">    <span class="type">int</span>* perm_z;        <span class="comment">// z维度的P[n]数组</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 生成从 0 到 point_count - 1 的乱序数组</span></span><br><span class="line">    <span class="comment">// 思路是先生成顺序的数组，然后使用洗牌算法打乱</span></span><br><span class="line">    <span class="function"><span class="type">static</span> <span class="type">int</span>* <span class="title">perlin_generate_perm</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">auto</span> p = <span class="keyword">new</span> <span class="type">int</span>[point_count];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; perlin::point_count; i++)</span><br><span class="line">            p[i] = i;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">permute</span>(p, point_count);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> p;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 洗牌算法打乱数组，从后向前遍历数组，每次随机挑一个下标和当前下标交换</span></span><br><span class="line">    <span class="function"><span class="type">static</span> <span class="type">void</span> <span class="title">permute</span><span class="params">(<span class="type">int</span>* p, <span class="type">int</span> n)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = n - <span class="number">1</span>; i &gt; <span class="number">0</span>; i--) &#123;</span><br><span class="line">            <span class="type">int</span> target = <span class="built_in">random_int</span>(<span class="number">0</span>, i);</span><br><span class="line">            <span class="type">int</span> tmp = p[i];</span><br><span class="line">            p[i] = p[target];</span><br><span class="line">            p[target] = tmp;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 三线性插值</span></span><br><span class="line">    <span class="function"><span class="type">static</span> <span class="type">double</span> <span class="title">trilinear_interp</span><span class="params">(<span class="type">double</span> c[<span class="number">2</span>][<span class="number">2</span>][<span class="number">2</span>], <span class="type">double</span> u, <span class="type">double</span> v, <span class="type">double</span> w)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">auto</span> accum = <span class="number">0.0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">2</span>; i++)</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">0</span>; j &lt; <span class="number">2</span>; j++)</span><br><span class="line">                <span class="keyword">for</span> (<span class="type">int</span> k = <span class="number">0</span>; k &lt; <span class="number">2</span>; k++)</span><br><span class="line">                    accum += (i * u + (<span class="number">1</span> - i) * (<span class="number">1</span> - u)) *</span><br><span class="line">                    (j * v + (<span class="number">1</span> - j) * (<span class="number">1</span> - v)) *</span><br><span class="line">                    (k * w + (<span class="number">1</span> - k) * (<span class="number">1</span> - w)) * c[i][j][k];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> accum;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-测试效果"><a href="#3-测试效果" class="headerlink" title="3 测试效果"></a>3 测试效果</h3><p>然后我们创建一个 Perlin 噪声纹理：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Perlin噪声纹理</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">noise_texture</span> : <span class="keyword">public</span> texture &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">noise_texture</span>() &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> color <span class="title">value</span><span class="params">(<span class="type">double</span> u, <span class="type">double</span> v, <span class="type">const</span> point3&amp; p)</span> <span class="type">const</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">color</span>(<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>) * noise.<span class="built_in">noise</span>(p);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    perlin noise;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>再创建一个新场景：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Perlin噪声测试场景</span></span><br><span class="line"><span class="function">hittable_list <span class="title">two_perlin_spheres</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    hittable_list objects;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">auto</span> pertext = <span class="built_in">make_shared</span>&lt;noise_texture&gt;();</span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(</span><br><span class="line">        <span class="built_in">point3</span>(<span class="number">0</span>, <span class="number">-1000</span>, <span class="number">0</span>), <span class="built_in">point3</span>(<span class="number">0</span>, <span class="number">-1000</span>, <span class="number">0</span>), <span class="number">0.0</span>, <span class="number">1.0</span>, <span class="number">1000</span>, <span class="built_in">make_shared</span>&lt;lambertian&gt;(pertext)));</span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(</span><br><span class="line">        <span class="built_in">point3</span>(<span class="number">0</span>, <span class="number">2</span>, <span class="number">0</span>), <span class="built_in">point3</span>(<span class="number">0</span>, <span class="number">2</span>, <span class="number">0</span>), <span class="number">0.0</span>, <span class="number">1.0</span>, <span class="number">2</span>, <span class="built_in">make_shared</span>&lt;lambertian&gt;(pertext)));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> objects;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>最后修改主函数部分：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">switch</span> (<span class="number">0</span>) &#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">        world = <span class="built_in">random_scene</span>();</span><br><span class="line">        lookfrom = <span class="built_in">point3</span>(<span class="number">13</span>, <span class="number">2</span>, <span class="number">3</span>);</span><br><span class="line">        lookat = <span class="built_in">point3</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">        vfov = <span class="number">20.0</span>;</span><br><span class="line">        aperture = <span class="number">0.1</span>;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">2</span>:</span><br><span class="line">        world = <span class="built_in">two_spheres</span>();</span><br><span class="line">        lookfrom = <span class="built_in">point3</span>(<span class="number">13</span>, <span class="number">2</span>, <span class="number">3</span>);</span><br><span class="line">        lookat = <span class="built_in">point3</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">        vfov = <span class="number">20.0</span>;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">    <span class="keyword">case</span> <span class="number">3</span>:</span><br><span class="line">        world = <span class="built_in">two_perlin_spheres</span>();</span><br><span class="line">        lookfrom = <span class="built_in">point3</span>(<span class="number">13</span>, <span class="number">2</span>, <span class="number">3</span>);</span><br><span class="line">        lookat = <span class="built_in">point3</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">        vfov = <span class="number">20.0</span>;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>得到的效果如下：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/19/20220419-RayTracer-Perlin%E5%99%AA%E5%A3%B0/PerlinNoise.png" alt="PerlinNoise"></p>
+<h3 id="4-改进实现"><a href="#4-改进实现" class="headerlink" title="4 改进实现"></a>4 改进实现</h3><p>接下来我们改进上面的简化版实现，首先是插值系数，我们使用 $s(t)&#x3D;6t^5−15t^4+10t^3$ 来改进插值系数，在 Perlin 类中加一个 <code>fade</code> 函数：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">static</span> <span class="type">double</span> <span class="title">fade</span><span class="params">(<span class="type">double</span> x)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> x * x * x * (x * (x * <span class="number">6</span> - <span class="number">15</span>) + <span class="number">10</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后修改 <code>noise</code> 函数：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Perlin 噪声函数，给定三维空间一点，返回噪声值</span></span><br><span class="line"><span class="function"><span class="type">double</span> <span class="title">noise</span><span class="params">(<span class="type">const</span> point3&amp; p)</span> <span class="type">const</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 三个维度坐标的小数部分相当于到一个单位立方体各个维度的距离，作为插值的系数</span></span><br><span class="line">    <span class="keyword">auto</span> u = p.<span class="built_in">x</span>() - <span class="built_in">floor</span>(p.<span class="built_in">x</span>());</span><br><span class="line">    <span class="keyword">auto</span> v = p.<span class="built_in">y</span>() - <span class="built_in">floor</span>(p.<span class="built_in">y</span>());</span><br><span class="line">    <span class="keyword">auto</span> w = p.<span class="built_in">z</span>() - <span class="built_in">floor</span>(p.<span class="built_in">z</span>());</span><br><span class="line">    <span class="comment">// 使用fade函数修改插值系数</span></span><br><span class="line">    u = <span class="built_in">fade</span>(u);</span><br><span class="line">    v = <span class="built_in">fade</span>(v);</span><br><span class="line">    w = <span class="built_in">fade</span>(w);</span><br><span class="line">    <span class="comment">// 三个维度坐标的整数部分，用于到P[n]数组中找到查找表下标</span></span><br><span class="line">    <span class="keyword">auto</span> i = <span class="built_in">static_cast</span>&lt;<span class="type">int</span>&gt;(<span class="built_in">floor</span>(p.<span class="built_in">x</span>()));</span><br><span class="line">    <span class="keyword">auto</span> j = <span class="built_in">static_cast</span>&lt;<span class="type">int</span>&gt;(<span class="built_in">floor</span>(p.<span class="built_in">y</span>()));</span><br><span class="line">    <span class="keyword">auto</span> k = <span class="built_in">static_cast</span>&lt;<span class="type">int</span>&gt;(<span class="built_in">floor</span>(p.<span class="built_in">z</span>()));</span><br><span class="line">    <span class="comment">// 存储离该点最近的八个晶格顶点的随机梯度向量和到该点的距离向量的点乘结果</span></span><br><span class="line">    <span class="type">double</span> c[<span class="number">2</span>][<span class="number">2</span>][<span class="number">2</span>];</span><br><span class="line">    <span class="comment">// 到查找表中查找八个点乘结果</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> di = <span class="number">0</span>; di &lt; <span class="number">2</span>; di++)</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> dj = <span class="number">0</span>; dj &lt; <span class="number">2</span>; dj++)</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> dk = <span class="number">0</span>; dk &lt; <span class="number">2</span>; dk++)</span><br><span class="line">                <span class="comment">// 异或是不进位加法，相当于把三个P[n]数组中的下标加起来并限制在0~255之间，避免下标越界</span></span><br><span class="line">                c[di][dj][dk] = ranfloat[</span><br><span class="line">                perm_x[(i + di) &amp; <span class="number">255</span>] ^</span><br><span class="line">                perm_y[(j + dj) &amp; <span class="number">255</span>] ^</span><br><span class="line">                perm_z[(k + dk) &amp; <span class="number">255</span>]</span><br><span class="line">            ];</span><br><span class="line">    <span class="comment">// 对八个点乘结果三线性插值</span></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">trilinear_interp</span>(c, u, v, w);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>效果如下：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/19/20220419-RayTracer-Perlin%E5%99%AA%E5%A3%B0/PerlinNoise2-16503697126921.png" alt="PerlinNoise2"></p>
+<p>可以看出一些随机效果，但是频率太低了，我们可以为纹理加上一个频率属性，控制随机的频率，这可以通过对传入 <code>noise</code> 函数的顶点值 p 进行缩放实现：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Perlin噪声纹理</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">noise_texture</span> : <span class="keyword">public</span> texture &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">noise_texture</span>() &#123;&#125;</span><br><span class="line">    <span class="built_in">noise_texture</span>(<span class="type">double</span> sc) : <span class="built_in">scale</span>(sc) &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> color <span class="title">value</span><span class="params">(<span class="type">double</span> u, <span class="type">double</span> v, <span class="type">const</span> point3&amp; p)</span> <span class="type">const</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">color</span>(<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>) * noise.<span class="built_in">noise</span>(scale * p);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    perlin noise;</span><br><span class="line">    <span class="type">double</span> scale;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>然后修改场景中的纹理，给定一个缩放系数：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Perlin噪声测试场景</span></span><br><span class="line"><span class="function">hittable_list <span class="title">two_perlin_spheres</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    hittable_list objects;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">auto</span> pertext = <span class="built_in">make_shared</span>&lt;noise_texture&gt;(<span class="number">4</span>);</span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(</span><br><span class="line">        <span class="built_in">point3</span>(<span class="number">0</span>, <span class="number">-1000</span>, <span class="number">0</span>), <span class="built_in">point3</span>(<span class="number">0</span>, <span class="number">-1000</span>, <span class="number">0</span>), <span class="number">0.0</span>, <span class="number">1.0</span>, <span class="number">1000</span>, <span class="built_in">make_shared</span>&lt;lambertian&gt;(pertext)));</span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(</span><br><span class="line">        <span class="built_in">point3</span>(<span class="number">0</span>, <span class="number">2</span>, <span class="number">0</span>), <span class="built_in">point3</span>(<span class="number">0</span>, <span class="number">2</span>, <span class="number">0</span>), <span class="number">0.0</span>, <span class="number">1.0</span>, <span class="number">2</span>, <span class="built_in">make_shared</span>&lt;lambertian&gt;(pertext)));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> objects;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>效果如下：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/19/20220419-RayTracer-Perlin%E5%99%AA%E5%A3%B0/PerlinNoise3.png" alt="PerlinNoise3"></p>
+<p>最后我们来实现真正的 Perlin 噪声函数，现在只要将随机生成的点乘结果，变为随机生成梯度向量，然后和点 p 到八个晶格顶点的距离向量做点乘，再利用三线性插值融合点乘结果即可。为此我们需要修改 Perlin 类：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">* Perlin噪声类</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">pragma</span> once</span></span><br><span class="line"><span class="meta">#<span class="keyword">ifndef</span> PERLIN_H</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PERLIN_H</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;utilities.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">perlin</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">perlin</span>() &#123;</span><br><span class="line">        <span class="comment">// 生成随机梯度向量</span></span><br><span class="line">        ranvec = <span class="keyword">new</span> vec3[point_count];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; point_count; ++i) &#123;</span><br><span class="line">            ranvec[i] = <span class="built_in">normalize</span>(<span class="built_in">random_vec</span>(<span class="number">-1</span>, <span class="number">1</span>));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 生成三个维度的P[n]数组</span></span><br><span class="line">        perm_x = <span class="built_in">perlin_generate_perm</span>();</span><br><span class="line">        perm_y = <span class="built_in">perlin_generate_perm</span>();</span><br><span class="line">        perm_z = <span class="built_in">perlin_generate_perm</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ~<span class="built_in">perlin</span>() &#123;</span><br><span class="line">        <span class="keyword">delete</span>[] ranvec;</span><br><span class="line">        <span class="keyword">delete</span>[] perm_x;</span><br><span class="line">        <span class="keyword">delete</span>[] perm_y;</span><br><span class="line">        <span class="keyword">delete</span>[] perm_z;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Perlin 噪声函数，给定三维空间一点，返回噪声值</span></span><br><span class="line">    <span class="function"><span class="type">double</span> <span class="title">noise</span><span class="params">(<span class="type">const</span> point3&amp; p)</span> <span class="type">const</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 三个维度坐标的小数部分相当于到一个单位立方体各个维度的距离</span></span><br><span class="line">        <span class="keyword">auto</span> u = p.<span class="built_in">x</span>() - <span class="built_in">floor</span>(p.<span class="built_in">x</span>());</span><br><span class="line">        <span class="keyword">auto</span> v = p.<span class="built_in">y</span>() - <span class="built_in">floor</span>(p.<span class="built_in">y</span>());</span><br><span class="line">        <span class="keyword">auto</span> w = p.<span class="built_in">z</span>() - <span class="built_in">floor</span>(p.<span class="built_in">z</span>());</span><br><span class="line">        <span class="comment">// 三个维度坐标的整数部分，用于到P[n]数组中找到查找表下标</span></span><br><span class="line">        <span class="keyword">auto</span> i = <span class="built_in">static_cast</span>&lt;<span class="type">int</span>&gt;(<span class="built_in">floor</span>(p.<span class="built_in">x</span>()));</span><br><span class="line">        <span class="keyword">auto</span> j = <span class="built_in">static_cast</span>&lt;<span class="type">int</span>&gt;(<span class="built_in">floor</span>(p.<span class="built_in">y</span>()));</span><br><span class="line">        <span class="keyword">auto</span> k = <span class="built_in">static_cast</span>&lt;<span class="type">int</span>&gt;(<span class="built_in">floor</span>(p.<span class="built_in">z</span>()));</span><br><span class="line">        <span class="comment">// 存储离该点最近的八个晶格顶点的随机梯度向量</span></span><br><span class="line">        vec3 c[<span class="number">2</span>][<span class="number">2</span>][<span class="number">2</span>];</span><br><span class="line">        <span class="comment">// 到查找表中查找八个随机梯度向量</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> di = <span class="number">0</span>; di &lt; <span class="number">2</span>; di++)</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> dj = <span class="number">0</span>; dj &lt; <span class="number">2</span>; dj++)</span><br><span class="line">                <span class="keyword">for</span> (<span class="type">int</span> dk = <span class="number">0</span>; dk &lt; <span class="number">2</span>; dk++)</span><br><span class="line">                    <span class="comment">// 异或是不进位加法，相当于把三个P[n]数组中的下标加起来并限制在0~255之间，避免下标越界</span></span><br><span class="line">                    c[di][dj][dk] = ranvec[</span><br><span class="line">                        perm_x[(i + di) &amp; <span class="number">255</span>] ^</span><br><span class="line">                            perm_y[(j + dj) &amp; <span class="number">255</span>] ^</span><br><span class="line">                            perm_z[(k + dk) &amp; <span class="number">255</span>]</span><br><span class="line">                    ];</span><br><span class="line">        <span class="comment">// 用八个梯度向量和距离向量点乘并线性插值</span></span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">perlin_interp</span>(c, u, v, w);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="type">static</span> <span class="type">const</span> <span class="type">int</span> point_count = <span class="number">256</span>;</span><br><span class="line">    vec3* ranvec;       <span class="comment">// 存储随机梯度向量查找表</span></span><br><span class="line">    <span class="type">int</span>* perm_x;        <span class="comment">// x维度的P[n]数组</span></span><br><span class="line">    <span class="type">int</span>* perm_y;        <span class="comment">// y维度的P[n]数组</span></span><br><span class="line">    <span class="type">int</span>* perm_z;        <span class="comment">// z维度的P[n]数组</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 生成从 0 到 point_count - 1 的乱序数组</span></span><br><span class="line">    <span class="comment">// 思路是先生成顺序的数组，然后使用洗牌算法打乱</span></span><br><span class="line">    <span class="function"><span class="type">static</span> <span class="type">int</span>* <span class="title">perlin_generate_perm</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">auto</span> p = <span class="keyword">new</span> <span class="type">int</span>[point_count];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; perlin::point_count; i++)</span><br><span class="line">            p[i] = i;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">permute</span>(p, point_count);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> p;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 洗牌算法打乱数组，从后向前遍历数组，每次随机挑一个下标和当前下标交换</span></span><br><span class="line">    <span class="function"><span class="type">static</span> <span class="type">void</span> <span class="title">permute</span><span class="params">(<span class="type">int</span>* p, <span class="type">int</span> n)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = n - <span class="number">1</span>; i &gt; <span class="number">0</span>; i--) &#123;</span><br><span class="line">            <span class="type">int</span> target = <span class="built_in">random_int</span>(<span class="number">0</span>, i);</span><br><span class="line">            <span class="type">int</span> tmp = p[i];</span><br><span class="line">            p[i] = p[target];</span><br><span class="line">            p[target] = tmp;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将八个顶点的梯度向量和点p到八个顶点的距离向量点乘，并做三线性插值</span></span><br><span class="line">    <span class="function"><span class="type">static</span> <span class="type">double</span> <span class="title">perlin_interp</span><span class="params">(vec3 c[<span class="number">2</span>][<span class="number">2</span>][<span class="number">2</span>], <span class="type">double</span> u, <span class="type">double</span> v, <span class="type">double</span> w)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 经过改进的线性插值系数</span></span><br><span class="line">        <span class="keyword">auto</span> uu = <span class="built_in">fade</span>(u);</span><br><span class="line">        <span class="keyword">auto</span> vv = <span class="built_in">fade</span>(v);</span><br><span class="line">        <span class="keyword">auto</span> ww = <span class="built_in">fade</span>(w);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">auto</span> accum = <span class="number">0.0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">2</span>; i++)</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">0</span>; j &lt; <span class="number">2</span>; j++)</span><br><span class="line">                <span class="keyword">for</span> (<span class="type">int</span> k = <span class="number">0</span>; k &lt; <span class="number">2</span>; k++) &#123;</span><br><span class="line">                    <span class="function">vec3 <span class="title">weight_v</span><span class="params">(u - i, v - j, w - k)</span></span>;</span><br><span class="line">                    accum += (i * uu + (<span class="number">1</span> - i) * (<span class="number">1</span> - uu))</span><br><span class="line">                        * (j * vv + (<span class="number">1</span> - j) * (<span class="number">1</span> - vv))</span><br><span class="line">                        * (k * ww + (<span class="number">1</span> - k) * (<span class="number">1</span> - ww))</span><br><span class="line">                        * <span class="built_in">dot</span>(c[i][j][k], weight_v);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> accum;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 缓和曲线，用于缓和线性插值系数</span></span><br><span class="line">    <span class="function"><span class="type">static</span> <span class="type">double</span> <span class="title">fade</span><span class="params">(<span class="type">double</span> x)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> x * x * x * (x * (x * <span class="number">6</span> - <span class="number">15</span>) + <span class="number">10</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+
+<p>按照这样的实现，由于向量点乘可能为负，因此 <code>noise</code> 函数输出的值可能为负，这样得到的颜色值就可能为负，最后进行伽马校正的时候我们要开根号，就会得到不正确的值。所以我们要在纹理类中将得到的噪声值从 [-1, 1] 映射到 [0, 1]：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Perlin噪声纹理</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">noise_texture</span> : <span class="keyword">public</span> texture &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">noise_texture</span>() &#123;&#125;</span><br><span class="line">    <span class="built_in">noise_texture</span>(<span class="type">double</span> sc) : <span class="built_in">scale</span>(sc) &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> color <span class="title">value</span><span class="params">(<span class="type">double</span> u, <span class="type">double</span> v, <span class="type">const</span> point3&amp; p)</span> <span class="type">const</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 得到的noise值范围是[-1,1]，防止颜色为负，映射到[0,1]</span></span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">color</span>(<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>) * <span class="number">0.5</span> * (<span class="number">1.0</span> + noise.<span class="built_in">noise</span>(scale * p));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    perlin noise;</span><br><span class="line">    <span class="type">double</span> scale;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>最后看一下真正的 Perlin 噪声的效果：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/19/20220419-RayTracer-Perlin%E5%99%AA%E5%A3%B0/PerlinNoise4.png" alt="PerlinNoise4"></p>
+<h3 id="5-Turbulence"><a href="#5-Turbulence" class="headerlink" title="5 Turbulence"></a>5 Turbulence</h3><p>将多个不同频率的噪声混合起来得到的噪声称为 Turbulence，利用 Turbulence 可以实现许多随机纹理，我们可以通过多次调用 <code>noise</code> 函数并将结果融合来得到 Turbulence。在 Perlin 类中增加：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 多个noise组合形成turbulence</span></span><br><span class="line"><span class="function"><span class="type">double</span> <span class="title">turb</span><span class="params">(<span class="type">const</span> point3&amp; p, <span class="type">int</span> depth = <span class="number">7</span>)</span> <span class="type">const</span> </span>&#123;</span><br><span class="line">    <span class="keyword">auto</span> accum = <span class="number">0.0</span>;</span><br><span class="line">    <span class="keyword">auto</span> temp_p = p;</span><br><span class="line">    <span class="keyword">auto</span> weight = <span class="number">1.0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; depth; i++) &#123;</span><br><span class="line">        accum += weight * <span class="built_in">noise</span>(temp_p);</span><br><span class="line">        weight *= <span class="number">0.5</span>;</span><br><span class="line">        temp_p *= <span class="number">2</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">fabs</span>(accum);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后修改噪声纹理类：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Perlin噪声纹理</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">noise_texture</span> : <span class="keyword">public</span> texture &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">noise_texture</span>() &#123;&#125;</span><br><span class="line">    <span class="built_in">noise_texture</span>(<span class="type">double</span> sc) : <span class="built_in">scale</span>(sc) &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> color <span class="title">value</span><span class="params">(<span class="type">double</span> u, <span class="type">double</span> v, <span class="type">const</span> point3&amp; p)</span> <span class="type">const</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 由于turb函数对最终融合的噪声取了绝对值，这里不需要再做任何映射</span></span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">color</span>(<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>) * noise.<span class="built_in">turb</span>(scale * p);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    perlin noise;</span><br><span class="line">    <span class="type">double</span> scale;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>得到的效果如下：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/19/20220419-RayTracer-Perlin%E5%99%AA%E5%A3%B0/PerlinNoise5.png" alt="PerlinNoise5"></p>
+<h3 id="6-大理石纹理"><a href="#6-大理石纹理" class="headerlink" title="6 大理石纹理"></a>6 大理石纹理</h3><p>一般来说，Turbulence 不会像上面那样直接使用。而是会作为一个随机扰动来生成不同的纹理，比如大理石纹理。我们可以让点 p 的某一维度和三角函数成正比，这样就可以模拟大理石的裂痕曲线，但是为了不让曲线有规律，我们使用 Turbulence 来改变三角函数的相位，这样就可以实现一个随机的大理石纹理：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Perlin噪声纹理</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">noise_texture</span> : <span class="keyword">public</span> texture &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">noise_texture</span>() &#123;&#125;</span><br><span class="line">    <span class="built_in">noise_texture</span>(<span class="type">double</span> sc) : <span class="built_in">scale</span>(sc) &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> color <span class="title">value</span><span class="params">(<span class="type">double</span> u, <span class="type">double</span> v, <span class="type">const</span> point3&amp; p)</span> <span class="type">const</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 大理石纹理</span></span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">color</span>(<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>) * <span class="number">0.5</span> * (<span class="number">1</span> + <span class="built_in">sin</span>(scale * p.<span class="built_in">z</span>() + <span class="number">10</span> * noise.<span class="built_in">turb</span>(p)));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    perlin noise;</span><br><span class="line">    <span class="type">double</span> scale;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>效果如下：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/19/20220419-RayTracer-Perlin%E5%99%AA%E5%A3%B0/PerlinNoise6.png" alt="PerlinNoise6"></p>
+<p>如果我们把点 p 和三角函数成正比的维度改为 y 轴，得到的效果如下：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/19/20220419-RayTracer-Perlin%E5%99%AA%E5%A3%B0/PerlinNoise7.png" alt="PerlinNoise7"></p>
+
+    </div>
+
+    
+    
+    
+
+    <div>
+    
+      <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">---- 本文结束 <i class="fa fa-trophy"></i> 知识又增加了亿点点！----</div>
+    
+</div>
+<br />
+<div>
+  <div>
+    <fieldset
+        style="
+            border: 1px dashed #C0C0C0;
+            padding: 10px;
+            border-radius: 5px;
+            line-height: 2em;
+            color: #6d6d6d;
+        ">
+        <legend
+            align="center"
+            style="
+                width: 30%;
+                text-align: center;
+                color: #6d6d6d;
+                border: 1px dashed #C0C0C0;
+                border-radius: 5px;
+            ">
+            文章版权声明
+        </legend>
+        1、博客名称：<font color="#37c6c0">LycTechStack</font><br />
+        2、博客网址：<font color="#37c6c0">https://lz328.github.io/LycTechStack.github.io/</font><br />
+        3、本博客的文章部分内容可能来源于网络，仅供大家学习与参考，如有侵权，请联系博主进行删除处理。<br />
+        4、本博客所有文章版权归博主所有，如需转载请标明出处。<br />
+    </fieldset>
+  </div>
+</div>
+
+    
+    </div>
+      
+  <div class="popular-posts-header">相关文章</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\04\11\20220411-RayTracer-基本工具类\" rel="bookmark">【RayTracer】（一）实现基本工具类</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\04\15\20220415-RayTracer-物体类\" rel="bookmark">【RayTracer】（二）实现物体类</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\04\16\20220416-RayTracer-改进相机\" rel="bookmark">【RayTracer】（七）景深效果</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\04\15\20220415-RayTracer-相机类和反走样\" rel="bookmark">【RayTracer】（三）相机类和反走样</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\04\16\20220416-RayTracer-构建随机场景\" rel="bookmark">【RayTracer】（八）构建随机场景</a></div>
+    </li>
+  </ul>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/LycTechStack.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/" rel="tag"># 计算机图形学</a>
+              <a href="/LycTechStack.github.io/tags/C/" rel="tag"># C++</a>
+              <a href="/LycTechStack.github.io/tags/%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/" rel="tag"># 光线追踪</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/LycTechStack.github.io/2022/04/18/20220418-RayTracer-%E7%BA%B9%E7%90%86/" rel="prev" title="【RayTracer】（十一）纹理">
+      <i class="fa fa-chevron-left"></i> 【RayTracer】（十一）纹理
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Perlin-%E5%99%AA%E5%A3%B0%E5%8E%9F%E7%90%86"><span class="nav-text">1 Perlin 噪声原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%AE%9E%E7%8E%B0"><span class="nav-text">2 实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%B5%8B%E8%AF%95%E6%95%88%E6%9E%9C"><span class="nav-text">3 测试效果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E6%94%B9%E8%BF%9B%E5%AE%9E%E7%8E%B0"><span class="nav-text">4 改进实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-Turbulence"><span class="nav-text">5 Turbulence</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E5%A4%A7%E7%90%86%E7%9F%B3%E7%BA%B9%E7%90%86"><span class="nav-text">6 大理石纹理</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Lyc"
+      src="/LycTechStack.github.io/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Lyc</p>
+  <div class="site-description" itemprop="description">从零开始的个人学习总结和技术经验分享，主要内容包括C++、数据结构、算法、计算机图形学、3D数学、实时渲染、游戏引擎等等，希望未来能真正踏入图形/引擎开发的大门！</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/LycTechStack.github.io/archives/">
+        
+          <span class="site-state-item-count">49</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/LycTechStack.github.io/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/LycTechStack.github.io/tags/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/LZ328/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;LZ328&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:27487358@qq.com" title="E-Mail → mailto:27487358@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2021 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heartbeat"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lyc</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">470k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">7:07</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="/LycTechStack.github.io/lib/canvas-ribbon/canvas-ribbon.js"></script>
+  <script src="/LycTechStack.github.io/lib/anime.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/pjax/pjax.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4/dist/browser/pangu.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/velocity/velocity.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/LycTechStack.github.io/js/utils.js"></script>
+
+<script src="/LycTechStack.github.io/js/motion.js"></script>
+
+
+<script src="/LycTechStack.github.io/js/schemes/pisces.js"></script>
+
+
+<script src="/LycTechStack.github.io/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/LycTechStack.github.io/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '09aa5d8a5587f012a8af',
+      clientSecret: '7f7ec08f02d74e1865e57b5f03a982047700b547',
+      repo        : 'LycTechStack.github.io',
+      owner       : 'LZ328',
+      admin       : ['LZ328'],
+      id          : '5753bb1c1798fcc8e41bd30b371de1ef',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+    </div>
+  
+</body>
+</html>
