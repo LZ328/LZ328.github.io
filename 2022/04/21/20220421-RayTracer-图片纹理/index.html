@@ -22,23 +22,24 @@
     var CONFIG = {"hostname":"lz328.github.io","root":"/LycTechStack.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":5,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="图形管线（Graphics Pipeline）这一节将对前面的所有内容做一个总结，因为图形管线就是由前面的所有内容组成的一个图形渲染流水线，空间中的点经过图形管线就被渲染到屏幕上成为图形。 对图形管线的理解对于之后学习 Shader 有非常重要的帮助，《Unity Shader 入门精要》第二章也对图形管线做了非常详细的介绍。">
+  <meta name="description" content="之前我们实现了纯色和噪声纹理，但它们都是程序生成的纹理，这一节我们通过读入图片，实现图片纹理映射。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="【计算机图形学】（八）图形管线">
-<meta property="og:url" content="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E5%9B%BE%E5%BD%A2%E7%AE%A1%E7%BA%BF/index.html">
+<meta property="og:title" content="【RayTracer】（十三）图片纹理">
+<meta property="og:url" content="https://lz328.github.io/LycTechStack.github.io/2022/04/21/20220421-RayTracer-%E5%9B%BE%E7%89%87%E7%BA%B9%E7%90%86/index.html">
 <meta property="og:site_name" content="LycTechStack">
-<meta property="og:description" content="图形管线（Graphics Pipeline）这一节将对前面的所有内容做一个总结，因为图形管线就是由前面的所有内容组成的一个图形渲染流水线，空间中的点经过图形管线就被渲染到屏幕上成为图形。 对图形管线的理解对于之后学习 Shader 有非常重要的帮助，《Unity Shader 入门精要》第二章也对图形管线做了非常详细的介绍。">
+<meta property="og:description" content="之前我们实现了纯色和噪声纹理，但它们都是程序生成的纹理，这一节我们通过读入图片，实现图片纹理映射。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E5%9B%BE%E5%BD%A2%E7%AE%A1%E7%BA%BF/image-20220310201713743.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E5%9B%BE%E5%BD%A2%E7%AE%A1%E7%BA%BF/q3tenh9i8t.png">
-<meta property="article:published_time" content="2022-03-10T13:29:33.000Z">
-<meta property="article:modified_time" content="2022-03-26T10:23:21.238Z">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/04/21/20220421-RayTracer-%E5%9B%BE%E7%89%87%E7%BA%B9%E7%90%86/Earth.png">
+<meta property="article:published_time" content="2022-04-21T09:53:17.000Z">
+<meta property="article:modified_time" content="2022-04-21T09:57:36.800Z">
 <meta property="article:author" content="Lyc">
 <meta property="article:tag" content="计算机图形学">
+<meta property="article:tag" content="C++">
+<meta property="article:tag" content="光线追踪">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E5%9B%BE%E5%BD%A2%E7%AE%A1%E7%BA%BF/image-20220310201713743.png">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2022/04/21/20220421-RayTracer-%E5%9B%BE%E7%89%87%E7%BA%B9%E7%90%86/Earth.png">
 
-<link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E5%9B%BE%E5%BD%A2%E7%AE%A1%E7%BA%BF/">
+<link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/04/21/20220421-RayTracer-%E5%9B%BE%E7%89%87%E7%BA%B9%E7%90%86/">
 
 
 <script id="page-configurations">
@@ -51,7 +52,7 @@
   };
 </script>
 
-  <title>【计算机图形学】（八）图形管线 | LycTechStack</title>
+  <title>【RayTracer】（十三）图片纹理 | LycTechStack</title>
   
 
 
@@ -202,7 +203,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E5%9B%BE%E5%BD%A2%E7%AE%A1%E7%BA%BF/">
+    <link itemprop="mainEntityOfPage" href="https://lz328.github.io/LycTechStack.github.io/2022/04/21/20220421-RayTracer-%E5%9B%BE%E7%89%87%E7%BA%B9%E7%90%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/LycTechStack.github.io/images/avatar.png">
@@ -215,7 +216,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          【计算机图形学】（八）图形管线
+          【RayTracer】（十三）图片纹理
         </h1>
 
         <div class="post-meta">
@@ -224,23 +225,17 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2022-03-10 21:29:33" itemprop="dateCreated datePublished" datetime="2022-03-10T21:29:33+08:00">2022-03-10</time>
+              <time title="创建时间：2022-04-21 17:53:17 / 修改时间：17:57:36" itemprop="dateCreated datePublished" datetime="2022-04-21T17:53:17+08:00">2022-04-21</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-26 18:23:21" itemprop="dateModified" datetime="2022-03-26T18:23:21+08:00">2022-03-26</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/LycTechStack.github.io/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/" itemprop="url" rel="index"><span itemprop="name">计算机图形学</span></a>
+                  <a href="/LycTechStack.github.io/categories/RayTracer/" itemprop="url" rel="index"><span itemprop="name">RayTracer</span></a>
                 </span>
             </span>
 
@@ -257,7 +252,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>2.2k</span>
+              <span>2.4k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -276,33 +271,19 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h3 id="图形管线（Graphics-Pipeline）"><a href="#图形管线（Graphics-Pipeline）" class="headerlink" title="图形管线（Graphics Pipeline）"></a>图形管线（Graphics Pipeline）</h3><p>这一节将对前面的所有内容做一个总结，因为图形管线就是由前面的所有内容组成的一个图形渲染流水线，空间中的点经过图形管线就被渲染到屏幕上成为图形。</p>
-<p>对图形管线的理解对于之后学习 Shader 有非常重要的帮助，《Unity Shader 入门精要》第二章也对图形管线做了非常详细的介绍。</p>
+        <p>之前我们实现了纯色和噪声纹理，但它们都是程序生成的纹理，这一节我们通过读入图片，实现图片纹理映射。</p>
 <p><em><span id="more"></span></em></p>
-<p>图形管线是基于物体顺序渲染的一系列绘制操作的序列。相对于基于物体顺序渲染还有基于图像顺序渲染，会在之后会讲到。基于物体顺序渲染由于其极高的运行效率而统治了图形学的渲染方法，从早期人们提出了软件图形管线后，图形管线的流程思路又被硬件优化内置到显卡中成为硬件图形管线，这两个管线后来呈现出并行关系，负责不同的事务。</p>
-<p>图形管线的主要流程如下：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E5%9B%BE%E5%BD%A2%E7%AE%A1%E7%BA%BF/image-20220310201713743.png" alt="image-20220310201713743"></p>
-<h4 id="1-顶点数据处理"><a href="#1-顶点数据处理" class="headerlink" title="1 顶点数据处理"></a>1 顶点数据处理</h4><p>输入图形管线的是三维空间中的顶点，这些输入的顶点数据不止有坐标，还包括纹理坐标、顶点法线和顶点颜色等各种属性，顶点数据处理就是对这些属性数据进行处理，首先把顶点连成空间中的一个个面，可以是三角形也可以是四边形，这里我们就用常用的三角形，空间中的三角形称为<strong>图元</strong>。</p>
-<p>之后就是经过各种矩阵变换把三维映射到二维屏幕上，在变换的时候还会进行一步重要的操作，叫做视体裁剪，视体就是指透视投影近平面和远平面组成的四棱台。这需要回顾透视投影部分的内容。</p>
-<p>透视投影有一个重要的性质就是它会将直线映射为直线，平面映射为平面，线段映射为线段，并且保留了所有点的排序正确，这保证了三角形正确映射为三角形。</p>
-<p>但是经过透视投影矩阵，原本的 $z$ 将会被映射为 $z’&#x3D;n+f-nf&#x2F;z$。于是我们就会发现在这个映射中，正的 $z$ 值会被映射到负 $z$ 上，负的 $z$  值被映射到正 $z$  上，当我们要渲染的物体都在视体内时自然还能正确投影到屏幕上，但是一旦出现了跨越 $z&#x3D;0$ 的线段，线段就会有一部分被映射到正负无穷因而被撕裂。</p>
-<p>详细来看其实是下面的图所导致的。下图所表示经过透视投影处理后的 $z$ 值情况，可以看到由于视体标准化的原因 $n+f$ 是真正意义上的 0 点，$z$ 值在 $n+f$ 的位置发生的翻转，这个翻转导致了图的下半部分的三角形 $c$ 点经过透视投影后出现在了另一个方向，这将会导致光栅化的时候绘制出错误三角形。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E5%9B%BE%E5%BD%A2%E7%AE%A1%E7%BA%BF/q3tenh9i8t.png" alt="q3tenh9i8t"></p>
-<p>观察上面的图我们还可以发现在视体中的部分(也就是z&#x3D;n到z&#x3D;f的区域)，经过透视投影后也会保持原来的顺序和位置，因而解决这个问题的方法就很直观了，在透视投影前就先将视体之外的面片裁剪掉，这就是视体裁剪。视体裁剪除了防止撕裂外还有一个显而易见的好处就是减少了后面进行投影变换时需要处理的顶点数量，而且减少掉的内容本来就在视体之外所以不会影响到最终的画面。</p>
-<p>具体如何进行裁剪，我们可以根据视体的顶点坐标计算出六个平面的方程，然后将空间中的点带入视体面方程，但平面方程计算比较复杂，更多关于裁剪的内容可以查看本篇的参考内容。</p>
-<h4 id="2-曲面细分"><a href="#2-曲面细分" class="headerlink" title="2 曲面细分"></a>2 曲面细分</h4><p>曲面细分是利用镶嵌化处理技术对三角面进行细分，以此来增加物体表面的三角面的数量，是渲染管线一个可选的阶段。它由外壳着色器(Hull Shader)、镶嵌器(Tessellator)和域着色器(Domain Shader)构成，其中外壳着色器和域着色器是可编程的，而镶嵌器是由硬件管理的。我们可以借助曲面细分的技术实现细节层次(Level-of-Detail)的机制，使得离摄像机越近的物体具有更加丰富的细节，而远离摄像机的物体具有较少的细节。</p>
-<h4 id="3-光栅化"><a href="#3-光栅化" class="headerlink" title="3 光栅化"></a>3 光栅化</h4><p>经过前面的处理我们得到了许多图元，并且最后通过视口变换变换到了屏幕坐标系下，然后就是进行光栅化，光栅化阶段会把图元变成屏幕坐标系中的离散的片元，片元可以理解为像素，但它与像素的区别在于片元拥有比像素更多的信息，例如深度值，法线，纹理坐标等信息。因此片元只是尺度和像素相同，但片元还不能直接显示到屏幕，一个像素会有很多个候选片元，这些片元还要经过一系列计算才能决定哪些片元显示在屏幕上。</p>
-<h4 id="4-片元处理"><a href="#4-片元处理" class="headerlink" title="4 片元处理"></a>4 片元处理</h4><p>片元处理阶段会对各个片元计算深度、颜色等属性信息，这里用到的就是三角形重心坐标插值，计算颜色还要用到纹理映射，因为片元相当于一个像素，所以这里的着色频率相当于是对每一个像素计算着色，也就是Phong Shading。有的图形管线也会在顶点处理时进行着色，也就是进行Gouraud Shading，但效果肯定不如逐片元着色好。</p>
-<h4 id="5-混合测试"><a href="#5-混合测试" class="headerlink" title="5 混合测试"></a>5 混合测试</h4><p>经过片元处理我们就得到了所有片元的颜色，最后就是要选择哪些片元能够显示在屏幕上，这里要经过一系列的混合测试，比如深度测试，也就是要用到之前说过的Z-Buffer，选择深度小的片元进行显示，当然除了深度测试之外还有切测试、Alpha测试、模板测试等等。</p>
-<h4 id="6-Shader"><a href="#6-Shader" class="headerlink" title="6 Shader"></a>6 Shader</h4><p>刚才说到过，在图形管线中我们可以选择在顶点处理阶段进行着色或者在片元处理阶段进行着色，而且我们还可以对着色进行专门的编程，控制GPU对对一个着色点执行什么样的着色操作，这就是Shader。</p>
-<p>Shader（着色器）是指一组供计算机图形资源在执行渲染任务时使用的指令，用于计算图像的颜色或明暗。通俗地说，着色器告诉电脑如何用特有的一种方法去绘制物体。</p>
-<p>关于Shader，后面会有专门的文章详细的讲解。</p>
-<h4 id="7-参考"><a href="#7-参考" class="headerlink" title="7 参考"></a>7 参考</h4><ul>
-<li><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1685227">【笔记】《计算机图形学》(8)——图形管线 - 云+社区 - 腾讯云 (tencent.com)</a></li>
-<li><a target="_blank" rel="noopener" href="https://positiveczp.github.io/%E7%BB%86%E8%AF%B4%E5%9B%BE%E5%BD%A2%E5%AD%A6%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF.html">细说图形渲染管线</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/7e701d7bfd79">写给大家看的“透视除法” —— 齐次坐标和投影 - 简书 (jianshu.com)</a></li>
-<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/102758967">一篇文章彻底弄懂齐次裁剪 - 知乎 (zhihu.com)</a></li>
-</ul>
+<h3 id="1-图片纹理类"><a href="#1-图片纹理类" class="headerlink" title="1 图片纹理类"></a>1 图片纹理类</h3><p>要实现图片纹理类，我们先要读入一张图片，这可以用到一开始存图使用的轻量而强大的 <code>stb_image</code> 库，然后我们要找到纹理坐标和图片坐标的映射关系，非常简单，对于一张 M * N 的图片上的像素 (i, j)，它的纹理坐标是：<br>$$<br>u &#x3D; \frac{i}{M-1},\ v &#x3D; \frac{j}{N-1}<br>$$<br>于是可以实现一个图片纹理类：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">* 纹理类，包含各种纹理</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="meta">#<span class="keyword">pragma</span> once</span></span><br><span class="line"><span class="meta">#<span class="keyword">ifndef</span> TEXTURE_H</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> TEXTURE_H</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;utilities.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;perlin.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> STB_IMAGE_IMPLEMENTATION</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;stb_image.h&quot;</span></span></span><br><span class="line"></span><br><span class="line">...</span><br><span class="line">    </span><br><span class="line"><span class="comment">// 图片纹理</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">image_texture</span> : <span class="keyword">public</span> texture &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="type">const</span> <span class="type">static</span> <span class="type">int</span> bytes_per_pixel = <span class="number">3</span>;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">image_texture</span>()</span><br><span class="line">        : <span class="built_in">data</span>(<span class="literal">nullptr</span>), <span class="built_in">width</span>(<span class="number">0</span>), <span class="built_in">height</span>(<span class="number">0</span>), <span class="built_in">bytes_per_scanline</span>(<span class="number">0</span>) &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">image_texture</span>(<span class="type">const</span> <span class="type">char</span>* filename) &#123;</span><br><span class="line">        <span class="keyword">auto</span> components_per_pixel = bytes_per_pixel;</span><br><span class="line"></span><br><span class="line">        data = <span class="built_in">stbi_load</span>(</span><br><span class="line">            filename, &amp;width, &amp;height, &amp;components_per_pixel, components_per_pixel);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!data) &#123;</span><br><span class="line">            std::cerr &lt;&lt; <span class="string">&quot;ERROR: Could not load texture image file &#x27;&quot;</span> &lt;&lt; filename &lt;&lt; <span class="string">&quot;&#x27;.\n&quot;</span>;</span><br><span class="line">            width = height = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        bytes_per_scanline = bytes_per_pixel * width;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ~<span class="built_in">image_texture</span>() &#123;</span><br><span class="line">        <span class="keyword">delete</span> data;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> color <span class="title">value</span><span class="params">(<span class="type">double</span> u, <span class="type">double</span> v, <span class="type">const</span> vec3&amp; p)</span> <span class="type">const</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 没有图片的话返回一个固定的颜色，便于debug</span></span><br><span class="line">        <span class="keyword">if</span> (data == <span class="literal">nullptr</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">color</span>(<span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 输入的纹理坐标截断在[0,1]区间</span></span><br><span class="line">        u = <span class="built_in">clamp</span>(u, <span class="number">0.0</span>, <span class="number">1.0</span>);</span><br><span class="line">        <span class="comment">// 由于图片是从上到下存储的，相当于原点在左上角，而纹理坐标原点在左下角，因此纵坐标要翻转一下</span></span><br><span class="line">        v = <span class="number">1.0</span> - <span class="built_in">clamp</span>(v, <span class="number">0.0</span>, <span class="number">1.0</span>); </span><br><span class="line">        <span class="comment">// 纹理坐标映射到图片坐标</span></span><br><span class="line">        <span class="keyword">auto</span> i = <span class="built_in">static_cast</span>&lt;<span class="type">int</span>&gt;(u * width);</span><br><span class="line">        <span class="keyword">auto</span> j = <span class="built_in">static_cast</span>&lt;<span class="type">int</span>&gt;(v * height);</span><br><span class="line">        <span class="keyword">if</span> (i &gt;= width)  i = width - <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">if</span> (j &gt;= height) j = height - <span class="number">1</span>;</span><br><span class="line">        <span class="comment">// 我们返回的颜色都在[0,1]之间，因此要除以255</span></span><br><span class="line">        <span class="type">const</span> <span class="keyword">auto</span> color_scale = <span class="number">1.0</span> / <span class="number">255.0</span>;</span><br><span class="line">        <span class="keyword">auto</span> pixel = data + j * bytes_per_scanline + i * bytes_per_pixel;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">color</span>(color_scale * pixel[<span class="number">0</span>], color_scale * pixel[<span class="number">1</span>], color_scale * pixel[<span class="number">2</span>]);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="type">unsigned</span> <span class="type">char</span>* data;</span><br><span class="line">    <span class="type">int</span> width, height;</span><br><span class="line">    <span class="type">int</span> bytes_per_scanline;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-测试效果"><a href="#2-测试效果" class="headerlink" title="2 测试效果"></a>2 测试效果</h3><p>新建一个场景：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 地球</span></span><br><span class="line"><span class="function">hittable_list <span class="title">earth</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    std::string TexturePath = <span class="string">&quot;D:\\TechStack\\ComputerGraphics\\Ray Tracing in One Weekend Series\\Project\\Textures\\earthmap.jpg&quot;</span>;</span><br><span class="line">    <span class="keyword">auto</span> earth_texture = <span class="built_in">make_shared</span>&lt;image_texture&gt;(TexturePath.<span class="built_in">c_str</span>());</span><br><span class="line">    <span class="keyword">auto</span> earth_surface = <span class="built_in">make_shared</span>&lt;lambertian&gt;(earth_texture);</span><br><span class="line">    <span class="keyword">auto</span> globe = <span class="built_in">make_shared</span>&lt;sphere&gt;(</span><br><span class="line">        <span class="built_in">point3</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>), <span class="built_in">point3</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>), <span class="number">0.0</span>, <span class="number">1.0</span>, <span class="number">2</span>, earth_surface);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">hittable_list</span>(globe);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>并对应修改主函数：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">    </span><br><span class="line"><span class="type">int</span> sence = <span class="number">4</span>;</span><br><span class="line"><span class="keyword">switch</span> (sence) &#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">    <span class="keyword">case</span> <span class="number">4</span>:</span><br><span class="line">        world = <span class="built_in">earth</span>();</span><br><span class="line">        lookfrom = <span class="built_in">point3</span>(<span class="number">13</span>, <span class="number">2</span>, <span class="number">3</span>);</span><br><span class="line">        lookat = <span class="built_in">point3</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">        vfov = <span class="number">20.0</span>;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>得到的效果：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/21/20220421-RayTracer-%E5%9B%BE%E7%89%87%E7%BA%B9%E7%90%86/Earth.png" alt="Earth"></p>
 
     </div>
 
@@ -353,19 +334,19 @@
   <div class="popular-posts-header">相关文章</div>
   <ul class="popular-posts">
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\02\20200302-变换\" rel="bookmark">【计算机图形学】（一）变换</a></div>
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\04\11\20220411-RayTracer-基本工具类\" rel="bookmark">【RayTracer】（一）实现基本工具类</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\03\20200303-旋转与四元数\" rel="bookmark">【计算机图形学】（二）旋转与四元数</a></div>
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\04\15\20220415-RayTracer-物体类\" rel="bookmark">【RayTracer】（二）实现物体类</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\06\20220306-光栅化\" rel="bookmark">【计算机图形学】（三）光栅化</a></div>
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\04\16\20220416-RayTracer-电介质\" rel="bookmark">【RayTracer】（六）电介质</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\06\20220306-反走样\" rel="bookmark">【计算机图形学】（四）反走样</a></div>
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\04\17\20220417-RayTracer-运动模糊\" rel="bookmark">【RayTracer】（九）运动模糊</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\08\20220308-深度缓冲\" rel="bookmark">【计算机图形学】（五）深度缓冲</a></div>
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\04\18\20220418-RayTracer-实现BVH\" rel="bookmark">【RayTracer】（十）实现BVH</a></div>
     </li>
   </ul>
 
@@ -373,6 +354,8 @@
       <footer class="post-footer">
           <div class="post-tags">
               <a href="/LycTechStack.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/" rel="tag"># 计算机图形学</a>
+              <a href="/LycTechStack.github.io/tags/C/" rel="tag"># C++</a>
+              <a href="/LycTechStack.github.io/tags/%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/" rel="tag"># 光线追踪</a>
           </div>
 
         
@@ -381,13 +364,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/" rel="prev" title="【计算机图形学】（七）纹理映射">
-      <i class="fa fa-chevron-left"></i> 【计算机图形学】（七）纹理映射
+    <a href="/LycTechStack.github.io/2022/04/19/20220419-RayTracer-Perlin%E5%99%AA%E5%A3%B0/" rel="prev" title="【RayTracer】（十二）Perlin噪声">
+      <i class="fa fa-chevron-left"></i> 【RayTracer】（十二）Perlin噪声
     </a></div>
-      <div class="post-nav-item">
-    <a href="/LycTechStack.github.io/2022/03/12/20220312-%E7%BA%BF%E6%80%A7%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92-%E5%8F%8C%E4%B8%B2/" rel="next" title="【动态规划】（三）线性动态规划之双串问题">
-      【动态规划】（三）线性动态规划之双串问题 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -447,7 +427,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%BE%E5%BD%A2%E7%AE%A1%E7%BA%BF%EF%BC%88Graphics-Pipeline%EF%BC%89"><span class="nav-text">图形管线（Graphics Pipeline）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E9%A1%B6%E7%82%B9%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86"><span class="nav-text">1 顶点数据处理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E6%9B%B2%E9%9D%A2%E7%BB%86%E5%88%86"><span class="nav-text">2 曲面细分</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E5%85%89%E6%A0%85%E5%8C%96"><span class="nav-text">3 光栅化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-%E7%89%87%E5%85%83%E5%A4%84%E7%90%86"><span class="nav-text">4 片元处理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-%E6%B7%B7%E5%90%88%E6%B5%8B%E8%AF%95"><span class="nav-text">5 混合测试</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-Shader"><span class="nav-text">6 Shader</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#7-%E5%8F%82%E8%80%83"><span class="nav-text">7 参考</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%9B%BE%E7%89%87%E7%BA%B9%E7%90%86%E7%B1%BB"><span class="nav-text">1 图片纹理类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%B5%8B%E8%AF%95%E6%95%88%E6%9E%9C"><span class="nav-text">2 测试效果</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -736,7 +716,7 @@ NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
       repo        : 'LycTechStack.github.io',
       owner       : 'LZ328',
       admin       : ['LZ328'],
-      id          : 'f4d6bbe575eae7fc267f13280150f8ec',
+      id          : '70d96bcf493974546e0b68ad4afa75a1',
         language: 'zh-CN',
       distractionFreeMode: true
     });
