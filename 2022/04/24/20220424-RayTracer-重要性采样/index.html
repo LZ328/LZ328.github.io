@@ -34,7 +34,7 @@
 <meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/04/24/20220424-RayTracer-%E9%87%8D%E8%A6%81%E6%80%A7%E9%87%87%E6%A0%B7/CornellBox.png">
 <meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/04/24/20220424-RayTracer-%E9%87%8D%E8%A6%81%E6%80%A7%E9%87%87%E6%A0%B7/CornellBox2.png">
 <meta property="article:published_time" content="2022-04-24T02:42:48.000Z">
-<meta property="article:modified_time" content="2022-04-24T03:04:39.061Z">
+<meta property="article:modified_time" content="2022-04-24T03:48:00.608Z">
 <meta property="article:author" content="Lyc">
 <meta property="article:tag" content="计算机图形学">
 <meta property="article:tag" content="C++">
@@ -230,7 +230,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2022-04-24 10:42:48 / 修改时间：11:04:39" itemprop="dateCreated datePublished" datetime="2022-04-24T10:42:48+08:00">2022-04-24</time>
+              <time title="创建时间：2022-04-24 10:42:48 / 修改时间：11:48:00" itemprop="dateCreated datePublished" datetime="2022-04-24T10:42:48+08:00">2022-04-24</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -255,7 +255,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>7.8k</span>
+              <span>8.2k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -290,8 +290,13 @@
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 得到光线颜色</span></span><br><span class="line"><span class="function">color <span class="title">ray_color</span><span class="params">(ray&amp; r, <span class="type">const</span> color&amp; background, <span class="type">const</span> hittable&amp; world, <span class="type">int</span> depth, <span class="type">double</span> RR)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> emitted + attenuation * <span class="built_in">ray_color</span>(scattered, background, world, depth - <span class="number">1</span>, RR);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>是一致的，只是代码中缺少了散射光线的概率密度函数 $s(direction)$。这是为什么呢？</p>
-<p>在我们实现的材质中，以漫反射 lambertian 材质为例，它的计算散射方向的方法是：使用表面法线偏移着色点 p 作为单位球的球心，在该单位球面上均匀采样一点并连接该点和点 p ，形成的向量即为散射方向。这样计算出的散射方向并不是在以点 p 为球心的半球上均匀分布的，所以概率密度并不是的 $\frac{1}{2\pi}$，而是与散射光线和法线的夹角余弦 $cos\theta$ 成正比的，我们可以推导出这个概率密度函数是什么。</p>
-<p>首先我们知道，方向表示为单位立体角 $d\omega$，单位立体角是球面上的一块面积 $dA$ 和半径平方的比值，在图形学中我们推导过：<br>$$<br>d\omega &#x3D; \frac{dA}{r^2} &#x3D; \frac{r^2sin\theta \ d\theta \ d\phi}{r^2} &#x3D; sin\theta \ d\theta \ d\phi<br>$$<br>于是对于半球面上的均匀采样，有：<br>$$<br>\int_0^{2\pi}\int_0^{\pi&#x2F;2}pdf·sin\theta \ d\theta \ d\phi &#x3D; 1<br>$$<br>而单位半球面的积分就是半球的表面积 $2\pi$，于是半球面上的均匀分布就是：<br>$$<br>pdf(x) &#x3D; \frac{1}{2\pi}<br>$$<br>同理，我们现在要求的概率密度函数和 $cos\theta$ 成正比，于是可以表示为：<br>$$<br>pdf(x) &#x3D; C·cos\theta<br>$$<br>带入上面的积分有：<br>$$<br>\int_0^{2\pi}\int_0^{\pi&#x2F;2}C·cos\theta·sin\theta \ d\theta \ d\phi &#x3D; 1<br>$$<br>半球面上对 $cos\theta$ 积分结果为 $\pi$，因此：<br>$$<br>C·\pi &#x3D; 1<br>$$<br>于是可以得到我们实现的 lambertian 材质的散射光线的概率密度函数为：<br>$$<br>s(direction) &#x3D; \frac{cos\theta}{\pi}<br>$$<br>接下来继续回顾图形学中的知识，我们求解渲染方程使用的是蒙特卡洛积分的方法，也就是按照某个概率分布 $p(x)$ 对被积变量进行随机采样，于是原积分可以通过如下方式计算：<br>$$<br>F_N &#x3D; \frac{1}{N}\sum_{i&#x3D;1}^{N}\frac{f(X_i)}{p(X_i)},\ X_i \sim p(x)<br>$$<br>那么现在的渲染方程就可以通过蒙特卡洛积分计算：<br>$$<br>color_{out} &#x3D; color_{emit} + \sum \frac{albedo·s(direction)·color_{in}}{p(direction)}<br>$$<br>如果我们选择对光线随机采样的概率密度和散射光线本身的概率密度分布一致，即：<br>$$<br>p(direction) &#x3D; s(direction) &#x3D; \frac{cos\theta}{\pi}<br>$$<br>显然渲染方程变为：<br>$$<br>color_{out} &#x3D; color_{emit} + \sum albedo·color_{in}<br>$$<br>也就是我们现在代码中的：</p>
+<p>在我们实现的材质中，以漫反射 lambertian 材质为例，它的计算散射方向的方法是：使用表面法线偏移着色点 p 作为单位球的球心，在该单位球面上均匀采样一点并连接该点和点 p ，形成的向量即为散射方向。这样计算出的散射方向并不是在以点 p 为球心的半球上均匀分布的，所以概率密度并不是的 $\frac{1}{2\pi}$，而是与散射光线和法线的夹角余弦 $cos\theta$ 成正比的，我们可以推导出这个概率密度函数。</p>
+<blockquote>
+<p><strong>为什么概率密度和 $cos\theta$ 成正比？</strong></p>
+<p>可以这样理解，首先概率密度函数的积分是概率，对于 cos 函数，从 0 到 $\pi&#x2F;4$ 的积分和从 $\pi&#x2F;4$ 到 $\pi&#x2F;2$ 的积分显然是不同的，这说明我们取到的散射方向和法线的夹角在 0 到 $\pi&#x2F;4$ 的概率比在 $\pi&#x2F;4$ 到 $\pi&#x2F;2$ 的概率更大。</p>
+<p>在我们的代码中， lambertian 材质的散射光线方向是法线方向加上一个单位球面上随机生成的方向，也就是说，最终得到的散射光线方向是两个向量的和。如果单位球面上随机生成的方向和法线的夹角刚好是 45 度，那么他和法线的和向量与法线的夹角一定小于 45 度，如果想要和向量的夹角为 45 度，那么随机生成的向量夹角就要大于 45 度。这说明我们在一个单位球面上均匀的取随机点作为一个向量与法线相加得到散射方向，大部分的点得到的散射方向会在 0 到 $\pi&#x2F;4$ 范围内，只有一小部分才会使最终的散射方向在 $\pi&#x2F;4$ 到 $\pi&#x2F;2$ 范围内，因此也就对应了不均匀的概率。</p>
+</blockquote>
+<p>接下来我们推导这个概率密度函数是什么。首先我们知道，方向表示为单位立体角 $d\omega$，单位立体角是球面上的一块面积 $dA$ 和半径平方的比值，在图形学中我们推导过：<br>$$<br>d\omega &#x3D; \frac{dA}{r^2} &#x3D; \frac{r^2sin\theta \ d\theta \ d\phi}{r^2} &#x3D; sin\theta \ d\theta \ d\phi<br>$$<br>于是对于半球面上的均匀采样，有：<br>$$<br>\int_0^{2\pi}\int_0^{\pi&#x2F;2}pdf·sin\theta \ d\theta \ d\phi &#x3D; 1<br>$$<br>而单位半球面的积分就是半球的表面积 $2\pi$，于是半球面上的均匀分布就是：<br>$$<br>pdf(x) &#x3D; \frac{1}{2\pi}<br>$$<br>同理，我们现在要求的概率密度函数和 $cos\theta$ 成正比，于是可以表示为：<br>$$<br>pdf(x) &#x3D; C·cos\theta<br>$$<br>带入上面的积分有：<br>$$<br>\int_0^{2\pi}\int_0^{\pi&#x2F;2}C·cos\theta·sin\theta \ d\theta \ d\phi &#x3D; 1<br>$$<br>半球面上对 $cos\theta$ 积分结果为 $\pi$，因此：<br>$$<br>C·\pi &#x3D; 1<br>$$<br>于是可以得到我们实现的 lambertian 材质的散射光线的概率密度函数为：<br>$$<br>s(direction) &#x3D; \frac{cos\theta}{\pi}<br>$$<br>接下来继续回顾图形学中的知识，我们求解渲染方程使用的是蒙特卡洛积分的方法，也就是按照某个概率分布 $p(x)$ 对被积变量进行随机采样，于是原积分可以通过如下方式计算：<br>$$<br>F_N &#x3D; \frac{1}{N}\sum_{i&#x3D;1}^{N}\frac{f(X_i)}{p(X_i)},\ X_i \sim p(x)<br>$$<br>那么现在的渲染方程就可以通过蒙特卡洛积分计算：<br>$$<br>color_{out} &#x3D; color_{emit} + \sum \frac{albedo·s(direction)·color_{in}}{p(direction)}<br>$$<br>如果我们选择对光线随机采样的概率密度和散射光线本身的概率密度分布一致，即：<br>$$<br>p(direction) &#x3D; s(direction) &#x3D; \frac{cos\theta}{\pi}<br>$$<br>显然渲染方程变为：<br>$$<br>color_{out} &#x3D; color_{emit} + \sum albedo·color_{in}<br>$$<br>也就是我们现在代码中的：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 得到光线颜色</span></span><br><span class="line"><span class="function">color <span class="title">ray_color</span><span class="params">(ray&amp; r, <span class="type">const</span> color&amp; background, <span class="type">const</span> hittable&amp; world, <span class="type">int</span> depth, <span class="type">double</span> RR)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> emitted + attenuation * <span class="built_in">ray_color</span>(scattered, background, world, depth - <span class="number">1</span>, RR);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>也就是说，在我们之前的实现中，<strong>隐式的把对光线随机采样的概率密度设置为了永远和散射光线的概率密度一样</strong>，无论是漫反射材质还是金属材质又或者是其他材质，我们不关注他们散射光线的概率密度什么，反正我们采样的概率密度和它们一致，所以渲染方程永远可以表示为上面那样。</p>
@@ -378,10 +383,10 @@
       <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\04\15\20220415-RayTracer-相机类和反走样\" rel="bookmark">【RayTracer】（三）相机类和反走样</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\04\16\20220416-RayTracer-构建随机场景\" rel="bookmark">【RayTracer】（八）构建随机场景</a></div>
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\04\16\20220416-RayTracer-改进相机\" rel="bookmark">【RayTracer】（七）景深效果</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\04\16\20220416-RayTracer-改进相机\" rel="bookmark">【RayTracer】（七）景深效果</a></div>
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\04\16\20220416-RayTracer-构建随机场景\" rel="bookmark">【RayTracer】（八）构建随机场景</a></div>
     </li>
   </ul>
 
@@ -539,13 +544,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">524k</span>
+    <span title="站点总字数">528k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">7:57</span>
+    <span title="站点阅读时长">8:01</span>
 </div>
 
         
