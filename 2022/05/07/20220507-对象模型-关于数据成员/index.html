@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/LycTechStack.github.io/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/LycTechStack.github.io/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/LycTechStack.github.io/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/LycTechStack.github.io/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/LycTechStack.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="/LycTechStack.github.io/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/LycTechStack.github.io/lib/pace/pace-theme-minimal.min.css">
+  <script src="/LycTechStack.github.io/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lz328.github.io","root":"/LycTechStack.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":5,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="《深度探索C++对象模型》第三章重点梳理。主要内容包括：  C++ 字节对齐和类大小计算 数据成员的布局、虚函数表和虚基类表的布局">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【C++对象模型】关于数据成员">
+<meta property="og:url" content="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/index.html">
+<meta property="og:site_name" content="LycTechStack">
+<meta property="og:description" content="《深度探索C++对象模型》第三章重点梳理。主要内容包括：  C++ 字节对齐和类大小计算 数据成员的布局、虚函数表和虚基类表的布局">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220507102541174.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220507102558864.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220507102738036.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220507102832628.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220507113905627.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220507113943452.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220507115635356.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220507120353989.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220507120419152.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220507164044837.png">
+<meta property="article:published_time" content="2022-05-07T08:49:49.000Z">
+<meta property="article:modified_time" content="2022-05-07T08:51:59.301Z">
+<meta property="article:author" content="Lyc">
+<meta property="article:tag" content="C++">
+<meta property="article:tag" content="C++对象模型">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220507102541174.png">
+
+<link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>【C++对象模型】关于数据成员 | LycTechStack</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/LycTechStack.github.io/atom.xml" title="LycTechStack" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/LycTechStack.github.io/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LycTechStack</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Lyc的个人成长技术栈</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/LycTechStack.github.io/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/LycTechStack.github.io/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/LycTechStack.github.io/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/LycTechStack.github.io/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/LycTechStack.github.io/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/LycTechStack.github.io/images/avatar.png">
+      <meta itemprop="name" content="Lyc">
+      <meta itemprop="description" content="个人学习总结和技术经验分享，主要内容包括C++、数据结构、算法、计算机图形学、3D数学、实时渲染、游戏引擎等等，希望未来能真正踏入图形/引擎开发的大门！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LycTechStack">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【C++对象模型】关于数据成员
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-05-07 16:49:49 / 修改时间：16:51:59" itemprop="dateCreated datePublished" datetime="2022-05-07T16:49:49+08:00">2022-05-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/LycTechStack.github.io/categories/%E6%B7%B1%E5%BA%A6%E6%8E%A2%E7%B4%A2C-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/" itemprop="url" rel="index"><span itemprop="name">深度探索C++对象模型</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>《深度探索C++对象模型》第三章重点梳理。主要内容包括：</p>
+<ul>
+<li>C++ 字节对齐和类大小计算</li>
+<li>数据成员的布局、虚函数表和虚基类表的布局</li>
+</ul>
+<p><em><span id="more"></span></em></p>
+<h3 id="1-C-字节对齐"><a href="#1-C-字节对齐" class="headerlink" title="1 C++ 字节对齐"></a>1 C++ 字节对齐</h3><p>关于 C++ 字节对齐这篇文章讲得非常细致：<a target="_blank" rel="noopener" href="https://blog.csdn.net/sweetfather/article/details/78487563">C++ 字节对齐的总结(原因和作用)</a></p>
+<p>这里只做简要总结：</p>
+<ul>
+<li><p>字节对齐的原因：各个硬件平台对存储空间的处理上有很大的不同。一些平台对某些特定类型的数据只能从某些特定地址开始存取。比如有些架构的CPU在访问 一个没有进行对齐的变量的时候会发生错误，那么在这种架构下编程必须保证字节对齐。其他平台可能没有这种情况，但是最常见的是，如果不按照适合其平台要求对数据存放进行对齐，会在存取效率上带来损失。比如有些平台每次读都是从偶地址开始，如果一个 int 型数据存放在偶地址开始的地方，那么一个读周期就可以读出这 32 位数据，而如果存放在奇地址开始的地方，就需要 2 个读周期，并对两次读出的结果的高低字节进行拼凑才能得到该 32 位数据，显然在读取效率上下降很多</p>
+</li>
+<li><p>可以使用 <code>pragma pack(n)</code> 指定以 n 字节方式对齐，不指定则按默认方式对齐</p>
+</li>
+<li><p>字节对齐是要看变量所在偏移地址是否为变量字节数（或指定对齐字节数 n，取二者较小值）的整数倍</p>
+</li>
+<li>对于结构成员，要按照结构成员中对齐长度最大的一个对齐</li>
+<li>对齐后还要看结构或类的总大小是否为其中最长变量（或指定对齐字节数 n，取二者较小值）的整数倍</li>
+</ul>
+<p>按照以上规则可以保证对齐后整个结构或类对象所占空间最小，并保证读取效率。</p>
+<h3 id="2-C-类大小计算"><a href="#2-C-类大小计算" class="headerlink" title="2 C++ 类大小计算"></a>2 C++ 类大小计算</h3><p>关于 C++ 类的大小计算这篇文章讲的非常全面：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/fengyaoyao/p/10262312.html">C++类的大小计算汇总</a></p>
+<p>这里只做简要总结：</p>
+<p>C++ 中的类由于涉及虚函数、静态成员、虚拟继承、多继承、空类等情况，类对象的大小较为复杂，但总结起来遵循以下几个原则：</p>
+<ul>
+<li>类的大小是指类对象实体的大小，类大小的计算遵循字节对齐原则</li>
+<li>类的大小与普通数据成员有关，与成员函数和静态成员无关。即普通成员函数、静态成员函数、静态数据成员、静态常量数据成员，均对类的大小无影响；静态数据成员之所以不计算在类的对象大小内，是因为类的静态数据成员被该类所有的对象所共享，并不属于具体哪个对象，静态数据成员定义在内存的全局区</li>
+<li>虚函数对类的大小有影响，是因为虚函数表指针带来的影响</li>
+<li>虚继承对类的大小有影响，是因为虚基表指针带来的影响</li>
+<li>空类的大小为 1，因为 C++ 要为某一个实体分配内存就要求这个实体必须有大小，不能为大小为 0 的实体分配内存，所以 C++ 会为空类指定 1 个字节作为其大小，防止 sizeof 为 0，含有虚函数，虚继承，多继承是特殊情况</li>
+</ul>
+<h4 id="2-1-关于空类"><a href="#2-1-关于空类" class="headerlink" title="2.1 关于空类"></a>2.1 关于空类</h4><p>C++ 空类大小为 1，这之中有两种情况需要注意：</p>
+<ul>
+<li>如果一个派生类继承自空类，且派生类有自己的数据成员，则基类子对象的一个字节不会加入到派生类中，因为派生类有自己的数据成员意味着有大小，可以分配内存，所以不需要空类的 1 个字节</li>
+<li>一个类包含一个空类对象成员，这时空类的一个字节是要被计算进去的，因为空类对象必须有自己大小</li>
+</ul>
+<h4 id="2-2-关于虚函数"><a href="#2-2-关于虚函数" class="headerlink" title="2.2 关于虚函数"></a>2.2 关于虚函数</h4><p>虚函数是通过一张虚函数表来实现的。编译器必需要<strong>保证虚函数表的指针存在于对象实例中最前面的位置</strong>（这是为了保证正确取到虚函数的偏移量）。</p>
+<p>每当创建一个包含有虚函数的类或从包含有虚函数的类派生一个类时，编译器就会为这个类创建一个虚函数表保存该类所有虚函数的地址，其实这个虚函数表的作用就是保存自己类中所有虚函数的地址，可以把虚函数表形象地看成一个函数指针数组，这个数组的每个元素存放的就是虚函数的地址。在每个带有虚函数的类中，编译器秘密地置入一指针，称为 vptr，指向这个对象的虚函数表。 当构造该派生类对象时，其成员 vptr 被初始化指向该派生类的虚函数表。所以可以认为<strong>虚函数表是该类的所有对象共有的</strong>，在定义该类时被初始化；而 <strong>vptr 则是每个类对象都有独立一份的</strong>，且在该类对象被构造时被初始化。</p>
+<p>含有虚函数的时候，类的大小计算要注意以下几点：</p>
+<ul>
+<li>由于指针大小为 8 字节，因此含有虚函数的任何类的大小都是原本大小加上 8 字节</li>
+<li>当继承的基类含有虚函数时，在派生类中不对基类的虚函数进行覆盖，同时派生类中还拥有自己的虚函数。此时派生类的虚函数表中首先存放基类虚函数地址，再存放派生类虚函数地址，所有虚函数地址顺序与声明顺序一致。因此无论是基类还是派生类，其大小也还是原本大小加 8 字节</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220507102541174.png" alt="image-20220507102541174"></p>
+<ul>
+<li>如果派生类中对基类的虚函数进行了覆盖，同时派生类中还拥有自己的虚函数。此时虚函数表中原本存放基类虚函数的位置会被覆盖为派生类重写的虚函数地址，其他顺序不变。因此无论是基类还是派生类，其大小也还是原本大小加 8 字节</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220507102558864.png" alt="image-20220507102558864"></p>
+<ul>
+<li>当一个派生类继承自多个含有虚函数的基类，并对基类虚函数无重载，此时派生类虚函数被放在第一个积累虚函数表后面，派生类的大小就是原本大小加上基类数量 * 8 字节</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220507102738036.png" alt="image-20220507102738036"></p>
+<ul>
+<li>当一个派生类继承自多个含有虚函数的基类，并对基类虚函数有重载，情况和上述一致，这时任意一个基类指针指向派生类对象都可以调用派生类重载的基类虚函数</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220507102832628.png" alt="image-20220507102832628"></p>
+<p>上面文章中的一个例子，在 Visual C++ 中的运行结果和文章中不同：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">A</span>    </span><br><span class="line">&#123;    </span><br><span class="line">&#125;;   </span><br><span class="line"> </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">B</span>    </span><br><span class="line">&#123; </span><br><span class="line">    <span class="type">char</span> ch;    </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func0</span><span class="params">()</span>  </span>&#123;  &#125;  </span><br><span class="line">&#125;;  </span><br><span class="line"> </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">C</span>   </span><br><span class="line">&#123; </span><br><span class="line">    <span class="type">char</span> ch1; </span><br><span class="line">    <span class="type">char</span> ch2; </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func</span><span class="params">()</span>  </span>&#123;  &#125;   </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func1</span><span class="params">()</span>  </span>&#123;  &#125;  </span><br><span class="line">&#125;; </span><br><span class="line"> </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">D</span>: <span class="keyword">public</span> A, <span class="keyword">public</span> C </span><br><span class="line">&#123;    </span><br><span class="line">    <span class="type">int</span> d;    </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func</span><span class="params">()</span>  </span>&#123;  &#125;  </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func1</span><span class="params">()</span>  </span>&#123;  &#125; </span><br><span class="line">&#125;;    </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">E</span>: <span class="keyword">public</span> B, <span class="keyword">public</span> C </span><br><span class="line">&#123;    </span><br><span class="line">    <span class="type">int</span> e;    </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func0</span><span class="params">()</span>  </span>&#123;  &#125;  </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func1</span><span class="params">()</span>  </span>&#123;  &#125; </span><br><span class="line">&#125;; </span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">void</span>)</span> </span></span><br><span class="line"><span class="function"></span>&#123; </span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;A=&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(A)&lt;&lt;endl;    <span class="comment">//result=1 </span></span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;B=&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(B)&lt;&lt;endl;    <span class="comment">//result=16     </span></span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;C=&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(C)&lt;&lt;endl;    <span class="comment">//result=16 </span></span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;D=&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(D)&lt;&lt;endl;    <span class="comment">//result=24 </span></span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;E=&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(E)&lt;&lt;endl;    <span class="comment">//result=40 </span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里关于类 E 的大小，有必要再详细分析一下：类 E 包含一个类 B 子对象 16字节，一个类 C 子对象 16 字节，以及自身的 int 4 字节，现在一共是 36字节，但因为要跟成员中最大变量虚函数表指针 8 字节对齐，最终补齐到 40 字节。</p>
+<blockquote>
+<p>可以在 VS 中输出类的布局，打开 vs项目属性-&gt;配置属性-&gt; c/c++ -&gt;命令行，在其它选项中添加如下命令：</p>
+<ul>
+<li><code>/d1 reportAllClassLayout</code> 是查看所有类的布局</li>
+<li><code>/d1 reportSingleClassLayoutXX</code> 是查看名为XX的类的布局</li>
+</ul>
+<p>配置之后重新编译项目，会在编译输出中打印类布局。</p>
+</blockquote>
+<p>上面例子中，类 E 的布局打印出来如下：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220507113905627.png" alt="image-20220507113905627"></p>
+<p>和我们的分析一致，同时还可以看到类 E 的两个虚函数表的布局：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220507113943452.png" alt="image-20220507113943452"></p>
+<p>其中 <code>E::$vftable@B@</code> 是基类 B 的虚函数表，存放的是被 E 重载后的函数 func0 的指针， <code>E::$vftable@C@</code> 是基类 C 的虚函数表，存放的是 C 的函数 func 和被 E 重载的函数 func1 的指针。</p>
+<h4 id="2-3-关于虚继承"><a href="#2-3-关于虚继承" class="headerlink" title="2.3 关于虚继承"></a>2.3 关于虚继承</h4><p>Visual C++ 中虚继承的情况比较简单，只是多了一个指向虚基类表的指针 vbptr，而真正的指向虚基类的指针存放在虚基类表中。</p>
+<h3 id="3-数据成员的布局"><a href="#3-数据成员的布局" class="headerlink" title="3 数据成员的布局"></a>3 数据成员的布局</h3><p>最后通过一个例子总结 C++ 数据成员布局，通过下面这个例子可以清晰的认识 C++ 类数据成员布局、虚函数表和虚基类表的布局：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">X</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="type">int</span> i;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Y</span> : <span class="keyword">public</span> <span class="keyword">virtual</span> X &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func0</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Z</span> : <span class="keyword">public</span> <span class="keyword">virtual</span> X &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="type">int</span> j;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func1</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">A</span> : <span class="keyword">public</span> Y, <span class="keyword">public</span> Z &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="type">char</span> x;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func1</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func2</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;size of class X is &quot;</span> &lt;&lt; <span class="built_in">sizeof</span>(X) &lt;&lt; std::endl;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;size of class Y is &quot;</span> &lt;&lt; <span class="built_in">sizeof</span>(Y) &lt;&lt; std::endl;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;size of class Z is &quot;</span> &lt;&lt; <span class="built_in">sizeof</span>(Z) &lt;&lt; std::endl;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;size of class A is &quot;</span> &lt;&lt; <span class="built_in">sizeof</span>(A) &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的例子中包含了虚继承、多重继承、虚函数的情况，运行结果如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">size of class X is 4</span><br><span class="line">size of class Y is 24</span><br><span class="line">size of class Z is 32</span><br><span class="line">size of class A is 56</span><br></pre></td></tr></table></figure>
+<p>我们打印类 A 的布局：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220507115635356.png" alt="image-20220507115635356"></p>
+<p>可以看到类 A 的布局：</p>
+<ul>
+<li>首先是基类 Y 的子对象，Y 包含一个虚函数，同时有一个虚基类，所以 Y 的内存中就是两个指针，一个是虚函数表指针 vfptr，一个是虚基类表指针 vbptr，共 16 字节；</li>
+<li>然后是基类 Z 的子对象，Z 同样包含 vfptr 和 vbptr，以及一个 int 成员，字节对齐后一共是 24 字节，此时类 A 总共偏移 40 字节</li>
+<li>然后是类 A 自己的数据成员，char 类型一个字节，类 A 总共偏移 41 字节，最终要和类中最长成员 8 字节对齐，因此对齐到 48 字节</li>
+<li>类 A 的全部成员都存放完后，最后存放虚基类成员，int 占 4 字节，此时类 A 总共 52 字节，但输出是 56 字节，实际又做了一次 8 字节对齐，因为打印出的内存布局把类 A 和虚基类子对象作为两个独立的部分，所以打印 48 + 4 = 52 字节，但实际还要做一次 8 字节对齐，所以 sizeof 输出 56 字节</li>
+</ul>
+<p>然后是类 A 的虚函数表：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220507120353989.png" alt="image-20220507120353989"></p>
+<p>虚函数表的第一项表示派生类对象指针相对于虚函数表指针的偏移，这里派生类 A 相对于基类 Y 的虚函数表指针的偏移是 0 字节，相对于基类 Z 的虚函数表指针的偏移是 -16 字节。</p>
+<p>最后是类 A 的虚基类表：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220507120419152.png" alt="image-20220507120419152"></p>
+<p>虚基类表原理与虚函数表类似，表的第一项表示派生类对象指针相对于虚基类表指针的偏移，这里是 -8 字节，因为虚基类表指针前面还有一个虚函数表指针占用了 8 个字节，所以派生类 Y 对象的指针相对于其虚基类表指针的偏移量是 -8，派生类 Z 对象的指针相对于其虚基类表指针的偏移也是 -8，注意这里的派生类不再是指 A 了，而是指虚基类的派生类，所以就是 Y 和 Z；虚基类表从第二项开始，表示各个虚基类地址相对于虚基类表指针的偏移。这里虚基类 X 相对于 Y 的虚基类表指针偏移了 40 个字节，因此虚基类 X 相对于派生类 Y 的地址总共偏移了 48 字节，对于派生类 Z 也同样如此，总共偏移了 24 + 8 = 32 个字节，从上面的内存布局可以清晰地看出这一点。</p>
+<p>可以看到，Y 和 Z 的虚基类表都指向同一个虚基类 X 的子对象，正如之前所说的，虚基类无论在继承链中被继承多少次，都只产生一个实体，即虚基类子对象，但是“不同的派生类中虚基类子对象的位置不同”这句话，一方面是指虚基类子对象相对于派生类的起始地址偏移量不同，并不是存在多个虚基类子对象；另一方面，随着类的派生，虚基类子对象的位置确实可能变化，但所有派生类的虚基类表中都指向那同一个虚基类子对象。</p>
+<p>最后总结一下，C++ 中数据成员布局与编译器有关，但总体原理一致，Visual C++ 中数据成员布局顺序为：</p>
+<ul>
+<li>基类子对象<ul>
+<li>虚函数表指针 vfptr</li>
+<li>虚基类表指针 vbptr</li>
+<li>基类成员</li>
+</ul>
+</li>
+<li>数据成员</li>
+<li>虚基类成员</li>
+</ul>
+<blockquote>
+<p>注：有的编译器不存在虚基类表指针 vbptr，而是把虚基类的偏移放在虚函数表中，这样只需要一个虚函数表指针</p>
+</blockquote>
+<p>最最后附上一个简单的问题：为什么不把派生类的成员填到基类子对象由于字节对齐而填充的空白内存中，而是要保留基类子对象的空白内存？</p>
+<p>直接借用书中的图解释：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220507164044837.png" alt="image-20220507164044837"></p>
+
+    </div>
+
+    
+    
+    
+
+    <div>
+    
+      <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">---- 本文结束 <i class="fa fa-trophy"></i> 知识又增加了亿点点！----</div>
+    
+</div>
+<br />
+<div>
+  <div>
+    <fieldset
+        style="
+            border: 1px dashed #C0C0C0;
+            padding: 10px;
+            border-radius: 5px;
+            line-height: 2em;
+            color: #6d6d6d;
+        ">
+        <legend
+            align="center"
+            style="
+                width: 30%;
+                text-align: center;
+                color: #6d6d6d;
+                border: 1px dashed #C0C0C0;
+                border-radius: 5px;
+            ">
+            文章版权声明
+        </legend>
+        1、博客名称：<font color="#37c6c0">LycTechStack</font><br />
+        2、博客网址：<font color="#37c6c0">https://lz328.github.io/LycTechStack.github.io/</font><br />
+        3、本博客的文章部分内容可能来源于网络，仅供大家学习与参考，如有侵权，请联系博主进行删除处理。<br />
+        4、本博客所有文章版权归博主所有，如需转载请标明出处。<br />
+    </fieldset>
+  </div>
+</div>
+
+    
+    </div>
+      
+  <div class="popular-posts-header">相关文章</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\05\20220505-对象模型-关于对象\" rel="bookmark">【C++对象模型】关于对象</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\06\20220506-对象模型-关于构造函数\" rel="bookmark">【C++对象模型】关于构造函数</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\03\20220303-二叉树\" rel="bookmark">【数据结构】二叉树</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\02\20220303-线性数据结构\" rel="bookmark">【数据结构】线性数据结构</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\07\20220307-线性动态规划-单串\" rel="bookmark">【动态规划】（一）线性动态规划之单串问题</a></div>
+    </li>
+  </ul>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/LycTechStack.github.io/tags/C/" rel="tag"># C++</a>
+              <a href="/LycTechStack.github.io/tags/C-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/" rel="tag"># C++对象模型</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/LycTechStack.github.io/2022/05/06/20220506-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0/" rel="prev" title="【C++对象模型】关于构造函数">
+      <i class="fa fa-chevron-left"></i> 【C++对象模型】关于构造函数
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-C-%E5%AD%97%E8%8A%82%E5%AF%B9%E9%BD%90"><span class="nav-text">1 C++ 字节对齐</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-C-%E7%B1%BB%E5%A4%A7%E5%B0%8F%E8%AE%A1%E7%AE%97"><span class="nav-text">2 C++ 类大小计算</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E5%85%B3%E4%BA%8E%E7%A9%BA%E7%B1%BB"><span class="nav-text">2.1 关于空类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E5%85%B3%E4%BA%8E%E8%99%9A%E5%87%BD%E6%95%B0"><span class="nav-text">2.2 关于虚函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-%E5%85%B3%E4%BA%8E%E8%99%9A%E7%BB%A7%E6%89%BF"><span class="nav-text">2.3 关于虚继承</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98%E7%9A%84%E5%B8%83%E5%B1%80"><span class="nav-text">3 数据成员的布局</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Lyc"
+      src="/LycTechStack.github.io/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Lyc</p>
+  <div class="site-description" itemprop="description">个人学习总结和技术经验分享，主要内容包括C++、数据结构、算法、计算机图形学、3D数学、实时渲染、游戏引擎等等，希望未来能真正踏入图形/引擎开发的大门！</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/LycTechStack.github.io/archives/">
+        
+          <span class="site-state-item-count">68</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/LycTechStack.github.io/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/LycTechStack.github.io/tags/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/LZ328/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;LZ328&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:27487358@qq.com" title="E-Mail → mailto:27487358@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2021 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heartbeat"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lyc</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">586k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">8:52</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="/LycTechStack.github.io/lib/canvas-ribbon/canvas-ribbon.js"></script>
+  <script src="/LycTechStack.github.io/lib/anime.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/pjax/pjax.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4/dist/browser/pangu.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/velocity/velocity.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/LycTechStack.github.io/js/utils.js"></script>
+
+<script src="/LycTechStack.github.io/js/motion.js"></script>
+
+
+<script src="/LycTechStack.github.io/js/schemes/pisces.js"></script>
+
+
+<script src="/LycTechStack.github.io/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/LycTechStack.github.io/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '09aa5d8a5587f012a8af',
+      clientSecret: '7f7ec08f02d74e1865e57b5f03a982047700b547',
+      repo        : 'LycTechStack.github.io',
+      owner       : 'LZ328',
+      admin       : ['LZ328'],
+      id          : 'fff062bd0464941acbf4ac2f0880ae49',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+    </div>
+  
+</body>
+</html>
