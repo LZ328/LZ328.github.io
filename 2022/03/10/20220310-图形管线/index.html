@@ -29,14 +29,14 @@
 <meta property="og:site_name" content="LycTechStack">
 <meta property="og:description" content="图形管线（Graphics Pipeline）这一节将对前面的所有内容做一个总结，因为图形管线就是由前面的所有内容组成的一个图形渲染流水线，空间中的点经过图形管线就被渲染到屏幕上成为图形。 对图形管线的理解对于之后学习 Shader 有非常重要的帮助，《Unity Shader 入门精要》第二章也对图形管线做了非常详细的介绍。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220310201713743.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/q3tenh9i8t.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E5%9B%BE%E5%BD%A2%E7%AE%A1%E7%BA%BF/image-20220310201713743.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E5%9B%BE%E5%BD%A2%E7%AE%A1%E7%BA%BF/q3tenh9i8t.png">
 <meta property="article:published_time" content="2022-03-10T13:29:33.000Z">
 <meta property="article:modified_time" content="2022-03-26T10:23:21.238Z">
 <meta property="article:author" content="Lyc">
 <meta property="article:tag" content="计算机图形学">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220310201713743.png">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E5%9B%BE%E5%BD%A2%E7%AE%A1%E7%BA%BF/image-20220310201713743.png">
 
 <link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E5%9B%BE%E5%BD%A2%E7%AE%A1%E7%BA%BF/">
 
@@ -281,14 +281,14 @@
 <p><em><span id="more"></span></em></p>
 <p>图形管线是基于物体顺序渲染的一系列绘制操作的序列。相对于基于物体顺序渲染还有基于图像顺序渲染，会在之后会讲到。基于物体顺序渲染由于其极高的运行效率而统治了图形学的渲染方法，从早期人们提出了软件图形管线后，图形管线的流程思路又被硬件优化内置到显卡中成为硬件图形管线，这两个管线后来呈现出并行关系，负责不同的事务。</p>
 <p>图形管线的主要流程如下：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220310201713743.png" alt="image-20220310201713743"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E5%9B%BE%E5%BD%A2%E7%AE%A1%E7%BA%BF/image-20220310201713743.png" alt="image-20220310201713743"></p>
 <h4 id="1-顶点数据处理"><a href="#1-顶点数据处理" class="headerlink" title="1 顶点数据处理"></a>1 顶点数据处理</h4><p>输入图形管线的是三维空间中的顶点，这些输入的顶点数据不止有坐标，还包括纹理坐标、顶点法线和顶点颜色等各种属性，顶点数据处理就是对这些属性数据进行处理，首先把顶点连成空间中的一个个面，可以是三角形也可以是四边形，这里我们就用常用的三角形，空间中的三角形称为<strong>图元</strong>。</p>
 <p>之后就是经过各种矩阵变换把三维映射到二维屏幕上，在变换的时候还会进行一步重要的操作，叫做视体裁剪，视体就是指透视投影近平面和远平面组成的四棱台。这需要回顾透视投影部分的内容。</p>
 <p>透视投影有一个重要的性质就是它会将直线映射为直线，平面映射为平面，线段映射为线段，并且保留了所有点的排序正确，这保证了三角形正确映射为三角形。</p>
-<p>但是经过透视投影矩阵，原本的 $z$ 将会被映射为 $z’=n+f-nf/z$。于是我们就会发现在这个映射中，正的 $z$ 值会被映射到负 $z$ 上，负的 $z$  值被映射到正 $z$  上，当我们要渲染的物体都在视体内时自然还能正确投影到屏幕上，但是一旦出现了跨越 $z=0$ 的线段，线段就会有一部分被映射到正负无穷因而被撕裂。</p>
+<p>但是经过透视投影矩阵，原本的 $z$ 将会被映射为 $z’&#x3D;n+f-nf&#x2F;z$。于是我们就会发现在这个映射中，正的 $z$ 值会被映射到负 $z$ 上，负的 $z$  值被映射到正 $z$  上，当我们要渲染的物体都在视体内时自然还能正确投影到屏幕上，但是一旦出现了跨越 $z&#x3D;0$ 的线段，线段就会有一部分被映射到正负无穷因而被撕裂。</p>
 <p>详细来看其实是下面的图所导致的。下图所表示经过透视投影处理后的 $z$ 值情况，可以看到由于视体标准化的原因 $n+f$ 是真正意义上的 0 点，$z$ 值在 $n+f$ 的位置发生的翻转，这个翻转导致了图的下半部分的三角形 $c$ 点经过透视投影后出现在了另一个方向，这将会导致光栅化的时候绘制出错误三角形。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/q3tenh9i8t.png" alt="q3tenh9i8t"></p>
-<p>观察上面的图我们还可以发现在视体中的部分(也就是z=n到z=f的区域)，经过透视投影后也会保持原来的顺序和位置，因而解决这个问题的方法就很直观了，在透视投影前就先将视体之外的面片裁剪掉，这就是视体裁剪。视体裁剪除了防止撕裂外还有一个显而易见的好处就是减少了后面进行投影变换时需要处理的顶点数量，而且减少掉的内容本来就在视体之外所以不会影响到最终的画面。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E5%9B%BE%E5%BD%A2%E7%AE%A1%E7%BA%BF/q3tenh9i8t.png" alt="q3tenh9i8t"></p>
+<p>观察上面的图我们还可以发现在视体中的部分(也就是z&#x3D;n到z&#x3D;f的区域)，经过透视投影后也会保持原来的顺序和位置，因而解决这个问题的方法就很直观了，在透视投影前就先将视体之外的面片裁剪掉，这就是视体裁剪。视体裁剪除了防止撕裂外还有一个显而易见的好处就是减少了后面进行投影变换时需要处理的顶点数量，而且减少掉的内容本来就在视体之外所以不会影响到最终的画面。</p>
 <p>具体如何进行裁剪，我们可以根据视体的顶点坐标计算出六个平面的方程，然后将空间中的点带入视体面方程，但平面方程计算比较复杂，更多关于裁剪的内容可以查看本篇的参考内容。</p>
 <h4 id="2-曲面细分"><a href="#2-曲面细分" class="headerlink" title="2 曲面细分"></a>2 曲面细分</h4><p>曲面细分是利用镶嵌化处理技术对三角面进行细分，以此来增加物体表面的三角面的数量，是渲染管线一个可选的阶段。它由外壳着色器(Hull Shader)、镶嵌器(Tessellator)和域着色器(Domain Shader)构成，其中外壳着色器和域着色器是可编程的，而镶嵌器是由硬件管理的。我们可以借助曲面细分的技术实现细节层次(Level-of-Detail)的机制，使得离摄像机越近的物体具有更加丰富的细节，而远离摄像机的物体具有较少的细节。</p>
 <h4 id="3-光栅化"><a href="#3-光栅化" class="headerlink" title="3 光栅化"></a>3 光栅化</h4><p>经过前面的处理我们得到了许多图元，并且最后通过视口变换变换到了屏幕坐标系下，然后就是进行光栅化，光栅化阶段会把图元变成屏幕坐标系中的离散的片元，片元可以理解为像素，但它与像素的区别在于片元拥有比像素更多的信息，例如深度值，法线，纹理坐标等信息。因此片元只是尺度和像素相同，但片元还不能直接显示到屏幕，一个像素会有很多个候选片元，这些片元还要经过一系列计算才能决定哪些片元显示在屏幕上。</p>
@@ -299,7 +299,7 @@
 <p>关于Shader，后面会有专门的文章详细的讲解。</p>
 <h4 id="7-参考"><a href="#7-参考" class="headerlink" title="7 参考"></a>7 参考</h4><ul>
 <li><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1685227">【笔记】《计算机图形学》(8)——图形管线 - 云+社区 - 腾讯云 (tencent.com)</a></li>
-<li><a target="_blank" rel="noopener" href="https://positiveczp.github.io/细说图形学渲染管线.html">细说图形渲染管线</a></li>
+<li><a target="_blank" rel="noopener" href="https://positiveczp.github.io/%E7%BB%86%E8%AF%B4%E5%9B%BE%E5%BD%A2%E5%AD%A6%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF.html">细说图形渲染管线</a></li>
 <li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/7e701d7bfd79">写给大家看的“透视除法” —— 齐次坐标和投影 - 简书 (jianshu.com)</a></li>
 <li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/102758967">一篇文章彻底弄懂齐次裁剪 - 知乎 (zhihu.com)</a></li>
 </ul>
@@ -353,10 +353,10 @@
   <div class="popular-posts-header">相关文章</div>
   <ul class="popular-posts">
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\02\20200302-变换\" rel="bookmark">【计算机图形学】（一）变换</a></div>
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\03\20200303-旋转与四元数\" rel="bookmark">【计算机图形学】（二）旋转与四元数</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\03\20200303-旋转与四元数\" rel="bookmark">【计算机图形学】（二）旋转与四元数</a></div>
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\02\20200302-变换\" rel="bookmark">【计算机图形学】（一）变换</a></div>
     </li>
     <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\06\20220306-光栅化\" rel="bookmark">【计算机图形学】（三）光栅化</a></div>
@@ -521,13 +521,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">601k</span>
+    <span title="站点总字数">607k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">9:07</span>
+    <span title="站点阅读时长">9:12</span>
 </div>
 
         
