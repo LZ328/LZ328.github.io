@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/LycTechStack.github.io/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/LycTechStack.github.io/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/LycTechStack.github.io/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/LycTechStack.github.io/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/LycTechStack.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="/LycTechStack.github.io/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/LycTechStack.github.io/lib/pace/pace-theme-minimal.min.css">
+  <script src="/LycTechStack.github.io/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lz328.github.io","root":"/LycTechStack.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":5,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="《深度探索C++对象模型》第六章重点梳理。主要内容包括：  执行期对象的构造与析构 详解 new 和 delete">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【C++对象模型】（六）关于执行期">
+<meta property="og:url" content="https://lz328.github.io/LycTechStack.github.io/2022/05/11/20220511-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%89%A7%E8%A1%8C%E6%9C%9F/index.html">
+<meta property="og:site_name" content="LycTechStack">
+<meta property="og:description" content="《深度探索C++对象模型》第六章重点梳理。主要内容包括：  执行期对象的构造与析构 详解 new 和 delete">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-05-11T07:17:16.000Z">
+<meta property="article:modified_time" content="2022-05-11T07:19:14.225Z">
+<meta property="article:author" content="Lyc">
+<meta property="article:tag" content="C++">
+<meta property="article:tag" content="C++对象模型">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/05/11/20220511-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%89%A7%E8%A1%8C%E6%9C%9F/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>【C++对象模型】（六）关于执行期 | LycTechStack</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/LycTechStack.github.io/atom.xml" title="LycTechStack" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/LycTechStack.github.io/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LycTechStack</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Lyc的个人成长技术栈</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/LycTechStack.github.io/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/LycTechStack.github.io/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/LycTechStack.github.io/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/LycTechStack.github.io/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/LycTechStack.github.io/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://lz328.github.io/LycTechStack.github.io/2022/05/11/20220511-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%89%A7%E8%A1%8C%E6%9C%9F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/LycTechStack.github.io/images/avatar.png">
+      <meta itemprop="name" content="Lyc">
+      <meta itemprop="description" content="个人学习总结和技术经验分享，主要内容包括C++、数据结构、算法、计算机图形学、3D数学、实时渲染、游戏引擎等等，希望未来能真正踏入图形/引擎开发的大门！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LycTechStack">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【C++对象模型】（六）关于执行期
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-05-11 15:17:16 / 修改时间：15:19:14" itemprop="dateCreated datePublished" datetime="2022-05-11T15:17:16+08:00">2022-05-11</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/LycTechStack.github.io/categories/%E6%B7%B1%E5%BA%A6%E6%8E%A2%E7%B4%A2C-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/" itemprop="url" rel="index"><span itemprop="name">深度探索C++对象模型</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>《深度探索C++对象模型》第六章重点梳理。主要内容包括：</p>
+<ul>
+<li>执行期对象的构造与析构</li>
+<li>详解 new 和 delete</li>
+</ul>
+<p><em><span id="more"></span></em></p>
+<h3 id="1-对象的构造与析构"><a href="#1-对象的构造与析构" class="headerlink" title="1 对象的构造与析构"></a>1 对象的构造与析构</h3><p>一般而言，构造函数被安插在对象的定义处，而析构函数被安插在对象生命周期结束前：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123; </span><br><span class="line">    Point point; </span><br><span class="line">    </span><br><span class="line">    <span class="comment">// point.Point::Point() 一般被安插在这儿      </span></span><br><span class="line">    </span><br><span class="line">    ...      </span><br><span class="line">             </span><br><span class="line">    <span class="comment">// point.Point::~Point() 一般被安插在这儿 </span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>当代码有一个以上的离开点的时候，析构函数则必须放在对象被构造之后的每一个离开点之前。因此，尽可能将对象定义在接近要使用的地方</strong>，可以减少不必要的构造对象和析构对象的代码被插入到自己的代码当中。</p>
+<h4 id="1-1-全局对象（Global-Objects）"><a href="#1-1-全局对象（Global-Objects）" class="headerlink" title="1.1 全局对象（Global Objects）"></a>1.1 全局对象（Global Objects）</h4><p>一个全局对象，C++ 保证它在 <code>main()</code> 第一次使用它之前将其构造，而在 <code>main()</code> 结束之前，将之析构掉。C++ 程序中所有的 global objects 都被放置在程序的 data segment (数据段) 中，如果明确指定给它一个值， object 将以该值为初值。否则 object 所配置到的内存内容为 0.</p>
+<p>虽然全局对象在编译期被即被置为 0，但真正的构造工作却需要直到程序激活后才能进行，而这个过程就是静态初始化。所谓静态初始化，是因为全局变量被放在 data segment，data segment 是在编译期已经布置好的，但构造函数的结果在编译期不能评估，因此先将对象的内容设置为 0，存储在数据段，而等到程序激活时，就可以通过构造函数对在数据段的全局对象进行初始化了.</p>
+<blockquote>
+<p>以下引用自原书：</p>
+<p>静态初始化的对象有一些缺点：如果构造函数支持异常机制，那么遗憾的是对象的构造函数的调用，无法被放置于 try 块中，我们知道一个没有得到 catch 的异常默认的调用 <code>terminate()</code> 函数。也就是说一个全局对象在构造过程中抛出异常，将导致程序的终结，而更悲剧的是，你还无法来捕获并处理这个异常。另一点在于，在不同文件中定义的全局变量，构造顺序有规则吗？我不知道。即使有规则，如果不同的构造顺序对程序有影响的话，那么有多琐碎复杂…</p>
+<p>Lippman 甚至建议：根本就不要使用那些需要静态初始化的全局对象。真的非要一个全局对象，而且这个对象还需要静态初始化？那么我的方法是，用一个函数封装一个静态局部对象，也是一样的效果嘛。</p>
+</blockquote>
+<h4 id="1-2-局部静态对象（Local-Static-Objects）"><a href="#1-2-局部静态对象（Local-Static-Objects）" class="headerlink" title="1.2 局部静态对象（Local Static Objects）"></a>1.2 局部静态对象（Local Static Objects）</h4><p>下面一段代码：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">const</span> Matrix&amp;  <span class="title">identity</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;  </span><br><span class="line">    <span class="type">static</span> Matrix mat_identity;  </span><br><span class="line">    <span class="comment">// ...  </span></span><br><span class="line">    <span class="keyword">return</span> mat_identity;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>因为 <code>static</code> 语意保证了 mat_identity 对象在整个程序周期都存在，而不会在函数 <code>identity()</code>退出时被析构，所以：</p>
+<ul>
+<li>mat_identity 的构造函数只能被施行一次，虽然 <code>identity()</code> 可以被调用多次</li>
+<li>mat_identity 的析构函数只能被施行一次，虽然 <code>identity()</code> 可以被调用多次</li>
+</ul>
+<p>那么 mat_identity 的构造函数和析构函数到底在什么时候被调用？答案是：mat_identity 的构造函数只有在  <code>identity()</code> 第一次被调用时才被施行，而在整个程序退出之时按构造相反的顺序析构局部静态对象。</p>
+<h4 id="1-3-对象数组（Array-of-Objects）"><a href="#1-3-对象数组（Array-of-Objects）" class="headerlink" title="1.3 对象数组（Array of Objects）"></a>1.3 对象数组（Array of Objects）</h4><p>对于定义的一个对象数组，例如：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Point knots[<span class="number">10</span>];</span><br></pre></td></tr></table></figure>
+<p>实际上背后做的工作是：</p>
+<ol>
+<li>分配充足的内存以存储 10 个 Point 对象；</li>
+<li>为每个 Point 对象调用它们的默认构造函数（如果有的话，且不论是合成的还是显式定义的）。编译器一般以一个或多个函数来完成这个任务。当数组的生命周期结束的时候，则要逐一调用析构函数，然后回收内存，编译器同样一个或多个函数来完成任务。这些函数完成什么功能，大概都能猜得出来。而关于具体细节，不必要死扣了，每个编译器肯定都有些许差别。</li>
+</ol>
+<h3 id="2-new-和-delete"><a href="#2-new-和-delete" class="headerlink" title="2 new 和 delete"></a>2 new 和 delete</h3><p>C++ 中一个经常容易混淆的问题是关于：operator new、new expression 和 placement operator new。这一节来详细讨论这三者的区别和联系。</p>
+<h4 id="2-1-operator-new-和-new-expression"><a href="#2-1-operator-new-和-new-expression" class="headerlink" title="2.1 operator new 和 new expression"></a>2.1 operator new 和 new expression</h4><p>首先要明确，operator new 是一个运算符，和 +、-、*、% 等一样，是可以被重载的，而 new expression 不可以被重载，new expression 是对 operator new 的又一层封装。</p>
+<p>C 语言中 <code>malloc</code> 函数我们非常熟悉，函数原型为 <code>void* malloc(size_t size)</code> ，参数 size 为要分配的字节数，返回值是 void*，通常要强转为我们需要申请空间的类型，开辟成功回返回空间首地址，失败会返回 NULL，但是申请成功后并不进行初始化，每个数据都是随机值。</p>
+<p>operator new 是对 malloc 的封装，因此功能和 malloc 完全一样，只有一点细微的不同，operator new 在内存申请失败时会抛出异常，除此之外完全相同，也就是说，operator new 只用于分配内存。</p>
+<p>而当我们使用非常熟悉的 new expression，比如：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Point3d *p = <span class="keyword">new</span> Point3d;</span><br></pre></td></tr></table></figure>
+<p>实际上包含了两个步骤：</p>
+<ul>
+<li>调用 operator new 分配内存</li>
+<li>调用合适的构造函数初始化这块内存，如果不是自定义的类，那么初始化就是简单的赋值操作</li>
+</ul>
+<p>由此可见， new expression 是对 operator new 的又一层封装。</p>
+<p>我们当然也可以直接使用 operator new，比如只想分配内存的时候，完全可以替代 C 语言中的 <code>malloc</code> 操作：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">T* newelements = <span class="built_in">static_cast</span>&lt;T*&gt;(<span class="keyword">operator</span> <span class="built_in">new</span>(<span class="built_in">sizeof</span>(T));</span><br><span class="line"><span class="comment">// 等同于T* pa = (T*)malloc(sizeof(T));</span></span><br><span class="line"><span class="comment">// static_cast表示明确的显式转换，可以告诉编译器和阅读程序的人这样的转换是故意为之</span></span><br></pre></td></tr></table></figure>
+<p>STL 中重载有两个版本的 operator new，分别为单个对象和数组对象服务，单个对象版本提供给分配单个对象的 <code>new</code> 表达式调用，数组版提供给分配数组的 <code>new[]</code> 表达式调用：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> *<span class="keyword">operator</span> <span class="title">new</span><span class="params">(<span class="type">size_t</span>)</span></span>;     <span class="comment">// allocate an object</span></span><br><span class="line"><span class="type">void</span> *<span class="keyword">operator</span> <span class="keyword">new</span>[](<span class="type">size_t</span>);   <span class="comment">// allocate an array</span></span><br></pre></td></tr></table></figure>
+<p>我们可以分别重载这两个版本，来自定义单个对象或对象数组的内存分配方式。当我们自己在重载 operator new 时，不一定要完全按照上面两个版本的原型重载，唯一的两个要求是：返回一个 <code>void*</code> 类型和第一个参数的类型必须为 <code>size_t</code>。</p>
+<p>同样的，operator delete 和 delete expression 的关系和上述 operator new 和 new expression 的关系完全一样，delete expression 会先调用析构函数，再调用 operator delete 释放内存。operator delete 的功能和 C 中的 <code>free</code> 完全一样，是对 <code>free</code> 的封装。</p>
+<p>需要注意的是，在类中重载的 operator new 和 operator delete 必须是静态的，因为前者运行于对象构造之前，后者运行于对象析构之后，所以他们不能也不应该拥有一个 this 指针来存取对象成员。另外，new expression 默认调用的是单参数的 operator new，即上面声明的那种，而其它不同形式的重载，则只能显式调用了。</p>
+<h4 id="2-2-野指针"><a href="#2-2-野指针" class="headerlink" title="2.2 野指针"></a>2.2 野指针</h4><p>有下面两种关于 delete expression 的情况，第一种：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span>* p = <span class="keyword">new</span> <span class="type">int</span>;</span><br><span class="line"><span class="keyword">delete</span> p;</span><br><span class="line"><span class="keyword">delete</span> p;   <span class="comment">// p为什么能delete两次，而程序运行的时候还不报错。</span></span><br></pre></td></tr></table></figure>
+<p>第二种情况：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span>* p = <span class="keyword">new</span> <span class="type">int</span> ;</span><br><span class="line"><span class="keyword">delete</span> p;</span><br><span class="line">*p = <span class="number">5</span>;     <span class="comment">//delete后为什么还可以对*p进行再赋值？</span></span><br></pre></td></tr></table></figure>
+<p>在回答这两个问题之前，我们先想想 <code>delete p</code>  这一语句意味着什么？p 指向一个地址，以该地址为起始地址保存有一个 <code>int</code> 变量（虽然该变量并没有进行初始化，因此默认为 0），<code>delete p</code> 之后 p 所指向的地址空间被释放，也就是说这个 int 变量的生命结束，但是 p 仍是一个合法的指针，它仍指向原来的地址，而且该地址仍代表着一个合法的程序空间。与 <code>delete</code> 之前唯一不同的是，你已经丧失了那块程序空间的所有权。但你依然可以通过指针对这块空间进行操作，因为你还保留有这块空间的“钥匙” p。</p>
+<p>此时通过指针 p 对这块空间进行操作虽然从语法上来说是合法的，但是暗藏着很大的逻辑错误。不论是对一块已经释放的内存再度 <code>delete</code>，还是再度给它赋值，都暗含着很大的危险，因为当你 <code>delete</code> 后，就代表着将这块内存归还，而这块被归还的内存很可能已经被再度分配出去，此时不论是你再度 <code>delete</code> 还是重新赋值，都将破坏其它代码的数据，同时你存储在其中的数据也很容易被覆盖。至于报不报错，崩不崩溃，完全取决于编译器够不够“聪明”。</p>
+<p>上述情况下的指针 p 被称为野指针——指向了一块“垃圾内存”，或者说指向了一块不应该读写的内存。避免野指针的一个好方法是，当一个指针变为野指针的时候，马上赋值为 <code>NULL</code>，其缘由在于，你可以很容易的判断一个指针是否为 <code>NULL</code>，却难以抉择其是否为野指针。而且，<code>delete</code> 一个空指针，不会做任何操作，因此总是安全的。</p>
+<h4 id="2-3-placement-operator-new-和-placement-new-expression"><a href="#2-3-placement-operator-new-和-placement-new-expression" class="headerlink" title="2.3 placement operator new 和 placement new expression"></a>2.3 placement operator new 和 placement new expression</h4><p>placement new expression 的功能是对已经存在的空间进行初始化，即用来在指定地址上构造对象，因此它并不分配内存，仅仅是对指定地址调用构造函数。</p>
+<p>而 placement operator new 是对 operator new 的重载，它的功能就是返回给定的指针：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span>* <span class="keyword">operator</span> <span class="title">new</span><span class="params">(<span class="type">size_t</span>, <span class="type">void</span> *p)</span></span></span><br><span class="line"><span class="function"></span>&#123; </span><br><span class="line">    <span class="keyword">return</span> p;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>因为 p 指针指向的内存已经存在，不需要再分配内存，因此只要返回这个指针即可。</p>
+<p>placement new expression 先调用 placement operator new 返回指针 p，然后调用构造函数初始化这个指针指向的内存，这样也就完成了对已经存在的空间进行初始化的工作。</p>
+<p>需要注意的是，通过 placement new expression 构建的一个对象，如果你使用 delete 来删除对象，那么其内存也会被回收，如果想保留内存而只析构对象，好的办法是显式调用其析构函数。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">A</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">A</span>(<span class="type">int</span> a) : _a(a) &#123;&#125;</span><br><span class="line">    ~<span class="built_in">A</span>()&#123;&#125;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="type">int</span> _a;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">test</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    A* pa = <span class="built_in">static_cast</span>&lt;A*&gt;(<span class="keyword">operator</span> <span class="built_in">new</span> (<span class="built_in">sizeof</span>(A));</span><br><span class="line">	<span class="comment">// 使用 placement new expression 初始化内存</span></span><br><span class="line">	<span class="built_in">new</span>(pa) <span class="built_in">A</span>(<span class="number">10</span>);</span><br><span class="line">	<span class="comment">// 显式调用析构函数析构对象</span></span><br><span class="line">	pa-&gt;~<span class="built_in">A</span>();</span><br><span class="line">    <span class="comment">// 此时内存还在，手动使用delete释放内存，如果直接使用delete则其自动先调用析构，再释放内存</span></span><br><span class="line">	<span class="keyword">delete</span> pa;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>事实上并没有 placement new expression 这么一说，上面的说法只是为了便于理解，从头到尾都只有一个 new expression，并且 new expression 永远都只进行以下两个步骤：</p>
+<ul>
+<li>调用一个合适参数的 operator new 来分配内存，可以是普通的 operator new，也可以是 operator new[]，还可以是 placement  operator new</li>
+<li>调用一个合适参数的构造函数初始化 operator new 分配的内存</li>
+</ul>
+<h4 id="2-4-总结"><a href="#2-4-总结" class="headerlink" title="2.4 总结"></a>2.4 总结</h4><p>operator new、new expression 和 placement operator new 三者的关系现在非常明了，总结如下：</p>
+<ul>
+<li>operator new 相当于 malloc 分配内存，区别在于申请失败时抛出异常而不是返回空指针</li>
+<li>placement operator new 将给定的指针直接返回，相当于返回一块已经存在的内存</li>
+<li>new expression 首先调用合适的 operator new 分配内存（可能是新分配的，也可能是已经存在的），然后调用构造函数初始化这块内存</li>
+<li>operator delete 相当于 free 释放内存</li>
+<li>delete expression 首先调用析构函数，然后调用 operator delete 释放内存</li>
+</ul>
+<h4 id="2-5-内存池"><a href="#2-5-内存池" class="headerlink" title="2.5 内存池"></a>2.5 内存池</h4><p>关于内存池技术有必要的话可以再做深入学习，这里只做简单了解即可。</p>
+<p>利用默认的内存管理操作符 new 和 delete 在堆上分配和释放内存会有一些额外的开销。</p>
+<p>系统在接收到分配一定大小内存的请求时，首先查找内部维护的内存空闲块表，并且需要根据一定的算法（例如分配最先找到的不小于申请大小的内存块给请求者，或者分配最适于申请大小的内存块，或者分配最大空闲的内存块等）找到合适大小的空闲内存块。如果该空闲内存块过大，还需要切割成已分配的部分和较小的空闲块。然后系统更新内存空闲块表，完成一次内存分配。类似地，在释放内存时，系统把释放的内存块重新加入到空闲内存块表中。如果有可能的话，可以把相邻的空闲块合并成较大的空闲块。默认的内存管理函数还考虑到多线程的应用，需要在每次分配和释放内存时加锁，同样增加了开销。</p>
+<p>可见，如果程序频繁地使用 new 和 delete 在堆上分配和释放内存，会导致性能的损失。并且会使系统中出现大量的内存碎片，降低内存的利用率。默认的分配和释放内存算法自然也考虑了性能，然而这些内存管理算法的通用版本为了应付更复杂、更广泛的情况，需要做更多的额外工作。而对于某一个具体的应用程序来说，适合自身特定的内存分配释放模式的自定义内存池可以获得更好的性能。</p>
+<p>C++ 引入了内存池（Memory Pool）来提高内存管理和运行效率。内存池是一种高效的内存分配方式，其工作原理是先向系统一次性申请比较大的空间，当我们每次去申请空间时就直接使用内存池里的空间，而省略了申请和释放的两个动作开销，也减少了系统内存碎片，从而提高了系统效率。</p>
+
+    </div>
+
+    
+    
+    
+
+    <div>
+    
+      <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">---- 本文结束 <i class="fa fa-trophy"></i> 知识又增加了亿点点！----</div>
+    
+</div>
+<br />
+<div>
+  <div>
+    <fieldset
+        style="
+            border: 1px dashed #C0C0C0;
+            padding: 10px;
+            border-radius: 5px;
+            line-height: 2em;
+            color: #6d6d6d;
+        ">
+        <legend
+            align="center"
+            style="
+                width: 30%;
+                text-align: center;
+                color: #6d6d6d;
+                border: 1px dashed #C0C0C0;
+                border-radius: 5px;
+            ">
+            文章版权声明
+        </legend>
+        1、博客名称：<font color="#37c6c0">LycTechStack</font><br />
+        2、博客网址：<font color="#37c6c0">https://lz328.github.io/LycTechStack.github.io/</font><br />
+        3、本博客的文章部分内容可能来源于网络，仅供大家学习与参考，如有侵权，请联系博主进行删除处理。<br />
+        4、本博客所有文章版权归博主所有，如需转载请标明出处。<br />
+    </fieldset>
+  </div>
+</div>
+
+    
+    </div>
+      
+  <div class="popular-posts-header">相关文章</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\05\20220505-对象模型-关于对象\" rel="bookmark">【C++对象模型】（一）关于对象</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\07\20220507-对象模型-关于数据成员\" rel="bookmark">【C++对象模型】（三）关于数据成员</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\09\20220509-对象模型-关于函数成员\" rel="bookmark">【C++对象模型】（四）关于函数成员</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\09\20220509-对象模型-对象复制和析构\" rel="bookmark">【C++对象模型】（五）对象复制和析构</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\11\20220511-对象模型-模板和RTTI\" rel="bookmark">【C++对象模型】（七）模板和RTTI</a></div>
+    </li>
+  </ul>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/LycTechStack.github.io/tags/C/" rel="tag"># C++</a>
+              <a href="/LycTechStack.github.io/tags/C-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B/" rel="tag"># C++对象模型</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/LycTechStack.github.io/2022/05/09/20220509-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%AF%B9%E8%B1%A1%E5%A4%8D%E5%88%B6%E5%92%8C%E6%9E%90%E6%9E%84/" rel="prev" title="【C++对象模型】（五）对象复制和析构">
+      <i class="fa fa-chevron-left"></i> 【C++对象模型】（五）对象复制和析构
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/LycTechStack.github.io/2022/05/11/20220511-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E6%A8%A1%E6%9D%BF%E5%92%8CRTTI/" rel="next" title="【C++对象模型】（七）模板和RTTI">
+      【C++对象模型】（七）模板和RTTI <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%AF%B9%E8%B1%A1%E7%9A%84%E6%9E%84%E9%80%A0%E4%B8%8E%E6%9E%90%E6%9E%84"><span class="nav-text">1 对象的构造与析构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-%E5%85%A8%E5%B1%80%E5%AF%B9%E8%B1%A1%EF%BC%88Global-Objects%EF%BC%89"><span class="nav-text">1.1 全局对象（Global Objects）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-%E5%B1%80%E9%83%A8%E9%9D%99%E6%80%81%E5%AF%B9%E8%B1%A1%EF%BC%88Local-Static-Objects%EF%BC%89"><span class="nav-text">1.2 局部静态对象（Local Static Objects）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-%E5%AF%B9%E8%B1%A1%E6%95%B0%E7%BB%84%EF%BC%88Array-of-Objects%EF%BC%89"><span class="nav-text">1.3 对象数组（Array of Objects）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-new-%E5%92%8C-delete"><span class="nav-text">2 new 和 delete</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-operator-new-%E5%92%8C-new-expression"><span class="nav-text">2.1 operator new 和 new expression</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E9%87%8E%E6%8C%87%E9%92%88"><span class="nav-text">2.2 野指针</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-placement-operator-new-%E5%92%8C-placement-new-expression"><span class="nav-text">2.3 placement operator new 和 placement new expression</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-4-%E6%80%BB%E7%BB%93"><span class="nav-text">2.4 总结</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-5-%E5%86%85%E5%AD%98%E6%B1%A0"><span class="nav-text">2.5 内存池</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Lyc"
+      src="/LycTechStack.github.io/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Lyc</p>
+  <div class="site-description" itemprop="description">个人学习总结和技术经验分享，主要内容包括C++、数据结构、算法、计算机图形学、3D数学、实时渲染、游戏引擎等等，希望未来能真正踏入图形/引擎开发的大门！</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/LycTechStack.github.io/archives/">
+        
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/LycTechStack.github.io/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/LycTechStack.github.io/tags/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/LZ328/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;LZ328&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:27487358@qq.com" title="E-Mail → mailto:27487358@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2021 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heartbeat"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lyc</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">601k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">9:07</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="/LycTechStack.github.io/lib/canvas-ribbon/canvas-ribbon.js"></script>
+  <script src="/LycTechStack.github.io/lib/anime.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/pjax/pjax.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4/dist/browser/pangu.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/velocity/velocity.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/LycTechStack.github.io/js/utils.js"></script>
+
+<script src="/LycTechStack.github.io/js/motion.js"></script>
+
+
+<script src="/LycTechStack.github.io/js/schemes/pisces.js"></script>
+
+
+<script src="/LycTechStack.github.io/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/LycTechStack.github.io/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '09aa5d8a5587f012a8af',
+      clientSecret: '7f7ec08f02d74e1865e57b5f03a982047700b547',
+      repo        : 'LycTechStack.github.io',
+      owner       : 'LZ328',
+      admin       : ['LZ328'],
+      id          : 'acee72be64cd84806d332ebff22abce1',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+    </div>
+  
+</body>
+</html>
