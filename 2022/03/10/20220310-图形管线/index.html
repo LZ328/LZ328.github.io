@@ -22,17 +22,17 @@
     var CONFIG = {"hostname":"lz328.github.io","root":"/LycTechStack.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":5,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="图形管线（Graphics Pipeline）这一节将对前面的所有内容做一个总结，因为图形管线就是由前面的所有内容组成的一个图形渲染流水线，空间中的点经过图形管线就被渲染到屏幕上成为图形。 对图形管线的理解对于之后学习 Shader 有非常重要的帮助，《Unity Shader 入门精要》第二章也对图形管线做了非常详细的介绍。">
+  <meta name="description" content="图形管线（Graphics Pipeline）这一节将对前面的所有内容做一个总结，因为图形管线就是由前面的所有内容组成的一个图形渲染流水线，空间中的点经过图形管线就被渲染到屏幕上成为图形。本节以概述形式介绍图形管线，随着学习的深入，会对图形管线有更深入的理解，到时候会对图形渲染管线进行全面详尽的总结。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="【计算机图形学】（八）图形管线">
 <meta property="og:url" content="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E5%9B%BE%E5%BD%A2%E7%AE%A1%E7%BA%BF/index.html">
 <meta property="og:site_name" content="LycTechStack">
-<meta property="og:description" content="图形管线（Graphics Pipeline）这一节将对前面的所有内容做一个总结，因为图形管线就是由前面的所有内容组成的一个图形渲染流水线，空间中的点经过图形管线就被渲染到屏幕上成为图形。 对图形管线的理解对于之后学习 Shader 有非常重要的帮助，《Unity Shader 入门精要》第二章也对图形管线做了非常详细的介绍。">
+<meta property="og:description" content="图形管线（Graphics Pipeline）这一节将对前面的所有内容做一个总结，因为图形管线就是由前面的所有内容组成的一个图形渲染流水线，空间中的点经过图形管线就被渲染到屏幕上成为图形。本节以概述形式介绍图形管线，随着学习的深入，会对图形管线有更深入的理解，到时候会对图形渲染管线进行全面详尽的总结。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E5%9B%BE%E5%BD%A2%E7%AE%A1%E7%BA%BF/image-20220310201713743.png">
 <meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E5%9B%BE%E5%BD%A2%E7%AE%A1%E7%BA%BF/q3tenh9i8t.png">
 <meta property="article:published_time" content="2022-03-10T13:29:33.000Z">
-<meta property="article:modified_time" content="2022-03-26T10:23:21.238Z">
+<meta property="article:modified_time" content="2022-05-12T09:45:52.861Z">
 <meta property="article:author" content="Lyc">
 <meta property="article:tag" content="计算机图形学">
 <meta name="twitter:card" content="summary">
@@ -232,7 +232,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-26 18:23:21" itemprop="dateModified" datetime="2022-03-26T18:23:21+08:00">2022-03-26</time>
+                <time title="修改时间：2022-05-12 17:45:52" itemprop="dateModified" datetime="2022-05-12T17:45:52+08:00">2022-05-12</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -240,7 +240,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/LycTechStack.github.io/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/" itemprop="url" rel="index"><span itemprop="name">计算机图形学</span></a>
+                  <a href="/LycTechStack.github.io/categories/GAMES101/" itemprop="url" rel="index"><span itemprop="name">GAMES101</span></a>
                 </span>
             </span>
 
@@ -276,8 +276,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h3 id="图形管线（Graphics-Pipeline）"><a href="#图形管线（Graphics-Pipeline）" class="headerlink" title="图形管线（Graphics Pipeline）"></a>图形管线（Graphics Pipeline）</h3><p>这一节将对前面的所有内容做一个总结，因为图形管线就是由前面的所有内容组成的一个图形渲染流水线，空间中的点经过图形管线就被渲染到屏幕上成为图形。</p>
-<p>对图形管线的理解对于之后学习 Shader 有非常重要的帮助，《Unity Shader 入门精要》第二章也对图形管线做了非常详细的介绍。</p>
+        <h3 id="图形管线（Graphics-Pipeline）"><a href="#图形管线（Graphics-Pipeline）" class="headerlink" title="图形管线（Graphics Pipeline）"></a>图形管线（Graphics Pipeline）</h3><p>这一节将对前面的所有内容做一个总结，因为图形管线就是由前面的所有内容组成的一个图形渲染流水线，空间中的点经过图形管线就被渲染到屏幕上成为图形。本节以概述形式介绍图形管线，随着学习的深入，会对图形管线有更深入的理解，到时候会对图形渲染管线进行全面详尽的总结。</p>
 <p><em><span id="more"></span></em></p>
 <p>图形管线是基于物体顺序渲染的一系列绘制操作的序列。相对于基于物体顺序渲染还有基于图像顺序渲染，会在之后会讲到。基于物体顺序渲染由于其极高的运行效率而统治了图形学的渲染方法，从早期人们提出了软件图形管线后，图形管线的流程思路又被硬件优化内置到显卡中成为硬件图形管线，这两个管线后来呈现出并行关系，负责不同的事务。</p>
 <p>图形管线的主要流程如下：</p>
@@ -353,10 +352,10 @@
   <div class="popular-posts-header">相关文章</div>
   <ul class="popular-posts">
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\03\20200303-旋转与四元数\" rel="bookmark">【计算机图形学】（二）旋转与四元数</a></div>
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\02\20200302-变换\" rel="bookmark">【计算机图形学】（一）变换</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\02\20200302-变换\" rel="bookmark">【计算机图形学】（一）变换</a></div>
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\03\20200303-旋转与四元数\" rel="bookmark">【计算机图形学】（二）旋转与四元数</a></div>
     </li>
     <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\06\20220306-光栅化\" rel="bookmark">【计算机图形学】（三）光栅化</a></div>
@@ -463,20 +462,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/LycTechStack.github.io/archives/">
         
-          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-count">73</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/LycTechStack.github.io/categories/">
           
-        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/LycTechStack.github.io/tags/">
           
-        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-count">13</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -521,13 +520,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">607k</span>
+    <span title="站点总字数">613k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">9:12</span>
+    <span title="站点阅读时长">9:17</span>
 </div>
 
         
