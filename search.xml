@@ -2265,147 +2265,6 @@
       </tags>
   </entry>
   <entry>
-    <title>【游戏引擎】（一）游戏引擎架构</title>
-    <url>/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/</url>
-    <content><![CDATA[<p>游戏引擎是一个庞大的软件系统，也是最接近操作系统的大型软件，因此会涉及非常复杂的架构设计、资源管理和和代码实现。这一节我们简要学习一个游戏引擎必备的几个重要模块及其功能，了解游戏引擎的宏观分层架构。</p>
-<p><em><span id="more"></span></em></p>
-<h3 id="1-游戏引擎分层架构"><a href="#1-游戏引擎分层架构" class="headerlink" title="1 游戏引擎分层架构"></a>1 游戏引擎分层架构</h3><p>现代游戏引擎的架构极为复杂，如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/image-20220428155123811.png" alt="image-20220428155123811"></p>
-<p>但大致可分为以下几个层次：</p>
-<ul>
-<li>工具层：工具层是面向游戏开发者，能够让游戏开发者使用引擎制作游戏的接口，包括一些系列可视化的编辑器，比如角色编辑器、纹理编辑器、动画编辑器等等。</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/image-20220428155356486.png" alt="image-20220428155356486"></p>
-<ul>
-<li>功能层：功能层包含一个游戏需要的各种功能，包括物理碰撞、动画、渲染、音效、逻辑脚本等等，是能够让一款游戏充满可玩性的核心驱动。</li>
-<li>资源层：资源层负责管理游戏引擎中的各种资源，比如纹理、模型、音频、视频、脚本等，资源层需要将这些资源合理的、有层次的组织起来，并管理他们的生命周期，在合适的时间加载某些资源，在另外一些时候释放某些资源。</li>
-<li>核心层：核心层包含上面几层在实现的过程中需要频繁使用的一些工具函数，比如数学、数据结构、常用的算法等，核心层是游戏引擎中所有上层结构的支撑，由于游戏引擎对效率的要求很高，所以有时并不能直接使用 C++ STL 提供的一些容器或者算法，而需要根据需求编写更高效的数据结构实现和算法函数供上层调用，因此核心层也是对代码质量要求最高的一层。</li>
-<li>平台层：平台层是最容易被忽略的一层，但也是非常重要的一层，平台层负责处理不同平台的差异，包括软件平台和硬件平台，比如不同的操作系统、不同的 CPU&#x2F;GPU 架构、不同的游戏输入设备等等，保证游戏能够在所有平台完美运行。</li>
-<li>第三方库：第三方库一方面用于实现一些基本功能，比如 GUI、图像处理等，另外也可以将功能层中某些模块直接用第三方库来实现，比如一些专门做物理、动画的第三方插件，直接集成到引擎中既方便开发，得到的效果也更好。</li>
-</ul>
-<p>游戏引擎架构当然没有这么简单，但是大致总结起来可以认为就是由这几部分组成的，分层架构的设计要求必须由上层调用下层功能，这样既便于开发，也便于管理。接下来我们对其中的重要模块稍作深入了解。</p>
-<h3 id="2-资源层"><a href="#2-资源层" class="headerlink" title="2 资源层"></a>2 资源层</h3><p>游戏开发中需要利用各种资源来达到目的，而各类资源有不同的格式，即使是同一类资源，它们的格式也不尽相同，比如不同的 3D 建模软件导出的模型就存在各种各样的格式差异，资源层需要将这些不同的资源，统一转化为游戏引擎使用的格式，转换后的资源被称为 Asset，从资源到 Asset 的过程可以认为是对资源文件的提纯过程，这个过程会去掉那些游戏引擎不需要的信息，比如 3D 模型中的编辑信息，而只保留游戏引擎中需要的信息，并组织成统一的格式。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/image-20220428161522013.png" alt="image-20220428161522013"></p>
-<p>除此之外，资源层还要对海量的资源进行合理的管理，包括每个资源的唯一标识（GUID）、不同资源之间的关系、资源的生命周期等等。高效的管理资源是一个游戏稳定运行的基础，比如在游戏场景切换的时候就需要卸载大量资源再加载大量资源，如果资源管理做的不好，轻则加载时间长，影响游戏体验，重则出现卡顿，甚至崩溃。</p>
-<h3 id="3-功能层"><a href="#3-功能层" class="headerlink" title="3 功能层"></a>3 功能层</h3><p>从某种程度上说，功能层是游戏引擎最核心的部分，因为它实现了一个游戏之所以能称之为游戏的全部重要功能，包括渲染、物理、动画、音效、网络、游戏性等等。因此功能层也是构建游戏世界的核心。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/image-20220428162147284.png" alt="image-20220428162147284"></p>
-<p>游戏世界是依靠 Tick 来驱动的，类似于秒针走动一下，我们的世界就会发生一次改变。在游戏世界中，“秒针”每次走动，我们的计算机就会将所有的功能全部运行一遍，来计算这一秒游戏世界中发生的事情，因此在游戏引擎的代码中，入口就是 Tick：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/image-20220428162301962.png" alt="image-20220428162301962"></p>
-<p>Tick 一般分为逻辑 Tick 和渲染 Tick，逻辑 Tick 负责计算相机、运动、动画、物理等功能，相当于在构建整个游戏世界；渲染 Tick 则负责将游戏在世界呈现在玩家面前，包括剔除、渲染、后处理等等。因此在每一个 Tick 中，都是先计算逻辑 Tick，再计算渲染 Tick。</p>
-<p>功能层的许多功能可以在游戏中实现，也可以在游戏引擎中实现，这完全取决于需求，对于一些通用的商业引擎，它们可能会用于制作各种类型的游戏，因此功能层提供的功能要尽可能的丰富，而对于一些专用的引擎，比如寒霜、RED ENGINE等，它们被用于制作特定类型的游戏，因此就会在功能层对特定的功能进行实现，而抛弃一些不需要的功能。</p>
-<h3 id="4-核心层"><a href="#4-核心层" class="headerlink" title="4 核心层"></a>4 核心层</h3><p>核心层为上层实现提供核心驱动，在核心层会实现包括数学计算、数据结构、内存管理、线程管理在内的基本代码，这部分要保证绝对的安全、稳定、高效。因此对编码要求也极高，一般核心层的代码不会轻易修改。</p>
-<p>数学计算包括一些基本运算、向量、矩阵、四元数、随机数等的实现，游戏中许多计算可能并不要求结果的绝对精确，而是更需要计算的高效性，结果允许存在一定误差，因此在实现上就和 C++ 提供的数学库完全不同了。</p>
-<p>数据结构也是同样，STL 提供的各种数据结构和容器实现有时候可能在内存、效率上达不到游戏中的要求，比如 C++11 中的 vector 在扩容时就可能造成大量的空间碎片，因此我们需要实现更高效、内存管理更严格的数据结构和容器供上层使用。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/image-20220428163516740.png" alt="image-20220428163516740"></p>
-<h3 id="5-平台层"><a href="#5-平台层" class="headerlink" title="5 平台层"></a>5 平台层</h3><p>平台层需要处理不同软硬件平台的差异，使得游戏和引擎能够在不同平台上运行。平台之间的差异说起来简单，但是实际情况却非常复杂，比如图形 API 之间的差异，DirectX 11、OpenGL、Vulkan 等图形接口就有相当大的差异，即便是同为微软的 DirectX 11 和 DirectX 12 也有着完全不同的实现框架，并且不同的显卡架构也完全不同，因此需要一个统一的渲染接口将这些差异统一起来，使得上层使用者只需要关注功能实现，而不需要关注底层接口和硬件之间的差异。</p>
-<p>除此之外，平台差异还包括核心处理器架构的差异，PS、XBox、PC 等平台的核心处理架构设计是完全不同的，需要对这样的差异进行处理；另外还有游戏输入设备之间的差异，键鼠、手柄、方向盘、感应器等等，需要一个统一的接口处理这些设备的输入，使它们能得到相同的响应效果。</p>
-<h3 id="6-总结"><a href="#6-总结" class="headerlink" title="6 总结"></a>6 总结</h3><p>总而言之，游戏引擎架构极为复杂，但概括来说就是由分层架构搭建而成，并且只允许上层功能调用下层功能，不允许下层功能调用上层功能。越底层的功能越稳定，越上层的功能越灵活。</p>
-<p>游戏世界依靠 Tick 驱动，每一个 Tick 都计算一次逻辑功能和渲染功能，这样整个游戏世界就能够构建起来、运行起来并且呈现在玩家面前了。</p>
-]]></content>
-      <categories>
-        <category>游戏引擎</category>
-      </categories>
-      <tags>
-        <tag>游戏引擎</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>【C++】基础知识汇总</title>
-    <url>/LycTechStack.github.io/2022/04/30/20220430-C++%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB/</url>
-    <content><![CDATA[<p>C++中琐碎的基础知识，原理，用法汇总，用于快速查询知识点。持续更新。</p>
-<p><em><span id="more"></span></em></p>
-<h3 id="1-智能指针"><a href="#1-智能指针" class="headerlink" title="1 智能指针"></a>1 智能指针</h3><ul>
-<li><a href="https://zhuanlan.zhihu.com/p/150555165">现代 C++：一文读懂智能指针</a></li>
-<li><a href="https://blog.csdn.net/K346K346/article/details/81478223">C++ STL 四种智能指针</a></li>
-<li><a href="https://blog.csdn.net/u012442719/article/details/55045583">C++ weak ptr解除指针循环引用</a></li>
-</ul>
-<h3 id="2-auto-和-decltype"><a href="#2-auto-和-decltype" class="headerlink" title="2 auto 和 decltype"></a>2 auto 和 decltype</h3><ul>
-<li><p><a href="http://c.biancheng.net/view/6984.html">C++ auto类型推导</a></p>
-</li>
-<li><p><a href="http://c.biancheng.net/view/7151.html">C++ decltype类型推导</a></p>
-</li>
-<li><p><a href="https://blog.csdn.net/tcy23456/article/details/110530204?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_baidulandingword~default-1.pc_relevant_antiscanv2&spm=1001.2101.3001.4242.2&utm_relevant_index=4">C++20 decltype和decltype(auto)用法</a></p>
-</li>
-</ul>
-<h3 id="3-Lambda表达式"><a href="#3-Lambda表达式" class="headerlink" title="3 Lambda表达式"></a>3 Lambda表达式</h3><ul>
-<li><p><a href="https://blog.csdn.net/A1138474382/article/details/111149792">C++ Lambda表达式原理及应用</a></p>
-</li>
-<li><p><a href="http://c.biancheng.net/view/3741.html">C++11 lambda表达式精讲</a></p>
-</li>
-<li><p><a href="http://c.biancheng.net/view/7818.html">C++11 lambda匿名函数用法详解</a></p>
-</li>
-</ul>
-<h3 id="4-仿函数"><a href="#4-仿函数" class="headerlink" title="4 仿函数"></a>4 仿函数</h3><ul>
-<li><a href="https://blog.csdn.net/JMW1407/article/details/107130600">仿函数(functors)</a></li>
-<li><a href="https://blog.csdn.net/toby54king/article/details/105103111">C++中的仿函数有点难，这篇文章却讲的通俗易懂</a></li>
-<li><a href="https://zhuanlan.zhihu.com/p/362323211">C++ 仿函数为何而生</a></li>
-</ul>
-]]></content>
-      <categories>
-        <category>STL</category>
-      </categories>
-      <tags>
-        <tag>C++</tag>
-        <tag>STL</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>【STL】序列式容器</title>
-    <url>/LycTechStack.github.io/2022/04/30/20220430-STL-%E5%BA%8F%E5%88%97%E5%BC%8F%E5%AE%B9%E5%99%A8/</url>
-    <content><![CDATA[<p>容器（Containers）是 STL 六大组件中最被人熟知和常用的一个神器，根据组织方式大概分为序列式容器和关联式容器两大类。</p>
-<p><em><span id="more"></span></em></p>
-<h3 id="1-STL-容器概览"><a href="#1-STL-容器概览" class="headerlink" title="1 STL 容器概览"></a>1 STL 容器概览</h3><p>STL 提供的容器如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/30/20220430-STL-%E5%BA%8F%E5%88%97%E5%BC%8F%E5%AE%B9%E5%99%A8/image-20220430153405060.png" alt="image-20220430153405060"></p>
-<p>其中内缩表达基层与衍生层的关系，这里所谓的衍生，并非派生 (inheritance) 关系，而是内含 (containment) 关系。例如 heap 内含一个 vector，priority_queue 内含一个 heap 、stack 和 queue 都含一个 deque，set&#x2F;map&#x2F;multiset&#x2F;multimap 都内含一个 RB-tree，hast_x 都内含一个 hashtable。</p>
-<h3 id="2-序列式容器"><a href="#2-序列式容器" class="headerlink" title="2 序列式容器"></a>2 序列式容器</h3><p>所谓序列式容器，其中的元素都可序（ordered），但未必有序（sorted），C++ 本身内建了一个序列式容器array，STL 另外提供了vector、list、deque、stack、queue、priority-queue 等序列式容器。其中 stack 和 queue 由于只是 deque 改头换面而来，技术上被归为一种配接器 (adapter)。接下来了解各序列式容器的具体实现。</p>
-<h3 id="3-vector"><a href="#3-vector" class="headerlink" title="3 vector"></a>3 vector</h3><p>vector 采用的数据结构非常简单：线性连续空间。它以两个迭代器 start 和 finish 分别指向配置得来的连续空间中目前已被使用的范围，并以迭代器 end_of_storage 指向整块连续空间（含备用空间）的尾端。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">class</span> <span class="title class_">T</span>, <span class="keyword">class</span> <span class="title class_">Alloc</span> = alloc&gt;</span><br><span class="line"><span class="keyword">class</span> vector &#123;</span><br><span class="line">    ...</span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">    iterator start;             <span class="comment">// 表示目前使用空间的头</span></span><br><span class="line">    iterator finish;            <span class="comment">// 表示目前使用空间的尾</span></span><br><span class="line">    iterator end_of_storage;    <span class="comment">// 表示目前可用空间的尾</span></span><br><span class="line">    ...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<p>为了降低空间配置时的速度成本， vector 实际配置的大小可能比客户端需求量更大一些，以备将来可能的扩充。这便是容量 (capacity) 的观念。换句话说，一个 vector 的容量永远大于或等于其大小。一旦容量等于大小，下次再有新增元素，整个 vector 就得进行动态增加容量。</p>
-<p>所谓动态增加容量，并不是在原来空间之后接续新空间（因为无法保证原空间之后尚有可供分配的空间），而是以原来大小的的两倍另外分配一块较大空间，然后将原内容拷贝过来，然后才开始在原内容之后构造新元素，并释放原空间。因此，对vector的任何操作，一旦引起空间重新配置，指向原 vector 的所有迭代器就都失效了。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/30/20220430-STL-%E5%BA%8F%E5%88%97%E5%BC%8F%E5%AE%B9%E5%99%A8/image-20220430154445332.png" alt="image-20220430154445332"></p>
-<p>当我们以 <code>push_back()</code> 将新元素插入于 vector 尾端时，该函数首先检查是否还有备用空间，如果有就直接在备用空间上构造元素，并调整迭代器 finish，使 vector 变大。如果没有备用空间了，就扩充空间（重新配置、移动数据、释放原空间）。</p>
-<h3 id="4-list"><a href="#4-list" class="headerlink" title="4 list"></a>4 list</h3><p>相对于 vector 的连续线性空间，list 就显得复杂许多，它的好处就是插入或删除一个元素，就配置或删除一个元素空间。对于任何位置的元素的插入或删除，list 永远是常数时间。</p>
-<p>List 不仅是一个双向链表，而且是一个双向循环链表，只需一个指针就可遍历整个链表。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/30/20220430-STL-%E5%BA%8F%E5%88%97%E5%BC%8F%E5%AE%B9%E5%99%A8/image-20220430155828333.png" alt="image-20220430155828333"></p>
-<p>对于迭代器，只能通过 <code>++</code> 或 <code>--</code> 操作将迭代器移动到后继&#x2F;前驱节点元素处，而不能对迭代器进行 +n 或 -n 的操作。因此 List 的迭代器是双向迭代器。在 List 中增加任何元素都不会使迭代器失效。删除元素时，除了指向当前被删除元素的迭代器外，其它迭代器都不会失效。</p>
-<h3 id="4-deque"><a href="#4-deque" class="headerlink" title="4 deque"></a>4 deque</h3><p>vector 是单向开口的连续线性空间，deque 则是一种双向开口的线性空间。所谓双向开口，意思是可以在头尾两端分别做元素的插入和删除操作，虽然 vector 也支持从头端插入元素，不过效率奇差。deque 容器类与 vector 类似，支持随机访问和快速插入删除，它在容器中某一位置上的操作所花费的是线性时间。</p>
-<p>deque 与 vector 最大差异：</p>
-<ul>
-<li>deque 允许常数时间内对头部进行元素的插入或移除操作。</li>
-<li>deque 没有所谓的容量观念，因为它是动态的以分段连续空间组合而成，随时可以增加一段新的空间并拼接起来。</li>
-</ul>
-<p>deque 由一段一段连续空间组成，一旦有必要在 deque 的前端或尾端增加新空间，便配置一段连续空间，串接在整个 deque 的前端或尾端。deque 的最大任务，便是在这些分段的连续空间上，维护其整体连续的假象，并提供随机存取的接口，避开了“重新配置、复制、释放”的轮回，代价是复杂的迭代器结构。</p>
-<p>deque 采用一块所谓的 map（不是 STL 的 map 容器）作为主控。这里所谓 map 是一小块连续空间，其中每个元素（此处称为一个节点，node）都是指针，指向另一段（较大的）连续线性空间，称为缓冲区。缓冲区才是 deque 的储存空间主体。 SGI STL 允许我们指定缓冲区大小，默认值 0 表示将使用 512 bytes 缓冲区。deque 最初状态（无任何元素）保有一个缓冲区，因此，clear() 完成之后回到初始状态，也一样会保留一个缓冲区。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/30/20220430-STL-%E5%BA%8F%E5%88%97%E5%BC%8F%E5%AE%B9%E5%99%A8/image-20220430160922218.png" alt="image-20220430160922218"></p>
-<p>由于以上结构，deque 的迭代器实现也较为复杂，deque 的迭代器首先必须指出分段连续空间在哪里，其次它必须能够判断自己是否已经处在缓冲区的边缘，如果是，一旦前进或后退就必须跳跃下一个缓冲区，为了能够正常跳跃，deque 必须随时掌握管控中心（map）。下图展示了 deque 的中控器、迭代器和缓冲区的关系：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/30/20220430-STL-%E5%BA%8F%E5%88%97%E5%BC%8F%E5%AE%B9%E5%99%A8/image-20220430161351783.png" alt="image-20220430161351783"></p>
-<p>假设一个 deque 存储 20 个元素，每个缓冲区可以存储 8 个元素，则它的迭代器关系如下：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/30/20220430-STL-%E5%BA%8F%E5%88%97%E5%BC%8F%E5%AE%B9%E5%99%A8/image-20220430161627317.png" alt="image-20220430161627317"></p>
-<p>迭代器 start 内的 cur 指针指向第一块缓冲区的第一个元素，迭代器 finish 内的 cur 指针指向最后一块缓冲区的最后一个元素（的下一位置）。</p>
-<p>下面来分析 deque 常用操作对迭代器的影响：</p>
-<ul>
-<li>在队前或队后插入元素时（push_back()和push_front()），由于可能缓冲区的空间不够，需要增加 map 中控器，而中控器的个数如果也不够，就需要新开辟更大的空间来容纳中控器，所以可能会使迭代器失效；但指针、引用仍有效，因为缓冲区已有的元素没有重新分配内存。</li>
-<li>在队列其他位置插入元素时，由于会造成缓冲区的一些元素的移动，所以肯定会造成迭代器的失效；并且指针、引用都会失效。</li>
-<li>删除队头或队尾的元素时，由于只是对当前的元素进行操作，所以其他元素的迭代器不会受到影响，所以一定不会失效，而且指针和引用也都不会失效。</li>
-<li>删除其他位置的元素时，也会造成元素的移动，所以其他元素的迭代器、指针和引用都会失效。</li>
-</ul>
-<h3 id="5-stack"><a href="#5-stack" class="headerlink" title="5 stack"></a>5 stack</h3><p>stack 是一种先进后出（First In Last Out，FILO）的数据结构，它只有一个出口。stack 允许增加元素、移除元素、取得最顶端元素。但除了最顶端外，没有任何其他方法可以存取 stack 的其他元素，换言之，stack 不允许有遍历行为，因此 stack 没有迭代器。stack 默认以 deque 为底层容器。stack 是对 deque 的又一层封装，因此 stack 并不是容器，而被称作配接器。</p>
-<p>除了 deque 外，stack 也可以使用 list 作为底层容器，因为二者都是双端开头的容器。</p>
-<h3 id="6-queue"><a href="#6-queue" class="headerlink" title="6 queue"></a>6 queue</h3><p>queue 是一种先进先出（First In First Out，FIFO）的数据结构，它有两个出口，允许增加元素、移除元素、从最底端加入元素、取得最顶端元素。但除了最底端可以加入、最顶端可以取出外，没有任何其他方法可以存取 queue 的其他元素，换言之，queue不允许有遍历行为，因此 queue 没有迭代器。queue 默认以 deque 为底层容器。</p>
-<p>除了 deque 外，queue 也可以使用 list 作为底层容器，因为二者都是双端开头的容器。</p>
-<h3 id="7-heap"><a href="#7-heap" class="headerlink" title="7 heap"></a>7 heap</h3><p>heap 使用 vector 作为底层容器，关于 heap 的算法可在专题<a href="https://lz328.github.io/LycTechStack.github.io/2022/04/06/20220406-%E4%BC%98%E5%85%88%E9%98%9F%E5%88%97%E5%92%8C%E5%A0%86/">【数据结构】优先队列和堆</a>中找到。STL 默认建立大顶堆。</p>
-<h3 id="8-priority-queue"><a href="#8-priority-queue" class="headerlink" title="8 priority_queue"></a>8 priority_queue</h3><p>priority_queue 底层使用 heap 实现。</p>
-]]></content>
-      <categories>
-        <category>STL</category>
-      </categories>
-      <tags>
-        <tag>C++</tag>
-        <tag>STL</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>【STL】迭代器</title>
     <url>/LycTechStack.github.io/2022/04/30/20220430-STL-%E8%BF%AD%E4%BB%A3%E5%99%A8/</url>
     <content><![CDATA[<p>STL的中心思想是：将数据容器和算法分隔开，彼此独立设计，最后再用黏合剂将它们撮合在一起。容器和算法的泛型化，可以用 C++ 的 class template 和 function template 来实现，而迭代器（Iterator）就是二者的黏合剂了。</p>
@@ -2505,6 +2364,62 @@
       </tags>
   </entry>
   <entry>
+    <title>【STL】序列式容器</title>
+    <url>/LycTechStack.github.io/2022/04/30/20220430-STL-%E5%BA%8F%E5%88%97%E5%BC%8F%E5%AE%B9%E5%99%A8/</url>
+    <content><![CDATA[<p>容器（Containers）是 STL 六大组件中最被人熟知和常用的一个神器，根据组织方式大概分为序列式容器和关联式容器两大类。</p>
+<p><em><span id="more"></span></em></p>
+<h3 id="1-STL-容器概览"><a href="#1-STL-容器概览" class="headerlink" title="1 STL 容器概览"></a>1 STL 容器概览</h3><p>STL 提供的容器如下图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/30/20220430-STL-%E5%BA%8F%E5%88%97%E5%BC%8F%E5%AE%B9%E5%99%A8/image-20220430153405060.png" alt="image-20220430153405060"></p>
+<p>其中内缩表达基层与衍生层的关系，这里所谓的衍生，并非派生 (inheritance) 关系，而是内含 (containment) 关系。例如 heap 内含一个 vector，priority_queue 内含一个 heap 、stack 和 queue 都含一个 deque，set&#x2F;map&#x2F;multiset&#x2F;multimap 都内含一个 RB-tree，hast_x 都内含一个 hashtable。</p>
+<h3 id="2-序列式容器"><a href="#2-序列式容器" class="headerlink" title="2 序列式容器"></a>2 序列式容器</h3><p>所谓序列式容器，其中的元素都可序（ordered），但未必有序（sorted），C++ 本身内建了一个序列式容器array，STL 另外提供了vector、list、deque、stack、queue、priority-queue 等序列式容器。其中 stack 和 queue 由于只是 deque 改头换面而来，技术上被归为一种配接器 (adapter)。接下来了解各序列式容器的具体实现。</p>
+<h3 id="3-vector"><a href="#3-vector" class="headerlink" title="3 vector"></a>3 vector</h3><p>vector 采用的数据结构非常简单：线性连续空间。它以两个迭代器 start 和 finish 分别指向配置得来的连续空间中目前已被使用的范围，并以迭代器 end_of_storage 指向整块连续空间（含备用空间）的尾端。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">class</span> <span class="title class_">T</span>, <span class="keyword">class</span> <span class="title class_">Alloc</span> = alloc&gt;</span><br><span class="line"><span class="keyword">class</span> vector &#123;</span><br><span class="line">    ...</span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">    iterator start;             <span class="comment">// 表示目前使用空间的头</span></span><br><span class="line">    iterator finish;            <span class="comment">// 表示目前使用空间的尾</span></span><br><span class="line">    iterator end_of_storage;    <span class="comment">// 表示目前可用空间的尾</span></span><br><span class="line">    ...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>为了降低空间配置时的速度成本， vector 实际配置的大小可能比客户端需求量更大一些，以备将来可能的扩充。这便是容量 (capacity) 的观念。换句话说，一个 vector 的容量永远大于或等于其大小。一旦容量等于大小，下次再有新增元素，整个 vector 就得进行动态增加容量。</p>
+<p>所谓动态增加容量，并不是在原来空间之后接续新空间（因为无法保证原空间之后尚有可供分配的空间），而是以原来大小的的两倍另外分配一块较大空间，然后将原内容拷贝过来，然后才开始在原内容之后构造新元素，并释放原空间。因此，对vector的任何操作，一旦引起空间重新配置，指向原 vector 的所有迭代器就都失效了。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/30/20220430-STL-%E5%BA%8F%E5%88%97%E5%BC%8F%E5%AE%B9%E5%99%A8/image-20220430154445332.png" alt="image-20220430154445332"></p>
+<p>当我们以 <code>push_back()</code> 将新元素插入于 vector 尾端时，该函数首先检查是否还有备用空间，如果有就直接在备用空间上构造元素，并调整迭代器 finish，使 vector 变大。如果没有备用空间了，就扩充空间（重新配置、移动数据、释放原空间）。</p>
+<h3 id="4-list"><a href="#4-list" class="headerlink" title="4 list"></a>4 list</h3><p>相对于 vector 的连续线性空间，list 就显得复杂许多，它的好处就是插入或删除一个元素，就配置或删除一个元素空间。对于任何位置的元素的插入或删除，list 永远是常数时间。</p>
+<p>List 不仅是一个双向链表，而且是一个双向循环链表，只需一个指针就可遍历整个链表。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/30/20220430-STL-%E5%BA%8F%E5%88%97%E5%BC%8F%E5%AE%B9%E5%99%A8/image-20220430155828333.png" alt="image-20220430155828333"></p>
+<p>对于迭代器，只能通过 <code>++</code> 或 <code>--</code> 操作将迭代器移动到后继&#x2F;前驱节点元素处，而不能对迭代器进行 +n 或 -n 的操作。因此 List 的迭代器是双向迭代器。在 List 中增加任何元素都不会使迭代器失效。删除元素时，除了指向当前被删除元素的迭代器外，其它迭代器都不会失效。</p>
+<h3 id="4-deque"><a href="#4-deque" class="headerlink" title="4 deque"></a>4 deque</h3><p>vector 是单向开口的连续线性空间，deque 则是一种双向开口的线性空间。所谓双向开口，意思是可以在头尾两端分别做元素的插入和删除操作，虽然 vector 也支持从头端插入元素，不过效率奇差。deque 容器类与 vector 类似，支持随机访问和快速插入删除，它在容器中某一位置上的操作所花费的是线性时间。</p>
+<p>deque 与 vector 最大差异：</p>
+<ul>
+<li>deque 允许常数时间内对头部进行元素的插入或移除操作。</li>
+<li>deque 没有所谓的容量观念，因为它是动态的以分段连续空间组合而成，随时可以增加一段新的空间并拼接起来。</li>
+</ul>
+<p>deque 由一段一段连续空间组成，一旦有必要在 deque 的前端或尾端增加新空间，便配置一段连续空间，串接在整个 deque 的前端或尾端。deque 的最大任务，便是在这些分段的连续空间上，维护其整体连续的假象，并提供随机存取的接口，避开了“重新配置、复制、释放”的轮回，代价是复杂的迭代器结构。</p>
+<p>deque 采用一块所谓的 map（不是 STL 的 map 容器）作为主控。这里所谓 map 是一小块连续空间，其中每个元素（此处称为一个节点，node）都是指针，指向另一段（较大的）连续线性空间，称为缓冲区。缓冲区才是 deque 的储存空间主体。 SGI STL 允许我们指定缓冲区大小，默认值 0 表示将使用 512 bytes 缓冲区。deque 最初状态（无任何元素）保有一个缓冲区，因此，clear() 完成之后回到初始状态，也一样会保留一个缓冲区。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/30/20220430-STL-%E5%BA%8F%E5%88%97%E5%BC%8F%E5%AE%B9%E5%99%A8/image-20220430160922218.png" alt="image-20220430160922218"></p>
+<p>由于以上结构，deque 的迭代器实现也较为复杂，deque 的迭代器首先必须指出分段连续空间在哪里，其次它必须能够判断自己是否已经处在缓冲区的边缘，如果是，一旦前进或后退就必须跳跃下一个缓冲区，为了能够正常跳跃，deque 必须随时掌握管控中心（map）。下图展示了 deque 的中控器、迭代器和缓冲区的关系：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/30/20220430-STL-%E5%BA%8F%E5%88%97%E5%BC%8F%E5%AE%B9%E5%99%A8/image-20220430161351783.png" alt="image-20220430161351783"></p>
+<p>假设一个 deque 存储 20 个元素，每个缓冲区可以存储 8 个元素，则它的迭代器关系如下：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/30/20220430-STL-%E5%BA%8F%E5%88%97%E5%BC%8F%E5%AE%B9%E5%99%A8/image-20220430161627317.png" alt="image-20220430161627317"></p>
+<p>迭代器 start 内的 cur 指针指向第一块缓冲区的第一个元素，迭代器 finish 内的 cur 指针指向最后一块缓冲区的最后一个元素（的下一位置）。</p>
+<p>下面来分析 deque 常用操作对迭代器的影响：</p>
+<ul>
+<li>在队前或队后插入元素时（push_back()和push_front()），由于可能缓冲区的空间不够，需要增加 map 中控器，而中控器的个数如果也不够，就需要新开辟更大的空间来容纳中控器，所以可能会使迭代器失效；但指针、引用仍有效，因为缓冲区已有的元素没有重新分配内存。</li>
+<li>在队列其他位置插入元素时，由于会造成缓冲区的一些元素的移动，所以肯定会造成迭代器的失效；并且指针、引用都会失效。</li>
+<li>删除队头或队尾的元素时，由于只是对当前的元素进行操作，所以其他元素的迭代器不会受到影响，所以一定不会失效，而且指针和引用也都不会失效。</li>
+<li>删除其他位置的元素时，也会造成元素的移动，所以其他元素的迭代器、指针和引用都会失效。</li>
+</ul>
+<h3 id="5-stack"><a href="#5-stack" class="headerlink" title="5 stack"></a>5 stack</h3><p>stack 是一种先进后出（First In Last Out，FILO）的数据结构，它只有一个出口。stack 允许增加元素、移除元素、取得最顶端元素。但除了最顶端外，没有任何其他方法可以存取 stack 的其他元素，换言之，stack 不允许有遍历行为，因此 stack 没有迭代器。stack 默认以 deque 为底层容器。stack 是对 deque 的又一层封装，因此 stack 并不是容器，而被称作配接器。</p>
+<p>除了 deque 外，stack 也可以使用 list 作为底层容器，因为二者都是双端开头的容器。</p>
+<h3 id="6-queue"><a href="#6-queue" class="headerlink" title="6 queue"></a>6 queue</h3><p>queue 是一种先进先出（First In First Out，FIFO）的数据结构，它有两个出口，允许增加元素、移除元素、从最底端加入元素、取得最顶端元素。但除了最底端可以加入、最顶端可以取出外，没有任何其他方法可以存取 queue 的其他元素，换言之，queue不允许有遍历行为，因此 queue 没有迭代器。queue 默认以 deque 为底层容器。</p>
+<p>除了 deque 外，queue 也可以使用 list 作为底层容器，因为二者都是双端开头的容器。</p>
+<h3 id="7-heap"><a href="#7-heap" class="headerlink" title="7 heap"></a>7 heap</h3><p>heap 使用 vector 作为底层容器，关于 heap 的算法可在专题<a href="https://lz328.github.io/LycTechStack.github.io/2022/04/06/20220406-%E4%BC%98%E5%85%88%E9%98%9F%E5%88%97%E5%92%8C%E5%A0%86/">【数据结构】优先队列和堆</a>中找到。STL 默认建立大顶堆。</p>
+<h3 id="8-priority-queue"><a href="#8-priority-queue" class="headerlink" title="8 priority_queue"></a>8 priority_queue</h3><p>priority_queue 底层使用 heap 实现。</p>
+]]></content>
+      <categories>
+        <category>STL</category>
+      </categories>
+      <tags>
+        <tag>C++</tag>
+        <tag>STL</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>【STL】关联式容器</title>
     <url>/LycTechStack.github.io/2022/05/03/20220503-STL-%E5%85%B3%E8%81%94%E5%BC%8F%E5%AE%B9%E5%99%A8/</url>
     <content><![CDATA[<p>标准的 STL 关联式容器分为 set(集合) &#x2F; map(映射表)两大类，以及这两大类的衍生体 multiset（多键集合）和 multimap（多键映射表）。这些容器的底层机制均以 RB-tree（红黑树）或hash table（哈希表）完成。</p>
@@ -2542,6 +2457,46 @@
 <ul>
 <li>map 一般就是用在数据量小于1000或者对内存使用要求比较高的情况下。因为 hash table 需要申请的空间比较大，而红黑树则是新增一个节点就申请一个节点的空间。</li>
 <li>如果数据量大的话并且需要频繁查找的话，就可以使用 hash table 实现的 map 了。这个时候内存已经不是主要的问题所在，而是查找时间了，这种情况下 hash table 的查找速度是常数而红黑树是 O(logN)，对于后者，1024个数据最坏情况下要10次比较，在频繁查找的情况下这种时间耗费是很大的。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>STL</category>
+      </categories>
+      <tags>
+        <tag>C++</tag>
+        <tag>STL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>【C++】基础知识汇总</title>
+    <url>/LycTechStack.github.io/2022/04/30/20220430-C++%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB/</url>
+    <content><![CDATA[<p>C++中琐碎的基础知识，原理，用法汇总，用于快速查询知识点。持续更新。</p>
+<p><em><span id="more"></span></em></p>
+<h3 id="1-智能指针"><a href="#1-智能指针" class="headerlink" title="1 智能指针"></a>1 智能指针</h3><ul>
+<li><a href="https://zhuanlan.zhihu.com/p/150555165">现代 C++：一文读懂智能指针</a></li>
+<li><a href="https://blog.csdn.net/K346K346/article/details/81478223">C++ STL 四种智能指针</a></li>
+<li><a href="https://blog.csdn.net/u012442719/article/details/55045583">C++ weak ptr解除指针循环引用</a></li>
+</ul>
+<h3 id="2-auto-和-decltype"><a href="#2-auto-和-decltype" class="headerlink" title="2 auto 和 decltype"></a>2 auto 和 decltype</h3><ul>
+<li><p><a href="http://c.biancheng.net/view/6984.html">C++ auto类型推导</a></p>
+</li>
+<li><p><a href="http://c.biancheng.net/view/7151.html">C++ decltype类型推导</a></p>
+</li>
+<li><p><a href="https://blog.csdn.net/tcy23456/article/details/110530204?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_baidulandingword~default-1.pc_relevant_antiscanv2&spm=1001.2101.3001.4242.2&utm_relevant_index=4">C++20 decltype和decltype(auto)用法</a></p>
+</li>
+</ul>
+<h3 id="3-Lambda表达式"><a href="#3-Lambda表达式" class="headerlink" title="3 Lambda表达式"></a>3 Lambda表达式</h3><ul>
+<li><p><a href="https://blog.csdn.net/A1138474382/article/details/111149792">C++ Lambda表达式原理及应用</a></p>
+</li>
+<li><p><a href="http://c.biancheng.net/view/3741.html">C++11 lambda表达式精讲</a></p>
+</li>
+<li><p><a href="http://c.biancheng.net/view/7818.html">C++11 lambda匿名函数用法详解</a></p>
+</li>
+</ul>
+<h3 id="4-仿函数"><a href="#4-仿函数" class="headerlink" title="4 仿函数"></a>4 仿函数</h3><ul>
+<li><a href="https://blog.csdn.net/JMW1407/article/details/107130600">仿函数(functors)</a></li>
+<li><a href="https://blog.csdn.net/toby54king/article/details/105103111">C++中的仿函数有点难，这篇文章却讲的通俗易懂</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/362323211">C++ 仿函数为何而生</a></li>
 </ul>
 ]]></content>
       <categories>
@@ -2799,6 +2754,51 @@
       <tags>
         <tag>C++</tag>
         <tag>C++对象模型</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>【游戏引擎】（一）游戏引擎架构</title>
+    <url>/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/</url>
+    <content><![CDATA[<p>游戏引擎是一个庞大的软件系统，也是最接近操作系统的大型软件，因此会涉及非常复杂的架构设计、资源管理和和代码实现。这一节我们简要学习一个游戏引擎必备的几个重要模块及其功能，了解游戏引擎的宏观分层架构。</p>
+<p><em><span id="more"></span></em></p>
+<h3 id="1-游戏引擎分层架构"><a href="#1-游戏引擎分层架构" class="headerlink" title="1 游戏引擎分层架构"></a>1 游戏引擎分层架构</h3><p>现代游戏引擎的架构极为复杂，如下图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/image-20220428155123811.png" alt="image-20220428155123811"></p>
+<p>但大致可分为以下几个层次：</p>
+<ul>
+<li>工具层：工具层是面向游戏开发者，能够让游戏开发者使用引擎制作游戏的接口，包括一些系列可视化的编辑器，比如角色编辑器、纹理编辑器、动画编辑器等等。</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/image-20220428155356486.png" alt="image-20220428155356486"></p>
+<ul>
+<li>功能层：功能层包含一个游戏需要的各种功能，包括物理碰撞、动画、渲染、音效、逻辑脚本等等，是能够让一款游戏充满可玩性的核心驱动。</li>
+<li>资源层：资源层负责管理游戏引擎中的各种资源，比如纹理、模型、音频、视频、脚本等，资源层需要将这些资源合理的、有层次的组织起来，并管理他们的生命周期，在合适的时间加载某些资源，在另外一些时候释放某些资源。</li>
+<li>核心层：核心层包含上面几层在实现的过程中需要频繁使用的一些工具函数，比如数学、数据结构、常用的算法等，核心层是游戏引擎中所有上层结构的支撑，由于游戏引擎对效率的要求很高，所以有时并不能直接使用 C++ STL 提供的一些容器或者算法，而需要根据需求编写更高效的数据结构实现和算法函数供上层调用，因此核心层也是对代码质量要求最高的一层。</li>
+<li>平台层：平台层是最容易被忽略的一层，但也是非常重要的一层，平台层负责处理不同平台的差异，包括软件平台和硬件平台，比如不同的操作系统、不同的 CPU&#x2F;GPU 架构、不同的游戏输入设备等等，保证游戏能够在所有平台完美运行。</li>
+<li>第三方库：第三方库一方面用于实现一些基本功能，比如 GUI、图像处理等，另外也可以将功能层中某些模块直接用第三方库来实现，比如一些专门做物理、动画的第三方插件，直接集成到引擎中既方便开发，得到的效果也更好。</li>
+</ul>
+<p>游戏引擎架构当然没有这么简单，但是大致总结起来可以认为就是由这几部分组成的，分层架构的设计要求必须由上层调用下层功能，这样既便于开发，也便于管理。接下来我们对其中的重要模块稍作深入了解。</p>
+<h3 id="2-资源层"><a href="#2-资源层" class="headerlink" title="2 资源层"></a>2 资源层</h3><p>游戏开发中需要利用各种资源来达到目的，而各类资源有不同的格式，即使是同一类资源，它们的格式也不尽相同，比如不同的 3D 建模软件导出的模型就存在各种各样的格式差异，资源层需要将这些不同的资源，统一转化为游戏引擎使用的格式，转换后的资源被称为 Asset，从资源到 Asset 的过程可以认为是对资源文件的提纯过程，这个过程会去掉那些游戏引擎不需要的信息，比如 3D 模型中的编辑信息，而只保留游戏引擎中需要的信息，并组织成统一的格式。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/image-20220428161522013.png" alt="image-20220428161522013"></p>
+<p>除此之外，资源层还要对海量的资源进行合理的管理，包括每个资源的唯一标识（GUID）、不同资源之间的关系、资源的生命周期等等。高效的管理资源是一个游戏稳定运行的基础，比如在游戏场景切换的时候就需要卸载大量资源再加载大量资源，如果资源管理做的不好，轻则加载时间长，影响游戏体验，重则出现卡顿，甚至崩溃。</p>
+<h3 id="3-功能层"><a href="#3-功能层" class="headerlink" title="3 功能层"></a>3 功能层</h3><p>从某种程度上说，功能层是游戏引擎最核心的部分，因为它实现了一个游戏之所以能称之为游戏的全部重要功能，包括渲染、物理、动画、音效、网络、游戏性等等。因此功能层也是构建游戏世界的核心。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/image-20220428162147284.png" alt="image-20220428162147284"></p>
+<p>游戏世界是依靠 Tick 来驱动的，类似于秒针走动一下，我们的世界就会发生一次改变。在游戏世界中，“秒针”每次走动，我们的计算机就会将所有的功能全部运行一遍，来计算这一秒游戏世界中发生的事情，因此在游戏引擎的代码中，入口就是 Tick：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/image-20220428162301962.png" alt="image-20220428162301962"></p>
+<p>Tick 一般分为逻辑 Tick 和渲染 Tick，逻辑 Tick 负责计算相机、运动、动画、物理等功能，相当于在构建整个游戏世界；渲染 Tick 则负责将游戏在世界呈现在玩家面前，包括剔除、渲染、后处理等等。因此在每一个 Tick 中，都是先计算逻辑 Tick，再计算渲染 Tick。</p>
+<p>功能层的许多功能可以在游戏中实现，也可以在游戏引擎中实现，这完全取决于需求，对于一些通用的商业引擎，它们可能会用于制作各种类型的游戏，因此功能层提供的功能要尽可能的丰富，而对于一些专用的引擎，比如寒霜、RED ENGINE等，它们被用于制作特定类型的游戏，因此就会在功能层对特定的功能进行实现，而抛弃一些不需要的功能。</p>
+<h3 id="4-核心层"><a href="#4-核心层" class="headerlink" title="4 核心层"></a>4 核心层</h3><p>核心层为上层实现提供核心驱动，在核心层会实现包括数学计算、数据结构、内存管理、线程管理在内的基本代码，这部分要保证绝对的安全、稳定、高效。因此对编码要求也极高，一般核心层的代码不会轻易修改。</p>
+<p>数学计算包括一些基本运算、向量、矩阵、四元数、随机数等的实现，游戏中许多计算可能并不要求结果的绝对精确，而是更需要计算的高效性，结果允许存在一定误差，因此在实现上就和 C++ 提供的数学库完全不同了。</p>
+<p>数据结构也是同样，STL 提供的各种数据结构和容器实现有时候可能在内存、效率上达不到游戏中的要求，比如 C++11 中的 vector 在扩容时就可能造成大量的空间碎片，因此我们需要实现更高效、内存管理更严格的数据结构和容器供上层使用。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/image-20220428163516740.png" alt="image-20220428163516740"></p>
+<h3 id="5-平台层"><a href="#5-平台层" class="headerlink" title="5 平台层"></a>5 平台层</h3><p>平台层需要处理不同软硬件平台的差异，使得游戏和引擎能够在不同平台上运行。平台之间的差异说起来简单，但是实际情况却非常复杂，比如图形 API 之间的差异，DirectX 11、OpenGL、Vulkan 等图形接口就有相当大的差异，即便是同为微软的 DirectX 11 和 DirectX 12 也有着完全不同的实现框架，并且不同的显卡架构也完全不同，因此需要一个统一的渲染接口将这些差异统一起来，使得上层使用者只需要关注功能实现，而不需要关注底层接口和硬件之间的差异。</p>
+<p>除此之外，平台差异还包括核心处理器架构的差异，PS、XBox、PC 等平台的核心处理架构设计是完全不同的，需要对这样的差异进行处理；另外还有游戏输入设备之间的差异，键鼠、手柄、方向盘、感应器等等，需要一个统一的接口处理这些设备的输入，使它们能得到相同的响应效果。</p>
+<h3 id="6-总结"><a href="#6-总结" class="headerlink" title="6 总结"></a>6 总结</h3><p>总而言之，游戏引擎架构极为复杂，但概括来说就是由分层架构搭建而成，并且只允许上层功能调用下层功能，不允许下层功能调用上层功能。越底层的功能越稳定，越上层的功能越灵活。</p>
+<p>游戏世界依靠 Tick 驱动，每一个 Tick 都计算一次逻辑功能和渲染功能，这样整个游戏世界就能够构建起来、运行起来并且呈现在玩家面前了。</p>
+]]></content>
+      <categories>
+        <category>游戏引擎</category>
+      </categories>
+      <tags>
+        <tag>游戏引擎</tag>
       </tags>
   </entry>
   <entry>
@@ -3136,6 +3136,64 @@
       </tags>
   </entry>
   <entry>
+    <title>【Real-Time Rendering】GPU管线</title>
+    <url>/LycTechStack.github.io/2022/05/13/20220513-RTR-GPU%E7%AE%A1%E7%BA%BF/</url>
+    <content><![CDATA[<p>本篇对《Real-Time Rendering》一书中 GPU 渲染管线和可编程着色器的相关知识进行概括总结。主要内容包括：</p>
+<ul>
+<li>GPU 管线概述</li>
+<li>可编程着色模型</li>
+<li>思维导图</li>
+</ul>
+<p><em><span id="more"></span></em></p>
+<h3 id="1-GPU-管线"><a href="#1-GPU-管线" class="headerlink" title="1 GPU 管线"></a>1 GPU 管线</h3><p>GPU 管线和上一节概念上的图形渲染管线不完全相同，现代 GPU 实现了图形渲染管线中的几何和光栅化阶段。其被分为一些不同程度的可配置性和可编程性的硬件阶段，如下图所示：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/13/20220513-RTR-GPU%E7%AE%A1%E7%BA%BF/image-20220513100149647.png" alt="image-20220513100149647"></p>
+<p>其中，不同颜色代表了不同程度的自定义属性：</p>
+<ul>
+<li>绿色的阶段都是完全可编程的</li>
+<li>黄色的阶段可配置，但不可编程</li>
+<li>蓝色的阶段完全固定</li>
+</ul>
+<p>GPU 实现的渲染管线和概念上的图形渲染管线的功能阶段在结构上略有不同。以下是对  GPU 渲染管线的一个流程概览：</p>
+<ul>
+<li><strong>顶点着色器（The Vertex Shader）</strong>是完全可编程的阶段，顶点着色器可以对每个顶点进行诸如变换和变形在内的很多操作，提供了修改、创建、忽略顶点相关属性的功能，这些顶点属性包括颜色、法线、纹理坐标和位置等。顶点着色器必须完成的任务是将顶点从模型空间转换到齐次裁剪空间。</li>
+<li><strong>几何着色器（The Geometry Shader）</strong>位于顶点着色器之后，允许 GPU 高效地创建和销毁几何图元。几何着色器是可选的，完全可编程的阶段，主要对图元（点、线、三角形）的顶点进行操作。几何着色器接收顶点着色器的输出作为输入，通过高效的几何运算，将数据输出，数据随后经过几何阶段和光栅化阶段的其他处理后，会发送给片元着色器。</li>
+<li><strong>裁剪（Clipping）</strong>属于可配置的功能阶段，在此阶段可选运行的裁剪方式，以及添加自定义的裁剪面。</li>
+<li><strong>屏幕映射（Screen Mapping）</strong>、<strong>三角形设置（Triangle Setup）</strong>和<strong>三角形遍历（Triangle Traversal）</strong>阶段是固定功能阶段。</li>
+<li><strong>像素着色器（Pixel Shader，Direct3D 中的叫法）</strong>常常又称为片段着色器，<strong>片元着色器（Fragment Shader，OpenGL 中的叫法）</strong>，是完全可编程的阶段，主要作用是进行像素的处理，让复杂的着色方程在每一个像素上执行。</li>
+<li><strong>合并阶段（The Merger Stage）</strong>处于完全可编程和固定功能之间，尽管不能编程，但是高度可配置，可以进行一系列的操作。其除了进行合并操作，还分管颜色修改（Color Modifying），Z 缓冲（Z-buffer），混合（Blend），模板（Stencil）和相关缓存的处理。</li>
+</ul>
+<h3 id="2-可编程着色模型"><a href="#2-可编程着色模型" class="headerlink" title="2 可编程着色模型"></a>2 可编程着色模型</h3><p>早期的着色模型可以用汇编语言直接编程，但 DX10 之后，汇编就只在调试输出阶段可见，改用高级着色语言。目前的着色语言都是 C-like 的着色语言，比如 HLSL，CG 和 GLSL，其被编译成独立于机器的汇编语言，也称为中间语言（IL）。这些汇编语言在单独的阶段，通常是在驱动中，被转化成实际的机器语言。这样的安排可以兼容不同的硬件实现。这些汇编语言可以被看做是定义一个作为着色语言编译器的虚拟机。这个虚拟机是一个处理多种类型寄存器和数据源、预编了一系列指令的处理器。<strong>着色语言虚拟机可以理解为一个处理多种类型寄存器和数据源、预编了一系列指令的处理器。</strong></p>
+<p>Shader 程序可以在程序加载或运行时离线编译。和任何编译器一样，有生成不同输出文件和使用不同优化级别的选项。一个编译过的  Shader 作为字符串或者文本来存储，并通过驱动程序传递给  GPU。</p>
+<h4 id="2-1-顶点着色器"><a href="#2-1-顶点着色器" class="headerlink" title="2.1 顶点着色器"></a>2.1 顶点着色器</h4><p>顶点着色器是完全可编程的阶段，是专门处理传入的顶点信息的着色器，顶点着色器可以对每个顶点进行诸如变换和变形在内的很多操作。顶点着色器一般不处理附加信息，也就是说，顶点着色器提供了修改，创建，或者忽略与每个多边形顶点相关的值的方式，例如其颜色，法线，纹理坐标和位置。通常，<strong>顶点着色器程序将顶点从模型空间（Model Space）变换到齐次裁剪空间（Homogeneous Clip Space）</strong>，并且，一个顶点着色器至少且必须输出此变换位置。</p>
+<p>顶点着色器既不能创建也不能消除顶点，并且由一个顶点生成的结果不能传递到另一个顶点。由于每个顶点都被独立处理，所以  GPU 上的任何数量的着色器处理器都可以并行地应用到传入的顶点流上。</p>
+<p>顶点着色器的输出可以以许多不同的方式来使用，通常是随后用于每个实例三角形的生成和光栅化，然后各个像素片段被发送到像素着色器，以便继续处理。而在 Shader Model 4.0 中，数据也可以发送到几何着色器（Geometry Shader）或输出流（Streamed Output）或同时发动到像素着色器和几何着色器两者中。</p>
+<h4 id="2-2-几何着色器"><a href="#2-2-几何着色器" class="headerlink" title="2.2 几何着色器"></a>2.2 几何着色器</h4><p>几何着色器的输入是单个对象及对象相关的顶点，而对象通常是网格中的三角形，线段或简单的点。另外，扩展的图元可以由几何着色器定义和处理。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/13/20220513-RTR-GPU%E7%AE%A1%E7%BA%BF/image-20220513102855674.png" alt="image-20220513102855674"></p>
+<p>上图所示，几何着色器程序的输入是一个单独的类型：点，线段，三角形。两个最右边的图元，包括与线和三角形对象相邻的顶点也可被使用。</p>
+<p>几何着色器需要图元作为输入，在处理过程中他可以将这个图元整个丢弃或者输出一个或更多的图元（也就是说它可以产生比它得到的更多或更少的顶点），这个能力被叫做几何增长（growing geometry）。几何着色器可以改变新传递进来的图元的拓扑结构，且几何着色器可以接收任何拓扑类型的图元，但是只能输出点、折线（line strip）和三角形条（triangle strips）。</p>
+<p>当我们未添加几何着色器时，默认的行为是将输入的三角形直接输出。我们添加了几何着色器之后，可以在几何着色器中修改输出的图形，我们可以输出我们想要输出的任何图形。</p>
+<blockquote>
+<p>GPU 管线的标准使用方式是发送数据到顶点着色器，然后对所得到的三角形进行光栅化处理，并在像素着色器中处理它们。数据总是通过管线传递，无法访问中间结果。流输出的想法在  Shader Model 4.0 中被引入。在顶点着色器（以及可选的几何着色器中）处理顶点之后，除了将数据发送到光栅化阶段之外，也可以输出到流，也就是一个有序数组中进行处理。事实上，可以完全关掉光栅化，然后管线纯粹作为非图形流处理器来使用。以这种方式处理的数据可以通过管线回传，从而允许迭代处理。这种操作特别适用于模拟流动的水或其他粒子特效。</p>
+</blockquote>
+<h4 id="2-3-像素着色器"><a href="#2-3-像素着色器" class="headerlink" title="2.3 像素着色器"></a>2.3 像素着色器</h4><p>像素着色器(Pixel Shader，Direct3D 中的叫法)，常常又称为片元着色器(Fragment Shader, OpenGL 中的叫法)，用于进行逐像素计算颜色的操作，让复杂的着色方程在每一个像素上执行。像素着色器是光栅化阶段的主要步骤之一。在顶点和几何着色器执行完其操作之后，图元会被裁剪、屏幕映射，结束几何阶段，到达光栅化阶段，在光栅化阶段中先经历三角形设定和三角形遍历，之后来到像素着色阶段。</p>
+<p>像素着色器常用来处理场景光照和与之相关的效果，如凸凹纹理映射和调色。名称片元着色器似乎更为准确，因为对于着色器的调用和屏幕上像素的显示并非一一对应。举个例子，对于一个像素，片元着色器可能会被调用若干次来决定它最终的颜色，那些被遮挡的物体也会被计算，直到最后的深度缓冲才将各物体前后排序。</p>
+<p>可以发现，顶点着色程序的输出，在经历裁剪、屏幕映射、三角形设定、三角形遍历后，实际上变成了像素着色程序的输入。在 Shader Model 4.0 中，共有 16 个向量（每个向量含 4 个值）可以从顶点着色器传到像素着色器。当使用几何着色器时，可以输出 32 个向量到像素着色器中。</p>
+<h4 id="2-4-合并阶段"><a href="#2-4-合并阶段" class="headerlink" title="2.4 合并阶段"></a>2.4 合并阶段</h4><p>作为光栅化阶段名义上的最后一个阶段，合并阶段（The Merging Stage）是将像素着色器中生成的各个片段的深度和颜色与帧缓冲结合在一起的地方。这个阶段也就是进行模板缓冲（Stencil-Buffer）和 Z 缓冲（Z-buffer）操作的地方。最常用于透明处理（Transparency）和合成操作（Compositing）的颜色混合（Color Blending）操作也是在这个阶段进行的。虽然合并阶段不可编程，但却是高度可配置的。在合并阶段可以设置颜色混合来执行大量不同的操作。最常见的是涉及颜色和 Alpha 值的乘法，加法，和减法的组合。其他操作也是可能的，比如最大值，最小值以及按位逻辑运算。</p>
+<h4 id="2-5-特效"><a href="#2-5-特效" class="headerlink" title="2.5 特效"></a>2.5 特效</h4><p>GPU 渲染管线中的可编程阶段有顶点、几何和像素着色器三个部分，他们需要相互结合在一起使用。正因如此，不同的团队研发出了不同的特效语言，例如 HLSL FX，CgFX，以及 COLLADA FX，来将他们更好的结合在一起。</p>
+<p>一个效果文件通常会包含所有执行一种特定图形算法的所有相关信息，而且通常定义一些可被应用程序赋值的全局参数。例如，一个单独的  effect file 可能定义渲染塑料材质需要的  vs（顶点着色器）和  ps（像素着色器），它可能暴露一些参数例如塑料颜色和粗糙度，这样渲染每个模型的时候可以改变效果而仅仅使用同一个特效文件。一个效果文件中能存储很多 techniques。这些 techniques 通常是一个<br>相同特效的变体。</p>
+<p>下图展示了一些特效文件带来的材质和后处理效果：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/13/20220513-RTR-GPU%E7%AE%A1%E7%BA%BF/image-20220513104314983.png" alt="image-20220513104314983"></p>
+<h3 id="3-思维导图"><a href="#3-思维导图" class="headerlink" title="3 思维导图"></a>3 思维导图</h3><p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/13/20220513-RTR-GPU%E7%AE%A1%E7%BA%BF/image-20220513104353817.png" alt="image-20220513104353817"></p>
+]]></content>
+      <categories>
+        <category>Real-Time Rendering</category>
+      </categories>
+      <tags>
+        <tag>计算机图形学</tag>
+        <tag>实时渲染</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>【Real-Time Rendering】图形渲染和视觉处理</title>
     <url>/LycTechStack.github.io/2022/05/13/20220513-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E5%92%8C%E8%A7%86%E8%A7%89%E5%A4%96%E8%A7%82/</url>
     <content><![CDATA[<p>本篇对《Real-Time Rendering》一书中与图形渲染基础和视觉处理相关的知识进行概括总结。主要内容包括：</p>
@@ -3197,64 +3255,6 @@
 </ul>
 <p>这种方法与渲染物体的顺序无关，并且得到的结果保证正确，但缺点也很明显，需要剥离 N 次才能完成，就需要 N 个 Pass，N 是深度复杂度，因此性能是严重的瓶颈，另外如何确定 N 也是个问题。</p>
 <h3 id="5-伽马校正"><a href="#5-伽马校正" class="headerlink" title="5 伽马校正"></a>5 伽马校正</h3><p>查看之前笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/04/15/20220415-RayTracer-%E6%BC%AB%E5%8F%8D%E5%B0%84%E6%9D%90%E8%B4%A8/">【RayTracer】（四）漫反射材质</a>中的第三部分。</p>
-]]></content>
-      <categories>
-        <category>Real-Time Rendering</category>
-      </categories>
-      <tags>
-        <tag>计算机图形学</tag>
-        <tag>实时渲染</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>【Real-Time Rendering】GPU管线</title>
-    <url>/LycTechStack.github.io/2022/05/13/20220513-RTR-GPU%E7%AE%A1%E7%BA%BF/</url>
-    <content><![CDATA[<p>本篇对《Real-Time Rendering》一书中 GPU 渲染管线和可编程着色器的相关知识进行概括总结。主要内容包括：</p>
-<ul>
-<li>GPU 管线概述</li>
-<li>可编程着色模型</li>
-<li>思维导图</li>
-</ul>
-<p><em><span id="more"></span></em></p>
-<h3 id="1-GPU-管线"><a href="#1-GPU-管线" class="headerlink" title="1 GPU 管线"></a>1 GPU 管线</h3><p>GPU 管线和上一节概念上的图形渲染管线不完全相同，现代 GPU 实现了图形渲染管线中的几何和光栅化阶段。其被分为一些不同程度的可配置性和可编程性的硬件阶段，如下图所示：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/13/20220513-RTR-GPU%E7%AE%A1%E7%BA%BF/image-20220513100149647.png" alt="image-20220513100149647"></p>
-<p>其中，不同颜色代表了不同程度的自定义属性：</p>
-<ul>
-<li>绿色的阶段都是完全可编程的</li>
-<li>黄色的阶段可配置，但不可编程</li>
-<li>蓝色的阶段完全固定</li>
-</ul>
-<p>GPU 实现的渲染管线和概念上的图形渲染管线的功能阶段在结构上略有不同。以下是对  GPU 渲染管线的一个流程概览：</p>
-<ul>
-<li><strong>顶点着色器（The Vertex Shader）</strong>是完全可编程的阶段，顶点着色器可以对每个顶点进行诸如变换和变形在内的很多操作，提供了修改、创建、忽略顶点相关属性的功能，这些顶点属性包括颜色、法线、纹理坐标和位置等。顶点着色器必须完成的任务是将顶点从模型空间转换到齐次裁剪空间。</li>
-<li><strong>几何着色器（The Geometry Shader）</strong>位于顶点着色器之后，允许 GPU 高效地创建和销毁几何图元。几何着色器是可选的，完全可编程的阶段，主要对图元（点、线、三角形）的顶点进行操作。几何着色器接收顶点着色器的输出作为输入，通过高效的几何运算，将数据输出，数据随后经过几何阶段和光栅化阶段的其他处理后，会发送给片元着色器。</li>
-<li><strong>裁剪（Clipping）</strong>属于可配置的功能阶段，在此阶段可选运行的裁剪方式，以及添加自定义的裁剪面。</li>
-<li><strong>屏幕映射（Screen Mapping）</strong>、<strong>三角形设置（Triangle Setup）</strong>和<strong>三角形遍历（Triangle Traversal）</strong>阶段是固定功能阶段。</li>
-<li><strong>像素着色器（Pixel Shader，Direct3D 中的叫法）</strong>常常又称为片段着色器，<strong>片元着色器（Fragment Shader，OpenGL 中的叫法）</strong>，是完全可编程的阶段，主要作用是进行像素的处理，让复杂的着色方程在每一个像素上执行。</li>
-<li><strong>合并阶段（The Merger Stage）</strong>处于完全可编程和固定功能之间，尽管不能编程，但是高度可配置，可以进行一系列的操作。其除了进行合并操作，还分管颜色修改（Color Modifying），Z 缓冲（Z-buffer），混合（Blend），模板（Stencil）和相关缓存的处理。</li>
-</ul>
-<h3 id="2-可编程着色模型"><a href="#2-可编程着色模型" class="headerlink" title="2 可编程着色模型"></a>2 可编程着色模型</h3><p>早期的着色模型可以用汇编语言直接编程，但 DX10 之后，汇编就只在调试输出阶段可见，改用高级着色语言。目前的着色语言都是 C-like 的着色语言，比如 HLSL，CG 和 GLSL，其被编译成独立于机器的汇编语言，也称为中间语言（IL）。这些汇编语言在单独的阶段，通常是在驱动中，被转化成实际的机器语言。这样的安排可以兼容不同的硬件实现。这些汇编语言可以被看做是定义一个作为着色语言编译器的虚拟机。这个虚拟机是一个处理多种类型寄存器和数据源、预编了一系列指令的处理器。<strong>着色语言虚拟机可以理解为一个处理多种类型寄存器和数据源、预编了一系列指令的处理器。</strong></p>
-<p>Shader 程序可以在程序加载或运行时离线编译。和任何编译器一样，有生成不同输出文件和使用不同优化级别的选项。一个编译过的  Shader 作为字符串或者文本来存储，并通过驱动程序传递给  GPU。</p>
-<h4 id="2-1-顶点着色器"><a href="#2-1-顶点着色器" class="headerlink" title="2.1 顶点着色器"></a>2.1 顶点着色器</h4><p>顶点着色器是完全可编程的阶段，是专门处理传入的顶点信息的着色器，顶点着色器可以对每个顶点进行诸如变换和变形在内的很多操作。顶点着色器一般不处理附加信息，也就是说，顶点着色器提供了修改，创建，或者忽略与每个多边形顶点相关的值的方式，例如其颜色，法线，纹理坐标和位置。通常，<strong>顶点着色器程序将顶点从模型空间（Model Space）变换到齐次裁剪空间（Homogeneous Clip Space）</strong>，并且，一个顶点着色器至少且必须输出此变换位置。</p>
-<p>顶点着色器既不能创建也不能消除顶点，并且由一个顶点生成的结果不能传递到另一个顶点。由于每个顶点都被独立处理，所以  GPU 上的任何数量的着色器处理器都可以并行地应用到传入的顶点流上。</p>
-<p>顶点着色器的输出可以以许多不同的方式来使用，通常是随后用于每个实例三角形的生成和光栅化，然后各个像素片段被发送到像素着色器，以便继续处理。而在 Shader Model 4.0 中，数据也可以发送到几何着色器（Geometry Shader）或输出流（Streamed Output）或同时发动到像素着色器和几何着色器两者中。</p>
-<h4 id="2-2-几何着色器"><a href="#2-2-几何着色器" class="headerlink" title="2.2 几何着色器"></a>2.2 几何着色器</h4><p>几何着色器的输入是单个对象及对象相关的顶点，而对象通常是网格中的三角形，线段或简单的点。另外，扩展的图元可以由几何着色器定义和处理。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/13/20220513-RTR-GPU%E7%AE%A1%E7%BA%BF/image-20220513102855674.png" alt="image-20220513102855674"></p>
-<p>上图所示，几何着色器程序的输入是一个单独的类型：点，线段，三角形。两个最右边的图元，包括与线和三角形对象相邻的顶点也可被使用。</p>
-<p>几何着色器需要图元作为输入，在处理过程中他可以将这个图元整个丢弃或者输出一个或更多的图元（也就是说它可以产生比它得到的更多或更少的顶点），这个能力被叫做几何增长（growing geometry）。几何着色器可以改变新传递进来的图元的拓扑结构，且几何着色器可以接收任何拓扑类型的图元，但是只能输出点、折线（line strip）和三角形条（triangle strips）。</p>
-<p>当我们未添加几何着色器时，默认的行为是将输入的三角形直接输出。我们添加了几何着色器之后，可以在几何着色器中修改输出的图形，我们可以输出我们想要输出的任何图形。</p>
-<blockquote>
-<p>GPU 管线的标准使用方式是发送数据到顶点着色器，然后对所得到的三角形进行光栅化处理，并在像素着色器中处理它们。数据总是通过管线传递，无法访问中间结果。流输出的想法在  Shader Model 4.0 中被引入。在顶点着色器（以及可选的几何着色器中）处理顶点之后，除了将数据发送到光栅化阶段之外，也可以输出到流，也就是一个有序数组中进行处理。事实上，可以完全关掉光栅化，然后管线纯粹作为非图形流处理器来使用。以这种方式处理的数据可以通过管线回传，从而允许迭代处理。这种操作特别适用于模拟流动的水或其他粒子特效。</p>
-</blockquote>
-<h4 id="2-3-像素着色器"><a href="#2-3-像素着色器" class="headerlink" title="2.3 像素着色器"></a>2.3 像素着色器</h4><p>像素着色器(Pixel Shader，Direct3D 中的叫法)，常常又称为片元着色器(Fragment Shader, OpenGL 中的叫法)，用于进行逐像素计算颜色的操作，让复杂的着色方程在每一个像素上执行。像素着色器是光栅化阶段的主要步骤之一。在顶点和几何着色器执行完其操作之后，图元会被裁剪、屏幕映射，结束几何阶段，到达光栅化阶段，在光栅化阶段中先经历三角形设定和三角形遍历，之后来到像素着色阶段。</p>
-<p>像素着色器常用来处理场景光照和与之相关的效果，如凸凹纹理映射和调色。名称片元着色器似乎更为准确，因为对于着色器的调用和屏幕上像素的显示并非一一对应。举个例子，对于一个像素，片元着色器可能会被调用若干次来决定它最终的颜色，那些被遮挡的物体也会被计算，直到最后的深度缓冲才将各物体前后排序。</p>
-<p>可以发现，顶点着色程序的输出，在经历裁剪、屏幕映射、三角形设定、三角形遍历后，实际上变成了像素着色程序的输入。在 Shader Model 4.0 中，共有 16 个向量（每个向量含 4 个值）可以从顶点着色器传到像素着色器。当使用几何着色器时，可以输出 32 个向量到像素着色器中。</p>
-<h4 id="2-4-合并阶段"><a href="#2-4-合并阶段" class="headerlink" title="2.4 合并阶段"></a>2.4 合并阶段</h4><p>作为光栅化阶段名义上的最后一个阶段，合并阶段（The Merging Stage）是将像素着色器中生成的各个片段的深度和颜色与帧缓冲结合在一起的地方。这个阶段也就是进行模板缓冲（Stencil-Buffer）和 Z 缓冲（Z-buffer）操作的地方。最常用于透明处理（Transparency）和合成操作（Compositing）的颜色混合（Color Blending）操作也是在这个阶段进行的。虽然合并阶段不可编程，但却是高度可配置的。在合并阶段可以设置颜色混合来执行大量不同的操作。最常见的是涉及颜色和 Alpha 值的乘法，加法，和减法的组合。其他操作也是可能的，比如最大值，最小值以及按位逻辑运算。</p>
-<h4 id="2-5-特效"><a href="#2-5-特效" class="headerlink" title="2.5 特效"></a>2.5 特效</h4><p>GPU 渲染管线中的可编程阶段有顶点、几何和像素着色器三个部分，他们需要相互结合在一起使用。正因如此，不同的团队研发出了不同的特效语言，例如 HLSL FX，CgFX，以及 COLLADA FX，来将他们更好的结合在一起。</p>
-<p>一个效果文件通常会包含所有执行一种特定图形算法的所有相关信息，而且通常定义一些可被应用程序赋值的全局参数。例如，一个单独的  effect file 可能定义渲染塑料材质需要的  vs（顶点着色器）和  ps（像素着色器），它可能暴露一些参数例如塑料颜色和粗糙度，这样渲染每个模型的时候可以改变效果而仅仅使用同一个特效文件。一个效果文件中能存储很多 techniques。这些 techniques 通常是一个<br>相同特效的变体。</p>
-<p>下图展示了一些特效文件带来的材质和后处理效果：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/13/20220513-RTR-GPU%E7%AE%A1%E7%BA%BF/image-20220513104314983.png" alt="image-20220513104314983"></p>
-<h3 id="3-思维导图"><a href="#3-思维导图" class="headerlink" title="3 思维导图"></a>3 思维导图</h3><p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/13/20220513-RTR-GPU%E7%AE%A1%E7%BA%BF/image-20220513104353817.png" alt="image-20220513104353817"></p>
 ]]></content>
       <categories>
         <category>Real-Time Rendering</category>
