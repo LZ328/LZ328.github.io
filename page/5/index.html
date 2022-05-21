@@ -195,6 +195,100 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://lz328.github.io/LycTechStack.github.io/2022/04/18/20220418-RayTracer-%E5%AE%9E%E7%8E%B0BVH/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/LycTechStack.github.io/images/avatar.png">
+      <meta itemprop="name" content="Lyc">
+      <meta itemprop="description" content="个人学习总结和技术经验分享，主要内容包括C++、数据结构、算法、计算机图形学、3D数学、实时渲染、游戏引擎等等，希望未来能真正踏入图形/引擎开发的大门！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LycTechStack">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/LycTechStack.github.io/2022/04/18/20220418-RayTracer-%E5%AE%9E%E7%8E%B0BVH/" class="post-title-link" itemprop="url">【RayTracer】（十）实现BVH</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-04-18 19:23:08 / 修改时间：20:54:51" itemprop="dateCreated datePublished" datetime="2022-04-18T19:23:08+08:00">2022-04-18</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/LycTechStack.github.io/categories/RayTracer/" itemprop="url" rel="index"><span itemprop="name">RayTracer</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>7.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>7 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>这一节我们开始考虑对光线追踪器的性能做一点优化，以应对之后更加复杂的场景。之前在渲染随机场景的时候我们的代码运行的非常慢，根据目前代码的实现过程以及之前学的图形学知识可以分析出，影响速度的一个重要瓶颈是计算光线和物体交点的部分，因为每根光线都要和场景 world 中的所有物体去计算交点，然后判断哪个离我们最近，当物体非常多的时候自然效率会很低。因此这一节我们运用图形学中学过的<strong>层次包围盒（BVH）</strong>去优化我们的代码。关于 BVH 的理论知识可以查看之前的笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/">【计算机图形学】（十一）Whitted 风格光线追踪</a>。</p>
+<p><em></em></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/LycTechStack.github.io/2022/04/18/20220418-RayTracer-%E5%AE%9E%E7%8E%B0BVH/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <div>
+    
+    </div>
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://lz328.github.io/LycTechStack.github.io/2022/04/17/20220417-RayTracer-%E8%BF%90%E5%8A%A8%E6%A8%A1%E7%B3%8A/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1072,100 +1166,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://lz328.github.io/LycTechStack.github.io/2022/04/11/20220411-RayTracer-%E5%9F%BA%E6%9C%AC%E5%B7%A5%E5%85%B7%E7%B1%BB/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/LycTechStack.github.io/images/avatar.png">
-      <meta itemprop="name" content="Lyc">
-      <meta itemprop="description" content="个人学习总结和技术经验分享，主要内容包括C++、数据结构、算法、计算机图形学、3D数学、实时渲染、游戏引擎等等，希望未来能真正踏入图形/引擎开发的大门！">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LycTechStack">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/LycTechStack.github.io/2022/04/11/20220411-RayTracer-%E5%9F%BA%E6%9C%AC%E5%B7%A5%E5%85%B7%E7%B1%BB/" class="post-title-link" itemprop="url">【RayTracer】（一）实现基本工具类</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2022-04-11 20:39:03 / 修改时间：21:36:40" itemprop="dateCreated datePublished" datetime="2022-04-11T20:39:03+08:00">2022-04-11</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/LycTechStack.github.io/categories/RayTracer/" itemprop="url" rel="index"><span itemprop="name">RayTracer</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>6k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>5 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>这部分我们将使用 C++ 从零开始实现一个光线追踪器。首先需要实现一些在简单的光线追踪器中要用到的基本工具类，包含三维向量类、光线类，以及一些之后可能频繁用到的工具函数。</p>
-<p><em></em></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/LycTechStack.github.io/2022/04/11/20220411-RayTracer-%E5%9F%BA%E6%9C%AC%E5%B7%A5%E5%85%B7%E7%B1%BB/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <div>
-    
-    </div>
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1237,7 +1237,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/LycTechStack.github.io/archives/">
         
-          <span class="site-state-item-count">86</span>
+          <span class="site-state-item-count">87</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1295,13 +1295,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">696k</span>
+    <span title="站点总字数">708k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">10:33</span>
+    <span title="站点阅读时长">10:44</span>
 </div>
 
         
