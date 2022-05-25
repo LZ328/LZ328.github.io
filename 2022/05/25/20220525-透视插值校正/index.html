@@ -30,12 +30,13 @@
 <meta property="og:description" content="在之前的光栅化渲染器中，我们在光栅化插值的过程中对所有顶点的属性都除以了该顶点的深度值 w，然后又在线性插值之后乘以了该点的深度值，这样才能得到正确的插值属性，这一步叫做透视插值校正。这一节我们来详细讨论透视插值校正的具体原理。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/25/20220525-%E9%80%8F%E8%A7%86%E6%8F%92%E5%80%BC%E6%A0%A1%E6%AD%A3/image-20220525160340619.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/25/20220525-%E9%80%8F%E8%A7%86%E6%8F%92%E5%80%BC%E6%A0%A1%E6%AD%A3/2022-05-25160428.png">
 <meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/25/20220525-%E9%80%8F%E8%A7%86%E6%8F%92%E5%80%BC%E6%A0%A1%E6%AD%A3/v2-d6f128e3e3150d0ab3941dfdc452e111_r.jpg">
 <meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/25/20220525-%E9%80%8F%E8%A7%86%E6%8F%92%E5%80%BC%E6%A0%A1%E6%AD%A3/v2-67871f21f22f9573e64d3bd30788c033_b.jpg">
 <meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/25/20220525-%E9%80%8F%E8%A7%86%E6%8F%92%E5%80%BC%E6%A0%A1%E6%AD%A3/v2-9ef76bf017541df6b268f0fc5d50f400_b.jpg">
 <meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/25/20220525-%E9%80%8F%E8%A7%86%E6%8F%92%E5%80%BC%E6%A0%A1%E6%AD%A3/v2-1766a667c7a314f19092ecc00ea03b6b_b.jpg">
 <meta property="article:published_time" content="2022-05-25T08:51:00.000Z">
-<meta property="article:modified_time" content="2022-05-25T08:53:42.677Z">
+<meta property="article:modified_time" content="2022-05-25T09:16:54.596Z">
 <meta property="article:author" content="Lyc">
 <meta property="article:tag" content="计算机图形学">
 <meta property="article:tag" content="3D数学">
@@ -230,7 +231,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2022-05-25 16:51:00 / 修改时间：16:53:42" itemprop="dateCreated datePublished" datetime="2022-05-25T16:51:00+08:00">2022-05-25</time>
+              <time title="创建时间：2022-05-25 16:51:00 / 修改时间：17:16:54" itemprop="dateCreated datePublished" datetime="2022-05-25T16:51:00+08:00">2022-05-25</time>
             </span>
 
           
@@ -246,7 +247,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>2.1k</span>
+              <span>2k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -270,7 +271,7 @@
 <h3 id="1-为什么需要透视插值校正"><a href="#1-为什么需要透视插值校正" class="headerlink" title="1 为什么需要透视插值校正"></a>1 为什么需要透视插值校正</h3><p>透视投影我们已经非常熟悉了，透视投影是为了模拟人眼所看到的近大远小的效果，比如一个正方形，如下图：</p>
 <p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/25/20220525-%E9%80%8F%E8%A7%86%E6%8F%92%E5%80%BC%E6%A0%A1%E6%AD%A3/image-20220525160340619.png" alt="image-20220525160340619"></p>
 <p>如果是正交投影，那么点 Q 就在 BC 连线中点处，而如果是透视投影，如下图：</p>
-<p>![屏幕截图 2022-05-25 160428]( 屏幕截图 2022-05-25 160428.png)</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/25/20220525-%E9%80%8F%E8%A7%86%E6%8F%92%E5%80%BC%E6%A0%A1%E6%AD%A3/2022-05-25160428.png" alt="屏幕截图 2022-05-25 160428"></p>
 <p>点 Q 就不再处于 BC 连线的中间处了，在我们的渲染器中纹理出现变形的原因就是我们在对顶点的纹理坐标进行插值的时候没有考虑透视的影响。如下图，红色坐标为纹理坐标，黑色为顶点位置：</p>
 <p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/25/20220525-%E9%80%8F%E8%A7%86%E6%8F%92%E5%80%BC%E6%A0%A1%E6%AD%A3/v2-d6f128e3e3150d0ab3941dfdc452e111_r.jpg" alt="v2-d6f128e3e3150d0ab3941dfdc452e111_r"></p>
 <p>当摄像机视线垂直于平面时，将贴图按照 uv 坐标插值，贴到正方形上会如右图所示，不会出现任何问题，但如果相机不垂直于平面：</p>
