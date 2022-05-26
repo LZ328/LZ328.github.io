@@ -29,17 +29,17 @@
 <meta property="og:site_name" content="LycTechStack">
 <meta property="og:description" content="本篇对《Real-Time Rendering》一书中 GPU 渲染管线和可编程着色器的相关知识进行概括总结。主要内容包括：  GPU 管线概述 可编程着色模型 思维导图">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220513100149647.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220513102855674.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220513104314983.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220513104353817.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/13/20220513-RTR-GPU%E7%AE%A1%E7%BA%BF/image-20220513100149647.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/13/20220513-RTR-GPU%E7%AE%A1%E7%BA%BF/image-20220513102855674.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/13/20220513-RTR-GPU%E7%AE%A1%E7%BA%BF/image-20220513104314983.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/13/20220513-RTR-GPU%E7%AE%A1%E7%BA%BF/image-20220513104353817.png">
 <meta property="article:published_time" content="2022-05-13T02:46:21.000Z">
 <meta property="article:modified_time" content="2022-05-13T02:47:22.923Z">
 <meta property="article:author" content="Lyc">
 <meta property="article:tag" content="计算机图形学">
 <meta property="article:tag" content="实时渲染">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220513100149647.png">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/13/20220513-RTR-GPU%E7%AE%A1%E7%BA%BF/image-20220513100149647.png">
 
 <link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/05/13/20220513-RTR-GPU%E7%AE%A1%E7%BA%BF/">
 
@@ -281,7 +281,7 @@
 </ul>
 <p><em><span id="more"></span></em></p>
 <h3 id="1-GPU-管线"><a href="#1-GPU-管线" class="headerlink" title="1 GPU 管线"></a>1 GPU 管线</h3><p>GPU 管线和上一节概念上的图形渲染管线不完全相同，现代 GPU 实现了图形渲染管线中的几何和光栅化阶段。其被分为一些不同程度的可配置性和可编程性的硬件阶段，如下图所示：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220513100149647.png" alt="image-20220513100149647"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/13/20220513-RTR-GPU%E7%AE%A1%E7%BA%BF/image-20220513100149647.png" alt="image-20220513100149647"></p>
 <p>其中，不同颜色代表了不同程度的自定义属性：</p>
 <ul>
 <li>绿色的阶段都是完全可编程的</li>
@@ -303,7 +303,7 @@
 <p>顶点着色器既不能创建也不能消除顶点，并且由一个顶点生成的结果不能传递到另一个顶点。由于每个顶点都被独立处理，所以  GPU 上的任何数量的着色器处理器都可以并行地应用到传入的顶点流上。</p>
 <p>顶点着色器的输出可以以许多不同的方式来使用，通常是随后用于每个实例三角形的生成和光栅化，然后各个像素片段被发送到像素着色器，以便继续处理。而在 Shader Model 4.0 中，数据也可以发送到几何着色器（Geometry Shader）或输出流（Streamed Output）或同时发动到像素着色器和几何着色器两者中。</p>
 <h4 id="2-2-几何着色器"><a href="#2-2-几何着色器" class="headerlink" title="2.2 几何着色器"></a>2.2 几何着色器</h4><p>几何着色器的输入是单个对象及对象相关的顶点，而对象通常是网格中的三角形，线段或简单的点。另外，扩展的图元可以由几何着色器定义和处理。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220513102855674.png" alt="image-20220513102855674"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/13/20220513-RTR-GPU%E7%AE%A1%E7%BA%BF/image-20220513102855674.png" alt="image-20220513102855674"></p>
 <p>上图所示，几何着色器程序的输入是一个单独的类型：点，线段，三角形。两个最右边的图元，包括与线和三角形对象相邻的顶点也可被使用。</p>
 <p>几何着色器需要图元作为输入，在处理过程中他可以将这个图元整个丢弃或者输出一个或更多的图元（也就是说它可以产生比它得到的更多或更少的顶点），这个能力被叫做几何增长（growing geometry）。几何着色器可以改变新传递进来的图元的拓扑结构，且几何着色器可以接收任何拓扑类型的图元，但是只能输出点、折线（line strip）和三角形条（triangle strips）。</p>
 <p>当我们未添加几何着色器时，默认的行为是将输入的三角形直接输出。我们添加了几何着色器之后，可以在几何着色器中修改输出的图形，我们可以输出我们想要输出的任何图形。</p>
@@ -317,8 +317,8 @@
 <h4 id="2-5-特效"><a href="#2-5-特效" class="headerlink" title="2.5 特效"></a>2.5 特效</h4><p>GPU 渲染管线中的可编程阶段有顶点、几何和像素着色器三个部分，他们需要相互结合在一起使用。正因如此，不同的团队研发出了不同的特效语言，例如 HLSL FX，CgFX，以及 COLLADA FX，来将他们更好的结合在一起。</p>
 <p>一个效果文件通常会包含所有执行一种特定图形算法的所有相关信息，而且通常定义一些可被应用程序赋值的全局参数。例如，一个单独的  effect file 可能定义渲染塑料材质需要的  vs（顶点着色器）和  ps（像素着色器），它可能暴露一些参数例如塑料颜色和粗糙度，这样渲染每个模型的时候可以改变效果而仅仅使用同一个特效文件。一个效果文件中能存储很多 techniques。这些 techniques 通常是一个<br>相同特效的变体。</p>
 <p>下图展示了一些特效文件带来的材质和后处理效果：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220513104314983.png" alt="image-20220513104314983"></p>
-<h3 id="3-思维导图"><a href="#3-思维导图" class="headerlink" title="3 思维导图"></a>3 思维导图</h3><p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220513104353817.png" alt="image-20220513104353817"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/13/20220513-RTR-GPU%E7%AE%A1%E7%BA%BF/image-20220513104314983.png" alt="image-20220513104314983"></p>
+<h3 id="3-思维导图"><a href="#3-思维导图" class="headerlink" title="3 思维导图"></a>3 思维导图</h3><p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/13/20220513-RTR-GPU%E7%AE%A1%E7%BA%BF/image-20220513104353817.png" alt="image-20220513104353817"></p>
 
     </div>
 
@@ -538,13 +538,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">752k</span>
+    <span title="站点总字数">758k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">11:23</span>
+    <span title="站点阅读时长">11:29</span>
 </div>
 
         

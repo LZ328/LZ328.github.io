@@ -22,31 +22,31 @@
     var CONFIG = {"hostname":"lz328.github.io","root":"/LycTechStack.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":5,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="本篇对《Real-Time Rendering》一书中延迟渲染相关知识进行概括总结和扩展。主要内容包括：  延迟渲染的概念、G-buffer、延迟渲染的过程 延迟渲染 vs 正向渲染、延迟渲染 vs Z-Prepass 延迟渲染的优缺点、延迟渲染透明物体、延迟渲染与 MSAA 延迟渲染的改进：延迟光照（Light Pre-Pass &#x2F; Deferred Lighting）、分块延迟渲染（Tile-">
+  <meta name="description" content="本篇对《Real-Time Rendering》一书中延迟渲染相关知识进行概括总结和扩展。主要内容包括：  延迟渲染的概念、G-buffer、延迟渲染的过程 延迟渲染 vs 正向渲染、延迟渲染 vs Z-Prepass 延迟渲染的优缺点、延迟渲染透明物体、延迟渲染与 MSAA 延迟渲染的改进：延迟光照（Light Pre-Pass &#x2F; Deferred Lighting）、分块延迟渲染（">
 <meta property="og:type" content="article">
 <meta property="og:title" content="【Real-Time Rendering】延迟渲染总结">
 <meta property="og:url" content="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-%E5%BB%B6%E8%BF%9F%E6%B8%B2%E6%9F%93%E6%80%BB%E7%BB%93/index.html">
 <meta property="og:site_name" content="LycTechStack">
-<meta property="og:description" content="本篇对《Real-Time Rendering》一书中延迟渲染相关知识进行概括总结和扩展。主要内容包括：  延迟渲染的概念、G-buffer、延迟渲染的过程 延迟渲染 vs 正向渲染、延迟渲染 vs Z-Prepass 延迟渲染的优缺点、延迟渲染透明物体、延迟渲染与 MSAA 延迟渲染的改进：延迟光照（Light Pre-Pass &#x2F; Deferred Lighting）、分块延迟渲染（Tile-">
+<meta property="og:description" content="本篇对《Real-Time Rendering》一书中延迟渲染相关知识进行概括总结和扩展。主要内容包括：  延迟渲染的概念、G-buffer、延迟渲染的过程 延迟渲染 vs 正向渲染、延迟渲染 vs Z-Prepass 延迟渲染的优缺点、延迟渲染透明物体、延迟渲染与 MSAA 延迟渲染的改进：延迟光照（Light Pre-Pass &#x2F; Deferred Lighting）、分块延迟渲染（">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220516150601199.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220516151041625.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220516151116425.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220516151507237.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220516152551865.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220516152925120.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220516161128767.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220516162715482.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220516164106531.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220516165141752.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220516165158816.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-%E5%BB%B6%E8%BF%9F%E6%B8%B2%E6%9F%93%E6%80%BB%E7%BB%93/image-20220516150601199.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-%E5%BB%B6%E8%BF%9F%E6%B8%B2%E6%9F%93%E6%80%BB%E7%BB%93/image-20220516151041625.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-%E5%BB%B6%E8%BF%9F%E6%B8%B2%E6%9F%93%E6%80%BB%E7%BB%93/image-20220516151116425.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-%E5%BB%B6%E8%BF%9F%E6%B8%B2%E6%9F%93%E6%80%BB%E7%BB%93/image-20220516151507237.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-%E5%BB%B6%E8%BF%9F%E6%B8%B2%E6%9F%93%E6%80%BB%E7%BB%93/image-20220516152551865.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-%E5%BB%B6%E8%BF%9F%E6%B8%B2%E6%9F%93%E6%80%BB%E7%BB%93/image-20220516152925120.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-%E5%BB%B6%E8%BF%9F%E6%B8%B2%E6%9F%93%E6%80%BB%E7%BB%93/image-20220516161128767.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-%E5%BB%B6%E8%BF%9F%E6%B8%B2%E6%9F%93%E6%80%BB%E7%BB%93/image-20220516162715482.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-%E5%BB%B6%E8%BF%9F%E6%B8%B2%E6%9F%93%E6%80%BB%E7%BB%93/image-20220516164106531.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-%E5%BB%B6%E8%BF%9F%E6%B8%B2%E6%9F%93%E6%80%BB%E7%BB%93/image-20220516165141752.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-%E5%BB%B6%E8%BF%9F%E6%B8%B2%E6%9F%93%E6%80%BB%E7%BB%93/image-20220516165158816.png">
 <meta property="article:published_time" content="2022-05-16T08:56:09.000Z">
 <meta property="article:modified_time" content="2022-05-16T09:18:24.669Z">
 <meta property="article:author" content="Lyc">
 <meta property="article:tag" content="计算机图形学">
 <meta property="article:tag" content="实时渲染">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220516150601199.png">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-%E5%BB%B6%E8%BF%9F%E6%B8%B2%E6%9F%93%E6%80%BB%E7%BB%93/image-20220516150601199.png">
 
 <link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-%E5%BB%B6%E8%BF%9F%E6%B8%B2%E6%9F%93%E6%80%BB%E7%BB%93/">
 
@@ -261,14 +261,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>8.2k</span>
+              <span>8.3k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>7 分钟</span>
+              <span>8 分钟</span>
             </span>
 
         </div>
@@ -285,7 +285,7 @@
 <li>延迟渲染的概念、G-buffer、延迟渲染的过程</li>
 <li>延迟渲染 vs 正向渲染、延迟渲染 vs Z-Prepass</li>
 <li>延迟渲染的优缺点、延迟渲染透明物体、延迟渲染与 MSAA</li>
-<li>延迟渲染的改进：延迟光照（Light Pre-Pass / Deferred Lighting）、分块延迟渲染（Tile-Based Deferred Rendering）</li>
+<li>延迟渲染的改进：延迟光照（Light Pre-Pass &#x2F; Deferred Lighting）、分块延迟渲染（Tile-Based Deferred Rendering）</li>
 <li>延迟渲染 vs 延迟光照</li>
 </ul>
 <p><em><span id="more"></span></em></p>
@@ -294,18 +294,18 @@
 <p>传统的正向渲染思路是，先进行着色，再进行深度测试。其主要缺点就是光照计算跟场景复杂度和光源个数有很大关系。假设有 n 个物体，m 个光源，且每个每个物体受所有光源的影响，那么复杂度就是 O(m*n)。</p>
 <p>正向渲染简单直接，也很容易实现，但是同时它对程序性能的影响也很大，因为对每一个需要渲染的物体，程序都要对每个光源下每一个需要渲染的片元进行迭代，如果旧的片元完全被一些新的片元覆盖，最终无需显示出来，那么其着色计算花费的时间就完全浪费掉了。</p>
 <p>而延迟渲染的提出，就是为了解决上述问题而诞生（尤其是在场景中存在大量光源的情况下）。延迟渲染给我们优化拥有大量光源的场景提供了很多可能性，因为它能够在渲染拥有成百上千光源的场景的同时还能够保持能让人接受的帧率。下面这张图展示了一个基于延迟着色渲染出的场景，这个场景中包含了 1000 个点光源，对于目前的硬件设备而言，用传统的正向渲染来实现将是极其耗时的。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220516150601199.png" alt="image-20220516150601199"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-%E5%BB%B6%E8%BF%9F%E6%B8%B2%E6%9F%93%E6%80%BB%E7%BB%93/image-20220516150601199.png" alt="image-20220516150601199"></p>
 <p><strong>可以将延迟渲染理解为先将所有物体都绘制到屏幕空间的缓冲（即  G-buffer，Geometric Buffer，几何缓冲区）中，再逐光源对该缓冲进行着色的过程，从而避免了因计算被深度测试丢弃的片元的着色而产⽣的不必要的开销。</strong>也就是说延迟渲染基本思想是，先执行深度测试，再进行着色计算，将本来在物空间（三维空间）进行的光照计算放到了像空间（二维空间）处理。相较于正向渲染 O(m*n) 的复杂度，经典的延迟渲染复杂度为 O(n+m)。</p>
 <h3 id="2-几何缓冲区（G-buffer）"><a href="#2-几何缓冲区（G-buffer）" class="headerlink" title="2 几何缓冲区（G-buffer）"></a>2 几何缓冲区（G-buffer）</h3><p>G-Buffer，全称 Geometric Buffer，几何缓冲区。它主要用于存储每个像素对应的位置（Position），法线（Normal），漫反射颜色（Diffuse Color）以及其他有用的材质参数。根据这些信息，就可以在像空间（二维空间）中对每个像素进行光照处理。下图展示了一个典型的 G-Buffer 布局：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220516151041625.png" alt="image-20220516151041625"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-%E5%BB%B6%E8%BF%9F%E6%B8%B2%E6%9F%93%E6%80%BB%E7%BB%93/image-20220516151041625.png" alt="image-20220516151041625"></p>
 <p>下图是一帧中 G-Buffer 中存储的部分内容可视化结果：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220516151116425.png" alt="image-20220516151116425"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-%E5%BB%B6%E8%BF%9F%E6%B8%B2%E6%9F%93%E6%80%BB%E7%BB%93/image-20220516151116425.png" alt="image-20220516151116425"></p>
 <p>G-Buffer 是一个宏观的概念，并不是一整个缓冲区，而是由多个缓冲区共同组成，或者由多张纹理共同组成，比如后文会提到的 MRT，就是将不同的信息渲染到多个纹理，这些纹理被称为渲染目标（Render Targte，RT），这些 RT 共同组成了 G-Buffer。</p>
 <h3 id="3-延迟渲染的过程"><a href="#3-延迟渲染的过程" class="headerlink" title="3 延迟渲染的过程"></a>3 延迟渲染的过程</h3><p>可以将延迟渲染理解为两个 Pass 的过程：</p>
 <p>1、<strong>几何处理阶段（Geometry Pass）</strong>。这个阶段中，我们获取对象的各种几何信息，并将第二步（也就是渲染）所需的各种数据储存到多个渲染目标中；</p>
 <p>2、<strong>光照处理阶段（Lighting Pass）</strong>。在这个 pass 中，我们只需渲染出一个屏幕大小的二维矩形，使用第一步在 G-buffer 中存储的数据对此矩阵的每一个片元计算场景的光照；光照计算的过程还是和正向渲染一样，只是现在我们需要从对应的 G-buffer 而不是顶点着色器（和一些 uniform 变量）那里获取输入变量了。</p>
 <p>下图展示了延迟渲染的过程：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220516151507237.png" alt="image-20220516151507237"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-%E5%BB%B6%E8%BF%9F%E6%B8%B2%E6%9F%93%E6%80%BB%E7%BB%93/image-20220516151507237.png" alt="image-20220516151507237"></p>
 <p>延迟渲染方法一个很大的好处就是能保证在 G-buffer 中的片元和在屏幕上呈现的像素所包含的片元信息是一样的，因为深度测试已经最终将这里的片元信息作为最顶层的片元。这样保证了对于在光照处理阶段中处理的每一个像素都只处理一次，所以我们能够省下很多无用的渲染调用。除此之外，延迟渲染还允许我们做更多的优化，从而渲染更多的光源。</p>
 <p>在几何处理阶段中填充 G-buffer 非常高效，因为我们直接储存位置，颜色，法线等对象信息到帧缓冲中，这个过程几乎不消耗处理时间。</p>
 <p>对于多个光源的情况，不同的光源对场景的影响不同，所以 G-Buffer 中存储的片元信息也可能不同，因此我们可以对每个光源创建一个屏幕空间包围矩形，然后用光照 shader 渲染这个矩形，最后融合起来即可。</p>
@@ -318,10 +318,11 @@
 <li>Forward Rendering 的核心伪代码可以表示为：</li>
 </ul>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">For each light:</span><br><span class="line">	For each object affected by the light: </span><br><span class="line">		framebuffer += object * light</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>Forward Rendering 的管线流程如下图所示：</li>
 </ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220516152551865.png" alt="image-20220516152551865"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-%E5%BB%B6%E8%BF%9F%E6%B8%B2%E6%9F%93%E6%80%BB%E7%BB%93/image-20220516152551865.png" alt="image-20220516152551865"></p>
 <h4 id="4-2-延迟渲染"><a href="#4-2-延迟渲染" class="headerlink" title="4.2 延迟渲染"></a>4.2 延迟渲染</h4><ul>
 <li>延迟渲染（Deferred Rendering），先执行深度测试，再执行着色计算</li>
 <li>延迟渲染渲染 n 个物体在 m 个光源下的着色，复杂度为 O(n+m)</li>
@@ -329,11 +330,12 @@
 <li>Deferred Rendering 的核心伪代码可以表示如下：</li>
 </ul>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">For each object:</span><br><span class="line">    Render to multiple render targets </span><br><span class="line">For each light:</span><br><span class="line">    Apply light as a 2D postprocess</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>Deferred Rendering 的管线流程如图所示：</li>
 </ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220516152925120.png" alt="image-20220516152925120"></p>
-<h4 id="4-3-延迟渲染-vs-Z-Prepass"><a href="#4-3-延迟渲染-vs-Z-Prepass" class="headerlink" title="4.3 延迟渲染 vs Z-Prepass"></a>4.3 延迟渲染 vs Z-Prepass</h4><p>延迟渲染和之前学过的 Early-Z 非常相似，二者的区别可以查看之前的笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/14/20220514-RTR-模板测试和深度测试/">【Real-Time Rendering】模板测试和深度测试</a>的最后部分。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-%E5%BB%B6%E8%BF%9F%E6%B8%B2%E6%9F%93%E6%80%BB%E7%BB%93/image-20220516152925120.png" alt="image-20220516152925120"></p>
+<h4 id="4-3-延迟渲染-vs-Z-Prepass"><a href="#4-3-延迟渲染-vs-Z-Prepass" class="headerlink" title="4.3 延迟渲染 vs Z-Prepass"></a>4.3 延迟渲染 vs Z-Prepass</h4><p>延迟渲染和之前学过的 Early-Z 非常相似，二者的区别可以查看之前的笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/14/20220514-RTR-%E6%A8%A1%E6%9D%BF%E6%B5%8B%E8%AF%95%E5%92%8C%E6%B7%B1%E5%BA%A6%E6%B5%8B%E8%AF%95/">【Real-Time Rendering】模板测试和深度测试</a>的最后部分。</p>
 <h3 id="5-延迟渲染的优缺点"><a href="#5-延迟渲染的优缺点" class="headerlink" title="5 延迟渲染的优缺点"></a>5 延迟渲染的优缺点</h3><p>总结一下延迟渲染的优缺点。</p>
 <h4 id="5-1-延迟渲染的优点"><a href="#5-1-延迟渲染的优点" class="headerlink" title="5.1 延迟渲染的优点"></a>5.1 延迟渲染的优点</h4><ul>
 <li>Deferred Rendering 最大的优势就是将光源的数目和场景中物体的数目在复杂度层面上完全分开。也就是说场景中不管是一个三角形还是一百万个三角形，最后的复杂度不会随光源数目变化而产生巨大变化</li>
@@ -357,12 +359,12 @@
 <li>透明物体之间重叠时，仅渲染最前面的透明物体，效果错误</li>
 </ul>
 <p>解决以上问题一个常见的思路是：<strong>使用延迟渲染的框架，分别渲染不透明物体，透明物体背面，透明物体正面，再把三者按照 alpha 合并。</strong></p>
-<p>在这种情况下，我们可以基本保证第二种情况的正确；而对于第三种情况，由于延迟渲染仅对离相机最近的像素进行光照/着色计算，我们依然只能计算（特别地，若最近的像素透明度为0，我们忽略这一像素）最近的透明物体的光照。<strong>对于这种情况，采取的解决方案是写入 G-Buffer 时仅混合物体颜色，在延迟渲染过程中，依然只计算最近物体的光照，但把混合后的颜色作为最近物体的基本颜色进行光照计算。</strong></p>
+<p>在这种情况下，我们可以基本保证第二种情况的正确；而对于第三种情况，由于延迟渲染仅对离相机最近的像素进行光照&#x2F;着色计算，我们依然只能计算（特别地，若最近的像素透明度为0，我们忽略这一像素）最近的透明物体的光照。<strong>对于这种情况，采取的解决方案是写入 G-Buffer 时仅混合物体颜色，在延迟渲染过程中，依然只计算最近物体的光照，但把混合后的颜色作为最近物体的基本颜色进行光照计算。</strong></p>
 <h3 id="7-延迟渲染与-MSAA"><a href="#7-延迟渲染与-MSAA" class="headerlink" title="7 延迟渲染与 MSAA"></a>7 延迟渲染与 MSAA</h3><p>为什么延迟渲染中不支持 MSAA？这又是一个经常被问起的话题，延迟渲染不支持 MSAA 的说法实际上并不准确，准确的说是延迟渲染对 MSAA 的支持并不好，或者说在延迟渲染中做 MSAA 不方便。</p>
 <p>首先来回顾 MSAA 的原理，MSAA 是在 SSAA 的基础上发展来的硬件抗锯齿技术。SSAA 是理论上效果最好的抗锯齿方案，以 4x 为例（下同），4xSSAA 对于每个像素计算 4 个子像素，将 4 个子像素的颜色求平均值，便能获得抗锯齿后的颜色。实际上 SSAA 等于暴力渲染了 4 倍分辨率的图像，在目前的硬件条件下这种性能开销是不可接受的，因此在 SSAA 的基础上发展出了 MSAA。</p>
 <p>MSAA 与 SSAA 的区别在于像素着色器（Pixel Shader）的运行次数。MSAA 同样对于每个像素进行了 4 次子采样（Sample），但是只在像素中心位置运行一次像素着色，然后根据有多少 Sample 被三角形覆盖而对颜色进行一个加权处理，也就是像素中有多少子像素被三角形覆盖，就用该像素的颜色乘以被覆盖的子像素的比例，相比于 SSAA 每个子像素单独计算颜色，效率大幅提升。</p>
 <p>下面以一个例子来看 MSAA 的具体过程：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220516161128767.png" alt="image-20220516161128767"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-%E5%BB%B6%E8%BF%9F%E6%B8%B2%E6%9F%93%E6%80%BB%E7%BB%93/image-20220516161128767.png" alt="image-20220516161128767"></p>
 <p>在前向渲染中，三角形的绘制是依次进行的。绘制蓝色三角形时，MSAA 的具体执行步骤如下：</p>
 <ol>
 <li>光栅化阶段，对四个 X 位置的 Sample 执行三角形覆盖判断，在一个四倍分辨率大小的 coverage mask 中记录每个 Sample 被覆盖的情况；</li>
@@ -381,12 +383,12 @@
 <li>延迟渲染因为需要节省光照计算的原因，事先把所有信息都放在了 G-Buffer 上，着色计算的时候已经丢失了几何信息</li>
 </ul>
 <p>如果要在延迟渲染中使用 MSAA，需要将 G 缓存的 MRT 以多重采样的形式保存使得每个样本的信息不被丢失从而可以进行解析操作。而如果直接对 G 缓存中的属性比如法线和深度进行解析的话则可能产生错误结果，比如说如果一个给定像素中的样本在 G 缓存中有着不同的深度值，那么取均值后的结果可能和场景真实的几何信息无关，法线同理。正确的做法是对每个样本进行光照计算后再解析，对每个样本的光照结果取均值。因此需要保证像素着色器逐样本执行然后将每个样本输出写入多重采样RT。如下图所示。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220516162715482.png" alt="image-20220516162715482"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-%E5%BB%B6%E8%BF%9F%E6%B8%B2%E6%9F%93%E6%80%BB%E7%BB%93/image-20220516162715482.png" alt="image-20220516162715482"></p>
 <p>事实上，从 DirectX 10 开始就已经允许在高达 8 个 MRT 的情况下使用 MSAA 了。</p>
 <h3 id="8-延迟渲染的改进"><a href="#8-延迟渲染的改进" class="headerlink" title="8 延迟渲染的改进"></a>8 延迟渲染的改进</h3><p>上文提到过，延迟渲染的性能瓶颈在于读写 G-buffer 的内存带宽，因此延迟渲染的改进也主要是从这方面入手，下面简单介绍一些降低延迟渲染存取带宽的改进方案。最简单也是最容易想到的就是将存取的 G-Buffer 数据结构最小化，这也就衍生出了 Light Pre-Pass，即延迟光照（Deferred Lighting）方法。另一种方式是将多个光照组成一组，然后一起处理，这种方法衍生出了分块延迟渲染（Tile-Based Deferred Rendering）。</p>
 <h4 id="8-1-延迟光照"><a href="#8-1-延迟光照" class="headerlink" title="8.1 延迟光照"></a>8.1 延迟光照</h4><p>Light Pre-Pass 即 Deferred Lighting（延迟光照），旨在减少传统 Defferred Rendering 使用 G-buffer 时占用的过多开销，延迟光照的具体的思路是：</p>
 <ol>
-<li>渲染场景中不透明（opaque ）的几何体。将法线向量 n 和镜面扩展因子（specular spread factor）m 写入缓冲区。这个 n/m-buffer 缓冲区是一个类似 G-Buffer 的缓冲区，但包含的信息更少，更轻量，可以用单个输出颜色缓冲区存储，因此不需要 MRT 支持。</li>
+<li>渲染场景中不透明（opaque ）的几何体。将法线向量 n 和镜面扩展因子（specular spread factor）m 写入缓冲区。这个 n&#x2F;m-buffer 缓冲区是一个类似 G-Buffer 的缓冲区，但包含的信息更少，更轻量，可以用单个输出颜色缓冲区存储，因此不需要 MRT 支持。</li>
 <li>渲染光照。计算漫反射和镜面着色方程，并将结果写入不同的漫反射和镜面反射累积缓冲区。这个过程可以在一个单独的 pass 中完成（使用 MRT），或者用两个单独的 pass。环境光照明可以在这个阶段使用一个 full-screen pass 进行计算。</li>
 <li>对场景中的不透明几何体进行第二次渲染。从纹理中读取漫反射和镜面反射值，对前面步骤中漫反射和镜面反射累积缓冲区的值进行调制，并将最终结果写入最终的颜色缓冲区。若在上一阶段没有处理环境光照明，则在此阶段应用环境光照明。</li>
 <li>使用非延迟渲染方法渲染半透明几何体。</li>
@@ -397,7 +399,7 @@
 <h4 id="8-2-分块延迟渲染"><a href="#8-2-分块延迟渲染" class="headerlink" title="8.2 分块延迟渲染"></a>8.2 分块延迟渲染</h4><p>作为传统 Defferred Rendering 的另一种主要改进，分块延迟渲染（Tile-Based Deferred Rendering，TBDR）旨在合理分摊开销。实验数据表明 TBDR 在大量光源存在的情况下明显优于上述的 Light Pre-Pass。</p>
 <p>我们知道，延迟渲染的瓶颈在于读写 G-buffer，在大量光源下，具体的瓶颈将会在于每个光源对 G-buffer 的读取及与颜色缓冲区混合。这里的问题是，每个光源，即使它们的影响范围在屏幕空间上有重叠，因为每个光源是在不同的绘制中进行，所以会重复读取 G-buffer 中相同位置的数据，计算后以相加混合方式写入颜色缓冲。光源越多，内存带宽用量越大。</p>
 <p>而分块延迟渲染的主要思想则是把屏幕分拆成细小的栅格，例如每 32 × 32 像素作为一个分块（tile），然后计算每个分块会受到哪些光源影响，把那些光源的索引储存在分块的光源列表里。最后，逐个分块进行着色，对每个像素读取 G-buffer 和光源列表及相关的光源信息。因此，G-buffer 的数据只会被读取 1 次且仅 1 次，写入 color buffer 也是 1 次且仅 1 次，大幅降低内存带宽用量。不过，这种方法需要计算光源会影响哪些分块，这个计算又称为光源剔除（light culling），可以在 CPU 或 GPU（通常以 compute shader 实现）中进行。用 GPU 计算的好处是，GPU 计算这类工作比 CPU 更快，也可以减少 CPU 和 GPU 之间的数据传输。此外，还可以计算每个分块的深度范围（depth range），作更有效的剔除。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220516164106531.png" alt="image-20220516164106531"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-%E5%BB%B6%E8%BF%9F%E6%B8%B2%E6%9F%93%E6%80%BB%E7%BB%93/image-20220516164106531.png" alt="image-20220516164106531"></p>
 <p>总结来说，分块延迟渲染将屏幕分成一个个小块 tile 并计算每个分块的深度范围。然后根据深度范围和分块大小，可以求得每个 tile 的 bounding volume。对每个 tile 的 bounding volume 和光源进行求交点，这样就得到了对该 tile 有作用的光源的序列。最后根据得到的序列计算所在 tile 的光照效果。</p>
 <p>对比传统 Deferred Rendering，之前是对每个光源求其作用区域 light volume，然后决定其作用的 pixel，也就是说每个光源要求取一次。而使用 TBDR，只要遍历每个 pixel，让其所属 tile 与光线求交，来计算作用其上的光源，并利用 G-Buffer 进行着色。这样做一方面减少了所需考虑的光源个数，另一方面与传统的 Deferred Rendering 相比减少了存取的带宽。</p>
 <h3 id="9-延迟渲染-vs-延迟光照"><a href="#9-延迟渲染-vs-延迟光照" class="headerlink" title="9 延迟渲染 vs 延迟光照"></a>9 延迟渲染 vs 延迟光照</h3><p>关于延迟着色和延迟光照，经常会被弄混，这里简单区分一下。</p>
@@ -407,9 +409,9 @@
 <li>两种方法的上述操作均是只能完成对不透明物体的渲染，而透明或半透明的物体则需额外的传统 Pass 来完成。</li>
 </ul>
 <p>延迟渲染的流程图如下，根据 G-Buffer 中的信息直接计算光照和着色：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220516165141752.png" alt="image-20220516165141752"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-%E5%BB%B6%E8%BF%9F%E6%B8%B2%E6%9F%93%E6%80%BB%E7%BB%93/image-20220516165141752.png" alt="image-20220516165141752"></p>
 <p>延迟光照的流程图如下，提前计算光照并存入纹理，在着色时直接对纹理采样得到光照结果，不再计算光照，只进行其他后处理，从这个流程上来说，Light Pre-Pass 这个名称更为合适：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220516165158816.png" alt="image-20220516165158816"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-%E5%BB%B6%E8%BF%9F%E6%B8%B2%E6%9F%93%E6%80%BB%E7%BB%93/image-20220516165158816.png" alt="image-20220516165158816"></p>
 <p><strong>无论是正向渲染，延迟渲染、延迟光照、分块延迟渲染，都属于不同的渲染路径（Rendering Path）。</strong></p>
 
     </div>
@@ -630,13 +632,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">752k</span>
+    <span title="站点总字数">758k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">11:23</span>
+    <span title="站点阅读时长">11:29</span>
 </div>
 
         
