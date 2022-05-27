@@ -609,41 +609,6 @@
       </tags>
   </entry>
   <entry>
-    <title>【计算机图形学】（五）深度缓冲</title>
-    <url>/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/</url>
-    <content><![CDATA[<h3 id="深度缓冲（Z-Buffer）"><a href="#深度缓冲（Z-Buffer）" class="headerlink" title="深度缓冲（Z-Buffer）"></a>深度缓冲（Z-Buffer）</h3><p>到上一篇文章为止，我们基本完成了把三维物体画在二维屏幕上的过程，但在这个过程中，还有一个非常重要的问题没有讨论，那就是在光栅化的时候我们之前的推导都没有考虑Z轴，也就是没有考虑三维物体离我们的远近，但是现实生活中我们看一个三维物体或者场景，由于物体离我们眼睛的距离不同，自然会产生遮挡现象。</p>
-<p><em><span id="more"></span></em></p>
-<p>比如一个立方体，在这样的视角下我们是看不到它的左平面、下平面和后平面的，但是在光栅化的过程中，我们依然会取这个立方体左平面上的三个点组成三角形并画在屏幕上，如果不考虑遮挡关系，那画出来的正方体显然和我们看到的就不一样了。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308174826553.png" alt="image-20220308174826553"></p>
-<p>那如何在光栅化过程中考虑这种遮挡关系，并把这种关系正确的画出来呢？这就是这一节要讨论的内容。</p>
-<p>在开始之前，要先明确一个概念，这一节所说的 Z ，并不是物体的 Z 坐标，<strong>而是代表物体离我们的远近，也就是深度，这个深度永远是正数，而且数值越小离我们越近</strong>。因为之前说了相机指向 -Z 方向，所以如果是 Z 坐标的话，离我们越近的反而数值上越大，这不符合我们的直觉。因此需要重新给出这个深度的概念。</p>
-<h4 id="1-画家算法"><a href="#1-画家算法" class="headerlink" title="1 画家算法"></a>1 画家算法</h4><p>画家算法指的是我们像画家画画一样，从远处往近处画，这样近处的画面自然会遮挡住远处的画面，光栅化的时候也可以这样，我们先对三角形的深度排序，然后从远往近画在屏幕上。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308175526241.png" alt="image-20220308175526241"></p>
-<p>但是这样的算法无法解决下面这种情况：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308175553407.png" alt="image-20220308175553407"></p>
-<p>三角形的遮挡关系往往没有那么简单，因此画家算法大多情况下并不适用。</p>
-<h4 id="2-Z-Buffer"><a href="#2-Z-Buffer" class="headerlink" title="2 Z-Buffer"></a>2 Z-Buffer</h4><p>Z-Buffer的思想非常简单，那就是我们在渲染图形时，除了维护frame-buffer（显示在屏幕上的图）外，再维护一个Z-buffer（深度图），<strong>Z-buffer中存储屏幕上每一个像素当前的最小深度</strong>，在光栅化开始时，Z-buffer中每一个像素的深度都设为无穷大，之后渲染三角形的时候，每次都先判断当前渲染的三角形的深度和Z-buffer中当前像素的深度谁更小（谁离我们更近），如果三角形的深度更小，那么就把三角形的颜色存入frame-buffer中这个像素的位置，同时把Z-buffer中当前像素的最小深度更新一次，这样我们总能保证深度小的颜色遮挡深度大的颜色。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308180155386.png" alt="image-20220308180155386"></p>
-<p>Z-buffer和frame-buffer总是同时渲染的，因此当我们生成一张图片的时候，也就生成了这张图片的深度图。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308180255018.png" alt="image-20220308180255018"></p>
-<p>可以看到深度图中越远的地方像素值越大，越近的地方像素值越小。</p>
-<p>Z-buffer的伪代码如下：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308180341613.png" alt="image-20220308180341613"></p>
-<p>相比于画家算法 O(nlogn) ，Z-buffer只需要 O(n) 的时间复杂度。</p>
-<blockquote>
-<p>为什么是O(n)？</p>
-<p>假设每个三角形只覆盖常数个像素，那么Z-buffer做的就是对每一个三角形判断对应的深度，然后填充像素，因此只需要花费 O(1) 时间，那么有n个三角形，复杂度就是O(n).</p>
-</blockquote>
-<p>最后说一下Z-buffer的优势，就是与画三角形的顺序无关，只要维护对了深度信息，画出来的一定是正确是遮挡关系，并且对硬件没有特殊需求，容易实现。</p>
-]]></content>
-      <categories>
-        <category>GAMES101</category>
-      </categories>
-      <tags>
-        <tag>计算机图形学</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>【动态规划】（一）线性动态规划之单串问题</title>
     <url>/LycTechStack.github.io/2022/03/07/20220307-%E7%BA%BF%E6%80%A7%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92-%E5%8D%95%E4%B8%B2/</url>
     <content><![CDATA[<p>线性动态规划的主要特点是状态的推导是按照问题规模 i 从小到大依次推过去的，较大规模的问题的解依赖较小规模的问题的解。这里问题规模为 i 的含义是考虑前 i 个元素 [0..i] 时问题的解。</p>
@@ -725,6 +690,41 @@
         <tag>C++</tag>
         <tag>算法</tag>
         <tag>动态规划</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>【计算机图形学】（五）深度缓冲</title>
+    <url>/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/</url>
+    <content><![CDATA[<h3 id="深度缓冲（Z-Buffer）"><a href="#深度缓冲（Z-Buffer）" class="headerlink" title="深度缓冲（Z-Buffer）"></a>深度缓冲（Z-Buffer）</h3><p>到上一篇文章为止，我们基本完成了把三维物体画在二维屏幕上的过程，但在这个过程中，还有一个非常重要的问题没有讨论，那就是在光栅化的时候我们之前的推导都没有考虑Z轴，也就是没有考虑三维物体离我们的远近，但是现实生活中我们看一个三维物体或者场景，由于物体离我们眼睛的距离不同，自然会产生遮挡现象。</p>
+<p><em><span id="more"></span></em></p>
+<p>比如一个立方体，在这样的视角下我们是看不到它的左平面、下平面和后平面的，但是在光栅化的过程中，我们依然会取这个立方体左平面上的三个点组成三角形并画在屏幕上，如果不考虑遮挡关系，那画出来的正方体显然和我们看到的就不一样了。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308174826553.png" alt="image-20220308174826553"></p>
+<p>那如何在光栅化过程中考虑这种遮挡关系，并把这种关系正确的画出来呢？这就是这一节要讨论的内容。</p>
+<p>在开始之前，要先明确一个概念，这一节所说的 Z ，并不是物体的 Z 坐标，<strong>而是代表物体离我们的远近，也就是深度，这个深度永远是正数，而且数值越小离我们越近</strong>。因为之前说了相机指向 -Z 方向，所以如果是 Z 坐标的话，离我们越近的反而数值上越大，这不符合我们的直觉。因此需要重新给出这个深度的概念。</p>
+<h4 id="1-画家算法"><a href="#1-画家算法" class="headerlink" title="1 画家算法"></a>1 画家算法</h4><p>画家算法指的是我们像画家画画一样，从远处往近处画，这样近处的画面自然会遮挡住远处的画面，光栅化的时候也可以这样，我们先对三角形的深度排序，然后从远往近画在屏幕上。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308175526241.png" alt="image-20220308175526241"></p>
+<p>但是这样的算法无法解决下面这种情况：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308175553407.png" alt="image-20220308175553407"></p>
+<p>三角形的遮挡关系往往没有那么简单，因此画家算法大多情况下并不适用。</p>
+<h4 id="2-Z-Buffer"><a href="#2-Z-Buffer" class="headerlink" title="2 Z-Buffer"></a>2 Z-Buffer</h4><p>Z-Buffer的思想非常简单，那就是我们在渲染图形时，除了维护frame-buffer（显示在屏幕上的图）外，再维护一个Z-buffer（深度图），<strong>Z-buffer中存储屏幕上每一个像素当前的最小深度</strong>，在光栅化开始时，Z-buffer中每一个像素的深度都设为无穷大，之后渲染三角形的时候，每次都先判断当前渲染的三角形的深度和Z-buffer中当前像素的深度谁更小（谁离我们更近），如果三角形的深度更小，那么就把三角形的颜色存入frame-buffer中这个像素的位置，同时把Z-buffer中当前像素的最小深度更新一次，这样我们总能保证深度小的颜色遮挡深度大的颜色。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308180155386.png" alt="image-20220308180155386"></p>
+<p>Z-buffer和frame-buffer总是同时渲染的，因此当我们生成一张图片的时候，也就生成了这张图片的深度图。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308180255018.png" alt="image-20220308180255018"></p>
+<p>可以看到深度图中越远的地方像素值越大，越近的地方像素值越小。</p>
+<p>Z-buffer的伪代码如下：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/image-20220308180341613.png" alt="image-20220308180341613"></p>
+<p>相比于画家算法 O(nlogn) ，Z-buffer只需要 O(n) 的时间复杂度。</p>
+<blockquote>
+<p>为什么是O(n)？</p>
+<p>假设每个三角形只覆盖常数个像素，那么Z-buffer做的就是对每一个三角形判断对应的深度，然后填充像素，因此只需要花费 O(1) 时间，那么有n个三角形，复杂度就是O(n).</p>
+</blockquote>
+<p>最后说一下Z-buffer的优势，就是与画三角形的顺序无关，只要维护对了深度信息，画出来的一定是正确是遮挡关系，并且对硬件没有特殊需求，容易实现。</p>
+]]></content>
+      <categories>
+        <category>GAMES101</category>
+      </categories>
+      <tags>
+        <tag>计算机图形学</tag>
       </tags>
   </entry>
   <entry>
@@ -1937,29 +1937,6 @@
       </tags>
   </entry>
   <entry>
-    <title>【RayTracer】（十七）新特性最终场景</title>
-    <url>/LycTechStack.github.io/2022/04/22/20220422-RayTracer-%E6%96%B0%E7%89%B9%E6%80%A7%E6%9C%80%E7%BB%88%E5%9C%BA%E6%99%AF/</url>
-    <content><![CDATA[<p>现在我们新建一个非常复杂的场景来测试到目前为止光线追踪器的全部特性，生成我们的第二张光线追踪“大片”。</p>
-<p><em><span id="more"></span></em></p>
-<h3 id="1-创建新场景"><a href="#1-创建新场景" class="headerlink" title="1 创建新场景"></a>1 创建新场景</h3><p>创建一个包含所有特性的场景：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 新特性最终场景</span></span><br><span class="line"><span class="function">hittable_list <span class="title">final_scene</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 高低起伏的盒子组成地面</span></span><br><span class="line">    hittable_list boxes1;</span><br><span class="line">    <span class="keyword">auto</span> ground = <span class="built_in">make_shared</span>&lt;lambertian&gt;(<span class="built_in">color</span>(<span class="number">0.48</span>, <span class="number">0.83</span>, <span class="number">0.53</span>));</span><br><span class="line"></span><br><span class="line">    <span class="type">const</span> <span class="type">int</span> boxes_per_side = <span class="number">20</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; boxes_per_side; i++) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">0</span>; j &lt; boxes_per_side; j++) &#123;</span><br><span class="line">            <span class="keyword">auto</span> w = <span class="number">100.0</span>;</span><br><span class="line">            <span class="keyword">auto</span> x0 = <span class="number">-1000.0</span> + i * w;</span><br><span class="line">            <span class="keyword">auto</span> z0 = <span class="number">-1000.0</span> + j * w;</span><br><span class="line">            <span class="keyword">auto</span> y0 = <span class="number">0.0</span>;</span><br><span class="line">            <span class="keyword">auto</span> x1 = x0 + w;</span><br><span class="line">            <span class="keyword">auto</span> y1 = <span class="built_in">random_double</span>(<span class="number">1</span>, <span class="number">101</span>);</span><br><span class="line">            <span class="keyword">auto</span> z1 = z0 + w;</span><br><span class="line"></span><br><span class="line">            boxes1.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;box&gt;(<span class="built_in">point3</span>(x0, y0, z0), <span class="built_in">point3</span>(x1, y1, z1), ground));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    hittable_list objects;</span><br><span class="line">    <span class="comment">// 构建地面的BVH树</span></span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;bvh_node&gt;(boxes1, <span class="number">0</span>, <span class="number">1</span>));</span><br><span class="line">    <span class="comment">// 光源</span></span><br><span class="line">    <span class="keyword">auto</span> light = <span class="built_in">make_shared</span>&lt;diffuse_light&gt;(<span class="built_in">color</span>(<span class="number">7</span>, <span class="number">7</span>, <span class="number">7</span>));</span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;xz_rect&gt;(<span class="number">123</span>, <span class="number">423</span>, <span class="number">147</span>, <span class="number">412</span>, <span class="number">554</span>, light));</span><br><span class="line">    <span class="comment">// 移动的球体</span></span><br><span class="line">    <span class="keyword">auto</span> center1 = <span class="built_in">point3</span>(<span class="number">400</span>, <span class="number">400</span>, <span class="number">200</span>);</span><br><span class="line">    <span class="keyword">auto</span> center2 = center1 + <span class="built_in">vec3</span>(<span class="number">30</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">auto</span> moving_sphere_material = <span class="built_in">make_shared</span>&lt;lambertian&gt;(<span class="built_in">color</span>(<span class="number">0.7</span>, <span class="number">0.3</span>, <span class="number">0.1</span>));</span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(center1, center2, <span class="number">0</span>, <span class="number">1</span>, <span class="number">50</span>, moving_sphere_material));</span><br><span class="line">    <span class="comment">// 透明球体</span></span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(</span><br><span class="line">        <span class="built_in">point3</span>(<span class="number">260</span>, <span class="number">150</span>, <span class="number">45</span>), <span class="built_in">point3</span>(<span class="number">260</span>, <span class="number">150</span>, <span class="number">45</span>), <span class="number">0</span>, <span class="number">1</span>, <span class="number">50</span>, <span class="built_in">make_shared</span>&lt;dielectric&gt;(<span class="number">1.5</span>)));</span><br><span class="line">    <span class="comment">// 金属球体</span></span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(</span><br><span class="line">        <span class="built_in">point3</span>(<span class="number">0</span>, <span class="number">150</span>, <span class="number">145</span>), <span class="built_in">point3</span>(<span class="number">0</span>, <span class="number">150</span>, <span class="number">145</span>), <span class="number">0</span>, <span class="number">1</span>, <span class="number">50</span>, <span class="built_in">make_shared</span>&lt;metal&gt;(<span class="built_in">color</span>(<span class="number">0.8</span>, <span class="number">0.8</span>, <span class="number">0.9</span>), <span class="number">1.0</span>)</span><br><span class="line">        ));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 参与介质</span></span><br><span class="line">    <span class="keyword">auto</span> boundary = <span class="built_in">make_shared</span>&lt;sphere&gt;(</span><br><span class="line">        <span class="built_in">point3</span>(<span class="number">360</span>, <span class="number">150</span>, <span class="number">145</span>), <span class="built_in">point3</span>(<span class="number">360</span>, <span class="number">150</span>, <span class="number">145</span>), <span class="number">0</span>, <span class="number">1</span>, <span class="number">70</span>, <span class="built_in">make_shared</span>&lt;dielectric&gt;(<span class="number">1.5</span>));</span><br><span class="line">    objects.<span class="built_in">add</span>(boundary);</span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;constant_medium&gt;(boundary, <span class="number">0.01</span>, <span class="built_in">color</span>(<span class="number">0.2</span>, <span class="number">0.4</span>, <span class="number">0.9</span>)));</span><br><span class="line">    boundary = <span class="built_in">make_shared</span>&lt;sphere&gt;(</span><br><span class="line">        <span class="built_in">point3</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>), <span class="built_in">point3</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>), <span class="number">0</span>, <span class="number">1</span>, <span class="number">5000</span>, <span class="built_in">make_shared</span>&lt;dielectric&gt;(<span class="number">1.5</span>));</span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;constant_medium&gt;(boundary, <span class="number">.0001</span>, <span class="built_in">color</span>(<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>)));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 地球</span></span><br><span class="line">    <span class="keyword">auto</span> emat = <span class="built_in">make_shared</span>&lt;lambertian&gt;(<span class="built_in">make_shared</span>&lt;image_texture&gt;(</span><br><span class="line">        <span class="string">&quot;D:\\TechStack\\ComputerGraphics\\Ray Tracing in One Weekend Series\\Project\\Textures\\earthmap.jpg&quot;</span>));</span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(</span><br><span class="line">        <span class="built_in">point3</span>(<span class="number">400</span>, <span class="number">200</span>, <span class="number">400</span>), <span class="built_in">point3</span>(<span class="number">400</span>, <span class="number">200</span>, <span class="number">400</span>), <span class="number">0</span>, <span class="number">1</span>, <span class="number">100</span>, emat));</span><br><span class="line">    <span class="comment">// 噪声纹理</span></span><br><span class="line">    <span class="keyword">auto</span> pertext = <span class="built_in">make_shared</span>&lt;noise_texture&gt;(<span class="number">4</span>);</span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(</span><br><span class="line">        <span class="built_in">point3</span>(<span class="number">220</span>, <span class="number">280</span>, <span class="number">300</span>), <span class="built_in">point3</span>(<span class="number">220</span>, <span class="number">280</span>, <span class="number">300</span>), <span class="number">0</span>, <span class="number">1</span>, <span class="number">80</span>, <span class="built_in">make_shared</span>&lt;lambertian&gt;(pertext)));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 一堆小球</span></span><br><span class="line">    hittable_list boxes2;</span><br><span class="line">    <span class="keyword">auto</span> white = <span class="built_in">make_shared</span>&lt;lambertian&gt;(<span class="built_in">color</span>(<span class="number">.73</span>, <span class="number">.73</span>, <span class="number">.73</span>));</span><br><span class="line">    <span class="type">int</span> ns = <span class="number">1000</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">0</span>; j &lt; ns; j++) &#123;</span><br><span class="line">        <span class="keyword">auto</span> center = <span class="built_in">random_vec</span>(<span class="number">0</span>, <span class="number">165</span>);</span><br><span class="line">        boxes2.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(</span><br><span class="line">            center, center, <span class="number">0</span>, <span class="number">1</span>, <span class="number">10</span>, white));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 旋转平移一堆小球</span></span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;translate&gt;(</span><br><span class="line">        <span class="built_in">make_shared</span>&lt;rotate_y&gt;(</span><br><span class="line">            <span class="built_in">make_shared</span>&lt;bvh_node&gt;(boxes2, <span class="number">0.0</span>, <span class="number">1.0</span>), <span class="number">15</span>),</span><br><span class="line">        <span class="built_in">vec3</span>(<span class="number">-100</span>, <span class="number">270</span>, <span class="number">395</span>)</span><br><span class="line">        )</span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> objects;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-渲染效果"><a href="#2-渲染效果" class="headerlink" title="2 渲染效果"></a>2 渲染效果</h3><p>修改主函数：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">switch</span> (sence) &#123;</span><br><span class="line">        ...</span><br><span class="line">        <span class="keyword">default</span>:</span><br><span class="line">        <span class="keyword">case</span> <span class="number">8</span>:</span><br><span class="line">            world = <span class="built_in">final_scene</span>();</span><br><span class="line">            aspect_ratio = <span class="number">1.0</span>;</span><br><span class="line">            image_width = <span class="number">800</span>;</span><br><span class="line">            samples_per_pixel = <span class="number">10000</span>;</span><br><span class="line">            min_bounce = <span class="number">95</span>;</span><br><span class="line">            background = <span class="built_in">color</span>(<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>);</span><br><span class="line">            lookfrom = <span class="built_in">point3</span>(<span class="number">478</span>, <span class="number">278</span>, <span class="number">-600</span>);</span><br><span class="line">            lookat = <span class="built_in">point3</span>(<span class="number">278</span>, <span class="number">278</span>, <span class="number">0</span>);</span><br><span class="line">            vfov = <span class="number">40.0</span>;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>渲染效果如下：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/22/20220422-RayTracer-%E6%96%B0%E7%89%B9%E6%80%A7%E6%9C%80%E7%BB%88%E5%9C%BA%E6%99%AF/FinalSence.png" alt="FinalSence"></p>
-]]></content>
-      <categories>
-        <category>RayTracer</category>
-      </categories>
-      <tags>
-        <tag>计算机图形学</tag>
-        <tag>C++</tag>
-        <tag>光线追踪</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>【RayTracer】（十六）参与介质</title>
     <url>/LycTechStack.github.io/2022/04/22/20220422-RayTracer-%E5%8F%82%E4%B8%8E%E4%BB%8B%E8%B4%A8/</url>
     <content><![CDATA[<p>之前在图形学中我们学过参与介质（participating media）的实现原理，比如烟雾，这一节我们来实现一个恒定密度的参与介质。</p>
@@ -1982,6 +1959,29 @@
 
 <p>得到的效果：</p>
 <p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/22/20220422-RayTracer-%E5%8F%82%E4%B8%8E%E4%BB%8B%E8%B4%A8/CornellBoxSmoke.png" alt="CornellBoxSmoke"></p>
+]]></content>
+      <categories>
+        <category>RayTracer</category>
+      </categories>
+      <tags>
+        <tag>计算机图形学</tag>
+        <tag>C++</tag>
+        <tag>光线追踪</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>【RayTracer】（十七）新特性最终场景</title>
+    <url>/LycTechStack.github.io/2022/04/22/20220422-RayTracer-%E6%96%B0%E7%89%B9%E6%80%A7%E6%9C%80%E7%BB%88%E5%9C%BA%E6%99%AF/</url>
+    <content><![CDATA[<p>现在我们新建一个非常复杂的场景来测试到目前为止光线追踪器的全部特性，生成我们的第二张光线追踪“大片”。</p>
+<p><em><span id="more"></span></em></p>
+<h3 id="1-创建新场景"><a href="#1-创建新场景" class="headerlink" title="1 创建新场景"></a>1 创建新场景</h3><p>创建一个包含所有特性的场景：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 新特性最终场景</span></span><br><span class="line"><span class="function">hittable_list <span class="title">final_scene</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 高低起伏的盒子组成地面</span></span><br><span class="line">    hittable_list boxes1;</span><br><span class="line">    <span class="keyword">auto</span> ground = <span class="built_in">make_shared</span>&lt;lambertian&gt;(<span class="built_in">color</span>(<span class="number">0.48</span>, <span class="number">0.83</span>, <span class="number">0.53</span>));</span><br><span class="line"></span><br><span class="line">    <span class="type">const</span> <span class="type">int</span> boxes_per_side = <span class="number">20</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; boxes_per_side; i++) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">0</span>; j &lt; boxes_per_side; j++) &#123;</span><br><span class="line">            <span class="keyword">auto</span> w = <span class="number">100.0</span>;</span><br><span class="line">            <span class="keyword">auto</span> x0 = <span class="number">-1000.0</span> + i * w;</span><br><span class="line">            <span class="keyword">auto</span> z0 = <span class="number">-1000.0</span> + j * w;</span><br><span class="line">            <span class="keyword">auto</span> y0 = <span class="number">0.0</span>;</span><br><span class="line">            <span class="keyword">auto</span> x1 = x0 + w;</span><br><span class="line">            <span class="keyword">auto</span> y1 = <span class="built_in">random_double</span>(<span class="number">1</span>, <span class="number">101</span>);</span><br><span class="line">            <span class="keyword">auto</span> z1 = z0 + w;</span><br><span class="line"></span><br><span class="line">            boxes1.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;box&gt;(<span class="built_in">point3</span>(x0, y0, z0), <span class="built_in">point3</span>(x1, y1, z1), ground));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    hittable_list objects;</span><br><span class="line">    <span class="comment">// 构建地面的BVH树</span></span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;bvh_node&gt;(boxes1, <span class="number">0</span>, <span class="number">1</span>));</span><br><span class="line">    <span class="comment">// 光源</span></span><br><span class="line">    <span class="keyword">auto</span> light = <span class="built_in">make_shared</span>&lt;diffuse_light&gt;(<span class="built_in">color</span>(<span class="number">7</span>, <span class="number">7</span>, <span class="number">7</span>));</span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;xz_rect&gt;(<span class="number">123</span>, <span class="number">423</span>, <span class="number">147</span>, <span class="number">412</span>, <span class="number">554</span>, light));</span><br><span class="line">    <span class="comment">// 移动的球体</span></span><br><span class="line">    <span class="keyword">auto</span> center1 = <span class="built_in">point3</span>(<span class="number">400</span>, <span class="number">400</span>, <span class="number">200</span>);</span><br><span class="line">    <span class="keyword">auto</span> center2 = center1 + <span class="built_in">vec3</span>(<span class="number">30</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">auto</span> moving_sphere_material = <span class="built_in">make_shared</span>&lt;lambertian&gt;(<span class="built_in">color</span>(<span class="number">0.7</span>, <span class="number">0.3</span>, <span class="number">0.1</span>));</span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(center1, center2, <span class="number">0</span>, <span class="number">1</span>, <span class="number">50</span>, moving_sphere_material));</span><br><span class="line">    <span class="comment">// 透明球体</span></span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(</span><br><span class="line">        <span class="built_in">point3</span>(<span class="number">260</span>, <span class="number">150</span>, <span class="number">45</span>), <span class="built_in">point3</span>(<span class="number">260</span>, <span class="number">150</span>, <span class="number">45</span>), <span class="number">0</span>, <span class="number">1</span>, <span class="number">50</span>, <span class="built_in">make_shared</span>&lt;dielectric&gt;(<span class="number">1.5</span>)));</span><br><span class="line">    <span class="comment">// 金属球体</span></span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(</span><br><span class="line">        <span class="built_in">point3</span>(<span class="number">0</span>, <span class="number">150</span>, <span class="number">145</span>), <span class="built_in">point3</span>(<span class="number">0</span>, <span class="number">150</span>, <span class="number">145</span>), <span class="number">0</span>, <span class="number">1</span>, <span class="number">50</span>, <span class="built_in">make_shared</span>&lt;metal&gt;(<span class="built_in">color</span>(<span class="number">0.8</span>, <span class="number">0.8</span>, <span class="number">0.9</span>), <span class="number">1.0</span>)</span><br><span class="line">        ));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 参与介质</span></span><br><span class="line">    <span class="keyword">auto</span> boundary = <span class="built_in">make_shared</span>&lt;sphere&gt;(</span><br><span class="line">        <span class="built_in">point3</span>(<span class="number">360</span>, <span class="number">150</span>, <span class="number">145</span>), <span class="built_in">point3</span>(<span class="number">360</span>, <span class="number">150</span>, <span class="number">145</span>), <span class="number">0</span>, <span class="number">1</span>, <span class="number">70</span>, <span class="built_in">make_shared</span>&lt;dielectric&gt;(<span class="number">1.5</span>));</span><br><span class="line">    objects.<span class="built_in">add</span>(boundary);</span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;constant_medium&gt;(boundary, <span class="number">0.01</span>, <span class="built_in">color</span>(<span class="number">0.2</span>, <span class="number">0.4</span>, <span class="number">0.9</span>)));</span><br><span class="line">    boundary = <span class="built_in">make_shared</span>&lt;sphere&gt;(</span><br><span class="line">        <span class="built_in">point3</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>), <span class="built_in">point3</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>), <span class="number">0</span>, <span class="number">1</span>, <span class="number">5000</span>, <span class="built_in">make_shared</span>&lt;dielectric&gt;(<span class="number">1.5</span>));</span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;constant_medium&gt;(boundary, <span class="number">.0001</span>, <span class="built_in">color</span>(<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>)));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 地球</span></span><br><span class="line">    <span class="keyword">auto</span> emat = <span class="built_in">make_shared</span>&lt;lambertian&gt;(<span class="built_in">make_shared</span>&lt;image_texture&gt;(</span><br><span class="line">        <span class="string">&quot;D:\\TechStack\\ComputerGraphics\\Ray Tracing in One Weekend Series\\Project\\Textures\\earthmap.jpg&quot;</span>));</span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(</span><br><span class="line">        <span class="built_in">point3</span>(<span class="number">400</span>, <span class="number">200</span>, <span class="number">400</span>), <span class="built_in">point3</span>(<span class="number">400</span>, <span class="number">200</span>, <span class="number">400</span>), <span class="number">0</span>, <span class="number">1</span>, <span class="number">100</span>, emat));</span><br><span class="line">    <span class="comment">// 噪声纹理</span></span><br><span class="line">    <span class="keyword">auto</span> pertext = <span class="built_in">make_shared</span>&lt;noise_texture&gt;(<span class="number">4</span>);</span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(</span><br><span class="line">        <span class="built_in">point3</span>(<span class="number">220</span>, <span class="number">280</span>, <span class="number">300</span>), <span class="built_in">point3</span>(<span class="number">220</span>, <span class="number">280</span>, <span class="number">300</span>), <span class="number">0</span>, <span class="number">1</span>, <span class="number">80</span>, <span class="built_in">make_shared</span>&lt;lambertian&gt;(pertext)));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 一堆小球</span></span><br><span class="line">    hittable_list boxes2;</span><br><span class="line">    <span class="keyword">auto</span> white = <span class="built_in">make_shared</span>&lt;lambertian&gt;(<span class="built_in">color</span>(<span class="number">.73</span>, <span class="number">.73</span>, <span class="number">.73</span>));</span><br><span class="line">    <span class="type">int</span> ns = <span class="number">1000</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">0</span>; j &lt; ns; j++) &#123;</span><br><span class="line">        <span class="keyword">auto</span> center = <span class="built_in">random_vec</span>(<span class="number">0</span>, <span class="number">165</span>);</span><br><span class="line">        boxes2.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(</span><br><span class="line">            center, center, <span class="number">0</span>, <span class="number">1</span>, <span class="number">10</span>, white));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 旋转平移一堆小球</span></span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;translate&gt;(</span><br><span class="line">        <span class="built_in">make_shared</span>&lt;rotate_y&gt;(</span><br><span class="line">            <span class="built_in">make_shared</span>&lt;bvh_node&gt;(boxes2, <span class="number">0.0</span>, <span class="number">1.0</span>), <span class="number">15</span>),</span><br><span class="line">        <span class="built_in">vec3</span>(<span class="number">-100</span>, <span class="number">270</span>, <span class="number">395</span>)</span><br><span class="line">        )</span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> objects;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-渲染效果"><a href="#2-渲染效果" class="headerlink" title="2 渲染效果"></a>2 渲染效果</h3><p>修改主函数：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">switch</span> (sence) &#123;</span><br><span class="line">        ...</span><br><span class="line">        <span class="keyword">default</span>:</span><br><span class="line">        <span class="keyword">case</span> <span class="number">8</span>:</span><br><span class="line">            world = <span class="built_in">final_scene</span>();</span><br><span class="line">            aspect_ratio = <span class="number">1.0</span>;</span><br><span class="line">            image_width = <span class="number">800</span>;</span><br><span class="line">            samples_per_pixel = <span class="number">10000</span>;</span><br><span class="line">            min_bounce = <span class="number">95</span>;</span><br><span class="line">            background = <span class="built_in">color</span>(<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>);</span><br><span class="line">            lookfrom = <span class="built_in">point3</span>(<span class="number">478</span>, <span class="number">278</span>, <span class="number">-600</span>);</span><br><span class="line">            lookat = <span class="built_in">point3</span>(<span class="number">278</span>, <span class="number">278</span>, <span class="number">0</span>);</span><br><span class="line">            vfov = <span class="number">40.0</span>;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>渲染效果如下：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/22/20220422-RayTracer-%E6%96%B0%E7%89%B9%E6%80%A7%E6%9C%80%E7%BB%88%E5%9C%BA%E6%99%AF/FinalSence.png" alt="FinalSence"></p>
 ]]></content>
       <categories>
         <category>RayTracer</category>
@@ -2678,131 +2678,6 @@
       </tags>
   </entry>
   <entry>
-    <title>【C++对象模型】（三）关于数据成员</title>
-    <url>/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/</url>
-    <content><![CDATA[<p>《深度探索C++对象模型》第三章重点梳理。主要内容包括：</p>
-<ul>
-<li>C++ 字节对齐和类大小计算</li>
-<li>数据成员的布局、虚函数表和虚基类表的布局</li>
-</ul>
-<p><em><span id="more"></span></em></p>
-<h3 id="1-C-字节对齐"><a href="#1-C-字节对齐" class="headerlink" title="1 C++ 字节对齐"></a>1 C++ 字节对齐</h3><p>关于 C++ 字节对齐这篇文章讲得非常细致：<a href="https://blog.csdn.net/sweetfather/article/details/78487563">C++ 字节对齐的总结(原因和作用)</a></p>
-<p>这里只做简要总结：</p>
-<ul>
-<li><p>字节对齐的原因：各个硬件平台对存储空间的处理上有很大的不同。一些平台对某些特定类型的数据只能从某些特定地址开始存取。比如有些架构的CPU在访问 一个没有进行对齐的变量的时候会发生错误，那么在这种架构下编程必须保证字节对齐。其他平台可能没有这种情况，但是最常见的是，如果不按照适合其平台要求对数据存放进行对齐，会在存取效率上带来损失。比如有些平台每次读都是从偶地址开始，如果一个 int 型数据存放在偶地址开始的地方，那么一个读周期就可以读出这 32 位数据，而如果存放在奇地址开始的地方，就需要 2 个读周期，并对两次读出的结果的高低字节进行拼凑才能得到该 32 位数据，显然在读取效率上下降很多</p>
-</li>
-<li><p>可以使用 <code>pragma pack(n)</code> 指定以 n 字节方式对齐，不指定则按默认方式对齐</p>
-</li>
-<li><p>字节对齐是要看变量所在偏移地址是否为变量字节数（或指定对齐字节数 n，取二者较小值）的整数倍</p>
-</li>
-<li><p>对于结构成员，要按照结构成员中对齐长度最大的一个对齐</p>
-</li>
-<li><p>对齐后还要看结构或类的总大小是否为其中最长变量（或指定对齐字节数 n，取二者较小值）的整数倍</p>
-</li>
-</ul>
-<p>按照以上规则可以保证对齐后整个结构或类对象所占空间最小，并保证读取效率。</p>
-<h3 id="2-C-类大小计算"><a href="#2-C-类大小计算" class="headerlink" title="2 C++ 类大小计算"></a>2 C++ 类大小计算</h3><p>关于 C++ 类的大小计算这篇文章讲的非常全面：<a href="https://www.cnblogs.com/fengyaoyao/p/10262312.html">C++类的大小计算汇总</a></p>
-<p>这里只做简要总结：</p>
-<p>C++ 中的类由于涉及虚函数、静态成员、虚拟继承、多继承、空类等情况，类对象的大小较为复杂，但总结起来遵循以下几个原则：</p>
-<ul>
-<li>类的大小是指类对象实体的大小，类大小的计算遵循字节对齐原则</li>
-<li>类的大小与普通数据成员有关，与成员函数和静态成员无关。即普通成员函数、静态成员函数、静态数据成员、静态常量数据成员，均对类的大小无影响；静态数据成员之所以不计算在类的对象大小内，是因为类的静态数据成员被该类所有的对象所共享，并不属于具体哪个对象，静态数据成员定义在内存的全局区</li>
-<li>虚函数对类的大小有影响，是因为虚函数表指针带来的影响</li>
-<li>虚继承对类的大小有影响，是因为虚基表指针带来的影响</li>
-<li>空类的大小为 1，因为 C++ 要为某一个实体分配内存就要求这个实体必须有大小，不能为大小为 0 的实体分配内存，所以 C++ 会为空类指定 1 个字节作为其大小，防止 sizeof 为 0，含有虚函数，虚继承，多继承是特殊情况</li>
-</ul>
-<h4 id="2-1-关于空类"><a href="#2-1-关于空类" class="headerlink" title="2.1 关于空类"></a>2.1 关于空类</h4><p>C++ 空类大小为 1，这之中有两种情况需要注意：</p>
-<ul>
-<li>如果一个派生类继承自空类，且派生类有自己的数据成员，则基类子对象的一个字节不会加入到派生类中，因为派生类有自己的数据成员意味着有大小，可以分配内存，所以不需要空类的 1 个字节</li>
-<li>一个类包含一个空类对象成员，这时空类的一个字节是要被计算进去的，因为空类对象必须有自己大小</li>
-</ul>
-<h4 id="2-2-关于虚函数"><a href="#2-2-关于虚函数" class="headerlink" title="2.2 关于虚函数"></a>2.2 关于虚函数</h4><p>虚函数是通过一张虚函数表来实现的。编译器必需要<strong>保证虚函数表的指针存在于对象实例中最前面的位置</strong>（这是为了保证正确取到虚函数的偏移量）。</p>
-<p>每当创建一个包含有虚函数的类或从包含有虚函数的类派生一个类时，编译器就会为这个类创建一个虚函数表保存该类所有虚函数的地址，其实这个虚函数表的作用就是保存自己类中所有虚函数的地址，可以把虚函数表形象地看成一个函数指针数组，这个数组的每个元素存放的就是虚函数的地址。在每个带有虚函数的类中，编译器秘密地置入一指针，称为 vptr，指向这个对象的虚函数表。 当构造该派生类对象时，其成员 vptr 被初始化指向该派生类的虚函数表。所以可以认为<strong>虚函数表是该类的所有对象共有的</strong>，在定义该类时被初始化；而 <strong>vptr 则是每个类对象都有独立一份的</strong>，且在该类对象被构造时被初始化。</p>
-<p>含有虚函数的时候，类的大小计算要注意以下几点：</p>
-<ul>
-<li>由于指针大小为 8 字节，因此含有虚函数的任何类的大小都是原本大小加上 8 字节</li>
-<li>当继承的基类含有虚函数时，在派生类中不对基类的虚函数进行覆盖，同时派生类中还拥有自己的虚函数。此时派生类的虚函数表中首先存放基类虚函数地址，再存放派生类虚函数地址，所有虚函数地址顺序与声明顺序一致。因此无论是基类还是派生类，其大小也还是原本大小加 8 字节</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507102541174.png" alt="image-20220507102541174"></p>
-<ul>
-<li>如果派生类中对基类的虚函数进行了覆盖，同时派生类中还拥有自己的虚函数。此时虚函数表中原本存放基类虚函数的位置会被覆盖为派生类重写的虚函数地址，其他顺序不变。因此无论是基类还是派生类，其大小也还是原本大小加 8 字节</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507102558864.png" alt="image-20220507102558864"></p>
-<ul>
-<li>当一个派生类继承自多个含有虚函数的基类，并对基类虚函数无重载，此时派生类虚函数被放在第一个积累虚函数表后面，派生类的大小就是原本大小加上基类数量 * 8 字节</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507102738036.png" alt="image-20220507102738036"></p>
-<ul>
-<li>当一个派生类继承自多个含有虚函数的基类，并对基类虚函数有重载，情况和上述一致，这时任意一个基类指针指向派生类对象都可以调用派生类重载的基类虚函数</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507102832628.png" alt="image-20220507102832628"></p>
-<p>上面文章中的一个例子，在 Visual C++ 中的运行结果和文章中不同：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">A</span>    </span><br><span class="line">&#123;    </span><br><span class="line">&#125;;   </span><br><span class="line"> </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">B</span>    </span><br><span class="line">&#123; </span><br><span class="line">    <span class="type">char</span> ch;    </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func0</span><span class="params">()</span>  </span>&#123;  &#125;  </span><br><span class="line">&#125;;  </span><br><span class="line"> </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">C</span>   </span><br><span class="line">&#123; </span><br><span class="line">    <span class="type">char</span> ch1; </span><br><span class="line">    <span class="type">char</span> ch2; </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func</span><span class="params">()</span>  </span>&#123;  &#125;   </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func1</span><span class="params">()</span>  </span>&#123;  &#125;  </span><br><span class="line">&#125;; </span><br><span class="line"> </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">D</span>: <span class="keyword">public</span> A, <span class="keyword">public</span> C </span><br><span class="line">&#123;    </span><br><span class="line">    <span class="type">int</span> d;    </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func</span><span class="params">()</span>  </span>&#123;  &#125;  </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func1</span><span class="params">()</span>  </span>&#123;  &#125; </span><br><span class="line">&#125;;    </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">E</span>: <span class="keyword">public</span> B, <span class="keyword">public</span> C </span><br><span class="line">&#123;    </span><br><span class="line">    <span class="type">int</span> e;    </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func0</span><span class="params">()</span>  </span>&#123;  &#125;  </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func1</span><span class="params">()</span>  </span>&#123;  &#125; </span><br><span class="line">&#125;; </span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">void</span>)</span> </span></span><br><span class="line"><span class="function"></span>&#123; </span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;A=&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(A)&lt;&lt;endl;    <span class="comment">//result=1 </span></span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;B=&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(B)&lt;&lt;endl;    <span class="comment">//result=16     </span></span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;C=&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(C)&lt;&lt;endl;    <span class="comment">//result=16 </span></span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;D=&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(D)&lt;&lt;endl;    <span class="comment">//result=24 </span></span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;E=&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(E)&lt;&lt;endl;    <span class="comment">//result=40 </span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>这里关于类 E 的大小，有必要再详细分析一下：类 E 包含一个类 B 子对象 16字节，一个类 C 子对象 16 字节，以及自身的 int 4 字节，现在一共是 36字节，但因为要跟成员中最大变量虚函数表指针 8 字节对齐，最终补齐到 40 字节。</p>
-<blockquote>
-<p>可以在 VS 中输出类的布局，打开 vs项目属性-&gt;配置属性-&gt; c&#x2F;c++ -&gt;命令行，在其它选项中添加如下命令：</p>
-<ul>
-<li><code>/d1 reportAllClassLayout</code> 是查看所有类的布局</li>
-<li><code>/d1 reportSingleClassLayoutXX</code> 是查看名为XX的类的布局</li>
-</ul>
-<p>配置之后重新编译项目，会在编译输出中打印类布局。</p>
-</blockquote>
-<p>上面例子中，类 E 的布局打印出来如下：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507113905627.png" alt="image-20220507113905627"></p>
-<p>和我们的分析一致，同时还可以看到类 E 的两个虚函数表的布局：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507113943452.png" alt="image-20220507113943452"></p>
-<p>其中 <code>E::$vftable@B@</code> 是基类 B 的虚函数表，存放的是被 E 重载后的函数 func0 的指针， <code>E::$vftable@C@</code> 是基类 C 的虚函数表，存放的是 C 的函数 func 和被 E 重载的函数 func1 的指针。</p>
-<h4 id="2-3-关于虚继承"><a href="#2-3-关于虚继承" class="headerlink" title="2.3 关于虚继承"></a>2.3 关于虚继承</h4><p>Visual C++ 中虚继承的情况比较简单，只是多了一个指向虚基类表的指针 vbptr，而真正的指向虚基类的指针存放在虚基类表中。</p>
-<h3 id="3-数据成员的布局"><a href="#3-数据成员的布局" class="headerlink" title="3 数据成员的布局"></a>3 数据成员的布局</h3><p>最后通过一个例子总结 C++ 数据成员布局，通过下面这个例子可以清晰的认识 C++ 类数据成员布局、虚函数表和虚基类表的布局：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">X</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="type">int</span> i;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Y</span> : <span class="keyword">public</span> <span class="keyword">virtual</span> X &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func0</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Z</span> : <span class="keyword">public</span> <span class="keyword">virtual</span> X &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="type">int</span> j;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func1</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">A</span> : <span class="keyword">public</span> Y, <span class="keyword">public</span> Z &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="type">char</span> x;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func1</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func2</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;size of class X is &quot;</span> &lt;&lt; <span class="built_in">sizeof</span>(X) &lt;&lt; std::endl;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;size of class Y is &quot;</span> &lt;&lt; <span class="built_in">sizeof</span>(Y) &lt;&lt; std::endl;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;size of class Z is &quot;</span> &lt;&lt; <span class="built_in">sizeof</span>(Z) &lt;&lt; std::endl;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;size of class A is &quot;</span> &lt;&lt; <span class="built_in">sizeof</span>(A) &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>上面的例子中包含了虚继承、多重继承、虚函数的情况，运行结果如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">size of class X is 4</span><br><span class="line">size of class Y is 24</span><br><span class="line">size of class Z is 32</span><br><span class="line">size of class A is 56</span><br></pre></td></tr></table></figure>
-
-<p>我们打印类 A 的布局：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507115635356.png" alt="image-20220507115635356"></p>
-<p>可以看到类 A 的布局：</p>
-<ul>
-<li>首先是基类 Y 的子对象，Y 包含一个虚函数，同时有一个虚基类，所以 Y 的内存中就是两个指针，一个是虚函数表指针 vfptr，一个是虚基类表指针 vbptr，共 16 字节；</li>
-<li>然后是基类 Z 的子对象，Z 同样包含 vfptr 和 vbptr，以及一个 int 成员，字节对齐后一共是 24 字节，此时类 A 总共偏移 40 字节</li>
-<li>然后是类 A 自己的数据成员，char 类型一个字节，类 A 总共偏移 41 字节，最终要和类中最长成员 8 字节对齐，因此对齐到 48 字节</li>
-<li>类 A 的全部成员都存放完后，最后存放虚基类成员，int 占 4 字节，此时类 A 总共 52 字节，但输出是 56 字节，实际又做了一次 8 字节对齐，因为打印出的内存布局把类 A 和虚基类子对象作为两个独立的部分，所以打印 48 + 4 &#x3D; 52 字节，但实际还要做一次 8 字节对齐，所以 sizeof 输出 56 字节</li>
-</ul>
-<p>然后是类 A 的虚函数表：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507120353989.png" alt="image-20220507120353989"></p>
-<p>虚函数表的第一项表示派生类对象指针相对于虚函数表指针的偏移，这里派生类 A 相对于基类 Y 的虚函数表指针的偏移是 0 字节，相对于基类 Z 的虚函数表指针的偏移是 -16 字节。</p>
-<p>最后是类 A 的虚基类表：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507120419152.png" alt="image-20220507120419152"></p>
-<p>虚基类表原理与虚函数表类似，表的第一项表示派生类对象指针相对于虚基类表指针的偏移，这里是 -8 字节，因为虚基类表指针前面还有一个虚函数表指针占用了 8 个字节，所以派生类 Y 对象的指针相对于其虚基类表指针的偏移量是 -8，派生类 Z 对象的指针相对于其虚基类表指针的偏移也是 -8，注意这里的派生类不再是指 A 了，而是指虚基类的派生类，所以就是 Y 和 Z；虚基类表从第二项开始，表示各个虚基类地址相对于虚基类表指针的偏移。这里虚基类 X 相对于 Y 的虚基类表指针偏移了 40 个字节，因此虚基类 X 相对于派生类 Y 的地址总共偏移了 48 字节，对于派生类 Z 也同样如此，总共偏移了 24 + 8 &#x3D; 32 个字节，从上面的内存布局可以清晰地看出这一点。</p>
-<p>可以看到，Y 和 Z 的虚基类表都指向同一个虚基类 X 的子对象，正如之前所说的，虚基类无论在继承链中被继承多少次，都只产生一个实体，即虚基类子对象，但是“不同的派生类中虚基类子对象的位置不同”这句话，一方面是指虚基类子对象相对于派生类的起始地址偏移量不同，并不是存在多个虚基类子对象；另一方面，随着类的派生，虚基类子对象的位置确实可能变化，但所有派生类的虚基类表中都指向那同一个虚基类子对象。</p>
-<p>最后总结一下，C++ 中数据成员布局与编译器有关，但总体原理一致，Visual C++ 中数据成员布局顺序为：</p>
-<ul>
-<li>基类子对象<ul>
-<li>虚函数表指针 vfptr</li>
-<li>虚基类表指针 vbptr</li>
-<li>基类成员</li>
-</ul>
-</li>
-<li>数据成员</li>
-<li>虚基类成员</li>
-</ul>
-<blockquote>
-<p>注：有的编译器不存在虚基类表指针 vbptr，而是把虚基类的偏移放在虚函数表中，这样只需要一个虚函数表指针</p>
-</blockquote>
-<p>最最后附上一个简单的问题：为什么不把派生类的成员填到基类子对象由于字节对齐而填充的空白内存中，而是要保留基类子对象的空白内存？</p>
-<p>直接借用书中的图解释：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507164044837.png" alt="image-20220507164044837"></p>
-]]></content>
-      <categories>
-        <category>深度探索C++对象模型</category>
-      </categories>
-      <tags>
-        <tag>C++</tag>
-        <tag>C++对象模型</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>【C++对象模型】（四）关于函数成员</title>
     <url>/LycTechStack.github.io/2022/05/09/20220509-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E5%87%BD%E6%95%B0%E6%88%90%E5%91%98/</url>
     <content><![CDATA[<p>《深度探索C++对象模型》第四章重点梳理。主要内容包括：</p>
@@ -2930,6 +2805,131 @@
 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 为局部变量产生的临时变量</span></span><br><span class="line"><span class="type">int</span> min_lv_minval_00;</span><br><span class="line"><span class="type">int</span> min_lv_minval_01;</span><br><span class="line"><span class="comment">// 为副作用参数产生的临时变量</span></span><br><span class="line"><span class="type">int</span> t1, t2;</span><br><span class="line">t1 = <span class="built_in">foo</span>();</span><br><span class="line">t2 = <span class="built_in">foo</span>() + <span class="number">1</span>;</span><br><span class="line">min_lv_minval_00 = val1 &lt; val2 ? val1 : val2;</span><br><span class="line">min_lv_minval_01 = t1 &lt; t2 ? t1 : t2;</span><br><span class="line">minval = min_lv_minval_00 + min_lv_minval_01;</span><br></pre></td></tr></table></figure>
 
 <p>内联函数对于封装提供了一种必要的支持，可以有效存取封装于 class 中的 nonpublic 数据。它同时也是 C 程序中大量使用的<code>#define</code> （前置处理宏）的一个安全代替品，特别是如果宏中的参数有副作用的话。然而一个 inline 函数如果被调用太多次的话，会产生大量的扩展码，使程序的大小暴涨，并且由于参数带有副作用或者 inline 函数中有局部变量，会产生大量临时对象，编译器无法将它们移除。此外，inline 中再有 inline，可能会使一个表面上看起来简单的 inline 因其连锁复杂度而没办法扩展开来。对于既要安全又要效率的程序， inline 函数提供了一个强而有力的工具。然而，与 non-inline 函数比起来，它们需要更加小心地处理。</p>
+]]></content>
+      <categories>
+        <category>深度探索C++对象模型</category>
+      </categories>
+      <tags>
+        <tag>C++</tag>
+        <tag>C++对象模型</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>【C++对象模型】（三）关于数据成员</title>
+    <url>/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/</url>
+    <content><![CDATA[<p>《深度探索C++对象模型》第三章重点梳理。主要内容包括：</p>
+<ul>
+<li>C++ 字节对齐和类大小计算</li>
+<li>数据成员的布局、虚函数表和虚基类表的布局</li>
+</ul>
+<p><em><span id="more"></span></em></p>
+<h3 id="1-C-字节对齐"><a href="#1-C-字节对齐" class="headerlink" title="1 C++ 字节对齐"></a>1 C++ 字节对齐</h3><p>关于 C++ 字节对齐这篇文章讲得非常细致：<a href="https://blog.csdn.net/sweetfather/article/details/78487563">C++ 字节对齐的总结(原因和作用)</a></p>
+<p>这里只做简要总结：</p>
+<ul>
+<li><p>字节对齐的原因：各个硬件平台对存储空间的处理上有很大的不同。一些平台对某些特定类型的数据只能从某些特定地址开始存取。比如有些架构的CPU在访问 一个没有进行对齐的变量的时候会发生错误，那么在这种架构下编程必须保证字节对齐。其他平台可能没有这种情况，但是最常见的是，如果不按照适合其平台要求对数据存放进行对齐，会在存取效率上带来损失。比如有些平台每次读都是从偶地址开始，如果一个 int 型数据存放在偶地址开始的地方，那么一个读周期就可以读出这 32 位数据，而如果存放在奇地址开始的地方，就需要 2 个读周期，并对两次读出的结果的高低字节进行拼凑才能得到该 32 位数据，显然在读取效率上下降很多</p>
+</li>
+<li><p>可以使用 <code>pragma pack(n)</code> 指定以 n 字节方式对齐，不指定则按默认方式对齐</p>
+</li>
+<li><p>字节对齐是要看变量所在偏移地址是否为变量字节数（或指定对齐字节数 n，取二者较小值）的整数倍</p>
+</li>
+<li><p>对于结构成员，要按照结构成员中对齐长度最大的一个对齐</p>
+</li>
+<li><p>对齐后还要看结构或类的总大小是否为其中最长变量（或指定对齐字节数 n，取二者较小值）的整数倍</p>
+</li>
+</ul>
+<p>按照以上规则可以保证对齐后整个结构或类对象所占空间最小，并保证读取效率。</p>
+<h3 id="2-C-类大小计算"><a href="#2-C-类大小计算" class="headerlink" title="2 C++ 类大小计算"></a>2 C++ 类大小计算</h3><p>关于 C++ 类的大小计算这篇文章讲的非常全面：<a href="https://www.cnblogs.com/fengyaoyao/p/10262312.html">C++类的大小计算汇总</a></p>
+<p>这里只做简要总结：</p>
+<p>C++ 中的类由于涉及虚函数、静态成员、虚拟继承、多继承、空类等情况，类对象的大小较为复杂，但总结起来遵循以下几个原则：</p>
+<ul>
+<li>类的大小是指类对象实体的大小，类大小的计算遵循字节对齐原则</li>
+<li>类的大小与普通数据成员有关，与成员函数和静态成员无关。即普通成员函数、静态成员函数、静态数据成员、静态常量数据成员，均对类的大小无影响；静态数据成员之所以不计算在类的对象大小内，是因为类的静态数据成员被该类所有的对象所共享，并不属于具体哪个对象，静态数据成员定义在内存的全局区</li>
+<li>虚函数对类的大小有影响，是因为虚函数表指针带来的影响</li>
+<li>虚继承对类的大小有影响，是因为虚基表指针带来的影响</li>
+<li>空类的大小为 1，因为 C++ 要为某一个实体分配内存就要求这个实体必须有大小，不能为大小为 0 的实体分配内存，所以 C++ 会为空类指定 1 个字节作为其大小，防止 sizeof 为 0，含有虚函数，虚继承，多继承是特殊情况</li>
+</ul>
+<h4 id="2-1-关于空类"><a href="#2-1-关于空类" class="headerlink" title="2.1 关于空类"></a>2.1 关于空类</h4><p>C++ 空类大小为 1，这之中有两种情况需要注意：</p>
+<ul>
+<li>如果一个派生类继承自空类，且派生类有自己的数据成员，则基类子对象的一个字节不会加入到派生类中，因为派生类有自己的数据成员意味着有大小，可以分配内存，所以不需要空类的 1 个字节</li>
+<li>一个类包含一个空类对象成员，这时空类的一个字节是要被计算进去的，因为空类对象必须有自己大小</li>
+</ul>
+<h4 id="2-2-关于虚函数"><a href="#2-2-关于虚函数" class="headerlink" title="2.2 关于虚函数"></a>2.2 关于虚函数</h4><p>虚函数是通过一张虚函数表来实现的。编译器必需要<strong>保证虚函数表的指针存在于对象实例中最前面的位置</strong>（这是为了保证正确取到虚函数的偏移量）。</p>
+<p>每当创建一个包含有虚函数的类或从包含有虚函数的类派生一个类时，编译器就会为这个类创建一个虚函数表保存该类所有虚函数的地址，其实这个虚函数表的作用就是保存自己类中所有虚函数的地址，可以把虚函数表形象地看成一个函数指针数组，这个数组的每个元素存放的就是虚函数的地址。在每个带有虚函数的类中，编译器秘密地置入一指针，称为 vptr，指向这个对象的虚函数表。 当构造该派生类对象时，其成员 vptr 被初始化指向该派生类的虚函数表。所以可以认为<strong>虚函数表是该类的所有对象共有的</strong>，在定义该类时被初始化；而 <strong>vptr 则是每个类对象都有独立一份的</strong>，且在该类对象被构造时被初始化。</p>
+<p>含有虚函数的时候，类的大小计算要注意以下几点：</p>
+<ul>
+<li>由于指针大小为 8 字节，因此含有虚函数的任何类的大小都是原本大小加上 8 字节</li>
+<li>当继承的基类含有虚函数时，在派生类中不对基类的虚函数进行覆盖，同时派生类中还拥有自己的虚函数。此时派生类的虚函数表中首先存放基类虚函数地址，再存放派生类虚函数地址，所有虚函数地址顺序与声明顺序一致。因此无论是基类还是派生类，其大小也还是原本大小加 8 字节</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507102541174.png" alt="image-20220507102541174"></p>
+<ul>
+<li>如果派生类中对基类的虚函数进行了覆盖，同时派生类中还拥有自己的虚函数。此时虚函数表中原本存放基类虚函数的位置会被覆盖为派生类重写的虚函数地址，其他顺序不变。因此无论是基类还是派生类，其大小也还是原本大小加 8 字节</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507102558864.png" alt="image-20220507102558864"></p>
+<ul>
+<li>当一个派生类继承自多个含有虚函数的基类，并对基类虚函数无重载，此时派生类虚函数被放在第一个积累虚函数表后面，派生类的大小就是原本大小加上基类数量 * 8 字节</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507102738036.png" alt="image-20220507102738036"></p>
+<ul>
+<li>当一个派生类继承自多个含有虚函数的基类，并对基类虚函数有重载，情况和上述一致，这时任意一个基类指针指向派生类对象都可以调用派生类重载的基类虚函数</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507102832628.png" alt="image-20220507102832628"></p>
+<p>上面文章中的一个例子，在 Visual C++ 中的运行结果和文章中不同：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">A</span>    </span><br><span class="line">&#123;    </span><br><span class="line">&#125;;   </span><br><span class="line"> </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">B</span>    </span><br><span class="line">&#123; </span><br><span class="line">    <span class="type">char</span> ch;    </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func0</span><span class="params">()</span>  </span>&#123;  &#125;  </span><br><span class="line">&#125;;  </span><br><span class="line"> </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">C</span>   </span><br><span class="line">&#123; </span><br><span class="line">    <span class="type">char</span> ch1; </span><br><span class="line">    <span class="type">char</span> ch2; </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func</span><span class="params">()</span>  </span>&#123;  &#125;   </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func1</span><span class="params">()</span>  </span>&#123;  &#125;  </span><br><span class="line">&#125;; </span><br><span class="line"> </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">D</span>: <span class="keyword">public</span> A, <span class="keyword">public</span> C </span><br><span class="line">&#123;    </span><br><span class="line">    <span class="type">int</span> d;    </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func</span><span class="params">()</span>  </span>&#123;  &#125;  </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func1</span><span class="params">()</span>  </span>&#123;  &#125; </span><br><span class="line">&#125;;    </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">E</span>: <span class="keyword">public</span> B, <span class="keyword">public</span> C </span><br><span class="line">&#123;    </span><br><span class="line">    <span class="type">int</span> e;    </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func0</span><span class="params">()</span>  </span>&#123;  &#125;  </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func1</span><span class="params">()</span>  </span>&#123;  &#125; </span><br><span class="line">&#125;; </span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">void</span>)</span> </span></span><br><span class="line"><span class="function"></span>&#123; </span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;A=&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(A)&lt;&lt;endl;    <span class="comment">//result=1 </span></span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;B=&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(B)&lt;&lt;endl;    <span class="comment">//result=16     </span></span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;C=&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(C)&lt;&lt;endl;    <span class="comment">//result=16 </span></span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;D=&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(D)&lt;&lt;endl;    <span class="comment">//result=24 </span></span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;E=&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(E)&lt;&lt;endl;    <span class="comment">//result=40 </span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里关于类 E 的大小，有必要再详细分析一下：类 E 包含一个类 B 子对象 16字节，一个类 C 子对象 16 字节，以及自身的 int 4 字节，现在一共是 36字节，但因为要跟成员中最大变量虚函数表指针 8 字节对齐，最终补齐到 40 字节。</p>
+<blockquote>
+<p>可以在 VS 中输出类的布局，打开 vs项目属性-&gt;配置属性-&gt; c&#x2F;c++ -&gt;命令行，在其它选项中添加如下命令：</p>
+<ul>
+<li><code>/d1 reportAllClassLayout</code> 是查看所有类的布局</li>
+<li><code>/d1 reportSingleClassLayoutXX</code> 是查看名为XX的类的布局</li>
+</ul>
+<p>配置之后重新编译项目，会在编译输出中打印类布局。</p>
+</blockquote>
+<p>上面例子中，类 E 的布局打印出来如下：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507113905627.png" alt="image-20220507113905627"></p>
+<p>和我们的分析一致，同时还可以看到类 E 的两个虚函数表的布局：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507113943452.png" alt="image-20220507113943452"></p>
+<p>其中 <code>E::$vftable@B@</code> 是基类 B 的虚函数表，存放的是被 E 重载后的函数 func0 的指针， <code>E::$vftable@C@</code> 是基类 C 的虚函数表，存放的是 C 的函数 func 和被 E 重载的函数 func1 的指针。</p>
+<h4 id="2-3-关于虚继承"><a href="#2-3-关于虚继承" class="headerlink" title="2.3 关于虚继承"></a>2.3 关于虚继承</h4><p>Visual C++ 中虚继承的情况比较简单，只是多了一个指向虚基类表的指针 vbptr，而真正的指向虚基类的指针存放在虚基类表中。</p>
+<h3 id="3-数据成员的布局"><a href="#3-数据成员的布局" class="headerlink" title="3 数据成员的布局"></a>3 数据成员的布局</h3><p>最后通过一个例子总结 C++ 数据成员布局，通过下面这个例子可以清晰的认识 C++ 类数据成员布局、虚函数表和虚基类表的布局：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">X</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="type">int</span> i;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Y</span> : <span class="keyword">public</span> <span class="keyword">virtual</span> X &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func0</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Z</span> : <span class="keyword">public</span> <span class="keyword">virtual</span> X &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="type">int</span> j;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func1</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">A</span> : <span class="keyword">public</span> Y, <span class="keyword">public</span> Z &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="type">char</span> x;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func1</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func2</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;size of class X is &quot;</span> &lt;&lt; <span class="built_in">sizeof</span>(X) &lt;&lt; std::endl;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;size of class Y is &quot;</span> &lt;&lt; <span class="built_in">sizeof</span>(Y) &lt;&lt; std::endl;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;size of class Z is &quot;</span> &lt;&lt; <span class="built_in">sizeof</span>(Z) &lt;&lt; std::endl;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;size of class A is &quot;</span> &lt;&lt; <span class="built_in">sizeof</span>(A) &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的例子中包含了虚继承、多重继承、虚函数的情况，运行结果如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">size of class X is 4</span><br><span class="line">size of class Y is 24</span><br><span class="line">size of class Z is 32</span><br><span class="line">size of class A is 56</span><br></pre></td></tr></table></figure>
+
+<p>我们打印类 A 的布局：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507115635356.png" alt="image-20220507115635356"></p>
+<p>可以看到类 A 的布局：</p>
+<ul>
+<li>首先是基类 Y 的子对象，Y 包含一个虚函数，同时有一个虚基类，所以 Y 的内存中就是两个指针，一个是虚函数表指针 vfptr，一个是虚基类表指针 vbptr，共 16 字节；</li>
+<li>然后是基类 Z 的子对象，Z 同样包含 vfptr 和 vbptr，以及一个 int 成员，字节对齐后一共是 24 字节，此时类 A 总共偏移 40 字节</li>
+<li>然后是类 A 自己的数据成员，char 类型一个字节，类 A 总共偏移 41 字节，最终要和类中最长成员 8 字节对齐，因此对齐到 48 字节</li>
+<li>类 A 的全部成员都存放完后，最后存放虚基类成员，int 占 4 字节，此时类 A 总共 52 字节，但输出是 56 字节，实际又做了一次 8 字节对齐，因为打印出的内存布局把类 A 和虚基类子对象作为两个独立的部分，所以打印 48 + 4 &#x3D; 52 字节，但实际还要做一次 8 字节对齐，所以 sizeof 输出 56 字节</li>
+</ul>
+<p>然后是类 A 的虚函数表：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507120353989.png" alt="image-20220507120353989"></p>
+<p>虚函数表的第一项表示派生类对象指针相对于虚函数表指针的偏移，这里派生类 A 相对于基类 Y 的虚函数表指针的偏移是 0 字节，相对于基类 Z 的虚函数表指针的偏移是 -16 字节。</p>
+<p>最后是类 A 的虚基类表：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507120419152.png" alt="image-20220507120419152"></p>
+<p>虚基类表原理与虚函数表类似，表的第一项表示派生类对象指针相对于虚基类表指针的偏移，这里是 -8 字节，因为虚基类表指针前面还有一个虚函数表指针占用了 8 个字节，所以派生类 Y 对象的指针相对于其虚基类表指针的偏移量是 -8，派生类 Z 对象的指针相对于其虚基类表指针的偏移也是 -8，注意这里的派生类不再是指 A 了，而是指虚基类的派生类，所以就是 Y 和 Z；虚基类表从第二项开始，表示各个虚基类地址相对于虚基类表指针的偏移。这里虚基类 X 相对于 Y 的虚基类表指针偏移了 40 个字节，因此虚基类 X 相对于派生类 Y 的地址总共偏移了 48 字节，对于派生类 Z 也同样如此，总共偏移了 24 + 8 &#x3D; 32 个字节，从上面的内存布局可以清晰地看出这一点。</p>
+<p>可以看到，Y 和 Z 的虚基类表都指向同一个虚基类 X 的子对象，正如之前所说的，虚基类无论在继承链中被继承多少次，都只产生一个实体，即虚基类子对象，但是“不同的派生类中虚基类子对象的位置不同”这句话，一方面是指虚基类子对象相对于派生类的起始地址偏移量不同，并不是存在多个虚基类子对象；另一方面，随着类的派生，虚基类子对象的位置确实可能变化，但所有派生类的虚基类表中都指向那同一个虚基类子对象。</p>
+<p>最后总结一下，C++ 中数据成员布局与编译器有关，但总体原理一致，Visual C++ 中数据成员布局顺序为：</p>
+<ul>
+<li>基类子对象<ul>
+<li>虚函数表指针 vfptr</li>
+<li>虚基类表指针 vbptr</li>
+<li>基类成员</li>
+</ul>
+</li>
+<li>数据成员</li>
+<li>虚基类成员</li>
+</ul>
+<blockquote>
+<p>注：有的编译器不存在虚基类表指针 vbptr，而是把虚基类的偏移放在虚函数表中，这样只需要一个虚函数表指针</p>
+</blockquote>
+<p>最最后附上一个简单的问题：为什么不把派生类的成员填到基类子对象由于字节对齐而填充的空白内存中，而是要保留基类子对象的空白内存？</p>
+<p>直接借用书中的图解释：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507164044837.png" alt="image-20220507164044837"></p>
 ]]></content>
       <categories>
         <category>深度探索C++对象模型</category>
@@ -4150,6 +4150,198 @@
       </tags>
   </entry>
   <entry>
+    <title>【动态规划】（三）线性动态规划之双串问题</title>
+    <url>/LycTechStack.github.io/2022/03/12/20220312-%E7%BA%BF%E6%80%A7%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92-%E5%8F%8C%E4%B8%B2/</url>
+    <content><![CDATA[<h3 id="双串问题"><a href="#双串问题" class="headerlink" title="双串问题"></a>双串问题</h3><p>线性动态规划的另一大类问题就是双串问题，双串问题有两个输入串，长度分别为 m, n，此时子问题需要用 i, j 两个变量表示，分别代表第一个串和第二个串考虑的位置， $dp[i][j]$ 表示第一串考虑 [0..i] ，第二串考虑 [0..j] 时原问题的解。双串问题相比于单串问题难度更大，虽然状态的定义大同小异，但是状态转移需要考虑的情况往往更加复杂。</p>
+<p><em><span id="more"></span></em></p>
+<p>双串问题同样分为两种情况，大多数情况下较大规模的子问题只与常数个较小规模的子问题有关，其中较小规模可能是 i 更小，或者是 j 更小，也可以是 i，j 同时变小。此时状态转移代码常见的形式是：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">for i = 1..m</span><br><span class="line">    for j = 1..n</span><br><span class="line">        dp[i][j] = f(dp[i-1][j-1], dp[i-1][j], dp[i][j-1])</span><br></pre></td></tr></table></figure>
+
+<p>另一种情况类似单串中依赖比 i 小的 O(n) 个子问题的情况，复杂度相对更高。</p>
+<h4 id="1-经典问题：LCS系列"><a href="#1-经典问题：LCS系列" class="headerlink" title="1 经典问题：LCS系列"></a>1 经典问题：LCS系列</h4><h5 id="最长公共子序列"><a href="#最长公共子序列" class="headerlink" title="最长公共子序列"></a><a href="https://leetcode-cn.com/problems/longest-common-subsequence/">最长公共子序列</a></h5><blockquote>
+<p>问题描述：</p>
+<p>给定两个字符串 text1 和 text2，返回这两个字符串的最长公共子序列的长度。</p>
+</blockquote>
+<p>这是最经典的双串动态规划问题，也比较简单，定义状态 $dp[i][j]$ 表示在 text1 的 [0…i] 上和 text2 的 [0…j] 上最长公共子序列长度，于是状态转移分为两种情况：</p>
+<ul>
+<li>当前字符 text1[i] &#x3D;&#x3D; text2[j]，那么此时找到了公共字符，$dp[i][j]$ 就等于 $dp[i-1][j-1]$ 的基础上加 1</li>
+<li>当前字符 text1[i] !&#x3D; text2[j]，那么此时二者不是公共字符，$dp[i][j]$ 取决于 $dp[i-1][j]$ 和 $dp[i][j-1]$ 中的较大值。</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">longestCommonSubsequence</span><span class="params">(string text1, string text2)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> m = text1.<span class="built_in">size</span>(), n = text2.<span class="built_in">size</span>();</span><br><span class="line">        vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">dp</span>(m+<span class="number">1</span>, <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(n+<span class="number">1</span>, <span class="number">0</span>));</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">1</span>; i &lt;= m; i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">1</span>; j &lt;= n; j++)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(text1[i<span class="number">-1</span>] == text2[j<span class="number">-1</span>]) dp[i][j] = dp[i<span class="number">-1</span>][j<span class="number">-1</span>] + <span class="number">1</span>;</span><br><span class="line">                <span class="keyword">else</span> dp[i][j] = <span class="built_in">max</span>(dp[i<span class="number">-1</span>][j], dp[i][j<span class="number">-1</span>]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[m][n];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h5 id="两个字符串的最小ASCII删除和"><a href="#两个字符串的最小ASCII删除和" class="headerlink" title="两个字符串的最小ASCII删除和"></a><a href="https://leetcode-cn.com/problems/minimum-ascii-delete-sum-for-two-strings/">两个字符串的最小ASCII删除和</a></h5><blockquote>
+<p>给定两个字符串<code>s1</code> 和 <code>s2</code>，返回 <em>使两个字符串相等所需删除字符的 <strong>ASCII</strong> 值的最小和</em> 。</p>
+</blockquote>
+<p>可以转换成最长公共子序列问题，只不过这次我们求最长公共子序列的 ASCII 值的和，然后用两个字符串的总ASCII 值的和<strong>减去两倍的最长公共子序列的 ASCII 值的和</strong>，剩下的就是删掉的 ASCII 值的最小和。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">minimumDeleteSum</span><span class="params">(string s1, string s2)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> m = s1.<span class="built_in">size</span>(), n = s2.<span class="built_in">size</span>();</span><br><span class="line">        <span class="type">int</span> total_asc = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; m; i++) total_asc += <span class="built_in">int</span>(s1[i]);</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt; n; j++) total_asc += <span class="built_in">int</span>(s2[j]);</span><br><span class="line">        vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">dp</span>(m+<span class="number">1</span>, <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(n+<span class="number">1</span>, <span class="number">0</span>));</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">1</span>; i &lt;= m; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">1</span>; j &lt;= n; ++j)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(s1[i<span class="number">-1</span>] == s2[j<span class="number">-1</span>]) dp[i][j] = dp[i<span class="number">-1</span>][j<span class="number">-1</span>] + <span class="built_in">int</span>(s1[i<span class="number">-1</span>]);</span><br><span class="line">                <span class="keyword">else</span> dp[i][j] = <span class="built_in">max</span>(dp[i<span class="number">-1</span>][j], dp[i][j<span class="number">-1</span>]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> total_asc - <span class="number">2</span> * dp[m][n];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>当然本题也可以直接定义和原问题一致的动态规划状态，具体可以看<a href="https://leetcode-cn.com/problems/minimum-ascii-delete-sum-for-two-strings/solution/liang-ge-zi-fu-chuan-de-zui-xiao-asciishan-chu-he-/">官方题解</a>的方法。</p>
+<h5 id="最长重复子数组"><a href="#最长重复子数组" class="headerlink" title="最长重复子数组"></a><a href="https://leetcode-cn.com/problems/maximum-length-of-repeated-subarray/">最长重复子数组</a></h5><p>和最长公共子序列的区别在于重复子数组必须是连续的，因此当前两个数不相等时，不能再继续传递 $dp[i-1][j]$ 和 $dp[i][j-1]$ 中的较大值，而是要将 $dp[i][j]$ 置 0 ，阻断状态传递，最终的结果取所有状态中的最大值就是最长重复子数组。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">findLength</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums1, vector&lt;<span class="type">int</span>&gt;&amp; nums2)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> m = nums1.<span class="built_in">size</span>(), n = nums2.<span class="built_in">size</span>();</span><br><span class="line">        vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">dp</span>(m+<span class="number">1</span>, <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(n+<span class="number">1</span>, <span class="number">0</span>));</span><br><span class="line">        <span class="type">int</span> ans = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">1</span>; i &lt;= m; i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">1</span>; j &lt;= n; j++)</span><br><span class="line">            &#123;</span><br><span class="line">                dp[i][j] = nums1[i<span class="number">-1</span>] == nums2[j<span class="number">-1</span>] ? dp[i<span class="number">-1</span>][j<span class="number">-1</span>] + <span class="number">1</span> : <span class="number">0</span>;</span><br><span class="line">                ans = <span class="built_in">max</span>(ans, dp[i][j]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>动态规划是本题最容易想到并实现的方法，但并不是最好的方法，本题使用滑动窗口会效率会更高，不过不容易想到且编码相对复杂一些，具体可以看<a href="https://leetcode-cn.com/problems/maximum-length-of-repeated-subarray/solution/wu-li-jie-fa-by-stg-2/">滑动窗口解法</a>。</p>
+<h4 id="2-经典问题：字符串匹配系列"><a href="#2-经典问题：字符串匹配系列" class="headerlink" title="2 经典问题：字符串匹配系列"></a>2 经典问题：字符串匹配系列</h4><h5 id="编辑距离"><a href="#编辑距离" class="headerlink" title="编辑距离"></a><a href="https://leetcode-cn.com/problems/edit-distance/">编辑距离</a></h5><blockquote>
+<p>问题描述：<br>给你两个单词 word1 和 word2， 请返回将 word1 转换成 word2 所使用的最少操作数 。<br>你可以对任何一个单词进行如下三种操作：</p>
+<ul>
+<li>插入一个字符</li>
+<li>删除一个字符</li>
+<li>替换一个字符</li>
+</ul>
+</blockquote>
+<p>编辑距离是非常经典的一个问题，并且在机器翻译、语音识别等领域也应用广泛，值得深入研究。</p>
+<p>题目实际上的意思是可以对两个单词都进行操作，只要最终两个单词相同即可，但我们要保证总操作次数最少，即编辑距离最小。</p>
+<p>我们首先考虑状态的定义，双串问题的状态定义之前已经说过，几乎都是一样的，因此我们定义 $dp[i][j]$ 表示从 word1[0…i] 转换成word2[0…j] 所需要的最小操作数，也就是 word1[0…i] 到 word2[0…j] 的最小编辑距离。从前向后遍历两个单词更新状态，最终 $dp[m][n]$ 就是答案。接下来考虑状态转移过程。</p>
+<p>因为我们对两个单词都可以插入、删除和替换，所以一共可以进行六种操作，看起来非常复杂，但我们仔细分析一下，假设某一时刻的状态 word1[0…i] 表示成 A ，word2[0…j] 表示成 B，那么从 A 转换到 B 有以下几种情况：</p>
+<ul>
+<li>在 A 的末尾插入一个字母，或者在B的末尾删除一个字母。这两种操作是等价的，比如 A&#x3D;goo， B&#x3D;good，此时从 A 转换到 B 我们可以在 A 的末尾插入字母 d ，也可以把 B 末尾的 d 删掉，因此这两种操作等价；</li>
+<li>在 B 的末尾插入一个字母，或者在A的末尾删除一个字母。这两种操作是等价的，理由同上；</li>
+<li>在 A 中替换一个字母或者在 B 中替换一个字母。这两种操作是等价的，比如 A&#x3D;good， B&#x3D;goom，我们可以把 A 的末尾 d 替换为 m，也可以把 B 的末尾 m 替换为 d。</li>
+</ul>
+<p>因此所有的六种操作实际上只有三种操作，这里要说明一下为什么都在末尾操作，因为我们的状态定义 $dp[i][j]$ 表示的就是以当前字母 word1[i] 结尾的单词和 word2[j] 结尾的单词之间的最小编辑距离，此前的编辑距离都已经计算完毕并且保证最小，因此我们每次只要关注单词末尾的操作就可以了。并且这里所有操作的顺序都不会影响最终结果，无论是先插入后删除，还是先删除后插入都不影响最终结果，所以我们在末尾的操作也与顺序无关，只要关注最小操作次数即可。</p>
+<p>有了以上的分析，再去进行状态转移就很简单了，因为每次我们只需要考虑三种操作的情况：</p>
+<ul>
+<li><p>在 A 的末尾插入一个字母（相当于在 B 的末尾删除一个字母）。假如我们已经知道了从 <code>horse</code> 到 <code>ho</code> 的最小编辑距离为 d，那么从 <code>horse</code> 到 <code>hos</code> 的最小编辑距离就是 d 加上1，因为我们可以在d次操作后将 <code>horse</code> 变为 <code>ho</code> ，此时要么在末尾加上一个字母 s ，要么把 <code>hos</code> 中的 s 删掉，二者就相同了，因此这种情况下状态转移方程为：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">dp[i][j] = dp[i][j-1] + 1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在 B 的末尾插入一个字母（相当于在 A 的末尾删除一个字母）。和上面的情况类似，因此状态转移方程为：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">dp[i][j] = dp[i-1][j] + 1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在 A 末尾替换一个字母（相当于在 B 末尾替换一个字母）。此时又分为两种情况：</p>
+<ul>
+<li><p>A末尾的字母和B末尾的字母相等，此时不需要任何操作，状态转移方程为：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">dp[i][j] = dp[i-1][j-1]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>A末尾的字母和B末尾的字母不相等，此时可以任意替换一次使二者相等，也就是操作一次：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">dp[i][j] = dp[i-1][j-1] + 1</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<p>这就是状态转移时全部可能的情况，取他们之中的最小值，就可以保证每次状态转移时都是二者之间的最小编辑距离。</p>
+<p>最后讨论一下边界情况：</p>
+<ul>
+<li>当 i &#x3D; 0 时，word1[0…i] 为空，此时想要转化为 word2[0…j] 需要操作 j 次，要么在 word1 末尾插入 j 次， 要么在 word2 末尾删除 j 次</li>
+<li>同理当 j &#x3D; 0 时，word2[0…j] 为空，此时想要转化为 word1[0…i] 需要操作 i 次</li>
+<li>i 和 j 都为 0 时，编辑距离显然为0</li>
+</ul>
+<p>这样一来代码就很好写了：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">minDistance</span><span class="params">(string word1, string word2)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> n = word1.<span class="built_in">length</span>();</span><br><span class="line">        <span class="type">int</span> m = word2.<span class="built_in">length</span>();</span><br><span class="line">        <span class="comment">// 有一个字符串为空串</span></span><br><span class="line">        <span class="keyword">if</span> (n * m == <span class="number">0</span>) <span class="keyword">return</span> n + m;</span><br><span class="line">        <span class="comment">// 边界状态初始化</span></span><br><span class="line">        vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">dp</span>(n + <span class="number">1</span>, <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(m + <span class="number">1</span>));</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt;= n; i++) &#123;</span><br><span class="line">            dp[i][<span class="number">0</span>] = i;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">0</span>; j &lt;= m; j++) &#123;</span><br><span class="line">            dp[<span class="number">0</span>][j] = j;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 计算所有 DP 值</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt; n + <span class="number">1</span>; i++) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">1</span>; j &lt; m + <span class="number">1</span>; j++) &#123;</span><br><span class="line">                <span class="type">int</span> insert_a = dp[i][j - <span class="number">1</span>] + <span class="number">1</span>;	<span class="comment">//在A末尾插入的情况</span></span><br><span class="line">                <span class="type">int</span> insert_b = dp[i - <span class="number">1</span>][j] + <span class="number">1</span>;	<span class="comment">//在B末尾插入的情况</span></span><br><span class="line">                <span class="type">int</span> replace = dp[i - <span class="number">1</span>][j - <span class="number">1</span>];		<span class="comment">//替换的情况</span></span><br><span class="line">                <span class="keyword">if</span> (word1[i - <span class="number">1</span>] != word2[j - <span class="number">1</span>]) replace += <span class="number">1</span>;</span><br><span class="line">                dp[i][j] = <span class="built_in">min</span>(insert_a, <span class="built_in">min</span>(insert_b, replace));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[n][m];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>注意到 $dp[i][j]$ 的状态只与$dp[i][j-1]$ 、$dp[i-1][j]$ 和 $dp[i-1][j-1]$ 有关，因此可以不用二维数组保存状态，改为一维，每次更新时， $dp[i][j-1]$ 就是 $dp[j-1]$ 已经计算完毕，$dp[i-1][j]$ 就是当前正在计算的位置 $dp[j]$，同时也是下一次计算时的 $dp[i-1][j-1]$，因此再用一个额外变量记录 $dp[i-1][j-1]$ 即可。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">minDistance</span><span class="params">(string word1, string word2)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> n = word1.<span class="built_in">length</span>();</span><br><span class="line">        <span class="type">int</span> m = word2.<span class="built_in">length</span>();</span><br><span class="line">        <span class="keyword">if</span> (n * m == <span class="number">0</span>) <span class="keyword">return</span> n + m;</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">dp</span><span class="params">(m + <span class="number">1</span>)</span></span>;</span><br><span class="line">        <span class="comment">// 边界状态初始化</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">0</span>; j &lt;= m; j++) &#123;</span><br><span class="line">            dp[j] = j;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 计算所有 DP 值</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt; n + <span class="number">1</span>; i++) &#123;</span><br><span class="line">            <span class="type">int</span> p = dp[<span class="number">0</span>];  <span class="comment">//保存dp[i-1][j-1]</span></span><br><span class="line">            dp[<span class="number">0</span>] = i;  <span class="comment">//相当于之前的另一个初始化</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">1</span>; j &lt; m + <span class="number">1</span>; j++) &#123;</span><br><span class="line">                <span class="type">int</span> insert_a = dp[j - <span class="number">1</span>] + <span class="number">1</span>;   <span class="comment">//dp[i][j-1] + 1</span></span><br><span class="line">                <span class="type">int</span> insert_b = dp[j] + <span class="number">1</span>;   <span class="comment">//dp[i-1][j] + 1</span></span><br><span class="line">                <span class="type">int</span> replace = p;</span><br><span class="line">                <span class="keyword">if</span> (word1[i - <span class="number">1</span>] != word2[j - <span class="number">1</span>]) replace += <span class="number">1</span>;</span><br><span class="line">                p = dp[j];  <span class="comment">//更新dp[i-1][j-1]，上一次的dp[i-1][j]，就是下一次的dp[i-1][j-1]</span></span><br><span class="line">                dp[j] = <span class="built_in">min</span>(insert_a, <span class="built_in">min</span>(insert_b, replace));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[m];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h5 id="通配符匹配"><a href="#通配符匹配" class="headerlink" title="通配符匹配"></a><a href="https://leetcode-cn.com/problems/wildcard-matching/">通配符匹配</a></h5><blockquote>
+<p>问题描述：</p>
+<p>给定一个字符串 (<code>s</code>) 和一个字符模式 (<code>p</code>) ，实现一个支持 <code>&#39;?&#39;</code> 和 <code>&#39;*&#39;</code> 的通配符匹配。</p>
+<p>其中：<code>&#39;?&#39;</code> 可以匹配任何单个字符；<code>&#39;*&#39;</code> 可以匹配任意字符串（包括空字符串）。</p>
+<p>两个字符串<strong>完全匹配</strong>才算匹配成功。</p>
+</blockquote>
+<p>这是一个比较困难的问题，状态定义同样是 $dp[i][j]$，表示字符串 s 以 i 结尾的子串和字符模式 p 以 j 结尾的子串能否成功匹配。</p>
+<p>s中只包含小写字母，p中包含小写字母、问号和星号，因此状态转移对应的就是三种情况：</p>
+<ul>
+<li><p>s[i] 和 p[j] 都是字母：此时 <code>dp[i][j] = dp[i-1][j-1] &amp;&amp; s[i] == p[j]</code></p>
+</li>
+<li><p>p[j] 是问号：此时 s[i] 一定匹配，因此 <code>dp[i][j] = dp[i-1][j-1]</code></p>
+</li>
+<li><p>p[j] 是星号：此时 s[i] 也一定匹配，但是要考虑是否消耗掉这个星号，因为一个星号可以匹配多个字母，如果消耗掉这个星号，则 <code>dp[i][j] = dp[i-1][j]</code>；如果不消耗这个星号，则 <code>dp[i][j] = dp[i][j-1]</code>，具体是否使用要看不用星号是否能够匹配，如果不用就可以匹配那就无需使用，如果不用就无法匹配了，那就必须使用，因此最终<code>dp[i][j] = dp[i-1][j] || dp[i][j-1]</code></p>
+</li>
+</ul>
+<p>然后是边界条件：</p>
+<ul>
+<li>$dp[0][0]$ 表示两个空串，可以匹配，所以 $dp[0][0]&#x3D;true$</li>
+<li>$dp[i][0]$ 表示模式串为空，那么字符串无论如何都无法匹配，因此 $dp[i][0] &#x3D; false$</li>
+<li>$dp[0][j]$ 表示字符串为空，那么只有模式串为星号才能匹配，因此模式串开头是星号的位置$dp[0][j]&#x3D;true$，其他位置都为$false$</li>
+</ul>
+<p>这样一来就问题就解决了。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">isMatch</span><span class="params">(string s, string p)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> m = s.<span class="built_in">size</span>();</span><br><span class="line">        <span class="type">int</span> n = p.<span class="built_in">size</span>();</span><br><span class="line">        vector&lt;vector&lt;<span class="type">bool</span>&gt;&gt; <span class="built_in">dp</span>(m + <span class="number">1</span>, <span class="built_in">vector</span>&lt;<span class="type">bool</span>&gt;(n + <span class="number">1</span>, <span class="literal">false</span>));</span><br><span class="line">        dp[<span class="number">0</span>][<span class="number">0</span>] = <span class="literal">true</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; ++i) &#123;</span><br><span class="line">            <span class="keyword">if</span> (p[i - <span class="number">1</span>] == <span class="string">&#x27;*&#x27;</span>) &#123;</span><br><span class="line">                dp[<span class="number">0</span>][i] = <span class="literal">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= m; ++i) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">1</span>; j &lt;= n; ++j) &#123;</span><br><span class="line">                <span class="keyword">if</span> (p[j - <span class="number">1</span>] == <span class="string">&#x27;*&#x27;</span>) &#123;</span><br><span class="line">                    dp[i][j] = dp[i][j - <span class="number">1</span>] || dp[i - <span class="number">1</span>][j];</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (p[j - <span class="number">1</span>] == <span class="string">&#x27;?&#x27;</span> || s[i - <span class="number">1</span>] == p[j - <span class="number">1</span>]) &#123;</span><br><span class="line">                    dp[i][j] = dp[i - <span class="number">1</span>][j - <span class="number">1</span>];</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[m][n];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>本题用贪心法也可以，并且不需要额外的空间，具体可以查看<a href="https://leetcode-cn.com/problems/wildcard-matching/solution/tong-pei-fu-pi-pei-by-leetcode-solution/">官方题解方法二</a>，但还是以理解动态规划方法为主。</p>
+<h5 id="正则表达式匹配"><a href="#正则表达式匹配" class="headerlink" title="正则表达式匹配"></a><a href="https://leetcode-cn.com/problems/regular-expression-matching/">正则表达式匹配</a></h5><blockquote>
+<p>问题描述：</p>
+<p>给你一个字符串 <code>s</code> 和一个字符规律 <code>p</code>，请你来实现一个支持 <code>&#39;.&#39;</code> 和 <code>&#39;*&#39;</code> 的正则表达式匹配。</p>
+<p>其中：<code>&#39;.&#39;</code> 可以匹配任何单个字符；<code>&#39;*&#39;</code> 可以匹配零个或多个前面的那一个元素。</p>
+</blockquote>
+<p>这道题是通配符匹配的进阶版，因此我们可以完全按照通配符匹配的思路来分析这道题，再去解决特殊的情况。</p>
+<p>状态定义同样是 $dp[i][j]$，表示字符串 s 以 i 结尾的子串和字符模式 p 以 j 结尾的子串能否成功匹配。</p>
+<p>s中只包含小写字母，p中包含小写字母、点和星号，因此状态转移对应的就是三种情况：</p>
+<ul>
+<li><p>s[i] 和 p[j] 都是字母：此时 <code>dp[i][j] = dp[i-1][j-1] &amp;&amp; s[i] == p[j]</code></p>
+</li>
+<li><p>p[j] 是点：此时 s[i] 一定匹配，因此 <code>dp[i][j] = dp[i-1][j-1]</code></p>
+</li>
+<li><p>p[j] 是星号：这时情况要比通配符更复杂一些，因为星号代表的是零个或多个前面的那一个元素，因此我们要判断 s[i] 和 p[j-1] 是否匹配：</p>
+<ul>
+<li><p>如果匹配，那么我们把 p[j-1] 和 p[j] 看成一个整体，此时这两个字符组成的整体的作用和通配符匹配中星号的作用完全一样，只不过是一个占用两个位置的星号，因此我们可以选择消耗掉星号来匹配s[i] ，或者不消耗掉星号，继续往后匹配，此时状态转移方程和通配符匹配中一致，不过记得这次星号占两位：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">dp[i][j] = dp[i-1][j] || dp[i][j-2]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果不匹配，同样把 p[j-1] 和 p[j] 看成一个整体相当于一个通配符中的星号，但是此时星号无作用，相当于匹配了一个空字符，直接丢掉即可，此时状态转移就是：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">dp[i][j] = dp[i][j-2]</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<p>接下来是边界条件：</p>
+<ul>
+<li>$dp[0][0]$ 表示两个空串，可以匹配，所以 $dp[0][0]&#x3D;true$</li>
+<li>$dp[i][0]$ 表示模式串为空，那么字符串无论如何都无法匹配，因此 $dp[i][0] &#x3D; false$</li>
+<li>$dp[0][j]$ 表示字符串为空，至于能否和模式串匹配，需要用上面的状态转移流程去判断，因此我们不需要专门去初始化，只要遍历字符串 s 时从 0 开始即可。</li>
+</ul>
+<p>代码如下：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">isMatch</span><span class="params">(string s, string p)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> m = s.<span class="built_in">size</span>(), n = p.<span class="built_in">size</span>();</span><br><span class="line">        vector&lt;vector&lt;<span class="type">bool</span>&gt;&gt; <span class="built_in">dp</span>(m+<span class="number">1</span>, <span class="built_in">vector</span>&lt;<span class="type">bool</span>&gt;(n+<span class="number">1</span>, <span class="number">0</span>));</span><br><span class="line">        dp[<span class="number">0</span>][<span class="number">0</span>] = <span class="number">1</span>;</span><br><span class="line">		<span class="comment">//判断两个位置是否匹配</span></span><br><span class="line">        <span class="keyword">auto</span> matches = [&amp;](<span class="type">int</span> i, <span class="type">int</span> j) &#123;</span><br><span class="line">            <span class="keyword">if</span> (i == <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (p[j - <span class="number">1</span>] == <span class="string">&#x27;.&#x27;</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> s[i - <span class="number">1</span>] == p[j - <span class="number">1</span>];</span><br><span class="line">        &#125;;</span><br><span class="line">		<span class="comment">//动态规划推导</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt;= m; i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">1</span>; j &lt;= n; j++)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(<span class="built_in">matches</span>(i, j))</span><br><span class="line">                &#123;</span><br><span class="line">                    dp[i][j] = dp[i<span class="number">-1</span>][j<span class="number">-1</span>];</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(p[j<span class="number">-1</span>] == <span class="string">&#x27;*&#x27;</span>)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">if</span>(<span class="built_in">matches</span>(i, j - <span class="number">1</span>))</span><br><span class="line">                    &#123;</span><br><span class="line">                        dp[i][j] = dp[i<span class="number">-1</span>][j] || dp[i][j<span class="number">-2</span>];</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">else</span>&#123;</span><br><span class="line">                        dp[i][j] = dp[i][j<span class="number">-2</span>];</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[m][n];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-其他双串问题"><a href="#3-其他双串问题" class="headerlink" title="3 其他双串问题"></a>3 其他双串问题</h4><h5 id="交错字符串"><a href="#交错字符串" class="headerlink" title="交错字符串"></a><a href="https://leetcode-cn.com/problems/interleaving-string/">交错字符串</a></h5><blockquote>
+<p>给定三个字符串 s1、s2、s3，请你帮忙验证 s3 是否是由 s1 和 s2 交错组成的。</p>
+<p>两个字符串 s 和 t 交错的定义与过程如下，其中每个字符串都会被分割成若干非空子字符串：</p>
+<p>s &#x3D; s1 + s2 + … + sn<br>t &#x3D; t1 + t2 + … + tm<br>|n - m| &lt;&#x3D; 1<br>交错是 s1 + t1 + s2 + t2 + s3 + t3 + … 或者 t1 + s1 + t2 + s2 + t3 + s3 + …<br>注意：a + b 意味着字符串 a 和 b 连接。</p>
+</blockquote>
+<p>定义状态 $dp[i][j]$ 表示字符串 s1 以 i 结尾的子串和字符串 s2 以 j 结尾的子串能否交错形成 s3 以 i+j-1 结尾的子串。</p>
+<p>状态转移只有两种情况：</p>
+<ul>
+<li>如果 $s1[i] &#x3D;&#x3D; s3[i+j-1]$，那么 $dp[i][j] &#x3D; dp[i-1][j]$</li>
+<li>如果 $s2[j] &#x3D;&#x3D; s3[i+j-1]$，那么 $dp[i][j] &#x3D; dp[i][j-1]$</li>
+</ul>
+<p>边界条件:</p>
+<ul>
+<li>$dp[0][0]&#x3D;true$</li>
+<li>$dp[i][0]$ 和 $dp[0][j]$ 都相当于在和 s3 做字符串匹配，因此直接在循环中从 0 开始遍历两个字符串即可</li>
+</ul>
+<p>由于 $dp[i][j]$ 只与 $dp[i-1][j]$ 和 $dp[i][j-1]$ 有关，因此只需使用一维数组。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">isInterleave</span><span class="params">(string s1, string s2, string s3)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> m = s1.<span class="built_in">size</span>(), n = s2.<span class="built_in">size</span>(), k = s3.<span class="built_in">size</span>();</span><br><span class="line">        <span class="keyword">if</span>(m + n != k) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">dp</span><span class="params">(n+<span class="number">1</span>)</span></span>;</span><br><span class="line">        dp[<span class="number">0</span>] = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt;= m; i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt;= n; j++)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="type">int</span> t = i + j - <span class="number">1</span>;</span><br><span class="line">                <span class="keyword">if</span>(i &gt; <span class="number">0</span>)</span><br><span class="line">                &#123;</span><br><span class="line">                    dp[j] &amp;= (s1[i<span class="number">-1</span>] == s3[t]);	<span class="comment">//相当于dp[i][j] = dp[i-1][j] &amp;&amp; s1[i-1] == s3[t]</span></span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span>(j &gt; <span class="number">0</span>)</span><br><span class="line">                &#123;</span><br><span class="line">                    dp[j] |= (s2[j<span class="number">-1</span>] == s3[t] &amp;&amp; dp[j<span class="number">-1</span>]);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[n];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h5 id="不同的子序列"><a href="#不同的子序列" class="headerlink" title="不同的子序列"></a><a href="https://leetcode-cn.com/problems/distinct-subsequences/">不同的子序列</a></h5><blockquote>
+<p>给定一个字符串 s 和一个字符串 t ，计算在 s 的子序列中 t 出现的个数。</p>
+<p>字符串的一个 子序列 是指，通过删除一些（也可以不删除）字符且不干扰剩余字符相对位置所组成的新字符串。（例如，”ACE” 是 “ABCDE” 的一个子序列，而 “AEC” 不是）</p>
+</blockquote>
+<p>定义状态 $dp[i][j]$ 表示字符串 s 以 i 结尾的子串中，字符串 t 以 j 结尾的子串出现的次数。</p>
+<p>考虑状态转移：</p>
+<ul>
+<li>如果 $s[i] \neq t[j]$，则 $dp[i][j] &#x3D; dp[i-1][j]$</li>
+<li>如果 $s[i] &#x3D; t[j]$，分为两种情况：<ul>
+<li>使用 s[i] 和 t[j] 匹配，此时 $dp[i][j] &#x3D; dp[i-1][j-1]$</li>
+<li>不使用 s[i] 和 t[j] 匹配，此时 $dp[i][j] &#x3D; dp[i-1][j]$</li>
+</ul>
+</li>
+</ul>
+<p>边界条件：</p>
+<ul>
+<li>$dp[0][0] &#x3D; 1$，空串是任何串的子串</li>
+<li>$dp[i][0] &#x3D; 1$，理由同上</li>
+<li>$dp[0][j] &#x3D; 0$，空串中不包含任何一个非空子串</li>
+</ul>
+<p>同时考虑到，如果 t 的长度大于 s 的长度，直接返回 0 即可，因此遍历 j 的时候也只需要遍历到比 i 小即可，因为 j 大于 i 时 $dp[i][j]$ 也一定为 0.</p>
+<p>代码如下：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">numDistinct</span><span class="params">(string s, string t)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> m = s.<span class="built_in">size</span>(), n = t.<span class="built_in">size</span>();</span><br><span class="line">        <span class="keyword">if</span>(m &lt; n) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        <span class="comment">//使用unsigned long long是为了通过一些阴间用例</span></span><br><span class="line">        vector&lt;vector&lt;<span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span>&gt;&gt; <span class="built_in">dp</span>(m+<span class="number">1</span>, <span class="built_in">vector</span>&lt;<span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span>&gt;(n+<span class="number">1</span>, <span class="number">0</span>));</span><br><span class="line">        dp[<span class="number">0</span>][<span class="number">0</span>] = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">1</span>; i &lt;= m; i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt;= <span class="built_in">min</span>(i, n); j++)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(j == <span class="number">0</span>) dp[i][<span class="number">0</span>] = <span class="number">1</span>;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(s[i<span class="number">-1</span>] != t[j<span class="number">-1</span>])</span><br><span class="line">                &#123;</span><br><span class="line">                    dp[i][j] = dp[i<span class="number">-1</span>][j];</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(s[i<span class="number">-1</span>] == t[j<span class="number">-1</span>])</span><br><span class="line">                &#123;</span><br><span class="line">                    dp[i][j] = dp[i<span class="number">-1</span>][j<span class="number">-1</span>] + dp[i<span class="number">-1</span>][j]; </span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[m][n];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h5 id="扰乱字符串"><a href="#扰乱字符串" class="headerlink" title="扰乱字符串"></a><a href="https://leetcode-cn.com/problems/scramble-string/solution/">扰乱字符串</a></h5><p>有余力可以了解。</p>
+]]></content>
+      <categories>
+        <category>数据结构与算法</category>
+      </categories>
+      <tags>
+        <tag>C++</tag>
+        <tag>算法</tag>
+        <tag>动态规划</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>【计算机图形学】（九）几何</title>
     <url>/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/</url>
     <content><![CDATA[<h2 id="几何（Geometry）"><a href="#几何（Geometry）" class="headerlink" title="几何（Geometry）"></a>几何（Geometry）</h2><p>图形学中几何是最最重要的部分之一，但同时也是极其复杂的一个课题，这一节只是对计算机图形学中几何的一些最基本的概念、算法做介绍，更加深入的图形学几何知识我们之后再去涉及。这部分内容主要包括几何的表示方式、贝塞尔曲线、分段贝塞尔曲线、B样条、贝塞尔曲面、曲面细分的几种算法和曲面简化的基本原理。</p>
@@ -4353,198 +4545,6 @@
       </categories>
       <tags>
         <tag>计算机图形学</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>【动态规划】（三）线性动态规划之双串问题</title>
-    <url>/LycTechStack.github.io/2022/03/12/20220312-%E7%BA%BF%E6%80%A7%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92-%E5%8F%8C%E4%B8%B2/</url>
-    <content><![CDATA[<h3 id="双串问题"><a href="#双串问题" class="headerlink" title="双串问题"></a>双串问题</h3><p>线性动态规划的另一大类问题就是双串问题，双串问题有两个输入串，长度分别为 m, n，此时子问题需要用 i, j 两个变量表示，分别代表第一个串和第二个串考虑的位置， $dp[i][j]$ 表示第一串考虑 [0..i] ，第二串考虑 [0..j] 时原问题的解。双串问题相比于单串问题难度更大，虽然状态的定义大同小异，但是状态转移需要考虑的情况往往更加复杂。</p>
-<p><em><span id="more"></span></em></p>
-<p>双串问题同样分为两种情况，大多数情况下较大规模的子问题只与常数个较小规模的子问题有关，其中较小规模可能是 i 更小，或者是 j 更小，也可以是 i，j 同时变小。此时状态转移代码常见的形式是：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">for i = 1..m</span><br><span class="line">    for j = 1..n</span><br><span class="line">        dp[i][j] = f(dp[i-1][j-1], dp[i-1][j], dp[i][j-1])</span><br></pre></td></tr></table></figure>
-
-<p>另一种情况类似单串中依赖比 i 小的 O(n) 个子问题的情况，复杂度相对更高。</p>
-<h4 id="1-经典问题：LCS系列"><a href="#1-经典问题：LCS系列" class="headerlink" title="1 经典问题：LCS系列"></a>1 经典问题：LCS系列</h4><h5 id="最长公共子序列"><a href="#最长公共子序列" class="headerlink" title="最长公共子序列"></a><a href="https://leetcode-cn.com/problems/longest-common-subsequence/">最长公共子序列</a></h5><blockquote>
-<p>问题描述：</p>
-<p>给定两个字符串 text1 和 text2，返回这两个字符串的最长公共子序列的长度。</p>
-</blockquote>
-<p>这是最经典的双串动态规划问题，也比较简单，定义状态 $dp[i][j]$ 表示在 text1 的 [0…i] 上和 text2 的 [0…j] 上最长公共子序列长度，于是状态转移分为两种情况：</p>
-<ul>
-<li>当前字符 text1[i] &#x3D;&#x3D; text2[j]，那么此时找到了公共字符，$dp[i][j]$ 就等于 $dp[i-1][j-1]$ 的基础上加 1</li>
-<li>当前字符 text1[i] !&#x3D; text2[j]，那么此时二者不是公共字符，$dp[i][j]$ 取决于 $dp[i-1][j]$ 和 $dp[i][j-1]$ 中的较大值。</li>
-</ul>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">longestCommonSubsequence</span><span class="params">(string text1, string text2)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> m = text1.<span class="built_in">size</span>(), n = text2.<span class="built_in">size</span>();</span><br><span class="line">        vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">dp</span>(m+<span class="number">1</span>, <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(n+<span class="number">1</span>, <span class="number">0</span>));</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">1</span>; i &lt;= m; i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">1</span>; j &lt;= n; j++)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(text1[i<span class="number">-1</span>] == text2[j<span class="number">-1</span>]) dp[i][j] = dp[i<span class="number">-1</span>][j<span class="number">-1</span>] + <span class="number">1</span>;</span><br><span class="line">                <span class="keyword">else</span> dp[i][j] = <span class="built_in">max</span>(dp[i<span class="number">-1</span>][j], dp[i][j<span class="number">-1</span>]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[m][n];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<h5 id="两个字符串的最小ASCII删除和"><a href="#两个字符串的最小ASCII删除和" class="headerlink" title="两个字符串的最小ASCII删除和"></a><a href="https://leetcode-cn.com/problems/minimum-ascii-delete-sum-for-two-strings/">两个字符串的最小ASCII删除和</a></h5><blockquote>
-<p>给定两个字符串<code>s1</code> 和 <code>s2</code>，返回 <em>使两个字符串相等所需删除字符的 <strong>ASCII</strong> 值的最小和</em> 。</p>
-</blockquote>
-<p>可以转换成最长公共子序列问题，只不过这次我们求最长公共子序列的 ASCII 值的和，然后用两个字符串的总ASCII 值的和<strong>减去两倍的最长公共子序列的 ASCII 值的和</strong>，剩下的就是删掉的 ASCII 值的最小和。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">minimumDeleteSum</span><span class="params">(string s1, string s2)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> m = s1.<span class="built_in">size</span>(), n = s2.<span class="built_in">size</span>();</span><br><span class="line">        <span class="type">int</span> total_asc = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; m; i++) total_asc += <span class="built_in">int</span>(s1[i]);</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt; n; j++) total_asc += <span class="built_in">int</span>(s2[j]);</span><br><span class="line">        vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">dp</span>(m+<span class="number">1</span>, <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(n+<span class="number">1</span>, <span class="number">0</span>));</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">1</span>; i &lt;= m; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">1</span>; j &lt;= n; ++j)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(s1[i<span class="number">-1</span>] == s2[j<span class="number">-1</span>]) dp[i][j] = dp[i<span class="number">-1</span>][j<span class="number">-1</span>] + <span class="built_in">int</span>(s1[i<span class="number">-1</span>]);</span><br><span class="line">                <span class="keyword">else</span> dp[i][j] = <span class="built_in">max</span>(dp[i<span class="number">-1</span>][j], dp[i][j<span class="number">-1</span>]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> total_asc - <span class="number">2</span> * dp[m][n];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<p>当然本题也可以直接定义和原问题一致的动态规划状态，具体可以看<a href="https://leetcode-cn.com/problems/minimum-ascii-delete-sum-for-two-strings/solution/liang-ge-zi-fu-chuan-de-zui-xiao-asciishan-chu-he-/">官方题解</a>的方法。</p>
-<h5 id="最长重复子数组"><a href="#最长重复子数组" class="headerlink" title="最长重复子数组"></a><a href="https://leetcode-cn.com/problems/maximum-length-of-repeated-subarray/">最长重复子数组</a></h5><p>和最长公共子序列的区别在于重复子数组必须是连续的，因此当前两个数不相等时，不能再继续传递 $dp[i-1][j]$ 和 $dp[i][j-1]$ 中的较大值，而是要将 $dp[i][j]$ 置 0 ，阻断状态传递，最终的结果取所有状态中的最大值就是最长重复子数组。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">findLength</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums1, vector&lt;<span class="type">int</span>&gt;&amp; nums2)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> m = nums1.<span class="built_in">size</span>(), n = nums2.<span class="built_in">size</span>();</span><br><span class="line">        vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">dp</span>(m+<span class="number">1</span>, <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(n+<span class="number">1</span>, <span class="number">0</span>));</span><br><span class="line">        <span class="type">int</span> ans = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">1</span>; i &lt;= m; i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">1</span>; j &lt;= n; j++)</span><br><span class="line">            &#123;</span><br><span class="line">                dp[i][j] = nums1[i<span class="number">-1</span>] == nums2[j<span class="number">-1</span>] ? dp[i<span class="number">-1</span>][j<span class="number">-1</span>] + <span class="number">1</span> : <span class="number">0</span>;</span><br><span class="line">                ans = <span class="built_in">max</span>(ans, dp[i][j]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<p>动态规划是本题最容易想到并实现的方法，但并不是最好的方法，本题使用滑动窗口会效率会更高，不过不容易想到且编码相对复杂一些，具体可以看<a href="https://leetcode-cn.com/problems/maximum-length-of-repeated-subarray/solution/wu-li-jie-fa-by-stg-2/">滑动窗口解法</a>。</p>
-<h4 id="2-经典问题：字符串匹配系列"><a href="#2-经典问题：字符串匹配系列" class="headerlink" title="2 经典问题：字符串匹配系列"></a>2 经典问题：字符串匹配系列</h4><h5 id="编辑距离"><a href="#编辑距离" class="headerlink" title="编辑距离"></a><a href="https://leetcode-cn.com/problems/edit-distance/">编辑距离</a></h5><blockquote>
-<p>问题描述：<br>给你两个单词 word1 和 word2， 请返回将 word1 转换成 word2 所使用的最少操作数 。<br>你可以对任何一个单词进行如下三种操作：</p>
-<ul>
-<li>插入一个字符</li>
-<li>删除一个字符</li>
-<li>替换一个字符</li>
-</ul>
-</blockquote>
-<p>编辑距离是非常经典的一个问题，并且在机器翻译、语音识别等领域也应用广泛，值得深入研究。</p>
-<p>题目实际上的意思是可以对两个单词都进行操作，只要最终两个单词相同即可，但我们要保证总操作次数最少，即编辑距离最小。</p>
-<p>我们首先考虑状态的定义，双串问题的状态定义之前已经说过，几乎都是一样的，因此我们定义 $dp[i][j]$ 表示从 word1[0…i] 转换成word2[0…j] 所需要的最小操作数，也就是 word1[0…i] 到 word2[0…j] 的最小编辑距离。从前向后遍历两个单词更新状态，最终 $dp[m][n]$ 就是答案。接下来考虑状态转移过程。</p>
-<p>因为我们对两个单词都可以插入、删除和替换，所以一共可以进行六种操作，看起来非常复杂，但我们仔细分析一下，假设某一时刻的状态 word1[0…i] 表示成 A ，word2[0…j] 表示成 B，那么从 A 转换到 B 有以下几种情况：</p>
-<ul>
-<li>在 A 的末尾插入一个字母，或者在B的末尾删除一个字母。这两种操作是等价的，比如 A&#x3D;goo， B&#x3D;good，此时从 A 转换到 B 我们可以在 A 的末尾插入字母 d ，也可以把 B 末尾的 d 删掉，因此这两种操作等价；</li>
-<li>在 B 的末尾插入一个字母，或者在A的末尾删除一个字母。这两种操作是等价的，理由同上；</li>
-<li>在 A 中替换一个字母或者在 B 中替换一个字母。这两种操作是等价的，比如 A&#x3D;good， B&#x3D;goom，我们可以把 A 的末尾 d 替换为 m，也可以把 B 的末尾 m 替换为 d。</li>
-</ul>
-<p>因此所有的六种操作实际上只有三种操作，这里要说明一下为什么都在末尾操作，因为我们的状态定义 $dp[i][j]$ 表示的就是以当前字母 word1[i] 结尾的单词和 word2[j] 结尾的单词之间的最小编辑距离，此前的编辑距离都已经计算完毕并且保证最小，因此我们每次只要关注单词末尾的操作就可以了。并且这里所有操作的顺序都不会影响最终结果，无论是先插入后删除，还是先删除后插入都不影响最终结果，所以我们在末尾的操作也与顺序无关，只要关注最小操作次数即可。</p>
-<p>有了以上的分析，再去进行状态转移就很简单了，因为每次我们只需要考虑三种操作的情况：</p>
-<ul>
-<li><p>在 A 的末尾插入一个字母（相当于在 B 的末尾删除一个字母）。假如我们已经知道了从 <code>horse</code> 到 <code>ho</code> 的最小编辑距离为 d，那么从 <code>horse</code> 到 <code>hos</code> 的最小编辑距离就是 d 加上1，因为我们可以在d次操作后将 <code>horse</code> 变为 <code>ho</code> ，此时要么在末尾加上一个字母 s ，要么把 <code>hos</code> 中的 s 删掉，二者就相同了，因此这种情况下状态转移方程为：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">dp[i][j] = dp[i][j-1] + 1</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>在 B 的末尾插入一个字母（相当于在 A 的末尾删除一个字母）。和上面的情况类似，因此状态转移方程为：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">dp[i][j] = dp[i-1][j] + 1</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>在 A 末尾替换一个字母（相当于在 B 末尾替换一个字母）。此时又分为两种情况：</p>
-<ul>
-<li><p>A末尾的字母和B末尾的字母相等，此时不需要任何操作，状态转移方程为：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">dp[i][j] = dp[i-1][j-1]</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>A末尾的字母和B末尾的字母不相等，此时可以任意替换一次使二者相等，也就是操作一次：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">dp[i][j] = dp[i-1][j-1] + 1</span><br></pre></td></tr></table></figure></li>
-</ul>
-</li>
-</ul>
-<p>这就是状态转移时全部可能的情况，取他们之中的最小值，就可以保证每次状态转移时都是二者之间的最小编辑距离。</p>
-<p>最后讨论一下边界情况：</p>
-<ul>
-<li>当 i &#x3D; 0 时，word1[0…i] 为空，此时想要转化为 word2[0…j] 需要操作 j 次，要么在 word1 末尾插入 j 次， 要么在 word2 末尾删除 j 次</li>
-<li>同理当 j &#x3D; 0 时，word2[0…j] 为空，此时想要转化为 word1[0…i] 需要操作 i 次</li>
-<li>i 和 j 都为 0 时，编辑距离显然为0</li>
-</ul>
-<p>这样一来代码就很好写了：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">minDistance</span><span class="params">(string word1, string word2)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> n = word1.<span class="built_in">length</span>();</span><br><span class="line">        <span class="type">int</span> m = word2.<span class="built_in">length</span>();</span><br><span class="line">        <span class="comment">// 有一个字符串为空串</span></span><br><span class="line">        <span class="keyword">if</span> (n * m == <span class="number">0</span>) <span class="keyword">return</span> n + m;</span><br><span class="line">        <span class="comment">// 边界状态初始化</span></span><br><span class="line">        vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">dp</span>(n + <span class="number">1</span>, <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(m + <span class="number">1</span>));</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt;= n; i++) &#123;</span><br><span class="line">            dp[i][<span class="number">0</span>] = i;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">0</span>; j &lt;= m; j++) &#123;</span><br><span class="line">            dp[<span class="number">0</span>][j] = j;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 计算所有 DP 值</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt; n + <span class="number">1</span>; i++) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">1</span>; j &lt; m + <span class="number">1</span>; j++) &#123;</span><br><span class="line">                <span class="type">int</span> insert_a = dp[i][j - <span class="number">1</span>] + <span class="number">1</span>;	<span class="comment">//在A末尾插入的情况</span></span><br><span class="line">                <span class="type">int</span> insert_b = dp[i - <span class="number">1</span>][j] + <span class="number">1</span>;	<span class="comment">//在B末尾插入的情况</span></span><br><span class="line">                <span class="type">int</span> replace = dp[i - <span class="number">1</span>][j - <span class="number">1</span>];		<span class="comment">//替换的情况</span></span><br><span class="line">                <span class="keyword">if</span> (word1[i - <span class="number">1</span>] != word2[j - <span class="number">1</span>]) replace += <span class="number">1</span>;</span><br><span class="line">                dp[i][j] = <span class="built_in">min</span>(insert_a, <span class="built_in">min</span>(insert_b, replace));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[n][m];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<p>注意到 $dp[i][j]$ 的状态只与$dp[i][j-1]$ 、$dp[i-1][j]$ 和 $dp[i-1][j-1]$ 有关，因此可以不用二维数组保存状态，改为一维，每次更新时， $dp[i][j-1]$ 就是 $dp[j-1]$ 已经计算完毕，$dp[i-1][j]$ 就是当前正在计算的位置 $dp[j]$，同时也是下一次计算时的 $dp[i-1][j-1]$，因此再用一个额外变量记录 $dp[i-1][j-1]$ 即可。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">minDistance</span><span class="params">(string word1, string word2)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> n = word1.<span class="built_in">length</span>();</span><br><span class="line">        <span class="type">int</span> m = word2.<span class="built_in">length</span>();</span><br><span class="line">        <span class="keyword">if</span> (n * m == <span class="number">0</span>) <span class="keyword">return</span> n + m;</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">dp</span><span class="params">(m + <span class="number">1</span>)</span></span>;</span><br><span class="line">        <span class="comment">// 边界状态初始化</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">0</span>; j &lt;= m; j++) &#123;</span><br><span class="line">            dp[j] = j;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 计算所有 DP 值</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt; n + <span class="number">1</span>; i++) &#123;</span><br><span class="line">            <span class="type">int</span> p = dp[<span class="number">0</span>];  <span class="comment">//保存dp[i-1][j-1]</span></span><br><span class="line">            dp[<span class="number">0</span>] = i;  <span class="comment">//相当于之前的另一个初始化</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">1</span>; j &lt; m + <span class="number">1</span>; j++) &#123;</span><br><span class="line">                <span class="type">int</span> insert_a = dp[j - <span class="number">1</span>] + <span class="number">1</span>;   <span class="comment">//dp[i][j-1] + 1</span></span><br><span class="line">                <span class="type">int</span> insert_b = dp[j] + <span class="number">1</span>;   <span class="comment">//dp[i-1][j] + 1</span></span><br><span class="line">                <span class="type">int</span> replace = p;</span><br><span class="line">                <span class="keyword">if</span> (word1[i - <span class="number">1</span>] != word2[j - <span class="number">1</span>]) replace += <span class="number">1</span>;</span><br><span class="line">                p = dp[j];  <span class="comment">//更新dp[i-1][j-1]，上一次的dp[i-1][j]，就是下一次的dp[i-1][j-1]</span></span><br><span class="line">                dp[j] = <span class="built_in">min</span>(insert_a, <span class="built_in">min</span>(insert_b, replace));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[m];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<h5 id="通配符匹配"><a href="#通配符匹配" class="headerlink" title="通配符匹配"></a><a href="https://leetcode-cn.com/problems/wildcard-matching/">通配符匹配</a></h5><blockquote>
-<p>问题描述：</p>
-<p>给定一个字符串 (<code>s</code>) 和一个字符模式 (<code>p</code>) ，实现一个支持 <code>&#39;?&#39;</code> 和 <code>&#39;*&#39;</code> 的通配符匹配。</p>
-<p>其中：<code>&#39;?&#39;</code> 可以匹配任何单个字符；<code>&#39;*&#39;</code> 可以匹配任意字符串（包括空字符串）。</p>
-<p>两个字符串<strong>完全匹配</strong>才算匹配成功。</p>
-</blockquote>
-<p>这是一个比较困难的问题，状态定义同样是 $dp[i][j]$，表示字符串 s 以 i 结尾的子串和字符模式 p 以 j 结尾的子串能否成功匹配。</p>
-<p>s中只包含小写字母，p中包含小写字母、问号和星号，因此状态转移对应的就是三种情况：</p>
-<ul>
-<li><p>s[i] 和 p[j] 都是字母：此时 <code>dp[i][j] = dp[i-1][j-1] &amp;&amp; s[i] == p[j]</code></p>
-</li>
-<li><p>p[j] 是问号：此时 s[i] 一定匹配，因此 <code>dp[i][j] = dp[i-1][j-1]</code></p>
-</li>
-<li><p>p[j] 是星号：此时 s[i] 也一定匹配，但是要考虑是否消耗掉这个星号，因为一个星号可以匹配多个字母，如果消耗掉这个星号，则 <code>dp[i][j] = dp[i-1][j]</code>；如果不消耗这个星号，则 <code>dp[i][j] = dp[i][j-1]</code>，具体是否使用要看不用星号是否能够匹配，如果不用就可以匹配那就无需使用，如果不用就无法匹配了，那就必须使用，因此最终<code>dp[i][j] = dp[i-1][j] || dp[i][j-1]</code></p>
-</li>
-</ul>
-<p>然后是边界条件：</p>
-<ul>
-<li>$dp[0][0]$ 表示两个空串，可以匹配，所以 $dp[0][0]&#x3D;true$</li>
-<li>$dp[i][0]$ 表示模式串为空，那么字符串无论如何都无法匹配，因此 $dp[i][0] &#x3D; false$</li>
-<li>$dp[0][j]$ 表示字符串为空，那么只有模式串为星号才能匹配，因此模式串开头是星号的位置$dp[0][j]&#x3D;true$，其他位置都为$false$</li>
-</ul>
-<p>这样一来就问题就解决了。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">isMatch</span><span class="params">(string s, string p)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> m = s.<span class="built_in">size</span>();</span><br><span class="line">        <span class="type">int</span> n = p.<span class="built_in">size</span>();</span><br><span class="line">        vector&lt;vector&lt;<span class="type">bool</span>&gt;&gt; <span class="built_in">dp</span>(m + <span class="number">1</span>, <span class="built_in">vector</span>&lt;<span class="type">bool</span>&gt;(n + <span class="number">1</span>, <span class="literal">false</span>));</span><br><span class="line">        dp[<span class="number">0</span>][<span class="number">0</span>] = <span class="literal">true</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; ++i) &#123;</span><br><span class="line">            <span class="keyword">if</span> (p[i - <span class="number">1</span>] == <span class="string">&#x27;*&#x27;</span>) &#123;</span><br><span class="line">                dp[<span class="number">0</span>][i] = <span class="literal">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= m; ++i) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">1</span>; j &lt;= n; ++j) &#123;</span><br><span class="line">                <span class="keyword">if</span> (p[j - <span class="number">1</span>] == <span class="string">&#x27;*&#x27;</span>) &#123;</span><br><span class="line">                    dp[i][j] = dp[i][j - <span class="number">1</span>] || dp[i - <span class="number">1</span>][j];</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (p[j - <span class="number">1</span>] == <span class="string">&#x27;?&#x27;</span> || s[i - <span class="number">1</span>] == p[j - <span class="number">1</span>]) &#123;</span><br><span class="line">                    dp[i][j] = dp[i - <span class="number">1</span>][j - <span class="number">1</span>];</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[m][n];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<p>本题用贪心法也可以，并且不需要额外的空间，具体可以查看<a href="https://leetcode-cn.com/problems/wildcard-matching/solution/tong-pei-fu-pi-pei-by-leetcode-solution/">官方题解方法二</a>，但还是以理解动态规划方法为主。</p>
-<h5 id="正则表达式匹配"><a href="#正则表达式匹配" class="headerlink" title="正则表达式匹配"></a><a href="https://leetcode-cn.com/problems/regular-expression-matching/">正则表达式匹配</a></h5><blockquote>
-<p>问题描述：</p>
-<p>给你一个字符串 <code>s</code> 和一个字符规律 <code>p</code>，请你来实现一个支持 <code>&#39;.&#39;</code> 和 <code>&#39;*&#39;</code> 的正则表达式匹配。</p>
-<p>其中：<code>&#39;.&#39;</code> 可以匹配任何单个字符；<code>&#39;*&#39;</code> 可以匹配零个或多个前面的那一个元素。</p>
-</blockquote>
-<p>这道题是通配符匹配的进阶版，因此我们可以完全按照通配符匹配的思路来分析这道题，再去解决特殊的情况。</p>
-<p>状态定义同样是 $dp[i][j]$，表示字符串 s 以 i 结尾的子串和字符模式 p 以 j 结尾的子串能否成功匹配。</p>
-<p>s中只包含小写字母，p中包含小写字母、点和星号，因此状态转移对应的就是三种情况：</p>
-<ul>
-<li><p>s[i] 和 p[j] 都是字母：此时 <code>dp[i][j] = dp[i-1][j-1] &amp;&amp; s[i] == p[j]</code></p>
-</li>
-<li><p>p[j] 是点：此时 s[i] 一定匹配，因此 <code>dp[i][j] = dp[i-1][j-1]</code></p>
-</li>
-<li><p>p[j] 是星号：这时情况要比通配符更复杂一些，因为星号代表的是零个或多个前面的那一个元素，因此我们要判断 s[i] 和 p[j-1] 是否匹配：</p>
-<ul>
-<li><p>如果匹配，那么我们把 p[j-1] 和 p[j] 看成一个整体，此时这两个字符组成的整体的作用和通配符匹配中星号的作用完全一样，只不过是一个占用两个位置的星号，因此我们可以选择消耗掉星号来匹配s[i] ，或者不消耗掉星号，继续往后匹配，此时状态转移方程和通配符匹配中一致，不过记得这次星号占两位：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">dp[i][j] = dp[i-1][j] || dp[i][j-2]</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>如果不匹配，同样把 p[j-1] 和 p[j] 看成一个整体相当于一个通配符中的星号，但是此时星号无作用，相当于匹配了一个空字符，直接丢掉即可，此时状态转移就是：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">dp[i][j] = dp[i][j-2]</span><br></pre></td></tr></table></figure></li>
-</ul>
-</li>
-</ul>
-<p>接下来是边界条件：</p>
-<ul>
-<li>$dp[0][0]$ 表示两个空串，可以匹配，所以 $dp[0][0]&#x3D;true$</li>
-<li>$dp[i][0]$ 表示模式串为空，那么字符串无论如何都无法匹配，因此 $dp[i][0] &#x3D; false$</li>
-<li>$dp[0][j]$ 表示字符串为空，至于能否和模式串匹配，需要用上面的状态转移流程去判断，因此我们不需要专门去初始化，只要遍历字符串 s 时从 0 开始即可。</li>
-</ul>
-<p>代码如下：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">isMatch</span><span class="params">(string s, string p)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> m = s.<span class="built_in">size</span>(), n = p.<span class="built_in">size</span>();</span><br><span class="line">        vector&lt;vector&lt;<span class="type">bool</span>&gt;&gt; <span class="built_in">dp</span>(m+<span class="number">1</span>, <span class="built_in">vector</span>&lt;<span class="type">bool</span>&gt;(n+<span class="number">1</span>, <span class="number">0</span>));</span><br><span class="line">        dp[<span class="number">0</span>][<span class="number">0</span>] = <span class="number">1</span>;</span><br><span class="line">		<span class="comment">//判断两个位置是否匹配</span></span><br><span class="line">        <span class="keyword">auto</span> matches = [&amp;](<span class="type">int</span> i, <span class="type">int</span> j) &#123;</span><br><span class="line">            <span class="keyword">if</span> (i == <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (p[j - <span class="number">1</span>] == <span class="string">&#x27;.&#x27;</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> s[i - <span class="number">1</span>] == p[j - <span class="number">1</span>];</span><br><span class="line">        &#125;;</span><br><span class="line">		<span class="comment">//动态规划推导</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt;= m; i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">1</span>; j &lt;= n; j++)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(<span class="built_in">matches</span>(i, j))</span><br><span class="line">                &#123;</span><br><span class="line">                    dp[i][j] = dp[i<span class="number">-1</span>][j<span class="number">-1</span>];</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(p[j<span class="number">-1</span>] == <span class="string">&#x27;*&#x27;</span>)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">if</span>(<span class="built_in">matches</span>(i, j - <span class="number">1</span>))</span><br><span class="line">                    &#123;</span><br><span class="line">                        dp[i][j] = dp[i<span class="number">-1</span>][j] || dp[i][j<span class="number">-2</span>];</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">else</span>&#123;</span><br><span class="line">                        dp[i][j] = dp[i][j<span class="number">-2</span>];</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[m][n];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<h4 id="3-其他双串问题"><a href="#3-其他双串问题" class="headerlink" title="3 其他双串问题"></a>3 其他双串问题</h4><h5 id="交错字符串"><a href="#交错字符串" class="headerlink" title="交错字符串"></a><a href="https://leetcode-cn.com/problems/interleaving-string/">交错字符串</a></h5><blockquote>
-<p>给定三个字符串 s1、s2、s3，请你帮忙验证 s3 是否是由 s1 和 s2 交错组成的。</p>
-<p>两个字符串 s 和 t 交错的定义与过程如下，其中每个字符串都会被分割成若干非空子字符串：</p>
-<p>s &#x3D; s1 + s2 + … + sn<br>t &#x3D; t1 + t2 + … + tm<br>|n - m| &lt;&#x3D; 1<br>交错是 s1 + t1 + s2 + t2 + s3 + t3 + … 或者 t1 + s1 + t2 + s2 + t3 + s3 + …<br>注意：a + b 意味着字符串 a 和 b 连接。</p>
-</blockquote>
-<p>定义状态 $dp[i][j]$ 表示字符串 s1 以 i 结尾的子串和字符串 s2 以 j 结尾的子串能否交错形成 s3 以 i+j-1 结尾的子串。</p>
-<p>状态转移只有两种情况：</p>
-<ul>
-<li>如果 $s1[i] &#x3D;&#x3D; s3[i+j-1]$，那么 $dp[i][j] &#x3D; dp[i-1][j]$</li>
-<li>如果 $s2[j] &#x3D;&#x3D; s3[i+j-1]$，那么 $dp[i][j] &#x3D; dp[i][j-1]$</li>
-</ul>
-<p>边界条件:</p>
-<ul>
-<li>$dp[0][0]&#x3D;true$</li>
-<li>$dp[i][0]$ 和 $dp[0][j]$ 都相当于在和 s3 做字符串匹配，因此直接在循环中从 0 开始遍历两个字符串即可</li>
-</ul>
-<p>由于 $dp[i][j]$ 只与 $dp[i-1][j]$ 和 $dp[i][j-1]$ 有关，因此只需使用一维数组。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">isInterleave</span><span class="params">(string s1, string s2, string s3)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> m = s1.<span class="built_in">size</span>(), n = s2.<span class="built_in">size</span>(), k = s3.<span class="built_in">size</span>();</span><br><span class="line">        <span class="keyword">if</span>(m + n != k) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">dp</span><span class="params">(n+<span class="number">1</span>)</span></span>;</span><br><span class="line">        dp[<span class="number">0</span>] = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt;= m; i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt;= n; j++)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="type">int</span> t = i + j - <span class="number">1</span>;</span><br><span class="line">                <span class="keyword">if</span>(i &gt; <span class="number">0</span>)</span><br><span class="line">                &#123;</span><br><span class="line">                    dp[j] &amp;= (s1[i<span class="number">-1</span>] == s3[t]);	<span class="comment">//相当于dp[i][j] = dp[i-1][j] &amp;&amp; s1[i-1] == s3[t]</span></span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span>(j &gt; <span class="number">0</span>)</span><br><span class="line">                &#123;</span><br><span class="line">                    dp[j] |= (s2[j<span class="number">-1</span>] == s3[t] &amp;&amp; dp[j<span class="number">-1</span>]);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[n];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<h5 id="不同的子序列"><a href="#不同的子序列" class="headerlink" title="不同的子序列"></a><a href="https://leetcode-cn.com/problems/distinct-subsequences/">不同的子序列</a></h5><blockquote>
-<p>给定一个字符串 s 和一个字符串 t ，计算在 s 的子序列中 t 出现的个数。</p>
-<p>字符串的一个 子序列 是指，通过删除一些（也可以不删除）字符且不干扰剩余字符相对位置所组成的新字符串。（例如，”ACE” 是 “ABCDE” 的一个子序列，而 “AEC” 不是）</p>
-</blockquote>
-<p>定义状态 $dp[i][j]$ 表示字符串 s 以 i 结尾的子串中，字符串 t 以 j 结尾的子串出现的次数。</p>
-<p>考虑状态转移：</p>
-<ul>
-<li>如果 $s[i] \neq t[j]$，则 $dp[i][j] &#x3D; dp[i-1][j]$</li>
-<li>如果 $s[i] &#x3D; t[j]$，分为两种情况：<ul>
-<li>使用 s[i] 和 t[j] 匹配，此时 $dp[i][j] &#x3D; dp[i-1][j-1]$</li>
-<li>不使用 s[i] 和 t[j] 匹配，此时 $dp[i][j] &#x3D; dp[i-1][j]$</li>
-</ul>
-</li>
-</ul>
-<p>边界条件：</p>
-<ul>
-<li>$dp[0][0] &#x3D; 1$，空串是任何串的子串</li>
-<li>$dp[i][0] &#x3D; 1$，理由同上</li>
-<li>$dp[0][j] &#x3D; 0$，空串中不包含任何一个非空子串</li>
-</ul>
-<p>同时考虑到，如果 t 的长度大于 s 的长度，直接返回 0 即可，因此遍历 j 的时候也只需要遍历到比 i 小即可，因为 j 大于 i 时 $dp[i][j]$ 也一定为 0.</p>
-<p>代码如下：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">numDistinct</span><span class="params">(string s, string t)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> m = s.<span class="built_in">size</span>(), n = t.<span class="built_in">size</span>();</span><br><span class="line">        <span class="keyword">if</span>(m &lt; n) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        <span class="comment">//使用unsigned long long是为了通过一些阴间用例</span></span><br><span class="line">        vector&lt;vector&lt;<span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span>&gt;&gt; <span class="built_in">dp</span>(m+<span class="number">1</span>, <span class="built_in">vector</span>&lt;<span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span>&gt;(n+<span class="number">1</span>, <span class="number">0</span>));</span><br><span class="line">        dp[<span class="number">0</span>][<span class="number">0</span>] = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">1</span>; i &lt;= m; i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt;= <span class="built_in">min</span>(i, n); j++)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(j == <span class="number">0</span>) dp[i][<span class="number">0</span>] = <span class="number">1</span>;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(s[i<span class="number">-1</span>] != t[j<span class="number">-1</span>])</span><br><span class="line">                &#123;</span><br><span class="line">                    dp[i][j] = dp[i<span class="number">-1</span>][j];</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(s[i<span class="number">-1</span>] == t[j<span class="number">-1</span>])</span><br><span class="line">                &#123;</span><br><span class="line">                    dp[i][j] = dp[i<span class="number">-1</span>][j<span class="number">-1</span>] + dp[i<span class="number">-1</span>][j]; </span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[m][n];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<h5 id="扰乱字符串"><a href="#扰乱字符串" class="headerlink" title="扰乱字符串"></a><a href="https://leetcode-cn.com/problems/scramble-string/solution/">扰乱字符串</a></h5><p>有余力可以了解。</p>
-]]></content>
-      <categories>
-        <category>数据结构与算法</category>
-      </categories>
-      <tags>
-        <tag>C++</tag>
-        <tag>算法</tag>
-        <tag>动态规划</tag>
       </tags>
   </entry>
   <entry>
