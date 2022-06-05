@@ -217,6 +217,65 @@
       </tags>
   </entry>
   <entry>
+    <title>【数据结构】线性数据结构</title>
+    <url>/LycTechStack.github.io/2022/03/02/20220303-%E7%BA%BF%E6%80%A7%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/</url>
+    <content><![CDATA[<h3 id="线性数据结构"><a href="#线性数据结构" class="headerlink" title="线性数据结构"></a>线性数据结构</h3><blockquote>
+<p><strong>摘要</strong></p>
+<p>对LeetCode上各种线性数据结构相关的题目做了一个分类整理，主要内容来源于LeetCode官方学习内容，这里只是一个记录和梳理，后序将持续更新。</p>
+</blockquote>
+<p><em><span id="more"></span></em></p>
+<h4 id="1、数组和字符串"><a href="#1、数组和字符串" class="headerlink" title="1、数组和字符串"></a>1、<a href="https://leetcode-cn.com/leetbook/detail/array-and-string/">数组和字符串</a></h4><h5 id="二分查找"><a href="#二分查找" class="headerlink" title="二分查找"></a>二分查找</h5><p>一般用于给定的数组是有序的，或先手动排序</p>
+<p><a href="https://leetcode-cn.com/problems/search-insert-position/solution/">搜索插入位置</a></p>
+<p><a href="https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array/solution/">寻找旋转排序数组中的最小值</a></p>
+<h5 id="首尾双指针"><a href="#首尾双指针" class="headerlink" title="首尾双指针"></a>首尾双指针</h5><p><a href="https://leetcode-cn.com/problems/two-sum-ii-input-array-is-sorted/solution/">两数之和 II - 输入有序数组</a></p>
+<h5 id="快慢双指针"><a href="#快慢双指针" class="headerlink" title="快慢双指针"></a>快慢双指针</h5><p><a href="https://leetcode-cn.com/problems/remove-element/solution/">移除元素</a><br><a href="https://leetcode-cn.com/problems/max-consecutive-ones/solution/">最大连续 1 的个数</a><br><a href="https://leetcode-cn.com/problems/minimum-size-subarray-sum/solution/">长度最小的子数组</a><br><a href="https://leetcode-cn.com/problems/remove-duplicates-from-sorted-array/solution/">删除有序数组中的重复项</a><br><a href="https://leetcode-cn.com/problems/move-zeroes/solution/">移动零</a></p>
+<h5 id="滑动窗口"><a href="#滑动窗口" class="headerlink" title="滑动窗口"></a>滑动窗口</h5><p><a href="https://leetcode-cn.com/problems/maximum-average-subarray-i/solution/">子数组最大平均数</a><br><a href="https://leetcode-cn.com/problems/maximum-points-you-can-obtain-from-cards/solution/">可获得的最大点数</a><br><a href="https://leetcode-cn.com/problems/grumpy-bookstore-owner/solution/">爱生气的书店老板</a><br><a href="https://leetcode-cn.com/problems/maximum-number-of-vowels-in-a-substring-of-given-length/solution/">定长子串中元音的最大数目</a><br><a href="https://leetcode-cn.com/problems/minimum-operations-to-reduce-x-to-zero/submissions/">将 x 减到 0 的最小操作数</a><br><a href="https://leetcode-cn.com/problems/minimum-window-substring/solution/hua-dong-chuang-kou-you-hua-jie-fa-by-bu-1i5e/">最小覆盖子串</a></p>
+<h5 id="字符串匹配KMP算法"><a href="#字符串匹配KMP算法" class="headerlink" title="字符串匹配KMP算法"></a><a href="https://leetcode-cn.com/leetbook/read/array-and-string/cpoo6/">字符串匹配KMP算法</a></h5><p>关键在于构建next数组的方法</p>
+<h5 id="二维数组"><a href="#二维数组" class="headerlink" title="二维数组"></a><a href="https://leetcode-cn.com/leetbook/read/array-and-string/y1nke/">二维数组</a></h5><p>一般就是矩阵问题，矩阵问题后面在动态规划和其他算法问题中也会经常遇到。</p>
+<p><a href="https://leetcode-cn.com/problems/rotate-matrix-lcci/">旋转矩阵</a></p>
+<p><a href="https://leetcode-cn.com/problems/zero-matrix-lcci/">零矩阵</a></p>
+<p><a href="https://leetcode-cn.com/problems/diagonal-traverse/">对角线遍历</a></p>
+<h4 id="2、链表"><a href="#2、链表" class="headerlink" title="2、链表"></a>2、<a href="https://leetcode-cn.com/leetbook/detail/linked-list/">链表</a></h4><h5 id="递归"><a href="#递归" class="headerlink" title="递归"></a>递归</h5><p>链表的很多问题都可以用递归，典型问题比如：<a href="https://leetcode-cn.com/problems/swap-nodes-in-pairs/solution/hua-jie-suan-fa-24-liang-liang-jiao-huan-lian-biao/">两两交换链表中的节点</a></p>
+<h5 id="快慢指针"><a href="#快慢指针" class="headerlink" title="快慢指针"></a>快慢指针</h5><p><a href="https://leetcode-cn.com/problems/linked-list-cycle-ii/solution/">环形链表II</a><br><a href="https://leetcode-cn.com/problems/intersection-of-two-linked-lists/solution/">相交链表</a></p>
+<h5 id="经典问题"><a href="#经典问题" class="headerlink" title="经典问题"></a>经典问题</h5><p><a href="https://leetcode-cn.com/problems/reverse-linked-list/">反转链表</a><br><a href="https://leetcode-cn.com/problems/palindrome-linked-list/solution/">回文链表</a></p>
+<blockquote>
+<p><strong>一般处理链表问题时在原链表前加一个虚节点就可以避免对头节点的特殊判断</strong></p>
+</blockquote>
+<h4 id="3、队列"><a href="#3、队列" class="headerlink" title="3、队列"></a>3、队列</h4><h5 id="广搜BFS"><a href="#广搜BFS" class="headerlink" title="广搜BFS"></a><a href="https://leetcode-cn.com/leetbook/read/queue-stack/kc5ge/">广搜BFS</a></h5><p>广度优先搜索一般用来二叉树的层序遍历、求最短路径、最小数量之类的题目。<br><a href="https://leetcode-cn.com/problems/walls-and-gates/">墙与门</a><br><a href="https://leetcode-cn.com/problems/number-of-islands/">岛屿数量</a><br><a href="https://leetcode-cn.com/problems/open-the-lock/">打开转盘锁</a><br><a href="https://leetcode-cn.com/problems/zui-xiao-tiao-yue-ci-shu/">最小跳跃次数</a></p>
+<ul>
+<li>广度优先搜索模板：<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">BFS</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	queue&lt;<span class="type">int</span>&gt; q;</span><br><span class="line">    unordered_set&lt;节点或状态&gt; map;	<span class="comment">//可选，看是否需要重复入队</span></span><br><span class="line">    <span class="type">int</span> step = <span class="number">0</span>;</span><br><span class="line">    q.<span class="built_in">push</span>(根节点或状态);</span><br><span class="line">    <span class="keyword">while</span>(!q.<span class="built_in">empty</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        ++step;</span><br><span class="line">        <span class="type">int</span> size = q.<span class="built_in">size</span>();</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; size; i++)	<span class="comment">//遍历当前层所有节点并扩展相邻节点</span></span><br><span class="line">        &#123;</span><br><span class="line">            节点或状态 cur = q.<span class="built_in">front</span>();	<span class="comment">//取队列头节点</span></span><br><span class="line">            <span class="keyword">if</span>(cur == 目标节点或状态)	<span class="keyword">return</span> step;</span><br><span class="line">            <span class="keyword">for</span>(节点 x : cur的所有相邻节点)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(map.<span class="built_in">count</span>(x)) <span class="keyword">continue</span>;	<span class="comment">//判断是否已经访问过，可选</span></span><br><span class="line">                q.<span class="built_in">push</span>(x);</span><br><span class="line">                map.<span class="built_in">insert</span>(x);	<span class="comment">//可选</span></span><br><span class="line">            &#125;</span><br><span class="line">            q.<span class="built_in">pop</span>();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> step;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="4、栈"><a href="#4、栈" class="headerlink" title="4、栈"></a>4、栈</h4><h5 id="深搜DFS"><a href="#深搜DFS" class="headerlink" title="深搜DFS"></a>深搜DFS</h5><p>一般能用广搜的也能用深搜，但是深搜不能保证是最短路径或者最小数量，深搜还用于二叉树的前中后序遍历。<br><a href="https://leetcode-cn.com/problems/keys-and-rooms/solution/yao-chi-he-fang-jian-shen-sou-he-yan-sou-nn8j/">钥匙和房间</a><br><a href="https://leetcode-cn.com/problems/flood-fill/solution/tu-xiang-xuan-ran-dfshe-bfs-by-bu-luo-bu-2tg4/">图像渲染</a><br>以及上面可以用BFS做的题</p>
+<ul>
+<li>DFS模板（非递归，类似于上面的BFS）</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">DFS</span><span class="params">(节点 root，节点 target)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	stack&lt;<span class="type">int</span>&gt; s;</span><br><span class="line">    unordered_set&lt;节点&gt; visited;	<span class="comment">//可选，看是否需要重复入栈</span></span><br><span class="line">    s.<span class="built_in">push</span>(root);</span><br><span class="line">    visited.<span class="built_in">insert</span>(root);</span><br><span class="line">    <span class="keyword">while</span>(!s.<span class="built_in">empty</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        节点 cur = q.<span class="built_in">top</span>();	<span class="comment">//取栈顶节点</span></span><br><span class="line">        <span class="keyword">if</span>(cur == target) <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        <span class="keyword">for</span>(节点 x : cur的所有相邻节点)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span>(visited.<span class="built_in">count</span>(x)) <span class="keyword">continue</span>;	<span class="comment">//判断是否已经访问过，可选</span></span><br><span class="line">            q.<span class="built_in">push</span>(x);</span><br><span class="line">            visited.<span class="built_in">insert</span>(x);	<span class="comment">//可选</span></span><br><span class="line">        &#125;</span><br><span class="line">        q.<span class="built_in">pop</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>DFS模板（递归）</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">DFS</span><span class="params">(节点 root，节点 target, unordered_set&lt;节点&gt;&amp; visited)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(root == target) <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    <span class="keyword">for</span>(节点 x : root的所有相邻节点)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(visited.<span class="built_in">count</span>(x)) <span class="keyword">continue</span>;	<span class="comment">//判断是否已经访问过，可选</span></span><br><span class="line">        visited.<span class="built_in">insert</span>(x);	<span class="comment">//可选</span></span><br><span class="line">        <span class="keyword">if</span>(<span class="built_in">DFS</span>(x,target,visited)) <span class="keyword">return</span> <span class="literal">true</span>;   </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="单调栈"><a href="#单调栈" class="headerlink" title="单调栈"></a>单调栈</h5><p>单调栈也是一种重要的数据结构，在实际解题中经常用到，简单来说单调栈内的元素保证是严格单调递增或递减的，如果一个新的元素和栈顶元素不满足这种单调关系，就将栈顶元素出栈并进行一定的操作，直到满足单调关系，将新元素入栈。</p>
+<p>之前的题目中也遇到过一些比较简单的单调栈问题，这里以两道困难题目加深对单调栈的理解。</p>
+<p><a href="https://leetcode-cn.com/problems/largest-rectangle-in-histogram/">柱状图中最大的矩形</a></p>
+<p><a href="https://leetcode-cn.com/problems/maximal-rectangle/">最大矩形</a></p>
+<p>但这两道题较为困难，能够加深对单调栈的理解。柱状图中的最大矩形的思路简单来说就是遍历每一根柱子，分别找到其左边和右边离它最近的高度低于它的柱子作为左右边界，在这两个边界范围内的所有柱子的高度都高于当前柱子，因此所形成的矩形面积就是当前柱子高度乘以边界长度。寻找柱子边界的过程就是利用单调栈实现的，并且优化过后只需要遍历一次就可以找到左边界和右边界。关于单调栈的思路如何得到以及优化具体细节可以查看<a href="https://leetcode-cn.com/problems/largest-rectangle-in-histogram/solution/zhu-zhuang-tu-zhong-zui-da-de-ju-xing-by-leetcode-/">柱状图中最大的矩形 官方题解</a>。</p>
+<p>最大矩形是一道更为困难的题目，但是如果理解了柱状图问题，再看最大矩形就不是很困难了。因为我们可以对矩阵每一行的每一个位置都求出这个位置上方连续的1的个数（包含这个位置本身），这样每一行都形成了一个柱状图，再按照柱状图的解法计算最大矩形面积即可，遍历完矩阵所有行也就得到了全局最大矩形。更多细节在代码中：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">maximalRectangle</span><span class="params">(vector&lt;vector&lt;<span class="type">char</span>&gt;&gt;&amp; matrix)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> m = matrix.<span class="built_in">size</span>(), n = matrix[<span class="number">0</span>].<span class="built_in">size</span>();</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">height</span><span class="params">(n, <span class="number">0</span>)</span></span>;     <span class="comment">//记录每一行每个位置上方连续的1的个数（包含本身）</span></span><br><span class="line">        <span class="type">int</span> ans = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; m; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">left</span><span class="params">(n)</span>, <span class="title">right</span><span class="params">(n, n)</span></span>;	<span class="comment">//每一行遍历开始都要重置right数组的初始值为n</span></span><br><span class="line">            <span class="comment">//计算每个格子上方连续1的个数，形成柱状图</span></span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt; n; ++j)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(i == <span class="number">0</span>)</span><br><span class="line">                &#123;</span><br><span class="line">                    height[j] = matrix[i][j] - <span class="string">&#x27;0&#x27;</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                &#123;</span><br><span class="line">                    height[j] = matrix[i][j] == <span class="string">&#x27;1&#x27;</span> ? height[j] + <span class="number">1</span> : <span class="number">0</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//计算直到当前行的柱状图最大矩形</span></span><br><span class="line">            stack&lt;<span class="type">int</span>&gt; mono;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt; n; ++j)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">while</span>(!mono.<span class="built_in">empty</span>() &amp;&amp; height[mono.<span class="built_in">top</span>()] &gt;= height[j])	<span class="comment">//注意更新右边界的判断条件是&#x27;&gt;=&#x27;</span></span><br><span class="line">                &#123;</span><br><span class="line">                    right[mono.<span class="built_in">top</span>()] = j;</span><br><span class="line">                    mono.<span class="built_in">pop</span>();</span><br><span class="line">                &#125;</span><br><span class="line">                left[j] = mono.<span class="built_in">empty</span>() ? <span class="number">-1</span> : mono.<span class="built_in">top</span>();</span><br><span class="line">                mono.<span class="built_in">push</span>(j);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//更新结果</span></span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt; n; ++j)</span><br><span class="line">            &#123;</span><br><span class="line">                ans = <span class="built_in">max</span>(ans, height[j] * (right[j] - left[j] - <span class="number">1</span>));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+
+
+]]></content>
+      <categories>
+        <category>数据结构与算法</category>
+      </categories>
+      <tags>
+        <tag>数据结构</tag>
+        <tag>C++</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>【数据结构】二叉树</title>
     <url>/LycTechStack.github.io/2022/03/03/20220303-%E4%BA%8C%E5%8F%89%E6%A0%91/</url>
     <content><![CDATA[<blockquote>
@@ -333,65 +392,6 @@
         <tag>数据结构</tag>
         <tag>C++</tag>
         <tag>STL</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>【数据结构】线性数据结构</title>
-    <url>/LycTechStack.github.io/2022/03/02/20220303-%E7%BA%BF%E6%80%A7%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/</url>
-    <content><![CDATA[<h3 id="线性数据结构"><a href="#线性数据结构" class="headerlink" title="线性数据结构"></a>线性数据结构</h3><blockquote>
-<p><strong>摘要</strong></p>
-<p>对LeetCode上各种线性数据结构相关的题目做了一个分类整理，主要内容来源于LeetCode官方学习内容，这里只是一个记录和梳理，后序将持续更新。</p>
-</blockquote>
-<p><em><span id="more"></span></em></p>
-<h4 id="1、数组和字符串"><a href="#1、数组和字符串" class="headerlink" title="1、数组和字符串"></a>1、<a href="https://leetcode-cn.com/leetbook/detail/array-and-string/">数组和字符串</a></h4><h5 id="二分查找"><a href="#二分查找" class="headerlink" title="二分查找"></a>二分查找</h5><p>一般用于给定的数组是有序的，或先手动排序</p>
-<p><a href="https://leetcode-cn.com/problems/search-insert-position/solution/">搜索插入位置</a></p>
-<p><a href="https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array/solution/">寻找旋转排序数组中的最小值</a></p>
-<h5 id="首尾双指针"><a href="#首尾双指针" class="headerlink" title="首尾双指针"></a>首尾双指针</h5><p><a href="https://leetcode-cn.com/problems/two-sum-ii-input-array-is-sorted/solution/">两数之和 II - 输入有序数组</a></p>
-<h5 id="快慢双指针"><a href="#快慢双指针" class="headerlink" title="快慢双指针"></a>快慢双指针</h5><p><a href="https://leetcode-cn.com/problems/remove-element/solution/">移除元素</a><br><a href="https://leetcode-cn.com/problems/max-consecutive-ones/solution/">最大连续 1 的个数</a><br><a href="https://leetcode-cn.com/problems/minimum-size-subarray-sum/solution/">长度最小的子数组</a><br><a href="https://leetcode-cn.com/problems/remove-duplicates-from-sorted-array/solution/">删除有序数组中的重复项</a><br><a href="https://leetcode-cn.com/problems/move-zeroes/solution/">移动零</a></p>
-<h5 id="滑动窗口"><a href="#滑动窗口" class="headerlink" title="滑动窗口"></a>滑动窗口</h5><p><a href="https://leetcode-cn.com/problems/maximum-average-subarray-i/solution/">子数组最大平均数</a><br><a href="https://leetcode-cn.com/problems/maximum-points-you-can-obtain-from-cards/solution/">可获得的最大点数</a><br><a href="https://leetcode-cn.com/problems/grumpy-bookstore-owner/solution/">爱生气的书店老板</a><br><a href="https://leetcode-cn.com/problems/maximum-number-of-vowels-in-a-substring-of-given-length/solution/">定长子串中元音的最大数目</a><br><a href="https://leetcode-cn.com/problems/minimum-operations-to-reduce-x-to-zero/submissions/">将 x 减到 0 的最小操作数</a><br><a href="https://leetcode-cn.com/problems/minimum-window-substring/solution/hua-dong-chuang-kou-you-hua-jie-fa-by-bu-1i5e/">最小覆盖子串</a></p>
-<h5 id="字符串匹配KMP算法"><a href="#字符串匹配KMP算法" class="headerlink" title="字符串匹配KMP算法"></a><a href="https://leetcode-cn.com/leetbook/read/array-and-string/cpoo6/">字符串匹配KMP算法</a></h5><p>关键在于构建next数组的方法</p>
-<h5 id="二维数组"><a href="#二维数组" class="headerlink" title="二维数组"></a><a href="https://leetcode-cn.com/leetbook/read/array-and-string/y1nke/">二维数组</a></h5><p>一般就是矩阵问题，矩阵问题后面在动态规划和其他算法问题中也会经常遇到。</p>
-<p><a href="https://leetcode-cn.com/problems/rotate-matrix-lcci/">旋转矩阵</a></p>
-<p><a href="https://leetcode-cn.com/problems/zero-matrix-lcci/">零矩阵</a></p>
-<p><a href="https://leetcode-cn.com/problems/diagonal-traverse/">对角线遍历</a></p>
-<h4 id="2、链表"><a href="#2、链表" class="headerlink" title="2、链表"></a>2、<a href="https://leetcode-cn.com/leetbook/detail/linked-list/">链表</a></h4><h5 id="递归"><a href="#递归" class="headerlink" title="递归"></a>递归</h5><p>链表的很多问题都可以用递归，典型问题比如：<a href="https://leetcode-cn.com/problems/swap-nodes-in-pairs/solution/hua-jie-suan-fa-24-liang-liang-jiao-huan-lian-biao/">两两交换链表中的节点</a></p>
-<h5 id="快慢指针"><a href="#快慢指针" class="headerlink" title="快慢指针"></a>快慢指针</h5><p><a href="https://leetcode-cn.com/problems/linked-list-cycle-ii/solution/">环形链表II</a><br><a href="https://leetcode-cn.com/problems/intersection-of-two-linked-lists/solution/">相交链表</a></p>
-<h5 id="经典问题"><a href="#经典问题" class="headerlink" title="经典问题"></a>经典问题</h5><p><a href="https://leetcode-cn.com/problems/reverse-linked-list/">反转链表</a><br><a href="https://leetcode-cn.com/problems/palindrome-linked-list/solution/">回文链表</a></p>
-<blockquote>
-<p><strong>一般处理链表问题时在原链表前加一个虚节点就可以避免对头节点的特殊判断</strong></p>
-</blockquote>
-<h4 id="3、队列"><a href="#3、队列" class="headerlink" title="3、队列"></a>3、队列</h4><h5 id="广搜BFS"><a href="#广搜BFS" class="headerlink" title="广搜BFS"></a><a href="https://leetcode-cn.com/leetbook/read/queue-stack/kc5ge/">广搜BFS</a></h5><p>广度优先搜索一般用来二叉树的层序遍历、求最短路径、最小数量之类的题目。<br><a href="https://leetcode-cn.com/problems/walls-and-gates/">墙与门</a><br><a href="https://leetcode-cn.com/problems/number-of-islands/">岛屿数量</a><br><a href="https://leetcode-cn.com/problems/open-the-lock/">打开转盘锁</a><br><a href="https://leetcode-cn.com/problems/zui-xiao-tiao-yue-ci-shu/">最小跳跃次数</a></p>
-<ul>
-<li>广度优先搜索模板：<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">BFS</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	queue&lt;<span class="type">int</span>&gt; q;</span><br><span class="line">    unordered_set&lt;节点或状态&gt; map;	<span class="comment">//可选，看是否需要重复入队</span></span><br><span class="line">    <span class="type">int</span> step = <span class="number">0</span>;</span><br><span class="line">    q.<span class="built_in">push</span>(根节点或状态);</span><br><span class="line">    <span class="keyword">while</span>(!q.<span class="built_in">empty</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        ++step;</span><br><span class="line">        <span class="type">int</span> size = q.<span class="built_in">size</span>();</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; size; i++)	<span class="comment">//遍历当前层所有节点并扩展相邻节点</span></span><br><span class="line">        &#123;</span><br><span class="line">            节点或状态 cur = q.<span class="built_in">front</span>();	<span class="comment">//取队列头节点</span></span><br><span class="line">            <span class="keyword">if</span>(cur == 目标节点或状态)	<span class="keyword">return</span> step;</span><br><span class="line">            <span class="keyword">for</span>(节点 x : cur的所有相邻节点)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(map.<span class="built_in">count</span>(x)) <span class="keyword">continue</span>;	<span class="comment">//判断是否已经访问过，可选</span></span><br><span class="line">                q.<span class="built_in">push</span>(x);</span><br><span class="line">                map.<span class="built_in">insert</span>(x);	<span class="comment">//可选</span></span><br><span class="line">            &#125;</span><br><span class="line">            q.<span class="built_in">pop</span>();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> step;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ul>
-<h4 id="4、栈"><a href="#4、栈" class="headerlink" title="4、栈"></a>4、栈</h4><h5 id="深搜DFS"><a href="#深搜DFS" class="headerlink" title="深搜DFS"></a>深搜DFS</h5><p>一般能用广搜的也能用深搜，但是深搜不能保证是最短路径或者最小数量，深搜还用于二叉树的前中后序遍历。<br><a href="https://leetcode-cn.com/problems/keys-and-rooms/solution/yao-chi-he-fang-jian-shen-sou-he-yan-sou-nn8j/">钥匙和房间</a><br><a href="https://leetcode-cn.com/problems/flood-fill/solution/tu-xiang-xuan-ran-dfshe-bfs-by-bu-luo-bu-2tg4/">图像渲染</a><br>以及上面可以用BFS做的题</p>
-<ul>
-<li>DFS模板（非递归，类似于上面的BFS）</li>
-</ul>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">DFS</span><span class="params">(节点 root，节点 target)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	stack&lt;<span class="type">int</span>&gt; s;</span><br><span class="line">    unordered_set&lt;节点&gt; visited;	<span class="comment">//可选，看是否需要重复入栈</span></span><br><span class="line">    s.<span class="built_in">push</span>(root);</span><br><span class="line">    visited.<span class="built_in">insert</span>(root);</span><br><span class="line">    <span class="keyword">while</span>(!s.<span class="built_in">empty</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        节点 cur = q.<span class="built_in">top</span>();	<span class="comment">//取栈顶节点</span></span><br><span class="line">        <span class="keyword">if</span>(cur == target) <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        <span class="keyword">for</span>(节点 x : cur的所有相邻节点)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span>(visited.<span class="built_in">count</span>(x)) <span class="keyword">continue</span>;	<span class="comment">//判断是否已经访问过，可选</span></span><br><span class="line">            q.<span class="built_in">push</span>(x);</span><br><span class="line">            visited.<span class="built_in">insert</span>(x);	<span class="comment">//可选</span></span><br><span class="line">        &#125;</span><br><span class="line">        q.<span class="built_in">pop</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>DFS模板（递归）</li>
-</ul>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">DFS</span><span class="params">(节点 root，节点 target, unordered_set&lt;节点&gt;&amp; visited)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(root == target) <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    <span class="keyword">for</span>(节点 x : root的所有相邻节点)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(visited.<span class="built_in">count</span>(x)) <span class="keyword">continue</span>;	<span class="comment">//判断是否已经访问过，可选</span></span><br><span class="line">        visited.<span class="built_in">insert</span>(x);	<span class="comment">//可选</span></span><br><span class="line">        <span class="keyword">if</span>(<span class="built_in">DFS</span>(x,target,visited)) <span class="keyword">return</span> <span class="literal">true</span>;   </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h5 id="单调栈"><a href="#单调栈" class="headerlink" title="单调栈"></a>单调栈</h5><p>单调栈也是一种重要的数据结构，在实际解题中经常用到，简单来说单调栈内的元素保证是严格单调递增或递减的，如果一个新的元素和栈顶元素不满足这种单调关系，就将栈顶元素出栈并进行一定的操作，直到满足单调关系，将新元素入栈。</p>
-<p>之前的题目中也遇到过一些比较简单的单调栈问题，这里以两道困难题目加深对单调栈的理解。</p>
-<p><a href="https://leetcode-cn.com/problems/largest-rectangle-in-histogram/">柱状图中最大的矩形</a></p>
-<p><a href="https://leetcode-cn.com/problems/maximal-rectangle/">最大矩形</a></p>
-<p>但这两道题较为困难，能够加深对单调栈的理解。柱状图中的最大矩形的思路简单来说就是遍历每一根柱子，分别找到其左边和右边离它最近的高度低于它的柱子作为左右边界，在这两个边界范围内的所有柱子的高度都高于当前柱子，因此所形成的矩形面积就是当前柱子高度乘以边界长度。寻找柱子边界的过程就是利用单调栈实现的，并且优化过后只需要遍历一次就可以找到左边界和右边界。关于单调栈的思路如何得到以及优化具体细节可以查看<a href="https://leetcode-cn.com/problems/largest-rectangle-in-histogram/solution/zhu-zhuang-tu-zhong-zui-da-de-ju-xing-by-leetcode-/">柱状图中最大的矩形 官方题解</a>。</p>
-<p>最大矩形是一道更为困难的题目，但是如果理解了柱状图问题，再看最大矩形就不是很困难了。因为我们可以对矩阵每一行的每一个位置都求出这个位置上方连续的1的个数（包含这个位置本身），这样每一行都形成了一个柱状图，再按照柱状图的解法计算最大矩形面积即可，遍历完矩阵所有行也就得到了全局最大矩形。更多细节在代码中：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">maximalRectangle</span><span class="params">(vector&lt;vector&lt;<span class="type">char</span>&gt;&gt;&amp; matrix)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> m = matrix.<span class="built_in">size</span>(), n = matrix[<span class="number">0</span>].<span class="built_in">size</span>();</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">height</span><span class="params">(n, <span class="number">0</span>)</span></span>;     <span class="comment">//记录每一行每个位置上方连续的1的个数（包含本身）</span></span><br><span class="line">        <span class="type">int</span> ans = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; m; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">left</span><span class="params">(n)</span>, <span class="title">right</span><span class="params">(n, n)</span></span>;	<span class="comment">//每一行遍历开始都要重置right数组的初始值为n</span></span><br><span class="line">            <span class="comment">//计算每个格子上方连续1的个数，形成柱状图</span></span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt; n; ++j)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(i == <span class="number">0</span>)</span><br><span class="line">                &#123;</span><br><span class="line">                    height[j] = matrix[i][j] - <span class="string">&#x27;0&#x27;</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                &#123;</span><br><span class="line">                    height[j] = matrix[i][j] == <span class="string">&#x27;1&#x27;</span> ? height[j] + <span class="number">1</span> : <span class="number">0</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//计算直到当前行的柱状图最大矩形</span></span><br><span class="line">            stack&lt;<span class="type">int</span>&gt; mono;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt; n; ++j)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">while</span>(!mono.<span class="built_in">empty</span>() &amp;&amp; height[mono.<span class="built_in">top</span>()] &gt;= height[j])	<span class="comment">//注意更新右边界的判断条件是&#x27;&gt;=&#x27;</span></span><br><span class="line">                &#123;</span><br><span class="line">                    right[mono.<span class="built_in">top</span>()] = j;</span><br><span class="line">                    mono.<span class="built_in">pop</span>();</span><br><span class="line">                &#125;</span><br><span class="line">                left[j] = mono.<span class="built_in">empty</span>() ? <span class="number">-1</span> : mono.<span class="built_in">top</span>();</span><br><span class="line">                mono.<span class="built_in">push</span>(j);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//更新结果</span></span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt; n; ++j)</span><br><span class="line">            &#123;</span><br><span class="line">                ans = <span class="built_in">max</span>(ans, height[j] * (right[j] - left[j] - <span class="number">1</span>));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-
-
-]]></content>
-      <categories>
-        <category>数据结构与算法</category>
-      </categories>
-      <tags>
-        <tag>数据结构</tag>
-        <tag>C++</tag>
       </tags>
   </entry>
   <entry>
@@ -1937,6 +1937,29 @@
       </tags>
   </entry>
   <entry>
+    <title>【RayTracer】（十七）新特性最终场景</title>
+    <url>/LycTechStack.github.io/2022/04/22/20220422-RayTracer-%E6%96%B0%E7%89%B9%E6%80%A7%E6%9C%80%E7%BB%88%E5%9C%BA%E6%99%AF/</url>
+    <content><![CDATA[<p>现在我们新建一个非常复杂的场景来测试到目前为止光线追踪器的全部特性，生成我们的第二张光线追踪“大片”。</p>
+<p><em><span id="more"></span></em></p>
+<h3 id="1-创建新场景"><a href="#1-创建新场景" class="headerlink" title="1 创建新场景"></a>1 创建新场景</h3><p>创建一个包含所有特性的场景：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 新特性最终场景</span></span><br><span class="line"><span class="function">hittable_list <span class="title">final_scene</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 高低起伏的盒子组成地面</span></span><br><span class="line">    hittable_list boxes1;</span><br><span class="line">    <span class="keyword">auto</span> ground = <span class="built_in">make_shared</span>&lt;lambertian&gt;(<span class="built_in">color</span>(<span class="number">0.48</span>, <span class="number">0.83</span>, <span class="number">0.53</span>));</span><br><span class="line"></span><br><span class="line">    <span class="type">const</span> <span class="type">int</span> boxes_per_side = <span class="number">20</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; boxes_per_side; i++) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">0</span>; j &lt; boxes_per_side; j++) &#123;</span><br><span class="line">            <span class="keyword">auto</span> w = <span class="number">100.0</span>;</span><br><span class="line">            <span class="keyword">auto</span> x0 = <span class="number">-1000.0</span> + i * w;</span><br><span class="line">            <span class="keyword">auto</span> z0 = <span class="number">-1000.0</span> + j * w;</span><br><span class="line">            <span class="keyword">auto</span> y0 = <span class="number">0.0</span>;</span><br><span class="line">            <span class="keyword">auto</span> x1 = x0 + w;</span><br><span class="line">            <span class="keyword">auto</span> y1 = <span class="built_in">random_double</span>(<span class="number">1</span>, <span class="number">101</span>);</span><br><span class="line">            <span class="keyword">auto</span> z1 = z0 + w;</span><br><span class="line"></span><br><span class="line">            boxes1.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;box&gt;(<span class="built_in">point3</span>(x0, y0, z0), <span class="built_in">point3</span>(x1, y1, z1), ground));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    hittable_list objects;</span><br><span class="line">    <span class="comment">// 构建地面的BVH树</span></span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;bvh_node&gt;(boxes1, <span class="number">0</span>, <span class="number">1</span>));</span><br><span class="line">    <span class="comment">// 光源</span></span><br><span class="line">    <span class="keyword">auto</span> light = <span class="built_in">make_shared</span>&lt;diffuse_light&gt;(<span class="built_in">color</span>(<span class="number">7</span>, <span class="number">7</span>, <span class="number">7</span>));</span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;xz_rect&gt;(<span class="number">123</span>, <span class="number">423</span>, <span class="number">147</span>, <span class="number">412</span>, <span class="number">554</span>, light));</span><br><span class="line">    <span class="comment">// 移动的球体</span></span><br><span class="line">    <span class="keyword">auto</span> center1 = <span class="built_in">point3</span>(<span class="number">400</span>, <span class="number">400</span>, <span class="number">200</span>);</span><br><span class="line">    <span class="keyword">auto</span> center2 = center1 + <span class="built_in">vec3</span>(<span class="number">30</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">auto</span> moving_sphere_material = <span class="built_in">make_shared</span>&lt;lambertian&gt;(<span class="built_in">color</span>(<span class="number">0.7</span>, <span class="number">0.3</span>, <span class="number">0.1</span>));</span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(center1, center2, <span class="number">0</span>, <span class="number">1</span>, <span class="number">50</span>, moving_sphere_material));</span><br><span class="line">    <span class="comment">// 透明球体</span></span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(</span><br><span class="line">        <span class="built_in">point3</span>(<span class="number">260</span>, <span class="number">150</span>, <span class="number">45</span>), <span class="built_in">point3</span>(<span class="number">260</span>, <span class="number">150</span>, <span class="number">45</span>), <span class="number">0</span>, <span class="number">1</span>, <span class="number">50</span>, <span class="built_in">make_shared</span>&lt;dielectric&gt;(<span class="number">1.5</span>)));</span><br><span class="line">    <span class="comment">// 金属球体</span></span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(</span><br><span class="line">        <span class="built_in">point3</span>(<span class="number">0</span>, <span class="number">150</span>, <span class="number">145</span>), <span class="built_in">point3</span>(<span class="number">0</span>, <span class="number">150</span>, <span class="number">145</span>), <span class="number">0</span>, <span class="number">1</span>, <span class="number">50</span>, <span class="built_in">make_shared</span>&lt;metal&gt;(<span class="built_in">color</span>(<span class="number">0.8</span>, <span class="number">0.8</span>, <span class="number">0.9</span>), <span class="number">1.0</span>)</span><br><span class="line">        ));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 参与介质</span></span><br><span class="line">    <span class="keyword">auto</span> boundary = <span class="built_in">make_shared</span>&lt;sphere&gt;(</span><br><span class="line">        <span class="built_in">point3</span>(<span class="number">360</span>, <span class="number">150</span>, <span class="number">145</span>), <span class="built_in">point3</span>(<span class="number">360</span>, <span class="number">150</span>, <span class="number">145</span>), <span class="number">0</span>, <span class="number">1</span>, <span class="number">70</span>, <span class="built_in">make_shared</span>&lt;dielectric&gt;(<span class="number">1.5</span>));</span><br><span class="line">    objects.<span class="built_in">add</span>(boundary);</span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;constant_medium&gt;(boundary, <span class="number">0.01</span>, <span class="built_in">color</span>(<span class="number">0.2</span>, <span class="number">0.4</span>, <span class="number">0.9</span>)));</span><br><span class="line">    boundary = <span class="built_in">make_shared</span>&lt;sphere&gt;(</span><br><span class="line">        <span class="built_in">point3</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>), <span class="built_in">point3</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>), <span class="number">0</span>, <span class="number">1</span>, <span class="number">5000</span>, <span class="built_in">make_shared</span>&lt;dielectric&gt;(<span class="number">1.5</span>));</span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;constant_medium&gt;(boundary, <span class="number">.0001</span>, <span class="built_in">color</span>(<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>)));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 地球</span></span><br><span class="line">    <span class="keyword">auto</span> emat = <span class="built_in">make_shared</span>&lt;lambertian&gt;(<span class="built_in">make_shared</span>&lt;image_texture&gt;(</span><br><span class="line">        <span class="string">&quot;D:\\TechStack\\ComputerGraphics\\Ray Tracing in One Weekend Series\\Project\\Textures\\earthmap.jpg&quot;</span>));</span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(</span><br><span class="line">        <span class="built_in">point3</span>(<span class="number">400</span>, <span class="number">200</span>, <span class="number">400</span>), <span class="built_in">point3</span>(<span class="number">400</span>, <span class="number">200</span>, <span class="number">400</span>), <span class="number">0</span>, <span class="number">1</span>, <span class="number">100</span>, emat));</span><br><span class="line">    <span class="comment">// 噪声纹理</span></span><br><span class="line">    <span class="keyword">auto</span> pertext = <span class="built_in">make_shared</span>&lt;noise_texture&gt;(<span class="number">4</span>);</span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(</span><br><span class="line">        <span class="built_in">point3</span>(<span class="number">220</span>, <span class="number">280</span>, <span class="number">300</span>), <span class="built_in">point3</span>(<span class="number">220</span>, <span class="number">280</span>, <span class="number">300</span>), <span class="number">0</span>, <span class="number">1</span>, <span class="number">80</span>, <span class="built_in">make_shared</span>&lt;lambertian&gt;(pertext)));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 一堆小球</span></span><br><span class="line">    hittable_list boxes2;</span><br><span class="line">    <span class="keyword">auto</span> white = <span class="built_in">make_shared</span>&lt;lambertian&gt;(<span class="built_in">color</span>(<span class="number">.73</span>, <span class="number">.73</span>, <span class="number">.73</span>));</span><br><span class="line">    <span class="type">int</span> ns = <span class="number">1000</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">0</span>; j &lt; ns; j++) &#123;</span><br><span class="line">        <span class="keyword">auto</span> center = <span class="built_in">random_vec</span>(<span class="number">0</span>, <span class="number">165</span>);</span><br><span class="line">        boxes2.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(</span><br><span class="line">            center, center, <span class="number">0</span>, <span class="number">1</span>, <span class="number">10</span>, white));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 旋转平移一堆小球</span></span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;translate&gt;(</span><br><span class="line">        <span class="built_in">make_shared</span>&lt;rotate_y&gt;(</span><br><span class="line">            <span class="built_in">make_shared</span>&lt;bvh_node&gt;(boxes2, <span class="number">0.0</span>, <span class="number">1.0</span>), <span class="number">15</span>),</span><br><span class="line">        <span class="built_in">vec3</span>(<span class="number">-100</span>, <span class="number">270</span>, <span class="number">395</span>)</span><br><span class="line">        )</span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> objects;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-渲染效果"><a href="#2-渲染效果" class="headerlink" title="2 渲染效果"></a>2 渲染效果</h3><p>修改主函数：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">switch</span> (sence) &#123;</span><br><span class="line">        ...</span><br><span class="line">        <span class="keyword">default</span>:</span><br><span class="line">        <span class="keyword">case</span> <span class="number">8</span>:</span><br><span class="line">            world = <span class="built_in">final_scene</span>();</span><br><span class="line">            aspect_ratio = <span class="number">1.0</span>;</span><br><span class="line">            image_width = <span class="number">800</span>;</span><br><span class="line">            samples_per_pixel = <span class="number">10000</span>;</span><br><span class="line">            min_bounce = <span class="number">95</span>;</span><br><span class="line">            background = <span class="built_in">color</span>(<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>);</span><br><span class="line">            lookfrom = <span class="built_in">point3</span>(<span class="number">478</span>, <span class="number">278</span>, <span class="number">-600</span>);</span><br><span class="line">            lookat = <span class="built_in">point3</span>(<span class="number">278</span>, <span class="number">278</span>, <span class="number">0</span>);</span><br><span class="line">            vfov = <span class="number">40.0</span>;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>渲染效果如下：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/22/20220422-RayTracer-%E6%96%B0%E7%89%B9%E6%80%A7%E6%9C%80%E7%BB%88%E5%9C%BA%E6%99%AF/FinalSence.png" alt="FinalSence"></p>
+]]></content>
+      <categories>
+        <category>RayTracer</category>
+      </categories>
+      <tags>
+        <tag>计算机图形学</tag>
+        <tag>C++</tag>
+        <tag>光线追踪</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>【RayTracer】（十六）参与介质</title>
     <url>/LycTechStack.github.io/2022/04/22/20220422-RayTracer-%E5%8F%82%E4%B8%8E%E4%BB%8B%E8%B4%A8/</url>
     <content><![CDATA[<p>之前在图形学中我们学过参与介质（participating media）的实现原理，比如烟雾，这一节我们来实现一个恒定密度的参与介质。</p>
@@ -1999,29 +2022,6 @@
 
 <p>效果如下：</p>
 <p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/22/20220422-RayTracer-%E7%AB%8B%E6%96%B9%E4%BD%93%E5%92%8C%E5%8F%98%E6%8D%A2/CornellBoxComplete-16506279092151.png" alt="CornellBoxComplete"></p>
-]]></content>
-      <categories>
-        <category>RayTracer</category>
-      </categories>
-      <tags>
-        <tag>计算机图形学</tag>
-        <tag>C++</tag>
-        <tag>光线追踪</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>【RayTracer】（十七）新特性最终场景</title>
-    <url>/LycTechStack.github.io/2022/04/22/20220422-RayTracer-%E6%96%B0%E7%89%B9%E6%80%A7%E6%9C%80%E7%BB%88%E5%9C%BA%E6%99%AF/</url>
-    <content><![CDATA[<p>现在我们新建一个非常复杂的场景来测试到目前为止光线追踪器的全部特性，生成我们的第二张光线追踪“大片”。</p>
-<p><em><span id="more"></span></em></p>
-<h3 id="1-创建新场景"><a href="#1-创建新场景" class="headerlink" title="1 创建新场景"></a>1 创建新场景</h3><p>创建一个包含所有特性的场景：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 新特性最终场景</span></span><br><span class="line"><span class="function">hittable_list <span class="title">final_scene</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 高低起伏的盒子组成地面</span></span><br><span class="line">    hittable_list boxes1;</span><br><span class="line">    <span class="keyword">auto</span> ground = <span class="built_in">make_shared</span>&lt;lambertian&gt;(<span class="built_in">color</span>(<span class="number">0.48</span>, <span class="number">0.83</span>, <span class="number">0.53</span>));</span><br><span class="line"></span><br><span class="line">    <span class="type">const</span> <span class="type">int</span> boxes_per_side = <span class="number">20</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; boxes_per_side; i++) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">0</span>; j &lt; boxes_per_side; j++) &#123;</span><br><span class="line">            <span class="keyword">auto</span> w = <span class="number">100.0</span>;</span><br><span class="line">            <span class="keyword">auto</span> x0 = <span class="number">-1000.0</span> + i * w;</span><br><span class="line">            <span class="keyword">auto</span> z0 = <span class="number">-1000.0</span> + j * w;</span><br><span class="line">            <span class="keyword">auto</span> y0 = <span class="number">0.0</span>;</span><br><span class="line">            <span class="keyword">auto</span> x1 = x0 + w;</span><br><span class="line">            <span class="keyword">auto</span> y1 = <span class="built_in">random_double</span>(<span class="number">1</span>, <span class="number">101</span>);</span><br><span class="line">            <span class="keyword">auto</span> z1 = z0 + w;</span><br><span class="line"></span><br><span class="line">            boxes1.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;box&gt;(<span class="built_in">point3</span>(x0, y0, z0), <span class="built_in">point3</span>(x1, y1, z1), ground));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    hittable_list objects;</span><br><span class="line">    <span class="comment">// 构建地面的BVH树</span></span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;bvh_node&gt;(boxes1, <span class="number">0</span>, <span class="number">1</span>));</span><br><span class="line">    <span class="comment">// 光源</span></span><br><span class="line">    <span class="keyword">auto</span> light = <span class="built_in">make_shared</span>&lt;diffuse_light&gt;(<span class="built_in">color</span>(<span class="number">7</span>, <span class="number">7</span>, <span class="number">7</span>));</span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;xz_rect&gt;(<span class="number">123</span>, <span class="number">423</span>, <span class="number">147</span>, <span class="number">412</span>, <span class="number">554</span>, light));</span><br><span class="line">    <span class="comment">// 移动的球体</span></span><br><span class="line">    <span class="keyword">auto</span> center1 = <span class="built_in">point3</span>(<span class="number">400</span>, <span class="number">400</span>, <span class="number">200</span>);</span><br><span class="line">    <span class="keyword">auto</span> center2 = center1 + <span class="built_in">vec3</span>(<span class="number">30</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">auto</span> moving_sphere_material = <span class="built_in">make_shared</span>&lt;lambertian&gt;(<span class="built_in">color</span>(<span class="number">0.7</span>, <span class="number">0.3</span>, <span class="number">0.1</span>));</span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(center1, center2, <span class="number">0</span>, <span class="number">1</span>, <span class="number">50</span>, moving_sphere_material));</span><br><span class="line">    <span class="comment">// 透明球体</span></span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(</span><br><span class="line">        <span class="built_in">point3</span>(<span class="number">260</span>, <span class="number">150</span>, <span class="number">45</span>), <span class="built_in">point3</span>(<span class="number">260</span>, <span class="number">150</span>, <span class="number">45</span>), <span class="number">0</span>, <span class="number">1</span>, <span class="number">50</span>, <span class="built_in">make_shared</span>&lt;dielectric&gt;(<span class="number">1.5</span>)));</span><br><span class="line">    <span class="comment">// 金属球体</span></span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(</span><br><span class="line">        <span class="built_in">point3</span>(<span class="number">0</span>, <span class="number">150</span>, <span class="number">145</span>), <span class="built_in">point3</span>(<span class="number">0</span>, <span class="number">150</span>, <span class="number">145</span>), <span class="number">0</span>, <span class="number">1</span>, <span class="number">50</span>, <span class="built_in">make_shared</span>&lt;metal&gt;(<span class="built_in">color</span>(<span class="number">0.8</span>, <span class="number">0.8</span>, <span class="number">0.9</span>), <span class="number">1.0</span>)</span><br><span class="line">        ));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 参与介质</span></span><br><span class="line">    <span class="keyword">auto</span> boundary = <span class="built_in">make_shared</span>&lt;sphere&gt;(</span><br><span class="line">        <span class="built_in">point3</span>(<span class="number">360</span>, <span class="number">150</span>, <span class="number">145</span>), <span class="built_in">point3</span>(<span class="number">360</span>, <span class="number">150</span>, <span class="number">145</span>), <span class="number">0</span>, <span class="number">1</span>, <span class="number">70</span>, <span class="built_in">make_shared</span>&lt;dielectric&gt;(<span class="number">1.5</span>));</span><br><span class="line">    objects.<span class="built_in">add</span>(boundary);</span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;constant_medium&gt;(boundary, <span class="number">0.01</span>, <span class="built_in">color</span>(<span class="number">0.2</span>, <span class="number">0.4</span>, <span class="number">0.9</span>)));</span><br><span class="line">    boundary = <span class="built_in">make_shared</span>&lt;sphere&gt;(</span><br><span class="line">        <span class="built_in">point3</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>), <span class="built_in">point3</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>), <span class="number">0</span>, <span class="number">1</span>, <span class="number">5000</span>, <span class="built_in">make_shared</span>&lt;dielectric&gt;(<span class="number">1.5</span>));</span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;constant_medium&gt;(boundary, <span class="number">.0001</span>, <span class="built_in">color</span>(<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>)));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 地球</span></span><br><span class="line">    <span class="keyword">auto</span> emat = <span class="built_in">make_shared</span>&lt;lambertian&gt;(<span class="built_in">make_shared</span>&lt;image_texture&gt;(</span><br><span class="line">        <span class="string">&quot;D:\\TechStack\\ComputerGraphics\\Ray Tracing in One Weekend Series\\Project\\Textures\\earthmap.jpg&quot;</span>));</span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(</span><br><span class="line">        <span class="built_in">point3</span>(<span class="number">400</span>, <span class="number">200</span>, <span class="number">400</span>), <span class="built_in">point3</span>(<span class="number">400</span>, <span class="number">200</span>, <span class="number">400</span>), <span class="number">0</span>, <span class="number">1</span>, <span class="number">100</span>, emat));</span><br><span class="line">    <span class="comment">// 噪声纹理</span></span><br><span class="line">    <span class="keyword">auto</span> pertext = <span class="built_in">make_shared</span>&lt;noise_texture&gt;(<span class="number">4</span>);</span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(</span><br><span class="line">        <span class="built_in">point3</span>(<span class="number">220</span>, <span class="number">280</span>, <span class="number">300</span>), <span class="built_in">point3</span>(<span class="number">220</span>, <span class="number">280</span>, <span class="number">300</span>), <span class="number">0</span>, <span class="number">1</span>, <span class="number">80</span>, <span class="built_in">make_shared</span>&lt;lambertian&gt;(pertext)));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 一堆小球</span></span><br><span class="line">    hittable_list boxes2;</span><br><span class="line">    <span class="keyword">auto</span> white = <span class="built_in">make_shared</span>&lt;lambertian&gt;(<span class="built_in">color</span>(<span class="number">.73</span>, <span class="number">.73</span>, <span class="number">.73</span>));</span><br><span class="line">    <span class="type">int</span> ns = <span class="number">1000</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">0</span>; j &lt; ns; j++) &#123;</span><br><span class="line">        <span class="keyword">auto</span> center = <span class="built_in">random_vec</span>(<span class="number">0</span>, <span class="number">165</span>);</span><br><span class="line">        boxes2.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(</span><br><span class="line">            center, center, <span class="number">0</span>, <span class="number">1</span>, <span class="number">10</span>, white));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 旋转平移一堆小球</span></span><br><span class="line">    objects.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;translate&gt;(</span><br><span class="line">        <span class="built_in">make_shared</span>&lt;rotate_y&gt;(</span><br><span class="line">            <span class="built_in">make_shared</span>&lt;bvh_node&gt;(boxes2, <span class="number">0.0</span>, <span class="number">1.0</span>), <span class="number">15</span>),</span><br><span class="line">        <span class="built_in">vec3</span>(<span class="number">-100</span>, <span class="number">270</span>, <span class="number">395</span>)</span><br><span class="line">        )</span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> objects;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-渲染效果"><a href="#2-渲染效果" class="headerlink" title="2 渲染效果"></a>2 渲染效果</h3><p>修改主函数：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">switch</span> (sence) &#123;</span><br><span class="line">        ...</span><br><span class="line">        <span class="keyword">default</span>:</span><br><span class="line">        <span class="keyword">case</span> <span class="number">8</span>:</span><br><span class="line">            world = <span class="built_in">final_scene</span>();</span><br><span class="line">            aspect_ratio = <span class="number">1.0</span>;</span><br><span class="line">            image_width = <span class="number">800</span>;</span><br><span class="line">            samples_per_pixel = <span class="number">10000</span>;</span><br><span class="line">            min_bounce = <span class="number">95</span>;</span><br><span class="line">            background = <span class="built_in">color</span>(<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>);</span><br><span class="line">            lookfrom = <span class="built_in">point3</span>(<span class="number">478</span>, <span class="number">278</span>, <span class="number">-600</span>);</span><br><span class="line">            lookat = <span class="built_in">point3</span>(<span class="number">278</span>, <span class="number">278</span>, <span class="number">0</span>);</span><br><span class="line">            vfov = <span class="number">40.0</span>;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>渲染效果如下：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/22/20220422-RayTracer-%E6%96%B0%E7%89%B9%E6%80%A7%E6%9C%80%E7%BB%88%E5%9C%BA%E6%99%AF/FinalSence.png" alt="FinalSence"></p>
 ]]></content>
       <categories>
         <category>RayTracer</category>
@@ -4342,6 +4342,212 @@
       </tags>
   </entry>
   <entry>
+    <title>【计算机图形学】（九）几何</title>
+    <url>/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/</url>
+    <content><![CDATA[<h2 id="几何（Geometry）"><a href="#几何（Geometry）" class="headerlink" title="几何（Geometry）"></a>几何（Geometry）</h2><p>图形学中几何是最最重要的部分之一，但同时也是极其复杂的一个课题，这一节只是对计算机图形学中几何的一些最基本的概念、算法做介绍，更加深入的图形学几何知识我们之后再去涉及。这部分内容主要包括几何的表示方式、贝塞尔曲线、分段贝塞尔曲线、B样条、贝塞尔曲面、曲面细分的几种算法和曲面简化的基本原理。</p>
+<p><em><span id="more"></span></em></p>
+<h3 id="1-几何表示方法"><a href="#1-几何表示方法" class="headerlink" title="1 几何表示方法"></a>1 几何表示方法</h3><p>几何讨论的实际上就是计算机中如何去描述曲线或者曲面这样的几何图形，比如下图这样复杂的曲线：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313124337862.png" alt="image-20220313124337862"></p>
+<p>再比如：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313124437599.png" alt="image-20220313124437599"></p>
+<p>这样复杂的物体我们几乎不可能通过建模去完成，因此需要一些方法对几何进行有效的表示。</p>
+<p>几何表示方法大体分为两大类，<strong>隐式表示</strong>和<strong>显式表示</strong>。</p>
+<p>隐式表示是指我们无法通过通过给定的表示方法直接知道它表示的是什么图形或者什么物体，比如我们非常熟悉的代数方程，给出一个方程我们无法直接知道这个方程表示的是什么，也很难知道哪些点在这个方程表示的物体上，如下图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313124958116.png" alt="image-20220313124958116"></p>
+<p>只根据这个代数方程我们很难知道哪些点在这个物体上，但是给定任意一个点，我们根据方程可以很容易的判断它是否在这个物体上，或者在这个物体内部还是外部。</p>
+<p>而显式表示是指直接给定这个几何图形上的所有点，或者给定一种参数映射规则，根据规则我们可以很容易得出哪些点在这个几何物体上，比如：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313125440581.png" alt="image-20220313125440581"></p>
+<p>我们可以把二维上的点通过某种规则映射到三维形成我们要表示物体，此时我们只需要根据规则把二维坐标带入就可以得到三维物体上每一个点的坐标了，对于刚才的例子，它的一种显式表示如下：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313125620781.png" alt="image-20220313125620781"></p>
+<p>我们只需要把某个范围内的二维坐标带入，就可以得到这个物体上每个点的三维坐标了。但是如果我们想要判断某个点是否在物体上，或者在物体的内部还是外部的时候，显式表示就没有很便捷方法能够做这样的判断了。</p>
+<p>因此，隐式表示和显式表示各有优劣，在实际任务中使用什么样的表示，完全取决于我们的需求，根据不同的需求选择具有不同特性的表示方法，再利用这种表示完成我们想要的效果，这也正是几何之所以非常困难的原因。</p>
+<p>接下来分别简单介绍几种隐式表示和显式表示方法。</p>
+<h4 id="1-1-一些隐式表示方法"><a href="#1-1-一些隐式表示方法" class="headerlink" title="1.1 一些隐式表示方法"></a>1.1 一些隐式表示方法</h4><ul>
+<li>代数表示：最常见的隐式表示方法，但是表示特别复杂的物体时会非常困难</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313130323647.png" alt="image-20220313130323647"></p>
+<ul>
+<li>构造实体几何（Constructive Solid Geometry）：通过对一些基本几何图形进行运算操作，比如交、并、差等操作，得到复杂的几何图形</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313130432128.png" alt="image-20220313130432128"></p>
+<ul>
+<li>距离函数（Distance Functions）：距离函数是隐式表示中非常强大的一种表示方式，所谓距离函数是指通过定义空间中任何一个点到离它最近的物体表面的距离，来定义一个物体。这样做的好处是便于不同物体之间的融合，如下图：</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313130703036.png" alt="image-20220313130703036"></p>
+<p>两个小球的融合如果用上面的一些表示方法是没有办法表示的这么平滑的，但是距离函数可以做到。我们可以先把两个小球用距离函数表示，然后把它们的距离函数做一个融合，融合之后的新的距离函数还原为模型，就得到了平滑的融合模型。融合的过程如下图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313130910020.png" alt="image-20220313130910020"></p>
+<p>A和B中阴影部分都代表某一个物体，阴影和空白的分界线自然就是这个物体的表面，因为距离函数的定义是空间中任意一点到离它最近的物体表面的距离，因此所谓两个物体的融合，其实也是两个物体表面的融合。根据距离函数的定义，A 和 B 的距离函数就是下面的 SDF(A) 和 SDF(B) 所示的样子，“o“ 代表距离为0，也就是这个物体的表面，那么当这两个距离函数融合之后，A的距离函数原本应该取正值的部分（表面的右边），会和 B 的距离函数原本取负值的部分（表面的左边）叠加起来，这样就会形成一个新的 0 平面，这个新的 0 平面就是两个物体融合后新的表面，再还原为物体自然就得到了平滑融合后的新的物体。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313131530880.png" alt="image-20220313131530880"></p>
+<ul>
+<li>水平集（Level Set）：水平集也是在图像分割领域广泛应用的一种隐式表示方法，比如下图中水的涟漪就是用水平集建模表示的。</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313131901065.png" alt="image-20220313131901065"></p>
+<ul>
+<li>自相似（Fractals）：自相似就是用自身组成自身，类似于递归</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313132021023.png" alt="image-20220313132021023"></p>
+<p>最后总结一下隐式表示的优缺点：</p>
+<p>优点是隐式表示对简单的物体能够表示的非常准确，并且容易做内外侧的判断，也便于光线与表面关系的计算，还可以很容易的进行拓扑变换，比如流体的模拟。但缺点也很明显就是很难去对复杂的模型进行表示。</p>
+<h4 id="1-2-一些显式表示方法"><a href="#1-2-一些显式表示方法" class="headerlink" title="1.2 一些显式表示方法"></a>1.2 一些显式表示方法</h4><ul>
+<li>点云（Point Cloud）：最直接的显式表示方法，可以很容易地表示任何几何图形，因此目前也应用广泛。</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313132554300.png" alt="image-20220313132554300"></p>
+<ul>
+<li>几何片面（Polygon Mesh）：图形学中使用最广泛的表示方式，也就是我们之前接触到的用三角形或者四边形片面组成一个模型：</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313132811559.png" alt="image-20220313132811559"></p>
+<p>提供给我们的是模型上每一个片面的顶点以及它的一些属性（纹理坐标、法向量等等），还有这些顶点的组合方式，哪几个顶点组成一个片面。下面是一个模型文件（.obj）的内容：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313132918667.png" alt="image-20220313132918667"></p>
+<p>其中 v就是顶点坐标，vt 是纹理坐标，vn 是法向量， f 是顶点组合方式，比如第36行的组合方式表示用第 5 个、第 1 个和第 4 个顶点组成一个三角形，三个顶点分别使用第 1 个、第 2 个、第 3 个纹理坐标，都使用第 1 个平面的法向量。</p>
+<p>了解了几何的表示方式，我们接下来开始具体讨论曲线和曲面。</p>
+<h3 id="2-曲线"><a href="#2-曲线" class="headerlink" title="2 曲线"></a>2 曲线</h3><p>曲线在图形学中非常重要，比如动画中摄像机的运动轨迹，我们运镜时要先定义好一个曲线，然后让相机在这个曲线上运动来拍出我们想要的效果；或者空间中一个物体运动的轨迹，我们也要事先把这个轨迹定义好。因此我们就需要有一种方法能够表示空间中任意形状的曲线，图形学中最基本的曲线表示方法就是贝塞尔曲线（Bézier Curves）。</p>
+<h4 id="2-1-贝塞尔曲线（Bezier-Curves）"><a href="#2-1-贝塞尔曲线（Bezier-Curves）" class="headerlink" title="2.1 贝塞尔曲线（Bézier Curves）"></a>2.1 贝塞尔曲线（Bézier Curves）</h4><p>贝塞尔曲线就是根据给定的控制点去唯一的确定一条曲线，比如下图所示的贝塞尔曲线，给定了四个控制点 $p_0$ 、 $p_1$ 、 $p_2$ 、 $p_3$ </p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313140742928.png" alt="image-20220313140742928"></p>
+<p>那么所确定的这条曲线要满足几个条件：</p>
+<ul>
+<li>过第一个和最后一个控制点</li>
+<li>曲线起始的切线方向沿 $\vec {p_1 p_0}$ 方向</li>
+<li>曲线末尾的切线方向沿 $\vec {p_3 p_2}$ 方向</li>
+</ul>
+<p>这样就确定出了一条贝塞尔曲线。那么我们怎么样快速的根据给定的控制点确定一条贝塞尔曲线呢？</p>
+<h4 id="2-2-de-Casteljau-算法"><a href="#2-2-de-Casteljau-算法" class="headerlink" title="2.2 de Casteljau 算法"></a>2.2 de Casteljau 算法</h4><p>de Casteljau 算法用来根据给定的控制点得到曲线上的点。首先我们先考虑三个控制点的情况，此时的贝塞尔曲线称为<strong>二阶贝塞尔曲线</strong>：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313141409889.png" alt="image-20220313141409889"></p>
+<p>对于给定的三个控制点 $b_0$​、$b_1$、$b_2$，我们将他们相邻的两两连接起来形成两条线段，假设在线段 $b_0 b_1$ 上 有一个点 $b_0^1$ 在沿着线段移动，那么这个点会把线段分为两个部分，如下图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313141700501.png" alt="image-20220313141700501"></p>
+<p>假设线段长度为 1，那么我们可以用一个在 0 到 1 之间的系数 t 来表示点 $b_0^1$ 在线段上移动了多少，也可以理解为 t 这个时刻点 $b_0^1$ 在线段上的位置，同样我们在线段 $b_1 b_2$ 上找一个 点 $b_1^1$ ，也移动了 t 距离：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313142123630.png" alt="image-20220313142123630"></p>
+<p>然后连接这两个点形成线段 $b_0^1 b_1^1$，然后在这条线段上继续寻找移动了 t 距离的点 $b_0^2$</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313142250287.png" alt="image-20220313142250287"></p>
+<p>此时这个点无法再形成线段，那么这个点就是由这三个控制点形成的曲线上在 t 时刻的点：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313142400258.png" alt="image-20220313142400258"></p>
+<p>于是对于任意一个 $t \in [0,1]$，都可以确定一个曲线上的点，这相当于定义了一种参数转换规则来描述这个曲线，因此贝塞尔曲线是一种显示的几何表示方法。</p>
+<p>那么同样对于三阶贝塞尔曲线，有四个控制点，按照同样的方法就可以得到曲线上的点了：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313142543570.png" alt="image-20220313142543570"></p>
+<p>下面的动图很好地展示了这一过程（来自<a href="https://acko.net/files/fullfrontal/fullfrontal/wdcode/online.html">Making things with Maths (acko.net)</a>）：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/BezierCurve.gif" alt="BezierCurve"></p>
+<h4 id="2-3-贝塞尔曲线的代数表示"><a href="#2-3-贝塞尔曲线的代数表示" class="headerlink" title="2.3 贝塞尔曲线的代数表示"></a>2.3 贝塞尔曲线的代数表示</h4><p>实际上通过de Casteljau 算法，我们可以很容易写出贝塞尔曲线的代数表示：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313143701807.png" alt="image-20220313143701807"></p>
+<p>每一个中间点都相当于线段两个端点做了一次线性插值，直到最终得到一个点，这个点就是曲线上的点。再以刚才的二阶贝塞尔曲线为例：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313143831050.png" alt="image-20220313143831050"></p>
+<p>可以看到 $b_0^2$ 的表达式系数就是一个完全平方展开，刚好是 $[(1-t) + t]^2$ 的展开，也就相当于 1 的二阶展开项。</p>
+<p>那么我们可以写出贝塞尔曲线的一般形式：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313144402420.png" alt="image-20220313144402420"></p>
+<p>对于 n 阶贝塞尔曲线上的点，实际上是就是所有 n + 1 个控制点的加权和，加权系数是伯恩斯坦多项式，其实就是二项式系数。</p>
+<p>比如对于一个三阶贝塞尔曲线，我们给定了 4 个控制点的坐标，那么根据伯恩斯坦多项式就可以确定出曲线上的点的坐标满足的关系：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313144711137.png" alt="image-20220313144711137"></p>
+<p>关于伯恩斯坦多项式，实际上就是 1 的 n 阶展开，如下图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313144740011.png" alt="image-20220313144740011"></p>
+<p>在任意时刻 t，各阶伯恩斯坦多项式的值和都为 1 . </p>
+<h4 id="2-4-贝塞尔曲线的性质"><a href="#2-4-贝塞尔曲线的性质" class="headerlink" title="2.4 贝塞尔曲线的性质"></a>2.4 贝塞尔曲线的性质</h4><p>贝塞尔曲线有如下的一些性质，以三阶贝塞尔曲线为例：</p>
+<ul>
+<li>过第一个和最后一个控制点：</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313144949539.png" alt="image-20220313144949539"></p>
+<ul>
+<li>切线方向：这里的系数 3 是因为我们是三阶贝塞尔曲线，更高阶的系数就不一定是 3 了</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313145008375.png" alt="image-20220313145008375"></p>
+<ul>
+<li>仿射不变性：一条贝塞尔曲线经过任意仿射变换相当于控制点经过任意仿射变换，因此我们要对贝塞尔曲线进行仿射变换无需对去线上的所有点变换，只要对控制点变换即可，但只有仿射变换满足这个性质，投影变换不满足</li>
+<li>凸包性：贝塞尔曲线一定在所有控制点形成的凸包内，所谓凸包就是能涵盖所有点的最小凸多边形，如下图：</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313145423691.png" alt="image-20220313145423691"></p>
+<h4 id="2-5-分段贝塞尔曲线（Piecewise-Bezier-Curves）"><a href="#2-5-分段贝塞尔曲线（Piecewise-Bezier-Curves）" class="headerlink" title="2.5 分段贝塞尔曲线（Piecewise Bézier Curves）"></a>2.5 分段贝塞尔曲线（Piecewise Bézier Curves）</h4><p>贝塞尔曲线也有一定的缺点，比如对于一个 10 阶贝塞尔曲线：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313150200076.png" alt="image-20220313150200076"></p>
+<p>可以看到这个曲线并没有想象中那么扭曲，而是相对平缓，这是因为高阶的贝塞尔曲线我们很难通过控制点去改变曲线的形状，因此人们发明了分段贝塞尔曲线。</p>
+<p>既然高阶不好控制，那我们可以把曲线分段，每一段用一个低阶的贝塞尔曲线（通常就是 3 阶）表示，最后再把他们连接起来，就可以形成各种复杂的曲线了。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313150417136.png" alt="image-20220313150417136"></p>
+<p>这里还有一个<a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">demo网页</a>可以帮助我们理解分段贝塞尔曲线，可以通过拖动每一个控制点改变曲线。</p>
+<p>那既然曲线连接起来了，就存在一个问题，就是两段曲线之间的连续性，比如上图中就有很多尖点显然是不连续的，但实际工程中我们希望很多复杂的曲线要严格连续，因此要定义两个贝塞尔曲线的连续性。</p>
+<ul>
+<li>$C^0$ 连续：前一段曲线的最后一个控制点就是后一段曲线的第一个控制点，就称两条曲线满足 $C^0$ 连续</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313150812525.png" alt="image-20220313150812525"></p>
+<ul>
+<li>$C^1$ 连续：两段曲线的连接点是两条曲线倒数第二个控制点和第二个控制点连线的中点，实际上就是第一段曲线结尾的切线方向和第二段曲线开始的切线方向相同，也就是一阶导数严格相等。<img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313150933957.png" alt="image-20220313150933957"></li>
+</ul>
+<p>虽然许多时候 $C^1$ 连续已经能满足我们的要求，但有些时候我们需要更严格连续，这时就要满足 $C^2$ 或者更高阶的连续，也就是二阶导数或者更高阶导数相等。</p>
+<h4 id="2-6-B样条（B-splines）"><a href="#2-6-B样条（B-splines）" class="headerlink" title="2.6 B样条（B-splines）"></a>2.6 B样条（B-splines）</h4><p>通过上面对贝塞尔曲线的了解，我们发现贝塞尔曲线有两个关键的缺点：一是改变任何一个控制点的位置，会对整条曲线产生影响，但很多时候我们并不希望如此，我们只希望在局部改变曲线形状，当然这可以由分段贝塞尔曲线来解决；另一方面就是虽然分段贝塞尔曲线能够解决局部性问题，但是改变了某一段的贝塞尔曲线，就可能会影响和这条曲线相连接的部分的曲线连续性，可能会导致曲线连续性降低。B样条就可以完美地解决这两个问题。</p>
+<p>B样条实际上是贝塞尔曲线的一般化，简单来说样条就是指由一组控制点控制的曲线，B样条是 basis splines 的缩写，也就是由basis函数组成的样条，basis函数就是基函数，因此B样条就是由一组基函数表示的样条曲线。</p>
+<p>对于给定的 n + 1 个控制点，贝塞尔曲线一定是 n 阶的，但是B样条并非如此，因此B样条相比于贝塞尔曲线更加灵活。具体来说，B样条可以把一个控制点的改变对于曲线形状的影响控制在一定范围内，这样就方便我们去做局部的调整了。并且B样条天然具备高阶连续性，且不必定义在固定区间 [0,1] 上，这给曲线的表征带来了极大的方便。</p>
+<p>但是B样条无法表示一些基本曲线，比如圆，因此又引入了<strong>非均匀有理B样条（NURBS）</strong>，具体关于B样条的内容可以查看本篇的<strong>更多</strong>部分内容。</p>
+<h3 id="3-曲面"><a href="#3-曲面" class="headerlink" title="3 曲面"></a>3 曲面</h3><h4 id="3-1-贝塞尔曲面（Bezier-Surface）"><a href="#3-1-贝塞尔曲面（Bezier-Surface）" class="headerlink" title="3.1 贝塞尔曲面（Bézier Surface）"></a>3.1 贝塞尔曲面（Bézier Surface）</h4><p>把贝塞尔曲线推广到三维，就是贝塞尔曲面，因此贝塞尔曲面同样是显式的几何表示方法。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313154416556.png" alt="image-20220313154416556"></p>
+<p>比如一个双三阶贝塞尔曲面，有16个控制点，我们先把每四个控制点所确定的贝塞尔曲线画出来：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313154540370.png" alt="image-20220313154540370"></p>
+<p>然后在这四条曲线上取四个点作为新的控制点就能确定一条新的贝塞尔曲线，四个新的控制点不停的移动就构建出了一个曲面。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313154857224.png" alt="image-20220313154857224"></p>
+<p>因此我们只要给定 $[0,1]^2$ 范围内的一个平面坐标 $(u,v)$，就可以对应到一个曲面上的点。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313154817496.png" alt="image-20220313154817496"></p>
+<h4 id="3-2-曲面操作"><a href="#3-2-曲面操作" class="headerlink" title="3.2 曲面操作"></a>3.2 曲面操作</h4><p>很多时候对于一个给定的模型，我们需要对模型上的曲面进行一些操作，如下图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313155114023.png" alt="image-20220313155114023"></p>
+<ul>
+<li>曲面细分：有时候模型上的曲面不够细时，我们想要使得模型更平滑更细节，就要对曲面进行细分，比如游戏中我们希望离我们近的模型细节更好，因此曲面要更多，离我们远的物体不需要太好的细节，就可以曲面少一些，减少性能消耗</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313155628632.png" alt="image-20220313155628632"></p>
+<ul>
+<li>曲面简化：刚才说的不需要太好的细节的时候就可以把曲面减少一些，也就是曲面简化</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313155639640.png" alt="image-20220313155639640"></p>
+<ul>
+<li>曲面规范化：有时候我们希望模型上的三角形的差异不要那么大，都把这些三角形规范化成近似等边的三角形，会方便我们进行一些操作，这时就需要曲面规范化</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313155652970.png" alt="image-20220313155652970"></p>
+<h4 id="3-3-曲面细分（Mesh-Subdivision）"><a href="#3-3-曲面细分（Mesh-Subdivision）" class="headerlink" title="3.3 曲面细分（Mesh Subdivision）"></a>3.3 曲面细分（Mesh Subdivision）</h4><h5 id="3-3-1-Loop细分"><a href="#3-3-1-Loop细分" class="headerlink" title="3.3.1 Loop细分"></a>3.3.1 Loop细分</h5><p>Loop细分（不是循环细分，是发明这个算法的人家族名字叫Loop）是一种广泛使用的曲面细分算法，但它只能对三角形曲面进行细分。如下图，细分后的曲面会变得更平滑，因此细分不是简单的把三角形拆成更多的三角形，还要调整这些小三角形的位置使得整个模型发生变化，变得如我们希望的一般平滑。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313160108916.png" alt="image-20220313160108916"></p>
+<p>Loop细分分为两步：</p>
+<p>1、创建更多的三角形：我们取每一个三角形三条边的中点并把它们连接起来就把一个三角形分成了4个小三角形，同时也获得了三个新的顶点</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313160024777.png" alt="image-20220313160024777"></p>
+<p>2、调整顶点位置：在经过第一步之后所有表面的顶点被分成了两类，一类是原本就有的顶点，另一类是新创造的顶点，对于这两类顶点我们用不同的方法去调整他们的位置。</p>
+<ul>
+<li><p>对于新顶点，一定在原来的两个三角形公共边的中点处，于是我们用这两个三角形的四个顶点对新顶点位置进行更新，离新顶点近的两个原顶点权值更高：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313160353029.png" alt="image-20220313160353029"></p>
+</li>
+<li><p>对于原来的顶点，既要参考周围其他点的位置，也要参考自己本身的位置，毕竟自己也是货真价实的一个顶点，因此对于任意一个原来的顶点，该点的度为 n （顶点的度就是和顶点相连的线段有几条，下图中顶点的度为 6 ），我们希望原顶点周围的顶点越多的时候，这个顶点对于自身位置的影响也就越不重要，因此顶点的更新规则为：</p>
+</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313160631125.png" alt="image-20220313160631125"></p>
+<h5 id="3-3-2-Catmull-Clark-细分"><a href="#3-3-2-Catmull-Clark-细分" class="headerlink" title="3.3.2 Catmull-Clark 细分"></a>3.3.2 Catmull-Clark 细分</h5><p>图灵奖得主Ed Catmull 最知名的算法之一。上面的Loop细分只能处理三角形曲面，而 Catmull-Clark 细分可以处理更一般的情况。比如既有四边形曲面又有三角形曲面的情况：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313161512896.png" alt="image-20220313161512896"></p>
+<p>Catmull-Clark 细分把曲面分为四边形面和非四边形面，把顶点分为奇异点和非奇异点，所谓奇异点是指顶点的度不为 4 的点，上图中紫色的点就是奇异点。</p>
+<p>Catmull-Clark 细分算法同样是先细分，再调整位置：</p>
+<p>1、细分：我们每次细分时，找到每个曲面的边的中点，以及每个曲面的中心点，把这些点连接起来</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313161857299.png" alt="image-20220313161857299"></p>
+<p>可以看到经过一次细分之后，对于四边形面，就是细分成了4个更小的四边形，而对三角形面，一个三角形被分成了 3 个小的四边形，也就是说<strong>经过一次细分后，就不再存在非四边形面了</strong>，同时我们注意到，原本有两个奇异点，经过一次细分后，新增加了两个奇异点，换句话说<strong>经过一次细分，所有的非四边形面都变成了一个奇异点</strong>，这样就不再存在非四边形面了，并且<strong>之后再进行细分也不会再增加奇异点个数了</strong>。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313162317511.png" alt="image-20220313162317511"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313162341322.png" alt="image-20220313162341322"></p>
+<p>2、调整顶点位置：Catmull-Clark 细分把顶点分为三类，一类是在平面内的点（Face Point），另一类是在平面边上的点（Edge Point），最后一类是原本的顶点（Vertex point），对于这三类点的更新都是利用周围的点进行一个加权平均。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313162639731.png" alt="image-20220313162639731"></p>
+<h4 id="3-4-曲面简化（Mesh-Simplification）"><a href="#3-4-曲面简化（Mesh-Simplification）" class="headerlink" title="3.4 曲面简化（Mesh Simplification）"></a>3.4 曲面简化（Mesh Simplification）</h4><p>曲面简化就是减少曲面的数量，这是一个比曲面细分更复杂的问题，因为我们得保证减少了曲面数量后，模型还有原本的形状特征，而不是单纯的合并曲面。比如下面的图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313162848709.png" alt="image-20220313162848709"></p>
+<p>30000个三角形简化到300个三角形后丢失了很多细节但形状特征还在，如果简化到30个就完全丢失形状特征了。</p>
+<p>曲面简化用到的方法叫做<strong>边缘坍缩（Edge Collapsing）</strong>，如下图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313163051056.png" alt="image-20220313163051056"></p>
+<p>我们去掉一条边之后和这条边有关的两个曲面就消失了，其他曲面就会坍缩在一起，这样就达到了简化的效果，当然这个过程存在一个非常关键的问题，那就是我们选哪条边坍缩呢？肯定要选择坍缩后对原本模型的形状特征影响最小的边，也就是对周围平面的相对关系影响最小的边，那么如何衡量这种影响呢？</p>
+<p>这里要用到<strong>二次误差度量（Quadric Error Metrics）</strong>，我们可以计算这条边到周围平面的L2距离，也就是距离的平方和作为这条边的分数，然后我们按照分数从小到大对边进行排序，每次都选择分数最小的边进行坍缩，也就是贪心算法的思想，当然每次坍缩完之后所有边的分数要重新计算，也就是说我们每次都要能在 O(1) 时间内找到分数最小的边，同时还能对所有边的分数进行动态更新，显然优先队列或者堆非常适合来完成这个任务。</p>
+<p>下面是曲面简化的效果：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313163822209.png" alt="image-20220313163822209"></p>
+<p>可以看到下边的小牛头部原本比较平坦，因此坍缩的边也更多，简化后形成了更大的曲面，而相对复杂的部分比如头和身体的连接处就没有进行过多的坍缩，因为这部分的边的二次度量误差一定更大，所以这里的曲面不会优先被合并。</p>
+<h3 id="4-更多"><a href="#4-更多" class="headerlink" title="4 更多"></a>4 更多</h3><ul>
+<li><p><a href="acko.net">Steven Wittens - Hackery, math &amp; design</a></p>
+</li>
+<li><p><a href="https://blog.csdn.net/Neo11111/article/details/107922900?spm=1001.2101.3001.6650.4&utm_medium=distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-4.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-4.pc_relevant_default&utm_relevant_index=7">B-Spline样条曲线及其性质</a></p>
+</li>
+<li><p><a href="https://www.jianshu.com/p/49aff913104c">B-样条曲线(B-spline Curve)总结</a></p>
+</li>
+<li><p><a href="https://blog.csdn.net/qq_40597317/article/details/81155571">B样条曲线</a></p>
+</li>
+<li><p><a href="https://blog.csdn.net/weixin_42284263/article/details/107093255">贝塞尔曲线，B-样条，非均匀有理B样条梳理</a></p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>GAMES101</category>
+      </categories>
+      <tags>
+        <tag>计算机图形学</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>【动态规划】（四）线性动态规划之矩阵和无串问题</title>
     <url>/LycTechStack.github.io/2022/03/15/20220315-%E7%BA%BF%E6%80%A7%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92-%E7%9F%A9%E9%98%B5%E5%92%8C%E6%97%A0%E4%B8%B2/</url>
     <content><![CDATA[<h3 id="1-矩阵问题"><a href="#1-矩阵问题" class="headerlink" title="1 矩阵问题"></a>1 矩阵问题</h3><p>除了数组和字符串外，矩阵也是一种线性结构，很多一维数组或字符串的问题可以推广到二维，因此矩阵上也有一些经典的动态规划问题，矩阵上的动态规划问题，基本的状态设计就是用二维变量 (i, j) 共同表示以 (0, 0) 为左上角，(i, j) 为右下角的子问题。因此矩阵问题的状态定义和双串 $dp[i][j]$ 类似，状态的推导方向以及推导公式与双串相同，但是物理意义不一样，且求解时所需的子问题的变化相对更多。</p>
@@ -4624,212 +4830,6 @@
       <tags>
         <tag>计算机图形学</tag>
         <tag>光线追踪</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>【计算机图形学】（九）几何</title>
-    <url>/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/</url>
-    <content><![CDATA[<h2 id="几何（Geometry）"><a href="#几何（Geometry）" class="headerlink" title="几何（Geometry）"></a>几何（Geometry）</h2><p>图形学中几何是最最重要的部分之一，但同时也是极其复杂的一个课题，这一节只是对计算机图形学中几何的一些最基本的概念、算法做介绍，更加深入的图形学几何知识我们之后再去涉及。这部分内容主要包括几何的表示方式、贝塞尔曲线、分段贝塞尔曲线、B样条、贝塞尔曲面、曲面细分的几种算法和曲面简化的基本原理。</p>
-<p><em><span id="more"></span></em></p>
-<h3 id="1-几何表示方法"><a href="#1-几何表示方法" class="headerlink" title="1 几何表示方法"></a>1 几何表示方法</h3><p>几何讨论的实际上就是计算机中如何去描述曲线或者曲面这样的几何图形，比如下图这样复杂的曲线：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313124337862.png" alt="image-20220313124337862"></p>
-<p>再比如：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313124437599.png" alt="image-20220313124437599"></p>
-<p>这样复杂的物体我们几乎不可能通过建模去完成，因此需要一些方法对几何进行有效的表示。</p>
-<p>几何表示方法大体分为两大类，<strong>隐式表示</strong>和<strong>显式表示</strong>。</p>
-<p>隐式表示是指我们无法通过通过给定的表示方法直接知道它表示的是什么图形或者什么物体，比如我们非常熟悉的代数方程，给出一个方程我们无法直接知道这个方程表示的是什么，也很难知道哪些点在这个方程表示的物体上，如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313124958116.png" alt="image-20220313124958116"></p>
-<p>只根据这个代数方程我们很难知道哪些点在这个物体上，但是给定任意一个点，我们根据方程可以很容易的判断它是否在这个物体上，或者在这个物体内部还是外部。</p>
-<p>而显式表示是指直接给定这个几何图形上的所有点，或者给定一种参数映射规则，根据规则我们可以很容易得出哪些点在这个几何物体上，比如：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313125440581.png" alt="image-20220313125440581"></p>
-<p>我们可以把二维上的点通过某种规则映射到三维形成我们要表示物体，此时我们只需要根据规则把二维坐标带入就可以得到三维物体上每一个点的坐标了，对于刚才的例子，它的一种显式表示如下：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313125620781.png" alt="image-20220313125620781"></p>
-<p>我们只需要把某个范围内的二维坐标带入，就可以得到这个物体上每个点的三维坐标了。但是如果我们想要判断某个点是否在物体上，或者在物体的内部还是外部的时候，显式表示就没有很便捷方法能够做这样的判断了。</p>
-<p>因此，隐式表示和显式表示各有优劣，在实际任务中使用什么样的表示，完全取决于我们的需求，根据不同的需求选择具有不同特性的表示方法，再利用这种表示完成我们想要的效果，这也正是几何之所以非常困难的原因。</p>
-<p>接下来分别简单介绍几种隐式表示和显式表示方法。</p>
-<h4 id="1-1-一些隐式表示方法"><a href="#1-1-一些隐式表示方法" class="headerlink" title="1.1 一些隐式表示方法"></a>1.1 一些隐式表示方法</h4><ul>
-<li>代数表示：最常见的隐式表示方法，但是表示特别复杂的物体时会非常困难</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313130323647.png" alt="image-20220313130323647"></p>
-<ul>
-<li>构造实体几何（Constructive Solid Geometry）：通过对一些基本几何图形进行运算操作，比如交、并、差等操作，得到复杂的几何图形</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313130432128.png" alt="image-20220313130432128"></p>
-<ul>
-<li>距离函数（Distance Functions）：距离函数是隐式表示中非常强大的一种表示方式，所谓距离函数是指通过定义空间中任何一个点到离它最近的物体表面的距离，来定义一个物体。这样做的好处是便于不同物体之间的融合，如下图：</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313130703036.png" alt="image-20220313130703036"></p>
-<p>两个小球的融合如果用上面的一些表示方法是没有办法表示的这么平滑的，但是距离函数可以做到。我们可以先把两个小球用距离函数表示，然后把它们的距离函数做一个融合，融合之后的新的距离函数还原为模型，就得到了平滑的融合模型。融合的过程如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313130910020.png" alt="image-20220313130910020"></p>
-<p>A和B中阴影部分都代表某一个物体，阴影和空白的分界线自然就是这个物体的表面，因为距离函数的定义是空间中任意一点到离它最近的物体表面的距离，因此所谓两个物体的融合，其实也是两个物体表面的融合。根据距离函数的定义，A 和 B 的距离函数就是下面的 SDF(A) 和 SDF(B) 所示的样子，“o“ 代表距离为0，也就是这个物体的表面，那么当这两个距离函数融合之后，A的距离函数原本应该取正值的部分（表面的右边），会和 B 的距离函数原本取负值的部分（表面的左边）叠加起来，这样就会形成一个新的 0 平面，这个新的 0 平面就是两个物体融合后新的表面，再还原为物体自然就得到了平滑融合后的新的物体。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313131530880.png" alt="image-20220313131530880"></p>
-<ul>
-<li>水平集（Level Set）：水平集也是在图像分割领域广泛应用的一种隐式表示方法，比如下图中水的涟漪就是用水平集建模表示的。</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313131901065.png" alt="image-20220313131901065"></p>
-<ul>
-<li>自相似（Fractals）：自相似就是用自身组成自身，类似于递归</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313132021023.png" alt="image-20220313132021023"></p>
-<p>最后总结一下隐式表示的优缺点：</p>
-<p>优点是隐式表示对简单的物体能够表示的非常准确，并且容易做内外侧的判断，也便于光线与表面关系的计算，还可以很容易的进行拓扑变换，比如流体的模拟。但缺点也很明显就是很难去对复杂的模型进行表示。</p>
-<h4 id="1-2-一些显式表示方法"><a href="#1-2-一些显式表示方法" class="headerlink" title="1.2 一些显式表示方法"></a>1.2 一些显式表示方法</h4><ul>
-<li>点云（Point Cloud）：最直接的显式表示方法，可以很容易地表示任何几何图形，因此目前也应用广泛。</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313132554300.png" alt="image-20220313132554300"></p>
-<ul>
-<li>几何片面（Polygon Mesh）：图形学中使用最广泛的表示方式，也就是我们之前接触到的用三角形或者四边形片面组成一个模型：</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313132811559.png" alt="image-20220313132811559"></p>
-<p>提供给我们的是模型上每一个片面的顶点以及它的一些属性（纹理坐标、法向量等等），还有这些顶点的组合方式，哪几个顶点组成一个片面。下面是一个模型文件（.obj）的内容：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313132918667.png" alt="image-20220313132918667"></p>
-<p>其中 v就是顶点坐标，vt 是纹理坐标，vn 是法向量， f 是顶点组合方式，比如第36行的组合方式表示用第 5 个、第 1 个和第 4 个顶点组成一个三角形，三个顶点分别使用第 1 个、第 2 个、第 3 个纹理坐标，都使用第 1 个平面的法向量。</p>
-<p>了解了几何的表示方式，我们接下来开始具体讨论曲线和曲面。</p>
-<h3 id="2-曲线"><a href="#2-曲线" class="headerlink" title="2 曲线"></a>2 曲线</h3><p>曲线在图形学中非常重要，比如动画中摄像机的运动轨迹，我们运镜时要先定义好一个曲线，然后让相机在这个曲线上运动来拍出我们想要的效果；或者空间中一个物体运动的轨迹，我们也要事先把这个轨迹定义好。因此我们就需要有一种方法能够表示空间中任意形状的曲线，图形学中最基本的曲线表示方法就是贝塞尔曲线（Bézier Curves）。</p>
-<h4 id="2-1-贝塞尔曲线（Bezier-Curves）"><a href="#2-1-贝塞尔曲线（Bezier-Curves）" class="headerlink" title="2.1 贝塞尔曲线（Bézier Curves）"></a>2.1 贝塞尔曲线（Bézier Curves）</h4><p>贝塞尔曲线就是根据给定的控制点去唯一的确定一条曲线，比如下图所示的贝塞尔曲线，给定了四个控制点 $p_0$ 、 $p_1$ 、 $p_2$ 、 $p_3$ </p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313140742928.png" alt="image-20220313140742928"></p>
-<p>那么所确定的这条曲线要满足几个条件：</p>
-<ul>
-<li>过第一个和最后一个控制点</li>
-<li>曲线起始的切线方向沿 $\vec {p_1 p_0}$ 方向</li>
-<li>曲线末尾的切线方向沿 $\vec {p_3 p_2}$ 方向</li>
-</ul>
-<p>这样就确定出了一条贝塞尔曲线。那么我们怎么样快速的根据给定的控制点确定一条贝塞尔曲线呢？</p>
-<h4 id="2-2-de-Casteljau-算法"><a href="#2-2-de-Casteljau-算法" class="headerlink" title="2.2 de Casteljau 算法"></a>2.2 de Casteljau 算法</h4><p>de Casteljau 算法用来根据给定的控制点得到曲线上的点。首先我们先考虑三个控制点的情况，此时的贝塞尔曲线称为<strong>二阶贝塞尔曲线</strong>：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313141409889.png" alt="image-20220313141409889"></p>
-<p>对于给定的三个控制点 $b_0$​、$b_1$、$b_2$，我们将他们相邻的两两连接起来形成两条线段，假设在线段 $b_0 b_1$ 上 有一个点 $b_0^1$ 在沿着线段移动，那么这个点会把线段分为两个部分，如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313141700501.png" alt="image-20220313141700501"></p>
-<p>假设线段长度为 1，那么我们可以用一个在 0 到 1 之间的系数 t 来表示点 $b_0^1$ 在线段上移动了多少，也可以理解为 t 这个时刻点 $b_0^1$ 在线段上的位置，同样我们在线段 $b_1 b_2$ 上找一个 点 $b_1^1$ ，也移动了 t 距离：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313142123630.png" alt="image-20220313142123630"></p>
-<p>然后连接这两个点形成线段 $b_0^1 b_1^1$，然后在这条线段上继续寻找移动了 t 距离的点 $b_0^2$</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313142250287.png" alt="image-20220313142250287"></p>
-<p>此时这个点无法再形成线段，那么这个点就是由这三个控制点形成的曲线上在 t 时刻的点：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313142400258.png" alt="image-20220313142400258"></p>
-<p>于是对于任意一个 $t \in [0,1]$，都可以确定一个曲线上的点，这相当于定义了一种参数转换规则来描述这个曲线，因此贝塞尔曲线是一种显示的几何表示方法。</p>
-<p>那么同样对于三阶贝塞尔曲线，有四个控制点，按照同样的方法就可以得到曲线上的点了：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313142543570.png" alt="image-20220313142543570"></p>
-<p>下面的动图很好地展示了这一过程（来自<a href="https://acko.net/files/fullfrontal/fullfrontal/wdcode/online.html">Making things with Maths (acko.net)</a>）：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/BezierCurve.gif" alt="BezierCurve"></p>
-<h4 id="2-3-贝塞尔曲线的代数表示"><a href="#2-3-贝塞尔曲线的代数表示" class="headerlink" title="2.3 贝塞尔曲线的代数表示"></a>2.3 贝塞尔曲线的代数表示</h4><p>实际上通过de Casteljau 算法，我们可以很容易写出贝塞尔曲线的代数表示：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313143701807.png" alt="image-20220313143701807"></p>
-<p>每一个中间点都相当于线段两个端点做了一次线性插值，直到最终得到一个点，这个点就是曲线上的点。再以刚才的二阶贝塞尔曲线为例：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313143831050.png" alt="image-20220313143831050"></p>
-<p>可以看到 $b_0^2$ 的表达式系数就是一个完全平方展开，刚好是 $[(1-t) + t]^2$ 的展开，也就相当于 1 的二阶展开项。</p>
-<p>那么我们可以写出贝塞尔曲线的一般形式：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313144402420.png" alt="image-20220313144402420"></p>
-<p>对于 n 阶贝塞尔曲线上的点，实际上是就是所有 n + 1 个控制点的加权和，加权系数是伯恩斯坦多项式，其实就是二项式系数。</p>
-<p>比如对于一个三阶贝塞尔曲线，我们给定了 4 个控制点的坐标，那么根据伯恩斯坦多项式就可以确定出曲线上的点的坐标满足的关系：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313144711137.png" alt="image-20220313144711137"></p>
-<p>关于伯恩斯坦多项式，实际上就是 1 的 n 阶展开，如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313144740011.png" alt="image-20220313144740011"></p>
-<p>在任意时刻 t，各阶伯恩斯坦多项式的值和都为 1 . </p>
-<h4 id="2-4-贝塞尔曲线的性质"><a href="#2-4-贝塞尔曲线的性质" class="headerlink" title="2.4 贝塞尔曲线的性质"></a>2.4 贝塞尔曲线的性质</h4><p>贝塞尔曲线有如下的一些性质，以三阶贝塞尔曲线为例：</p>
-<ul>
-<li>过第一个和最后一个控制点：</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313144949539.png" alt="image-20220313144949539"></p>
-<ul>
-<li>切线方向：这里的系数 3 是因为我们是三阶贝塞尔曲线，更高阶的系数就不一定是 3 了</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313145008375.png" alt="image-20220313145008375"></p>
-<ul>
-<li>仿射不变性：一条贝塞尔曲线经过任意仿射变换相当于控制点经过任意仿射变换，因此我们要对贝塞尔曲线进行仿射变换无需对去线上的所有点变换，只要对控制点变换即可，但只有仿射变换满足这个性质，投影变换不满足</li>
-<li>凸包性：贝塞尔曲线一定在所有控制点形成的凸包内，所谓凸包就是能涵盖所有点的最小凸多边形，如下图：</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313145423691.png" alt="image-20220313145423691"></p>
-<h4 id="2-5-分段贝塞尔曲线（Piecewise-Bezier-Curves）"><a href="#2-5-分段贝塞尔曲线（Piecewise-Bezier-Curves）" class="headerlink" title="2.5 分段贝塞尔曲线（Piecewise Bézier Curves）"></a>2.5 分段贝塞尔曲线（Piecewise Bézier Curves）</h4><p>贝塞尔曲线也有一定的缺点，比如对于一个 10 阶贝塞尔曲线：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313150200076.png" alt="image-20220313150200076"></p>
-<p>可以看到这个曲线并没有想象中那么扭曲，而是相对平缓，这是因为高阶的贝塞尔曲线我们很难通过控制点去改变曲线的形状，因此人们发明了分段贝塞尔曲线。</p>
-<p>既然高阶不好控制，那我们可以把曲线分段，每一段用一个低阶的贝塞尔曲线（通常就是 3 阶）表示，最后再把他们连接起来，就可以形成各种复杂的曲线了。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313150417136.png" alt="image-20220313150417136"></p>
-<p>这里还有一个<a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">demo网页</a>可以帮助我们理解分段贝塞尔曲线，可以通过拖动每一个控制点改变曲线。</p>
-<p>那既然曲线连接起来了，就存在一个问题，就是两段曲线之间的连续性，比如上图中就有很多尖点显然是不连续的，但实际工程中我们希望很多复杂的曲线要严格连续，因此要定义两个贝塞尔曲线的连续性。</p>
-<ul>
-<li>$C^0$ 连续：前一段曲线的最后一个控制点就是后一段曲线的第一个控制点，就称两条曲线满足 $C^0$ 连续</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313150812525.png" alt="image-20220313150812525"></p>
-<ul>
-<li>$C^1$ 连续：两段曲线的连接点是两条曲线倒数第二个控制点和第二个控制点连线的中点，实际上就是第一段曲线结尾的切线方向和第二段曲线开始的切线方向相同，也就是一阶导数严格相等。<img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313150933957.png" alt="image-20220313150933957"></li>
-</ul>
-<p>虽然许多时候 $C^1$ 连续已经能满足我们的要求，但有些时候我们需要更严格连续，这时就要满足 $C^2$ 或者更高阶的连续，也就是二阶导数或者更高阶导数相等。</p>
-<h4 id="2-6-B样条（B-splines）"><a href="#2-6-B样条（B-splines）" class="headerlink" title="2.6 B样条（B-splines）"></a>2.6 B样条（B-splines）</h4><p>通过上面对贝塞尔曲线的了解，我们发现贝塞尔曲线有两个关键的缺点：一是改变任何一个控制点的位置，会对整条曲线产生影响，但很多时候我们并不希望如此，我们只希望在局部改变曲线形状，当然这可以由分段贝塞尔曲线来解决；另一方面就是虽然分段贝塞尔曲线能够解决局部性问题，但是改变了某一段的贝塞尔曲线，就可能会影响和这条曲线相连接的部分的曲线连续性，可能会导致曲线连续性降低。B样条就可以完美地解决这两个问题。</p>
-<p>B样条实际上是贝塞尔曲线的一般化，简单来说样条就是指由一组控制点控制的曲线，B样条是 basis splines 的缩写，也就是由basis函数组成的样条，basis函数就是基函数，因此B样条就是由一组基函数表示的样条曲线。</p>
-<p>对于给定的 n + 1 个控制点，贝塞尔曲线一定是 n 阶的，但是B样条并非如此，因此B样条相比于贝塞尔曲线更加灵活。具体来说，B样条可以把一个控制点的改变对于曲线形状的影响控制在一定范围内，这样就方便我们去做局部的调整了。并且B样条天然具备高阶连续性，且不必定义在固定区间 [0,1] 上，这给曲线的表征带来了极大的方便。</p>
-<p>但是B样条无法表示一些基本曲线，比如圆，因此又引入了<strong>非均匀有理B样条（NURBS）</strong>，具体关于B样条的内容可以查看本篇的<strong>更多</strong>部分内容。</p>
-<h3 id="3-曲面"><a href="#3-曲面" class="headerlink" title="3 曲面"></a>3 曲面</h3><h4 id="3-1-贝塞尔曲面（Bezier-Surface）"><a href="#3-1-贝塞尔曲面（Bezier-Surface）" class="headerlink" title="3.1 贝塞尔曲面（Bézier Surface）"></a>3.1 贝塞尔曲面（Bézier Surface）</h4><p>把贝塞尔曲线推广到三维，就是贝塞尔曲面，因此贝塞尔曲面同样是显式的几何表示方法。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313154416556.png" alt="image-20220313154416556"></p>
-<p>比如一个双三阶贝塞尔曲面，有16个控制点，我们先把每四个控制点所确定的贝塞尔曲线画出来：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313154540370.png" alt="image-20220313154540370"></p>
-<p>然后在这四条曲线上取四个点作为新的控制点就能确定一条新的贝塞尔曲线，四个新的控制点不停的移动就构建出了一个曲面。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313154857224.png" alt="image-20220313154857224"></p>
-<p>因此我们只要给定 $[0,1]^2$ 范围内的一个平面坐标 $(u,v)$，就可以对应到一个曲面上的点。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313154817496.png" alt="image-20220313154817496"></p>
-<h4 id="3-2-曲面操作"><a href="#3-2-曲面操作" class="headerlink" title="3.2 曲面操作"></a>3.2 曲面操作</h4><p>很多时候对于一个给定的模型，我们需要对模型上的曲面进行一些操作，如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313155114023.png" alt="image-20220313155114023"></p>
-<ul>
-<li>曲面细分：有时候模型上的曲面不够细时，我们想要使得模型更平滑更细节，就要对曲面进行细分，比如游戏中我们希望离我们近的模型细节更好，因此曲面要更多，离我们远的物体不需要太好的细节，就可以曲面少一些，减少性能消耗</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313155628632.png" alt="image-20220313155628632"></p>
-<ul>
-<li>曲面简化：刚才说的不需要太好的细节的时候就可以把曲面减少一些，也就是曲面简化</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313155639640.png" alt="image-20220313155639640"></p>
-<ul>
-<li>曲面规范化：有时候我们希望模型上的三角形的差异不要那么大，都把这些三角形规范化成近似等边的三角形，会方便我们进行一些操作，这时就需要曲面规范化</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313155652970.png" alt="image-20220313155652970"></p>
-<h4 id="3-3-曲面细分（Mesh-Subdivision）"><a href="#3-3-曲面细分（Mesh-Subdivision）" class="headerlink" title="3.3 曲面细分（Mesh Subdivision）"></a>3.3 曲面细分（Mesh Subdivision）</h4><h5 id="3-3-1-Loop细分"><a href="#3-3-1-Loop细分" class="headerlink" title="3.3.1 Loop细分"></a>3.3.1 Loop细分</h5><p>Loop细分（不是循环细分，是发明这个算法的人家族名字叫Loop）是一种广泛使用的曲面细分算法，但它只能对三角形曲面进行细分。如下图，细分后的曲面会变得更平滑，因此细分不是简单的把三角形拆成更多的三角形，还要调整这些小三角形的位置使得整个模型发生变化，变得如我们希望的一般平滑。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313160108916.png" alt="image-20220313160108916"></p>
-<p>Loop细分分为两步：</p>
-<p>1、创建更多的三角形：我们取每一个三角形三条边的中点并把它们连接起来就把一个三角形分成了4个小三角形，同时也获得了三个新的顶点</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313160024777.png" alt="image-20220313160024777"></p>
-<p>2、调整顶点位置：在经过第一步之后所有表面的顶点被分成了两类，一类是原本就有的顶点，另一类是新创造的顶点，对于这两类顶点我们用不同的方法去调整他们的位置。</p>
-<ul>
-<li><p>对于新顶点，一定在原来的两个三角形公共边的中点处，于是我们用这两个三角形的四个顶点对新顶点位置进行更新，离新顶点近的两个原顶点权值更高：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313160353029.png" alt="image-20220313160353029"></p>
-</li>
-<li><p>对于原来的顶点，既要参考周围其他点的位置，也要参考自己本身的位置，毕竟自己也是货真价实的一个顶点，因此对于任意一个原来的顶点，该点的度为 n （顶点的度就是和顶点相连的线段有几条，下图中顶点的度为 6 ），我们希望原顶点周围的顶点越多的时候，这个顶点对于自身位置的影响也就越不重要，因此顶点的更新规则为：</p>
-</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313160631125.png" alt="image-20220313160631125"></p>
-<h5 id="3-3-2-Catmull-Clark-细分"><a href="#3-3-2-Catmull-Clark-细分" class="headerlink" title="3.3.2 Catmull-Clark 细分"></a>3.3.2 Catmull-Clark 细分</h5><p>图灵奖得主Ed Catmull 最知名的算法之一。上面的Loop细分只能处理三角形曲面，而 Catmull-Clark 细分可以处理更一般的情况。比如既有四边形曲面又有三角形曲面的情况：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313161512896.png" alt="image-20220313161512896"></p>
-<p>Catmull-Clark 细分把曲面分为四边形面和非四边形面，把顶点分为奇异点和非奇异点，所谓奇异点是指顶点的度不为 4 的点，上图中紫色的点就是奇异点。</p>
-<p>Catmull-Clark 细分算法同样是先细分，再调整位置：</p>
-<p>1、细分：我们每次细分时，找到每个曲面的边的中点，以及每个曲面的中心点，把这些点连接起来</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313161857299.png" alt="image-20220313161857299"></p>
-<p>可以看到经过一次细分之后，对于四边形面，就是细分成了4个更小的四边形，而对三角形面，一个三角形被分成了 3 个小的四边形，也就是说<strong>经过一次细分后，就不再存在非四边形面了</strong>，同时我们注意到，原本有两个奇异点，经过一次细分后，新增加了两个奇异点，换句话说<strong>经过一次细分，所有的非四边形面都变成了一个奇异点</strong>，这样就不再存在非四边形面了，并且<strong>之后再进行细分也不会再增加奇异点个数了</strong>。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313162317511.png" alt="image-20220313162317511"></p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313162341322.png" alt="image-20220313162341322"></p>
-<p>2、调整顶点位置：Catmull-Clark 细分把顶点分为三类，一类是在平面内的点（Face Point），另一类是在平面边上的点（Edge Point），最后一类是原本的顶点（Vertex point），对于这三类点的更新都是利用周围的点进行一个加权平均。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313162639731.png" alt="image-20220313162639731"></p>
-<h4 id="3-4-曲面简化（Mesh-Simplification）"><a href="#3-4-曲面简化（Mesh-Simplification）" class="headerlink" title="3.4 曲面简化（Mesh Simplification）"></a>3.4 曲面简化（Mesh Simplification）</h4><p>曲面简化就是减少曲面的数量，这是一个比曲面细分更复杂的问题，因为我们得保证减少了曲面数量后，模型还有原本的形状特征，而不是单纯的合并曲面。比如下面的图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313162848709.png" alt="image-20220313162848709"></p>
-<p>30000个三角形简化到300个三角形后丢失了很多细节但形状特征还在，如果简化到30个就完全丢失形状特征了。</p>
-<p>曲面简化用到的方法叫做<strong>边缘坍缩（Edge Collapsing）</strong>，如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313163051056.png" alt="image-20220313163051056"></p>
-<p>我们去掉一条边之后和这条边有关的两个曲面就消失了，其他曲面就会坍缩在一起，这样就达到了简化的效果，当然这个过程存在一个非常关键的问题，那就是我们选哪条边坍缩呢？肯定要选择坍缩后对原本模型的形状特征影响最小的边，也就是对周围平面的相对关系影响最小的边，那么如何衡量这种影响呢？</p>
-<p>这里要用到<strong>二次误差度量（Quadric Error Metrics）</strong>，我们可以计算这条边到周围平面的L2距离，也就是距离的平方和作为这条边的分数，然后我们按照分数从小到大对边进行排序，每次都选择分数最小的边进行坍缩，也就是贪心算法的思想，当然每次坍缩完之后所有边的分数要重新计算，也就是说我们每次都要能在 O(1) 时间内找到分数最小的边，同时还能对所有边的分数进行动态更新，显然优先队列或者堆非常适合来完成这个任务。</p>
-<p>下面是曲面简化的效果：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E5%87%A0%E4%BD%95/image-20220313163822209.png" alt="image-20220313163822209"></p>
-<p>可以看到下边的小牛头部原本比较平坦，因此坍缩的边也更多，简化后形成了更大的曲面，而相对复杂的部分比如头和身体的连接处就没有进行过多的坍缩，因为这部分的边的二次度量误差一定更大，所以这里的曲面不会优先被合并。</p>
-<h3 id="4-更多"><a href="#4-更多" class="headerlink" title="4 更多"></a>4 更多</h3><ul>
-<li><p><a href="acko.net">Steven Wittens - Hackery, math &amp; design</a></p>
-</li>
-<li><p><a href="https://blog.csdn.net/Neo11111/article/details/107922900?spm=1001.2101.3001.6650.4&utm_medium=distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-4.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-4.pc_relevant_default&utm_relevant_index=7">B-Spline样条曲线及其性质</a></p>
-</li>
-<li><p><a href="https://www.jianshu.com/p/49aff913104c">B-样条曲线(B-spline Curve)总结</a></p>
-</li>
-<li><p><a href="https://blog.csdn.net/qq_40597317/article/details/81155571">B样条曲线</a></p>
-</li>
-<li><p><a href="https://blog.csdn.net/weixin_42284263/article/details/107093255">贝塞尔曲线，B-样条，非均匀有理B样条梳理</a></p>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>GAMES101</category>
-      </categories>
-      <tags>
-        <tag>计算机图形学</tag>
       </tags>
   </entry>
   <entry>
@@ -7483,6 +7483,140 @@
 <p>这是因为 SH 是从低到高的频段表示，我们使用前 n 阶的 SH，就只能表示信号中对应的这么多频段的信息，更高频的信息就会丢失掉，对于一些高频环境光照的场景，可以使用其他基函数，比如二维小波函数（Wavelet），任意一个二维函数都可以表示为所有小波基函数的线性组合，而我们可以只保留线性组合系数最高的那些项来表示原函数，因此小波表示是全频率的，比 SH 更适合表示高频环境光，但小波函数不具有快速旋转性质，当环境光变化时处理非常不灵活，下图是 SH 和 小波函数的渲染结果对比：</p>
 <p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602172803653.png" alt="image-20220602172803653"></p>
 <p>显然小波保留了更多的高频信息，得到了更好的阴影和反射效果。</p>
+]]></content>
+      <categories>
+        <category>高质量实时渲染</category>
+      </categories>
+      <tags>
+        <tag>计算机图形学</tag>
+        <tag>实时渲染</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>【高质量实时渲染】实时全局光照</title>
+    <url>/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/</url>
+    <content><![CDATA[<p>全局光照是实时渲染中非常重要的部分，一般来说最简单的评价一个游戏画面好坏的方法就是看画面有多亮，而这就是完全由全局光照质量所决定的。所谓全局光照，指的是光线经过多次弹射后照亮其他物体，在实时渲染中为了减少运算降低开销，一般只考虑光线的一次额外弹射。这一节我们分别讨论一些三维空间和屏幕空间的实时全局光照算法，主要了解大致的思路。</p>
+<p><em><span id="more"></span></em></p>
+<h2 id="1-三维空间全局光照"><a href="#1-三维空间全局光照" class="headerlink" title="1 三维空间全局光照"></a>1 三维空间全局光照</h2><h3 id="1-1-Reﬂective-Shadow-Maps（RSM）"><a href="#1-1-Reﬂective-Shadow-Maps（RSM）" class="headerlink" title="1.1 Reﬂective Shadow Maps（RSM）"></a>1.1 Reﬂective Shadow Maps（RSM）</h3><p>RSM 算法基于一个很简单的但却是实时全局光照中的核心观察：<strong>所有被光源直接照亮的物体表面都可以作为次级光源照亮其他物体。</strong>于是当我们在渲染时得到这个想法的时候，就可以用各种方法实现全局光照了，问题只是在于如何处理这些次级光源。</p>
+<p>那么怎么得到场景中被光源直接照亮的表面信息呢？Shadow Map 所做的正是这个工作，Shadow Map 的每一个 texel 都可以代表场景中的一块区域，这一块区域就一定是被光源直接照亮的区域，就可以作为次级光源照亮其他物体，因此 Shadow Map 实际上可以看作存储了场景中所有的次级光源，因此我们在渲染每个着色点的时候，考虑这些次级光源的贡献即可。</p>
+<p>现在的问题是，每一个次级光源对着色点的贡献相当于从着色点 p 看向这个光源表面所得到的光照结果（其实和光线追踪原理一样），那么如果这个表面是 Glossy 的，情况会非常复杂，因此 RSM 假设所有次级光源表面都是 diffuse 的，这样次级光源对着色点 p 的光照就与他们的相对方向无关了，这样一来次级光源就被抽象为一个向各个方向均匀发光的面光源了。</p>
+<p>那么对于面光源，我们在路径追踪中有推导过如何将渲染方程中对方向立体角的积分转化为对面光源的积分：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220603103514616.png" alt="image-20220603103514616"></p>
+<p>于是渲染方程可以写成：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220603103524667.png" alt="image-20220603103524667"></p>
+<p>其中 $patch$ 就是代表每一个小的次级光源。现在来看渲染方程中的每一项：</p>
+<p>首先是 BRDF 项，没有什么问题。</p>
+<p>然后是 visibility 项，visibility 要考虑次级光源和着色点的遮挡关系，这是很难得到的，想要得到就要对每一个次级光源生成一个 Shadow Map，而假设我们的直接光照的 Shadow Map 分辨率是 512 * 512，那就代表我们有 512 * 512 个次级光源，每个次级光源都生成一次 Shadow Map，这是不可能的，因此 RSM 选择不计算 visibility 项，毕竟间接光照是低频的，而且这么多次级光源分别的贡献实际上都很小，所以不计算 visibility 影响也不大。</p>
+<p>最麻烦的是次级光源到着色点的光照 $L_i(q\rightarrow p)$，这要根据该表面的直接光照得到，因为假设了表面是 diffuse 的，所以 BRDF 是一个常数：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220603104607816.png" alt="image-20220603104607816"></p>
+<p>需要注意这里的 BRDF 是指计算次级光源表面被实际光源直接照射时的渲染方程中的 BRDF，而上面的渲染方程是计算着色点被次级光源照射时的方程。于是 $L_i(q\rightarrow p)$ 就可以写成：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220603104650506.png" alt="image-20220603104650506"></p>
+<p>因为 BRDF 是出射的 Radiance 和入射的 Irradiance 的比值，因此乘上该表面入射的 Irradiance，得到的就是出射的 Radiance，也就是我们想要的次级光源发出的光线。而该表面入射的 Irradiance 可以根据定义表示为直接光源的光通量，也就是功率除以单位面积（因为 Irradiance 表示单位面积上的光的能量），所以就有上面的公式了。上面公式的好处在于带入渲染方程中，我们会发现单位面积 dA 被约掉了，说明之后的计算与次级光源的面积无关。</p>
+<p>接下来考虑的问题是，假设我们的直接光照的 Shadow Map 分辨率是 512 * 512，那就代表我们有 512 * 512 个次级光源，如果每个次级光源都进行上面的计算，开销也是很大的，而实际上很多次级光源可能对着色点是没有贡献的，如下图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220603105635240.png" alt="image-20220603105635240"></p>
+<p>着色点为 x，而 Shadow Map 中存储的桌子上的点就显然是对 x 没有贡献的，不需要进行计算，因此我们可以根据法线方向去掉一些不需要计算的次级光源；此外，距离着色点太远的次级光源也不需要计算，因此我们只需要计算着色点一定距离范围内的有贡献的次级光源就可以了，经过这些筛选最后剩下的次级光源数量是可以接受的，也是完全可以做到实时计算的。</p>
+<p>综上，要计算渲染方程：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220603103524667.png" alt="image-20220603103524667"></p>
+<p>我们需要知道的信息有：次级光源到着色点的距离，直接光源对次级光源的光通量以及次级光源表面的法线，因此 Reﬂective Shadow Maps 中存储的就是这些信息：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220603105452496.png" alt="image-20220603105452496"></p>
+<p>RSM 只需要在 SM 的基础上额外存储一些信息就可以实现全局光照，是很容易实现的。但也存在很多缺点，比如因为是基于 Shadow Map，那么对于场景中的所有直接光源都要生成一张 RSM，复杂度会随着光源数量增加；而且整个算法做了很多舍弃和假设，比如舍弃了 visibility 项的计算，假设所有次级光源都是 diffuse 的，这会对最终效果产生一定影响。</p>
+<h3 id="1-2-Light-Propagation-Volumes（LPV）"><a href="#1-2-Light-Propagation-Volumes（LPV）" class="headerlink" title="1.2 Light Propagation Volumes（LPV）"></a>1.2 Light Propagation Volumes（LPV）</h3><p>LPV 的核心思想是，我们要计算着色点的间接光照就需要知道着色点上从各个方向来的 Radiance 是多少，也就是 RSM 中计算的所有次级光源的 Radiance，那如果我们在渲染着色点的时候能直接查询到各个方向来的 Radiance，就不需要额外的计算了。</p>
+<p>于是 LPV 将空间分为一个个网格，然后将所有次级光源表面发出的 Radiance 注入到表面所在的网格中，然后这些 Radiance 根据各自的方向向周围的网格传播，这样一来在渲染的时候只需要查询着色点所在的网格中的 Radiance 就可以快速计算渲染方程了。具体步骤如下：</p>
+<ul>
+<li>第一步：找到能被光源直接照亮的表面，这直接使用 RSM 即可</li>
+<li>第二步：计算这些表面的 Radiance，并注入到所在的网格中，网格中将这些 Radiance 加起来，会得到一个二维函数，表示不同方向上的 Radiance，因为是只与方向有关的二维函数，那么自然可以近似表示为 SH，一般只需要使用前两阶 SH 表示即可，因为 LPV 同样假设次级光源是 diffuse 的，那么次级光源的光照就是低频的，所以不需要太高阶的 SH：</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220603111036435.png" alt="image-20220603111036435"></p>
+<ul>
+<li>第三步：每个格子中的 Radiance 沿着格子进行传传播，每个格子的 Radiance 会传播到它相邻的六个格子中，传播过去的 Radiance 被加入到那个格子的 Radiance 中，如此迭代，一般 4 到 5 次迭代就可以让整个网格基本达到稳定，这时所有格子里的 Radiance 就可以代表这里的各个方向传播来的 Radiance 了，渲染时可以直接使用：</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220603111410505.png" alt="image-20220603111410505"></p>
+<ul>
+<li>第四步：渲染时直接将着色点所在的网格中的 Radiance 作为着色点的 Radiance 进行渲染即可。</li>
+</ul>
+<p>通过上面的步骤可以看出 LPV 有一个很严重的问题，就是如下图中的情况：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220603111539524.png" alt="image-20220603111539524"></p>
+<p>点 p 是一个次级光源，正常来说它发出的 Radiance 不应该照亮墙的背面，但是由于它发出的 Radiance 会被认为是整个网格的 Radiance  ，于是这些 Radiance 就可以照亮墙的背面，也就会发生漏光现象：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220603111714792.png" alt="image-20220603111714792"></p>
+<p>不过这不影响 LPV 是一个优秀的实时全局光照解决方案。</p>
+<h3 id="1-3-Voxel-Global-Illumination（VXGI）"><a href="#1-3-Voxel-Global-Illumination（VXGI）" class="headerlink" title="1.3 Voxel Global Illumination（VXGI）"></a>1.3 Voxel Global Illumination（VXGI）</h3><p>VXGI 同样是基于体素（Voxel）的，不同于 LPV，VXGI 将场景体素化，并创建层次结构（LPV 没有层次结构）：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220603111846023.png" alt="image-20220603111846023"></p>
+<p>这样一来 RSM 中每个 texel 对应的一片区域就变成对应一些体素，这样就可以计算体素中物体表面的光照作为间接光照，因此 VXGI 可以计算次级光源的 Glossy 光照，不需要假设所有次级光源都是 Glossy 的，所以效果更好，但效率自然更低。VXGI 的实现非常复杂，这里不再赘述。</p>
+<h2 id="2-屏幕空间全局光照"><a href="#2-屏幕空间全局光照" class="headerlink" title="2 屏幕空间全局光照"></a>2 屏幕空间全局光照</h2><h3 id="2-1-Screen-Space-Ambient-Occlusion（SSAO）"><a href="#2-1-Screen-Space-Ambient-Occlusion（SSAO）" class="headerlink" title="2.1 Screen Space Ambient Occlusion（SSAO）"></a>2.1 Screen Space Ambient Occlusion（SSAO）</h3><p>我们之前学习过，环境光遮蔽（AO）是一种对全局光照的近似方法，实现简单，但是可以大幅增强画面的层次感，所以被广泛使用。环境光遮蔽的想法非常简单，Blinn Phong 模型把所有间接光照抽象成了一个常数，叠加到所有着色点上进行一个统一的亮度增强来模拟全局光照，这样的问题在于所有着色点的亮度增强程度是一样的，所以无法增强明暗遮蔽关系，如果我们能对每一个着色点，根据它所处位置的遮蔽关系给这个统一的环境光常数乘上一个系数再累加到着色结果上，就可以体现出物体之间的遮蔽关系了。而这个系数正是渲染方程中的 visibility 项。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605105404933.png" alt="image-20220605105404933"></p>
+<p>上面的过程可以通过渲染方程来更深入的理解。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605105617924.png" alt="image-20220605105617924"></p>
+<p>我们使用之前常用的近似积分拆解公式：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605105818137.png" alt="image-20220605105818137"></p>
+<p>把 visibility 项拿出来：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605105715490.png" alt="image-20220605105715490"></p>
+<p>这里我们把 $cos\theta_idw_i$ 看成了一个整体，当作公式中的 $dx$，这实际上是有意义的，我们知道 $dw_i$ 是微分立体角，是单位球面上的一小块面积，乘上了一个和法线的夹角余弦相当于把这一小块面积投影到了单位圆上，如下图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605110006953.png" alt="image-20220605110006953"></p>
+<p>所以 $cos\theta_idw_i$ 这个整体也叫做微分投影立体角，是单位圆中的一小块面积，因此对 $cos\theta_idw_i$ 的积分实际上就是单位圆的面积 $\pi$，这也从另一个角度解释了半球面上对 $cos\theta$ 的积分为什么是  $\pi$。</p>
+<p>现在回到渲染方程，把 visibility 项拿出来之后，渲染方程分为了两部分：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605105715490.png" alt="image-20220605105715490"></p>
+<p>其中，蓝色框中实际上就是对着色点 p 周围<strong>遮挡关系结果的加权平均</strong>（加权和除以权值和就是加权平均），权值是 $cos\theta$，即离法线近的权值大，离法线远的权值小。而分母就是对投影立体角的积分，结果是 $\pi$，于是蓝框中的部分就是：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605110447249.png" alt="image-20220605110447249"></p>
+<p>一般就写成一个系数 $k_A$  来表示环境光遮蔽系数。</p>
+<p>而黄色框中的部分是一个渲染方程，通过之前的算法我们知道，实时渲染中一般在计算全局光照的时候都会假设所有物体表面都是 diffuse 的，这样每一个次级光源就被抽象成了一个均匀发光的面光源，而在这里， SSAO 还假设所有物体的间接光照都一样，这和 Blinn Phong 模型的假设一致，于是间接光照 $L_i^{indir}$ 就是一个常数，diffuse 的 BRDF 也是常数，因此黄色框部分可以写成：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605110615757.png" alt="image-20220605110615757"></p>
+<p>自然就是一个常数，这就相当于 Blinn Phong 中的环境光常数，我们可以直接给定。于是整个渲染方程就是环境光常数乘上了每个片段的遮蔽系数，也就是我们一开始说的那个过程。因为上面的推导中使用了积分拆解近似式，而该公式近似的准确的条件是 $g(x)$ 要么连续，要么在积分区间上波动很小，而在这里 $g(x)$ 就是一个常数，自然满足这两个条件，因此使用这样的方法来近似是完全准确的。</p>
+<p>屏幕空间环境光遮蔽自然是在屏幕空间完成上述过程，那么关键就在于如何只通过屏幕上的信息得到每一个像素对应的场景中的位置的遮蔽关系，从而得到 visibility 系数。</p>
+<p>SSAO 的做法是在屏幕上每一个像素对应的场景中的点周围一个球体范围内随机采样一些点，根据这些点到相机的深度来判断这些点是不是能被看到，用这些结果来近似点 p 会被周围多少物体遮挡，从而得到一个 visibility 系数，如下图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605111352019.png" alt="image-20220605111352019"></p>
+<p>这样做的问题在于我们实际去判断一个点的遮挡关系的时候只应该考虑该点法线方向半球上的遮挡关系，而这里用了整个球体内采样，是不准确的，于是一种解决方法是当采样点中被遮挡的点的数量大于一半时才开始考虑这一点的 AO，这样相当于粗略的截取了一个半球：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605111534174.png" alt="image-20220605111534174"></p>
+<p>当然现代渲染中，我们在屏幕空间也可以得到每一个像素对应的法线，因此可以直接准确的在法线方向半球内采样，并且知道了法线还可以考虑上面公式中的 $cos\theta$ 的加权平均，结果会更加准确：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605111716185.png" alt="image-20220605111716185"></p>
+<p>这种方法叫做 HBAO，得到的结果也会比 SSAO 更加真实。</p>
+<h3 id="2-2-Screen-Space-Directional-Occlusion（SSDO）"><a href="#2-2-Screen-Space-Directional-Occlusion（SSDO）" class="headerlink" title="2.2 Screen Space Directional Occlusion（SSDO）"></a>2.2 Screen Space Directional Occlusion（SSDO）</h3><p>SSDO 是 SSAO 的改进，SSAO 中假设一个点接收到的所有来自于其他物体反射光源的间接光照都是一样的（常数），但实际上我们利用 RSM 的思想，我们是知道哪些物体表面是被直接照亮的，因此我们不需要这样简单粗暴的假设，我们可以去准确的计算这些次级光源发出的间接光照是什么。</p>
+<p>SSDO 像是在屏幕空间进行光线追踪一样，在每一个着色点向四面八方打出光光线，如果没有碰到周围的表面说明是直接光照，如果碰到了其他表面就计算该表面的间接光照作为该着色点间接光照的一部分贡献，这里计算其他表面的间接光照还是假设该表面是 diffuse 的：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605112300423.png" alt="image-20220605112300423"></p>
+<p>于是就只有两种情况，可以表示为：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605112324715.png" alt="image-20220605112324715"></p>
+<p>当然，SSDO 既然是屏幕空间的算法，自然不是从 RSM 中获哪那些表面是被直接照亮的，只需要通过深度图就可以近似得到，更准确地说我们认为相机看到的就是被直接照亮的，相机看到的每个点的直接光照结果就作为该点的间接光照去照亮其他点，在实际实现中也不是真的从着色点向周围发出许多光线，而是类似于 HBAO，在着色点法线所在半球随机取点，然后判断这些点的深度是否被遮挡，如果深度大于深度缓冲中的深度，就认为被遮挡，进而认为点 p 到这一点的光线打到了遮挡该点的那个表面，就将那个表面的间接光照作为点 p 的间接光照的贡献之一，整个过程如下图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605112905103.png" alt="image-20220605112905103"></p>
+<p>当然这样的做法毕竟不是真正的追踪光线，因此必然会出现一些问题，比如上图中最右边的情况，当点 A 和相机之间有一个遮挡物，点 A 会认为被遮挡，进而认为光线 PA 会打到 z1 所对应的那个点，这显然是不对的，同理点 B 被认为没有被遮挡，但实际上光线 PB 被旁边的表面遮挡到了，不过这些瑕疵在实时渲染中不会对结果有太大影响，因此可以忽略，只要整体结果是好的，那么这个是算法就是好的。</p>
+<p>SSDO 存在的问题不止上面说到的，由于是屏幕空间的算法，所以我们所拥有的全部信息就是屏幕中的信息，相当于是整个场景能被看到的一层外壳，看不到的部分对我们来说是完全不知道的，因此就会丢失掉一些遮蔽信息：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605113407580.png" alt="image-20220605113407580"></p>
+<p>此外，由于是在法线所在半球内随机取点，这个半球一定对应一个范围，这个范围不能太大，如果无限大那就是光线追踪了，因此对于比较远的间接反射 SSDO 是做不出来的，比如：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605113455806.png" alt="image-20220605113455806"></p>
+<p>上图中立方体反射出了右边的绿色墙面，这是光线追踪的结果，SSDO 是不能做到的，因为它追踪不了那么远，但是近处的颜色是可以得到的，比如左边的红色墙面，这也是 SSDO 最大的优势，就是可以实现 color blending 的效果，能够将物体之间的反射颜色融合起来，这也是因为它把我们看到的颜色作为次级光源来计算着色点的间接光照，而不是像 SSAO 一样全局的设定一个间接光照，下图中最右边可以看出蓝色物体表面映射出了一点黄色：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605113729167.png" alt="image-20220605113729167"></p>
+<h3 id="2-3-Screen-Space-Reﬂection（SSR）"><a href="#2-3-Screen-Space-Reﬂection（SSR）" class="headerlink" title="2.3 Screen Space Reﬂection（SSR）"></a>2.3 Screen Space Reﬂection（SSR）</h3><p>屏幕空间反射 SSR 真正做到了屏幕空间的光线追踪，所以 SSR 更准确地应该被叫做屏幕空间光线追踪（Screen Space Ray-tracing），因此效果很好，也是目前在实时渲染中最广泛使用的方法。</p>
+<p>既然是光线追踪，那么一定分为两步，一是光线和场景求交点，在屏幕空间没有三维场景的信息，实际上计算的是光线和我们看到的场景的一个外壳求交点；二是计算着色，根据采样光线求解渲染方程，这一步和正常的光线追踪完全一样。</p>
+<p>SSR 有效的一个重要原因在于，屏幕中我们能看到的场景中的反射的部分，一定有绝大部分是已经存在于当前的屏幕中的，如下图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605114441736.png" alt="image-20220605114441736"></p>
+<p>街道上反射的就是屏幕的上半部分，因此屏幕空间光线追踪是完全可行的，仅利用屏幕中的信息是足够的。</p>
+<p>对于每一个像素，如果只考虑最简单的镜面反射情况，那么我们直接从该点追踪镜面反射方向，就可以找到镜面反射光线和场景外壳上的一个交点，这个交点的颜色我们是直接可以知道的，就把这个颜色作为间接光照颜色（间接光照渲染方程的结果）加到该像素上就可以了，对于更复杂的 Glossy 和漫反射就像光线追踪一样采样更多光线即可，但是也不需要像光线追踪那样采样那么多，因为间接光照最后是要叠加到直接光照结果上的，所以我们只要采样少一些光线，得到一个有噪声的间接光照结果，简单去一下噪（加个模糊之类的）再叠加到直接光照上就能得到不错的结果了。</p>
+<p>下图是镜面反射的结果：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605115220889.png" alt="image-20220605115220889"></p>
+<p>以及 Glossy 的结果：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605115237982.png" alt="image-20220605115237982"></p>
+<p>SSR 还可以实现表面不平整的反射，无非就是不平整的表面法线影响了光线的反射方向而已：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605115334563.png" alt="image-20220605115334563"></p>
+<p>于是现在最主要的问题就是如何在屏幕空间追踪光线，也就是如何求得光线和我们看到的这一层外壳的交点。</p>
+<p>最原始的做法是从着色点出发，沿着要追踪的光线方向，一次移动一定的距离，每次移动后判断对应的深度，如果深度小于深度缓冲中的深度则继续移动，直到深度大于深度缓冲中的深度，则认为找到了交点：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605125808577.png" alt="image-20220605125808577"></p>
+<p>这种方法找到的交点是不准确的，交点的精度取决于每次移动的步长，步长过大会找到不准确的交点，步长过小又会影响速度，因此要进行加速优化，这里又要用到图形学中常用的加速手段，类似于三维空间中的 BVH，我们为深度图生成 Mipmap，但这里的 Mipmap 不能取多个深度的均值，要取多个深度的最小值，也就是离我们最近的深度作为下一 level 的深度：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605130111638.png" alt="image-20220605130111638"></p>
+<p>这样一来，我们就构建了层次深度结构，每次沿着光线移动时可以试探性地增大步长，也就是在更高一层移动，如果找到交点就降低 level 去找具体和哪个像素相交了，举例来说：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605130239538.png" alt="image-20220605130239538"></p>
+<p>对于上图的情况，我们第一次从着色点出发，先在 level 0 移动，这时每一步会移动一个像素：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605130325578.png" alt="image-20220605130325578"></p>
+<p>此时深度小于深度缓冲中的深度，说明没有遮挡，继续移动，这次我们增加一个 level，在 level 1上移动，level 1 中每一个像素代表了 level 0 中的 4 个（我们这里是二维，所以是 2 个）像素深度的最小值：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605130448099.png" alt="image-20220605130448099"></p>
+<p>移动之后还是没有交点，于是再增加一个 level，在 level 2上移动，level 2 中每一个像素代表了 level 0 中的 16 个（我们这里是二维，所以是 4 个）像素深度的最小值：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605130610015.png" alt="image-20220605130610015"></p>
+<p>这时发现有交点了，于是减小一个 level，继续判断：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605130649452.png" alt="image-20220605130649452"></p>
+<p>继续减小 level 到 level 0：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605130728981.png" alt="image-20220605130728981"></p>
+<p>这时发现在 level 1有交点的像素细化到 level 0 之后没有交点，于是继续传播，因为没有交点，所以 level 加一，在 level 1 上移动：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605130912940.png" alt="image-20220605130912940"></p>
+<p>找到了交点，再次减小一个 level：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605130937759.png" alt="image-20220605130937759"></p>
+<p>最终找到了交点所在的像素，将这个像素对应的颜色作为间接光照累加到当前着色点上即可。上述过程的伪代码如下：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605131027338.png" alt="image-20220605131027338"></p>
+<p>屏幕空间光线追踪可以很好的实现全局光照，但也一定存在问题，因为我们只有屏幕中的场景信息，这些信息只是整个场景的一个外壳，内部的信息我们是完全不知道的，因此也就会导致我们看不到的部分就不会产生反射，如下图：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605131201515.png" alt="image-20220605131201515"></p>
+<p>此外，SSR 也只能反射屏幕中存在的物体，因此一部分在屏幕外的物体的反射就会被“切断”，如下图：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605131343414.png" alt="image-20220605131343414"></p>
+<p>不过这可以通过增加一个随距离增大的模糊衰减来解决，使结果看起来更真实：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605131427066.png" alt="image-20220605131427066"></p>
+<p>当然这只是 SSR 最基本的思想，实际实现中有非常多的细节和优化问题，比如重要性采样、样本在时间和空间上的复用等等，这里就不再展开了。</p>
 ]]></content>
       <categories>
         <category>高质量实时渲染</category>
