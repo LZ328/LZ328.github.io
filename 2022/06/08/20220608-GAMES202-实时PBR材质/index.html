@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/LycTechStack.github.io/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/LycTechStack.github.io/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/LycTechStack.github.io/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/LycTechStack.github.io/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/LycTechStack.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="/LycTechStack.github.io/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/LycTechStack.github.io/lib/pace/pace-theme-minimal.min.css">
+  <script src="/LycTechStack.github.io/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lz328.github.io","root":"/LycTechStack.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":5,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="在离线渲染中，基于物理的渲染可以带来非常真实效果，基于物理的渲染方法的核心就是各种基于物理的材质，这些材质的 BRDF 相对于Blinn Phong 等基于经验的材质模型会比较复杂，因此处理起来也比较费时，不适用于实时渲染，这一节主要学习实时渲染中如何处理基于物理的材质。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【高质量实时渲染】实时PBR材质">
+<meta property="og:url" content="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/index.html">
+<meta property="og:site_name" content="LycTechStack">
+<meta property="og:description" content="在离线渲染中，基于物理的渲染可以带来非常真实效果，基于物理的渲染方法的核心就是各种基于物理的材质，这些材质的 BRDF 相对于Blinn Phong 等基于经验的材质模型会比较复杂，因此处理起来也比较费时，不适用于实时渲染，这一节主要学习实时渲染中如何处理基于物理的材质。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608160027871.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608160157916.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608160244963.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608160343753.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608160608070.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608161221287.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608161340128.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608161702625.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608162529565.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608162719493.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608162902522.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608163456607.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608163757728.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608163914474.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608163942337.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608164659865.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608165256048.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608165644101.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608170245422.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608170313862.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608171651408.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608172124188.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608172427624.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608173223545.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608173712743.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608174038845.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608174727016.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608174837806.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608175902209.png">
+<meta property="article:published_time" content="2022-06-08T10:06:47.000Z">
+<meta property="article:modified_time" content="2022-06-08T10:34:31.332Z">
+<meta property="article:author" content="Lyc">
+<meta property="article:tag" content="计算机图形学">
+<meta property="article:tag" content="实时渲染">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608160027871.png">
+
+<link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>【高质量实时渲染】实时PBR材质 | LycTechStack</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/LycTechStack.github.io/atom.xml" title="LycTechStack" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/LycTechStack.github.io/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LycTechStack</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Lyc的个人成长技术栈</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/LycTechStack.github.io/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/LycTechStack.github.io/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/LycTechStack.github.io/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/LycTechStack.github.io/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/LycTechStack.github.io/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/LycTechStack.github.io/images/avatar.png">
+      <meta itemprop="name" content="Lyc">
+      <meta itemprop="description" content="个人学习总结和技术经验分享，主要内容包括C++、数据结构、算法、计算机图形学、3D数学、实时渲染、游戏引擎等等，希望未来能真正踏入图形/引擎开发的大门！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LycTechStack">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【高质量实时渲染】实时PBR材质
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-06-08 18:06:47 / 修改时间：18:34:31" itemprop="dateCreated datePublished" datetime="2022-06-08T18:06:47+08:00">2022-06-08</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/LycTechStack.github.io/categories/%E9%AB%98%E8%B4%A8%E9%87%8F%E5%AE%9E%E6%97%B6%E6%B8%B2%E6%9F%93/" itemprop="url" rel="index"><span itemprop="name">高质量实时渲染</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在离线渲染中，基于物理的渲染可以带来非常真实效果，基于物理的渲染方法的核心就是各种基于物理的材质，这些材质的 BRDF 相对于Blinn Phong 等基于经验的材质模型会比较复杂，因此处理起来也比较费时，不适用于实时渲染，这一节主要学习实时渲染中如何处理基于物理的材质。</p>
+<p><em><span id="more"></span></em></p>
+<h3 id="1-再谈微表面"><a href="#1-再谈微表面" class="headerlink" title="1 再谈微表面"></a>1 再谈微表面</h3><p>通过之前的学习可以发现，实时渲染的各种方法实际上都是在离线渲染的基础上，做各种假设和近似来快速得到一个近似地效果，材质也不例外，基于物理的材质最常用的就是微表面模型，实时渲染中同样使用微表面模型，因此我们首先来回顾微表面模型的内容。</p>
+<p>微表面 BRDF 由菲涅尔项 F，几何项 G 和法线分布函数 D 组成，描述了从某个入射方向来的光会向某个出射方向反射出多少能量：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608160027871.png" alt="image-20220608160027871"></p>
+<h4 id="1-1-菲涅尔项"><a href="#1-1-菲涅尔项" class="headerlink" title="1.1 菲涅尔项"></a>1.1 菲涅尔项</h4><p>菲涅尔项描述了随着入射方向和法线夹角增大，反射会变得越来越强的现象：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608160157916.png" alt="image-20220608160157916"></p>
+<p>对于非导体，入射方向与法线夹角和反射率的关系为：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608160244963.png" alt="image-20220608160244963"></p>
+<p>即当我们沿着法线方向观察的时候几乎不会看到反射，而当我们垂直于法线方向观察的时候会看到物体几乎全部被反射。</p>
+<p>对于导体（金属），菲涅尔曲线为：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608160343753.png" alt="image-20220608160343753"></p>
+<p>即导体本身就会发生强烈的反射，随着视角变化，观察到的反射不会有太大的变化，因此可以说金属本身就会有比较固定的颜色（反射率），比如金、银、铜都有自己的颜色。</p>
+<p>菲涅尔项表达式非常复杂，与介质和材质的折射率有关，一般在渲染中使用 Schlick’s 近似：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608160608070.png" alt="image-20220608160608070"></p>
+<p>总的来说，菲涅尔项描述了对于给定的入射方向和出射方向（半程向量），会有多少光从入射方向反射到出射方向上，一般来说渲染的时候出射方向固定，就是观察方向，那么不同入射方向的光反射到观察方向上的比例就不同，这是菲涅尔项的意义。</p>
+<h4 id="1-2-法线分布函数"><a href="#1-2-法线分布函数" class="headerlink" title="1.2 法线分布函数"></a>1.2 法线分布函数</h4><p>法线分布函数描述了物体表面有多少微表面的法线和给定的半程向量方向一致，那么这些微表面才会被看到（只考虑镜面反射）。这是一个宏观的理解，实际上 NDF 描述的就是微表面的法线的概率分布：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608161221287.png" alt="image-20220608161221287"></p>
+<p>有不同的模型来描述法线分布，比如之前提到过的 Beckmann 法线分布函数：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608161340128.png" alt="image-20220608161340128"></p>
+<p>该函数由表面粗糙程度 $\alpha$ 和微表面法线与宏观法线（一般是 [0, 0, 1]）的夹角 $\theta_h$ 来定义，从公式可以看出，Beckmann 法线分布实际上和高斯分布非常像，其中表面粗糙程度 $\alpha$ 就类似于正态分布的标准差，粗糙程度越大，法线分布就越分散，而这个正态分布是对于 $tan\theta_h$ 的正态分布， $tan\theta_h$ 的几何意义如下图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608161702625.png" alt="image-20220608161702625"></p>
+<p>如果直接定义为夹角 $\theta_h$ 的正态分布，那么法线可能取到下半球，夹角就大于 90 度，而对于法线来说只有上半球有意义，因此定义为 $tan\theta_h$ 的正态分布的好处在于可以把上半球的所有法线方向对应到一个平面上的区间，这个区间是无穷大的，刚好是正态分布的积分区间，这样定义自然当法线在下半球的时候没有意义，是一个很巧妙的处理。</p>
+<p>另一个更好的法线分布函数是 GGX 模型，也叫做 Trowbridge-Reitz（TR）模型，相较于 Beckmann 模型，GGX 是长尾（long tail）分布的：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608162529565.png" alt="image-20220608162529565"></p>
+<p>也就是过度更加平滑，在值较小的部分衰减速度也更小，这样的好处是高光区域和非高光区域的过渡会更加平滑，呈现出一种 Glossy 的效果，更加真实：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608162719493.png" alt="image-20220608162719493"></p>
+<p>在 TR 模型的基础上还有一个更加通用的 GTR 法线分布，引入了一个可调的参数来控制长尾分布的程度：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608162902522.png" alt="image-20220608162902522"></p>
+<p>总之，法线分布函数描述的是微表面的法线方向分布，对于给定的入射和出射方向，可以得到半程向量，法线分布函数可以给出这个材质的表面上有多少为微表面的法线是在这个半程向量方向上的，那么这些微表面才可以被看到。更准确的说，NDF 描述的是法线方向的概率分布，渲染时，对于每一个着色点都有不同的半程向量，这个半程向量对应的可以被看到的概率可以通过 NDF 得出，可以被看到也就是表面法线和半程向量方向一致，因此 NDF 给出的概率实际上是当前着色点的法线刚好和当前半程向量重合的概率，而一个点的着色结果是许多不同的半程向量的结果的加权平均，权值就是这个概率，这样就能得到这个着色点正确期望的着色结果。</p>
+<h4 id="1-3-几何项"><a href="#1-3-几何项" class="headerlink" title="1.3 几何项"></a>1.3 几何项</h4><p>几何项描述的是微表面之间的自遮挡现象，自遮挡现象有两种情况：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608163456607.png" alt="image-20220608163456607"></p>
+<p>一种是入射光被其他微表面遮挡入射不进来，一种是反射光被其他微表面遮挡反射不出去，前者称为 shadowing，后者称为 masking，因此几何项也被称为 Shadowing-Masking Term。</p>
+<p>从上面的定义可以看出，当我们垂直于表面观察时，几乎不会发生自遮挡，当我们观察方向越接近法线的垂直方向，自遮挡就会越严重，因此对应于上面的法线分布得出的几何项分布大概长这样：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608163757728.png" alt="image-20220608163757728"></p>
+<p>几何项的意义在于，当我们垂直于表面观察的时候，几何项就是 1，对最终结果不会有任何影响，但是当我们接近垂直于法线的方向观察时，比如一个球体的边缘：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608163914474.png" alt="image-20220608163914474"></p>
+<p>如果不考虑几何项，那么按照微表面 BRDF 的定义：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608163942337.png" alt="image-20220608163942337"></p>
+<p>其他两项可以计算出正常结果，但是分母中有观察方向和法线的点乘，由于我们是接近垂直于法线的方向观察的，那么这个点乘结果就会接近于 0，于是整个BRDF 结果就会非常大，如果没有几何项来修正这个结果，那么最终的渲染图像上球体边缘就会是一圈白色。根据上面的几何项曲线可以看出，几何项在夹角接近 90 度的时候迅速变为 0，从而修正了这个非常大的结果。</p>
+<h3 id="2-Kulla-Conty-Approximation"><a href="#2-Kulla-Conty-Approximation" class="headerlink" title="2 Kulla-Conty Approximation"></a>2 Kulla-Conty Approximation</h3><p>上面回顾了微表面模型，并进一步深入理解了各个项的作用，通过上面的分析我们可以很容易得出一个结论：微表面模型只考虑了光线在微表面之间的一次反射。被挡住的光线就认为看不到，这样做的结果就是微表面模型是能量不守恒的，如下图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608164659865.png" alt="image-20220608164659865"></p>
+<p>随着粗糙程度增大，最终的渲染结果会越来越暗，因为粗糙程度越大意味着法线分布越分散，从而微表面之间的遮挡也会越严重，在微表面模型中被遮挡掉的能量就被丢掉不考虑了，所以自然会越来越暗。</p>
+<p>实际上被遮挡的光线还会在微表面之间弹射从而被看到，因此为了解决这个问题，提出了 Kulla-Conty 估计，用来近似估计光线在微表面之间的多次弹射。</p>
+<p>Kulla-Conty 估计基于一个关键思想：微表面 BRDF 只考虑了没有被遮挡的能量，那么如果能再设计一个 BRDF 来专门描述被遮挡的能量就可以修正微表面的结果了。</p>
+<p>于是首先要知道没有被遮挡的能量是多少，我们假设入射光强度恒为 1，然后对微表面 BRDF 的渲染方程在整个半球面上积分：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608165256048.png" alt="image-20220608165256048"></p>
+<p>注意上面的式子中用了一个简单的积分换元，把 $d\theta$ 换成了 $dsin\theta$，这样一来原本渲染方程中的 cos 项也就没有了，光照项为常数 1，因此上面的积分结果就代表了微表面模型中在出射方向 $\mu_o$ 上全部被看到的能量总和，因为光照项为 1，所以该结果是一个系数，表示出射方向 $\mu_o$ 上被看到的能量占全部能量的比例。</p>
+<p>于是因为遮挡而没被看到的能量总和自然就是 $1-E(\mu_o)$，因此，我们要设计一个 BRDF 来专门描述被遮挡的能量，那么这个 BRDF 在半球面上的积分结果就必须是 $1-E(\mu_o)$。</p>
+<p>考虑到 BRDF 具有双向可逆性，因此 Kulla-Conty 估计设计了这样一个 BRDF：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608165644101.png" alt="image-20220608165644101"></p>
+<p>这个 BRDF 的形式并不是唯一的，只要能保证函数在半球的积分结果是 $1-E(\mu_o)$ 就可以，只是 Kulla-Conty 这样设计既把积分结果本身放到了函数中，还考虑了双向可逆的性质，非常巧妙。</p>
+<p>于是通过积分结果为 $1-E(\mu_o)$ 可以求出常数 c：<br>$$<br>c &#x3D; \frac{1}{\pi(1-E_{avg})}<br>$$<br>其中：<br>$$<br>E_{avg} &#x3D; \frac{\int_0^1E(\mu)\mu d\mu}{\int_0^1\mu d\mu} &#x3D; 2\int_0^1E(\mu)\mu d\mu<br>$$<br>相当于对上面的 $E(\mu_o)$ 做了一个加权平均，权值就是各个方向的夹角正弦 $\mu$，于是整个 Kulla-Conty 估计就是：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608170245422.png" alt="image-20220608170245422"></p>
+<p>容易验证该函数在半球面上积分结果为 $1-E(\mu_o)$：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608170313862.png" alt="image-20220608170313862"></p>
+<p>因此这个函数可以作为描述被遮挡的能量的 BRDF，现在的问题是 $E_{avg}$ 是对一个积分 $E(\mu)$ 再进行积分，实时计算起来比较复杂，所以需要进行预计算。</p>
+<p>对于 $E(\mu)$ 这个积分，是对全部入射方向 $\mu_i$ 的积分，因此积分结果只与观察方向和法线的夹角正弦 $\mu_o$ 和粗糙程度 $\alpha$ 有关，于是预计算的积分结果可以用一张二维纹理来存储：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608171651408.png" alt="image-20220608171651408"></p>
+<p>而对于 $E_{avg}$ 这个积分，是对 $\mu_o$ 的积分，所以积分结果只与粗糙程度 $\alpha$ 有关，只需要一个一维纹理就可以存储。</p>
+<p>将 Kulla-Conty 的结果加到微表面 BRDF 的结果上就可以近似模拟光线在微表面之间多次弹射的结果，达到能量守恒：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608172124188.png" alt="image-20220608172124188"></p>
+<p>接下来还有最后一个问题，上面的所有推导都是假设物体表面没有颜色，也就是反射率恒为 1，如果物体表面有颜色，那么能量在每次弹射后都会损失，如何计算这种损失来得到正确的结果呢？</p>
+<p>Kulla-Conty 又计算了菲涅尔项的加权平均：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608172427624.png" alt="image-20220608172427624"></p>
+<p>这表示每次弹射，表面上有多少能量被反射。这类似于上面的 $E_{avg}$， $E_{avg}$ 表示表面上有多少能量没被遮挡能够被看到，于是我们可以直接看到的能量就可以表示为：<br>$$<br>F_{avg}E_{avg}<br>$$<br>没被看到的能量就是：<br>$$<br>F_{avg}(1-E_{avg})<br>$$<br>这部分能量会在微表面之间继续弹射，于是经过一次弹射后被我们看到的能量就是：<br>$$<br>F_{avg}(1-E_{avg})·F_{avg}E_{avg}<br>$$<br>以此类推，可以写出经过无数次弹射后的能量，将这些能量加起来，就可以得到当物体有颜色的时候，光线在微表面之间多次弹射后反射出的能量，这是一个级数求和问题，最终的结果是：<br>$$<br>\frac{F_{avg}E_{avg}}{1-F_{avg}(1-E_{avg})}<br>$$<br>将这个系数乘到 Kulla-Conty 的 BRDF 上就可以得到有颜色的情况下被遮挡的能量的 BRDF 了。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608173223545.png" alt="image-20220608173223545"></p>
+<h3 id="3-Linearly-Transformed-Cosines（LTC）"><a href="#3-Linearly-Transformed-Cosines（LTC）" class="headerlink" title="3 Linearly Transformed Cosines（LTC）"></a>3 Linearly Transformed Cosines（LTC）</h3><p>有了微表面 BRDF，另一个需要解决的问题是如何使用微表面模型进行渲染。线性变换余弦（LTC）方法是用来解决多边形面光源下，使用微表面 BRDF，主要是 GGX 法线模型的渲染而提出的方法（不考虑阴影）。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608173712743.png" alt="image-20220608173712743"></p>
+<p>当然 LTC 不仅适用于上述情况，对于类似 GGX 法线分布的其他微表面模型也都有很好的效果。</p>
+<p>在离线渲染中处理这样的渲染自然是对面光源进行采样计算，但实时渲染需要快速得到渲染结果，而不同的 BRDF 我们不知道它的分布是什么样的，所以也不容易快速求出这个 BRDF 积分的渲染方程的解析解，因此 LTC 将 BRDF 变换成一个 cos 函数，然后对所有的方向、以及面光源（积分区域）都做同样的变换：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608174038845.png" alt="image-20220608174038845"></p>
+<p>这样就将原积分转化为了一个对余弦函数的积分，保证可以快速求出解析解。具体来说，就是将原本的函数 $F(w_i)$ 变换为 $cos(w_i)$，为了便于理解，我们假设 BRDF 是各向同性的，于是 $F(w_i)$ 实际上和方位角无关，在出射方向固定的情况下就是一个只与俯仰角有关的一维函数，所以可以变换到一维的 cos 函数上，事实上 LTC 也可以处理各向异性的情况，这里就不展开讨论了。</p>
+<p>然后将积分变量 $dw_i$ 同样变换为 $dw_{i’}$，实际上就是对原积分进行了换元：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608174727016.png" alt="image-20220608174727016"></p>
+<p>这样就可以快速求出解析解了。LTC 方法虽然思路很简单，但是效果却非常优秀，因此目前被广泛使用：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608174837806.png" alt="image-20220608174837806"></p>
+<h3 id="4-Disney’s-Principled-BRDF"><a href="#4-Disney’s-Principled-BRDF" class="headerlink" title="4 Disney’s Principled BRDF"></a>4 Disney’s Principled BRDF</h3><p>最后简单了解一下目前工业界知名的，非常强大的迪士尼的开源 BRDF。微表面 BRDF 的问题之一在于不能够表达复合材质，现实世界中许多材质不是单一的，是多种材质的组合，比如蒙上一层塑料布的木头桌子，那么它的表面就有多层材质，光照表现自然和普通桌子不同，而 Disney’s Principled BRDF 具有强大的表达能力，可以表达各种复合材质。</p>
+<p>并且 Disney’s Principled BRDF 摒弃了传统基于物理的材质的各种物理参数，只使用一些非常符合人直觉的参数就可以进行调节，对于艺术家非常友好，这也是迪士尼设计这个 BRDF 的原则之一，这些原则有：</p>
+<ul>
+<li>使用符合人直觉的参数而不是各种难懂的物理量</li>
+<li>越少的参数越好</li>
+<li>所有参数都是从 0 到 1 调节的</li>
+<li>在一些合理的情况下允许参数不在 0 到 1 范围内</li>
+<li>所有参数的任意组合都必须得出合理的结果，而不是某些非常奇怪的结果</li>
+</ul>
+<p>能够满足上述原则的 BRDF 可以说是完美的，虽然严格来说迪士尼的 BRDF 不是基于物理的，而是进行了各种非常复杂的拟合，但是也常被归为基于物理的 BRDF。</p>
+<p>下图是一些可以调节的参数和得出的材质效果：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608175902209.png" alt="image-20220608175902209"></p>
+<p>从上到下依次是：</p>
+<ul>
+<li>次表面散射 subsurface：值越大次表面散射越严重，物体看起来更像一个平面</li>
+<li>金属度 metallic：值越大物体越像金属</li>
+<li>高光度 specular：值越大物体高光反射越强</li>
+<li>高光颜色 specularTint：可以调节高光反射的颜色</li>
+<li>粗糙程度 roughness：值越大物体表面越粗糙</li>
+<li>各向异性程度 anisotropic：值越大物体表面越呈现各向异性</li>
+<li>绒毛 sheen：绒毛相当于物体表面每个点都有一根朝向法线方向的绒毛，表现出来就是物体边缘会有模糊感，值越大绒毛越明显</li>
+<li>绒毛颜色 sheenTint：控制绒毛颜色</li>
+<li>表面通透 clearcoat：类似于给物体表面蒙上一层透明的漆，值越大这个效果越明显</li>
+<li>表面通透颜色 clearcoatGloss：表面通透高光的锐利度，值越大高光越锐利</li>
+</ul>
+<p>上面的所有参数可以随意组合，表达各种复合材质，所以迪士尼 BRDF 的表达能力非常强。</p>
+
+    </div>
+
+    
+    
+    
+
+    <div>
+    
+      <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">---- 本文结束 <i class="fa fa-trophy"></i> 知识又增加了亿点点！----</div>
+    
+</div>
+<br />
+<div>
+  <div>
+    <fieldset
+        style="
+            border: 1px dashed #C0C0C0;
+            padding: 10px;
+            border-radius: 5px;
+            line-height: 2em;
+            color: #6d6d6d;
+        ">
+        <legend
+            align="center"
+            style="
+                width: 30%;
+                text-align: center;
+                color: #6d6d6d;
+                border: 1px dashed #C0C0C0;
+                border-radius: 5px;
+            ">
+            文章版权声明
+        </legend>
+        1、博客名称：<font color="#37c6c0">LycTechStack</font><br />
+        2、博客网址：<font color="#37c6c0">https://lz328.github.io/LycTechStack.github.io/</font><br />
+        3、本博客的文章部分内容可能来源于网络，仅供大家学习与参考，如有侵权，请联系博主进行删除处理。<br />
+        4、本博客所有文章版权归博主所有，如需转载请标明出处。<br />
+    </fieldset>
+  </div>
+</div>
+
+    
+    </div>
+      
+  <div class="popular-posts-header">相关文章</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\13\20220513-RTR-GPU管线\" rel="bookmark">【Real-Time Rendering】GPU管线</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\13\20220513-RTR-图形渲染和视觉外观\" rel="bookmark">【Real-Time Rendering】图形渲染和视觉处理</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\14\20220514-RTR-模板测试和深度测试\" rel="bookmark">【Real-Time Rendering】模板测试和深度测试</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\16\20220516-RTR-BRDF总结\" rel="bookmark">【Real-Time Rendering】BRDF总结</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\15\20220515-RTR-程序噪声总结\" rel="bookmark">【Real-Time Rendering】程序噪声总结</a></div>
+    </li>
+  </ul>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/LycTechStack.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/" rel="tag"># 计算机图形学</a>
+              <a href="/LycTechStack.github.io/tags/%E5%AE%9E%E6%97%B6%E6%B8%B2%E6%9F%93/" rel="tag"># 实时渲染</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/" rel="prev" title="【高质量实时渲染】实时全局光照">
+      <i class="fa fa-chevron-left"></i> 【高质量实时渲染】实时全局光照
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%86%8D%E8%B0%88%E5%BE%AE%E8%A1%A8%E9%9D%A2"><span class="nav-text">1 再谈微表面</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-%E8%8F%B2%E6%B6%85%E5%B0%94%E9%A1%B9"><span class="nav-text">1.1 菲涅尔项</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-%E6%B3%95%E7%BA%BF%E5%88%86%E5%B8%83%E5%87%BD%E6%95%B0"><span class="nav-text">1.2 法线分布函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-%E5%87%A0%E4%BD%95%E9%A1%B9"><span class="nav-text">1.3 几何项</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Kulla-Conty-Approximation"><span class="nav-text">2 Kulla-Conty Approximation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Linearly-Transformed-Cosines%EF%BC%88LTC%EF%BC%89"><span class="nav-text">3 Linearly Transformed Cosines（LTC）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-Disney%E2%80%99s-Principled-BRDF"><span class="nav-text">4 Disney’s Principled BRDF</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Lyc"
+      src="/LycTechStack.github.io/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Lyc</p>
+  <div class="site-description" itemprop="description">个人学习总结和技术经验分享，主要内容包括C++、数据结构、算法、计算机图形学、3D数学、实时渲染、游戏引擎等等，希望未来能真正踏入图形/引擎开发的大门！</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/LycTechStack.github.io/archives/">
+        
+          <span class="site-state-item-count">99</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/LycTechStack.github.io/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/LycTechStack.github.io/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/LZ328/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;LZ328&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:27487358@qq.com" title="E-Mail → mailto:27487358@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2021 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heartbeat"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lyc</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">787k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">11:55</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="/LycTechStack.github.io/lib/canvas-ribbon/canvas-ribbon.js"></script>
+  <script src="/LycTechStack.github.io/lib/anime.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/pjax/pjax.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4/dist/browser/pangu.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/velocity/velocity.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/LycTechStack.github.io/js/utils.js"></script>
+
+<script src="/LycTechStack.github.io/js/motion.js"></script>
+
+
+<script src="/LycTechStack.github.io/js/schemes/pisces.js"></script>
+
+
+<script src="/LycTechStack.github.io/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/LycTechStack.github.io/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '09aa5d8a5587f012a8af',
+      clientSecret: '7f7ec08f02d74e1865e57b5f03a982047700b547',
+      repo        : 'LycTechStack.github.io',
+      owner       : 'LZ328',
+      admin       : ['LZ328'],
+      id          : '39703816617d1fc4667b8f3e1085397b',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+    </div>
+  
+</body>
+</html>
