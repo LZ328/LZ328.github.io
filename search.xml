@@ -1020,6 +1020,66 @@
       </tags>
   </entry>
   <entry>
+    <title>【计算机图形学】（十二）辐射度量学基础</title>
+    <url>/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/</url>
+    <content><![CDATA[<h3 id="辐射度量学（Radiometry）"><a href="#辐射度量学（Radiometry）" class="headerlink" title="辐射度量学（Radiometry）"></a>辐射度量学（Radiometry）</h3><p>上一节我们学习了 Whitted 风格光线追踪的基本原理和优化结构，Whitted 风格光线追踪是基于布林冯光照模型的渲染方式，回顾布林冯光照模型，其中有一个概念我们一直不清楚，那就是所有光照公式中的光照强度 $I$ 是如何定义的，光照强度到底是什么，是从哪里来的，又要用什么去衡量？并且上一节中我们也看到了，其实利用 Whitted 风格光线追踪渲染出来的图片并没有想象中那么真实，这是因为我们从头到尾都没有准确的对光照进行度量和描述，所有公式中的光都是抽象的，简化的结果。因此也无法解释上面的一系列问题。</p>
+<p>从这一节开始我们将学习更为先进的路径追踪技术，路径追踪技术是基于辐射度量学的光线追踪算法，而<strong>辐射度量学是可以准确描述光线的空间属性的体系，可以保证在物理上绝对正确的情况下进行各种光照的计算。</strong></p>
+<p><em><span id="more"></span></em></p>
+<p>为了之后更好的学习，这一节首先介绍基础辐射度量学的各种概念和公式，由于许多概念没有太准确的中文翻译，所以这一节中的概念只能在保留英文原词的基础上尽可能的加以说明。</p>
+<h4 id="1-Radiant-Energy-和-Flux（Power）"><a href="#1-Radiant-Energy-和-Flux（Power）" class="headerlink" title="1 Radiant Energy 和 Flux（Power）"></a>1 Radiant Energy 和 Flux（Power）</h4><p>Radiant Energy 简单来说就是指光线的能量，物理上能量的单位是焦耳（J），所以 Radiant Energy 的单位自然也是焦耳。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318150152632.png" alt="image-20220318150152632"></p>
+<p>Radiant Flux 物理上叫做辐射通量，也称为功率（Power），是指单位时间内，放射、反射、折射或者接收到的光的能量，物理上功率的单位一般是瓦特（W），光学中有一个专门的单位<strong>流明（lm）</strong>。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318150419583.png" alt="image-20220318150419583"></p>
+<p>辐射通量还可以理解为一个光源放射出光线，在单位时间内通过一个平面的光线的数量，这样理解更符合”通量“这个概念，但辐射通量（功率）用我们生活上的经验来理解指的其实就是”亮度“，比如我们买灯泡，功率越大肯定就越亮，所以 Radiant Flux 描述的就是光的亮度，<strong>因此功率就代表光的强度。后文中提到的所有光的强度指的都是辐射通量，也就是功率。</strong></p>
+<h4 id="2-Radiant-Intensity"><a href="#2-Radiant-Intensity" class="headerlink" title="2 Radiant Intensity"></a>2 Radiant Intensity</h4><p>之前我们一直不知道如何描述一个点光源向四面八方辐射出的光线的强度，因为我们不知道如何定义空间中任意一个方向。回顾平面中我们是如何定义任意一个方向的：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318151148501.png" alt="image-20220318151148501"></p>
+<p>显然是用角度来定义的，一个单位圆就可以定义平面中任意一个方向，高中知识也告诉我们这个角度等于弧长除以半径，因为整个圆的周长是 $2\pi r$，所以角度最大就是 $2\pi$，单位是弧度（radians）。那这个概念能不能推广到空间中呢？当然可以。</p>
+<p>空间中的一个单位球就可以定义任意一个方向，从圆心向球面投射出一块小的区域 A ，当这个区域足够小的时候这个锥体就指示了一个方向，我们用这个椎体的面积除以球的半径的平方就得到了类似于二维中的角度，我们把这个角度称为<strong>立体角（Solid Angle）</strong>，因为球的表面积是 $4\pi r^2$，所以立体角最大是 $4\pi$，单位是 sr（steradians）.</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318151731669.png" alt="image-20220318151731669"></p>
+<p>Radiant Intensity 就是用来描述<strong>一个点光源放射出的单位立体角上的光的强度</strong>的物理量。<strong>所谓单位立体角，我们永远可以理解为它就是一个方向。</strong>这句话非常关键，对于后面其他概念的理解很有帮助。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318151022165.png" alt="image-20220318151022165"></p>
+<p>根据上面的公式，Radiant Intensity 的单位是（lm &#x2F; sr），有一个专门的名字叫做 candela，candela 也是国际标准单位之一。</p>
+<p>其中微分立体角 $d\omega$ 如何表述呢？可以利用微积分知识得到另一个表达式，考虑空间中的单位球体：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318152452914.png" alt="image-20220318152452914"></p>
+<p>实际上之前定义空间中任意一个方向我们更为熟悉的方式是用角度 $\theta$ 和 $\phi$ 来唯一确定球上任意一个半径方向，也就指示了空间中任意一个方向，其中 $\theta$ 是半径与 Z 轴的夹角， $\phi$ 是半径绕 Z 轴旋转的角度。那么考虑一个单位立体角，假设这个立体角是半径分别在 $\theta$ 和 $\phi$ 方向上移动 $d\theta$ 和 $d\phi$ 角度形成的，于是它对应球面上一个非常小的矩形 $dA$，我们要计算这个矩形的面积就要求出它的两个边长，矩形垂直的边长对应的就是以 $r$ 为半径的圆上的一段圆弧，圆弧对应的角度是 $d\theta$ ，所以矩形的垂直边长就是 $r·d\theta$，同理矩形水平的边长对应的是以 $r·sin\theta$ 为半径的圆上的一段圆弧，圆弧对应的角度是 $d\phi$ ，所以矩形的水平边长就是 $r·sin\theta ·d\phi$，因此可以得到微分矩形的面积：<br>$$<br>\begin{split}<br>dA &amp;&#x3D; (r·d\theta)(r·sin\theta ·d\phi) \\<br>&amp;&#x3D; r^2 sin\theta \ d\theta \ d\phi<br>\end{split}<br>$$<br>于是微分立体角就是：<br>$$<br>d\omega &#x3D; \frac{dA}{r^2} &#x3D; sin\theta \ d\theta \ d\phi<br>$$<br>之前说过，因为立体角表示的是整个球面上某一块的面积与半径平方的比值，所以立体角最大就是 $4\pi$，因此在球面上对所有立体角 $\omega$ 积分一定得到的是 $4\pi$，整个球面对 $\omega$ 积分实际上就是对 $\theta$ 在 $[0,\pi]$， $\phi$ 在 $[0,2\pi]$ 上积分，就是一个简单的二重积分：<br>$$<br>\begin{split}<br>\Omega &amp;&#x3D; \int_{S^2} d \omega \\<br>&amp;&#x3D;\int_{0}^{2\pi} \int_{0}^{\pi} sin\theta \ d\theta \ d\phi \\<br>&amp;&#x3D; 4\pi<br>\end{split}<br>$$<br>现在再回顾 Radiant Intensity 的定义，Radiant Intensity 描述的就是一个点光源朝四面八方辐射出去的光的通量（功率）。如果我们假设一个点光源向各个方向辐射出的强度是相同的，那么每个单位立体角上的强度就是一样的，假设为 $I$，则光源本身的强度 $\Phi$ 相当于每个单位立体角上的强度 $I$ 的积分：<br>$$<br>\begin{split}<br>\Phi &amp;&#x3D; \int_{S^2} I \ d\omega \<br>&amp;&#x3D; 4\pi I<br>\end{split}<br>$$<br>因此每个单位立体角上的强度 $I$ 就是：<br>$$<br>I &#x3D; \frac{\Phi}{4\pi} \ (candelas)<br>$$<br>比如一个 LED 灯泡的功率是 815 流明，那么它的 Radiant Intensity 就是：<br>$$<br>Intensity &#x3D; \frac{815 \ lm}{4\pi \ sr} &#x3D; 65 \ candelas<br>$$</p>
+<h4 id="3-Irradiance"><a href="#3-Irradiance" class="headerlink" title="3 Irradiance"></a>3 Irradiance</h4><p>Intensity 是用来描述一个光源发出的光的强度的物理量，那自然要有一个物理量用来描述一个点接收的光有多少，Irradiance 表示<strong>单位面积入射的光的强度</strong>，单位是 $lm &#x2F; m^2$，也有一个专门的名字叫做 lux。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318160656284.png" alt="image-20220318160656284"></p>
+<p>这里的单位面积指的是<strong>投影单位面积</strong>，我们规定只有光线和这个面垂直，才去计算 Irradiance，因此如果这个面和光线入射方向不垂直，那就把这个面投影到垂直的方向上再计算，实际上这也是之前布林冯光照模型中用到的 Lambert’s 余弦定理的原理。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318161132535.png" alt="image-20220318161132535"></p>
+<p>因此一个表面和入射光的夹角越接近直角，它单位面积接收到的光的能量就越大。</p>
+<p>利用 Irradiance 还可以解释布林冯光照模型中光的强度随距离衰减为什么是 $I&#x2F;r^2$。回顾当时的一张图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318161604597.png" alt="image-20220318161604597"></p>
+<p>现在我们用辐射度量学的角度来理解这张图，如果光源的强度是 $\Phi$，假设光源向四面八方都是均匀辐射的，在光源处有一个单位球面把光源包起来，那么这个球面上每一处的 Irradiance 就是光源的强度除以球的表面积，单位球半径为1，因此：<br>$$<br>E &#x3D; \frac{\Phi}{4\pi}<br>$$<br>而距离光源半径为 $r$ 的球面上每一处的 Irradiance 就是：<br>$$<br>E’ &#x3D; \frac{\Phi}{4\pi r^2} &#x3D; \frac{E}{r^2}<br>$$<br>所以之前说的光的强度随距离衰减实际上是 Irradiance 在随着距离衰减。</p>
+<h4 id="4-Radiance"><a href="#4-Radiance" class="headerlink" title="4 Radiance"></a>4 Radiance</h4><p>到目前为止，我们已经有了描述光源发出的光的强度的物理量 Intensity 和描述单位面积接收到的光的强度的物理量 Irradiance，接下来就是最重要的一个概念——Radiance，Radiance 是用来描述光线的物理量，而我们后续渲染时的所有计算都是基于光线的计算，所以说 Radiance 是最重要的一个概念。</p>
+<p>Radiance 定义为<strong>单位立体角、单位投影面积上发射、反射、折射或入射的光的强度</strong>。单位是 $lm&#x2F;(sr·m^2)$，也有一个专门的名字叫做尼特（nit）。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318162959095.png" alt="image-20220318162959095"></p>
+<p>虽然已经有了心理准备，但这个概念还是太过抽象了。不过我们可以一点一点拆开来看。从上面的公式可以看到，实际上 Radiance 就是单位立体角、单位面积的光的强度。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318163414923.png" alt="image-20220318163414923"></p>
+<p>回顾 Radiant Intensity 的定义，Radiant Intensity 是单位立体角上的光的强度，那么 Radiance 不就是单位面积上的 Radiant Intensity 吗；同理，Irradiance 是单位面积上的光的强度，那么 Radiance 不也可以是单位立体角上的 Irradiance 吗。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318163639208.png" alt="image-20220318163639208"></p>
+<p>现在我们在抽象上好像明白 Radiance 是什么了，接下来分别分析一下这两种说法对应的都是什么物理意义。</p>
+<ul>
+<li>Radiance 相当于单位面积上的 Radiant Intensity，Radiant Intensity 是指一个点光源放射出的单位立体角上的强度，所以Radiance就是<strong>一个光源单位面积上放射出的单位立体角的上的光的强度</strong>。之前说过，单位立体角我们永远可以理解为它就是一个方向，因此上面这句话就可以理解成<strong>一个光源单位面积上放射出的某个方向上的光的强度</strong>。这相当于我们不考虑整个光源向某个方向放射出的能量有多少，而是只考虑光源上的某一个单位平面向某个方向放射出的能量有多少，同样这里的单位面积一定是投影单位面积。因此从这个角度来说，<strong>Radiance 表示的是沿着某个立体角表示的方向 $\omega$ 离开单位平面 dA 的光的强度</strong>。这里的”离开“自然可以代表发射、反射、折射等等。</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318164148266.png" alt="image-20220318164148266"></p>
+<ul>
+<li>Radiance 相当于单位立体角上的 Irradiance，Irradiance 表示单位面积入射的光的强度，单位立体角又表示方向，所以Radiance 就是单位面积在某个方向上入射的光的强度。也就是一个单位平面从四面八方都会接收到光，但 Radiance 只表示这个单位平面接收到的从某个方向 $\omega$ 入射来的光的强度。</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318165844563.png" alt="image-20220318165844563"></p>
+<p>下面的图有助于更进一步理解 Radiance 和 Irradiance 的关系：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318170234173.png" alt="image-20220318170234173"></p>
+<p>Irradiance 是单位平面 $dA$ 从各个方向接收到的全部的光的强度，Radiance 是单位平面 $dA$ 从单位立体角 $d\omega$ 方向接收到的光的强度，因此对 Radiance 在半球面的各个方向 $d\omega$ 上积分，得到的就是各个方向接收到的光的强度的总和，也就是 Irradiance 。</p>
+<p>这样一来我们就可以理解 Radiance 的物理含义了，同时也就明白为什么开头说 Radiance 是表示光线的物理量，因为它既有方向，又有大小。</p>
+]]></content>
+      <categories>
+        <category>GAMES101</category>
+      </categories>
+      <tags>
+        <tag>计算机图形学</tag>
+        <tag>光线追踪</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>【计算机图形学】（十四）材质</title>
     <url>/LycTechStack.github.io/2022/03/24/20220324-%E6%9D%90%E8%B4%A8/</url>
     <content><![CDATA[<h3 id="材质（Materials）"><a href="#材质（Materials）" class="headerlink" title="材质（Materials）"></a>材质（Materials）</h3><p>这一节开始学习图形学中材质的相关内容。我们之所以能看到现实世界中不同的物体有不同的材质，本质上就是因为不同材质对光线的吸收、反射、折射的能力不同，而描述这种能力的函数就是我们上一节中简单了解过的双向反射分布函数（BRDF），上一节中也说过，BRDF 就是材质，因此这一节讨论的内容实际上就是 BRDF。</p>
@@ -1384,66 +1444,6 @@
       </tags>
   </entry>
   <entry>
-    <title>【计算机图形学】（十二）辐射度量学基础</title>
-    <url>/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/</url>
-    <content><![CDATA[<h3 id="辐射度量学（Radiometry）"><a href="#辐射度量学（Radiometry）" class="headerlink" title="辐射度量学（Radiometry）"></a>辐射度量学（Radiometry）</h3><p>上一节我们学习了 Whitted 风格光线追踪的基本原理和优化结构，Whitted 风格光线追踪是基于布林冯光照模型的渲染方式，回顾布林冯光照模型，其中有一个概念我们一直不清楚，那就是所有光照公式中的光照强度 $I$ 是如何定义的，光照强度到底是什么，是从哪里来的，又要用什么去衡量？并且上一节中我们也看到了，其实利用 Whitted 风格光线追踪渲染出来的图片并没有想象中那么真实，这是因为我们从头到尾都没有准确的对光照进行度量和描述，所有公式中的光都是抽象的，简化的结果。因此也无法解释上面的一系列问题。</p>
-<p>从这一节开始我们将学习更为先进的路径追踪技术，路径追踪技术是基于辐射度量学的光线追踪算法，而<strong>辐射度量学是可以准确描述光线的空间属性的体系，可以保证在物理上绝对正确的情况下进行各种光照的计算。</strong></p>
-<p><em><span id="more"></span></em></p>
-<p>为了之后更好的学习，这一节首先介绍基础辐射度量学的各种概念和公式，由于许多概念没有太准确的中文翻译，所以这一节中的概念只能在保留英文原词的基础上尽可能的加以说明。</p>
-<h4 id="1-Radiant-Energy-和-Flux（Power）"><a href="#1-Radiant-Energy-和-Flux（Power）" class="headerlink" title="1 Radiant Energy 和 Flux（Power）"></a>1 Radiant Energy 和 Flux（Power）</h4><p>Radiant Energy 简单来说就是指光线的能量，物理上能量的单位是焦耳（J），所以 Radiant Energy 的单位自然也是焦耳。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318150152632.png" alt="image-20220318150152632"></p>
-<p>Radiant Flux 物理上叫做辐射通量，也称为功率（Power），是指单位时间内，放射、反射、折射或者接收到的光的能量，物理上功率的单位一般是瓦特（W），光学中有一个专门的单位<strong>流明（lm）</strong>。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318150419583.png" alt="image-20220318150419583"></p>
-<p>辐射通量还可以理解为一个光源放射出光线，在单位时间内通过一个平面的光线的数量，这样理解更符合”通量“这个概念，但辐射通量（功率）用我们生活上的经验来理解指的其实就是”亮度“，比如我们买灯泡，功率越大肯定就越亮，所以 Radiant Flux 描述的就是光的亮度，<strong>因此功率就代表光的强度。后文中提到的所有光的强度指的都是辐射通量，也就是功率。</strong></p>
-<h4 id="2-Radiant-Intensity"><a href="#2-Radiant-Intensity" class="headerlink" title="2 Radiant Intensity"></a>2 Radiant Intensity</h4><p>之前我们一直不知道如何描述一个点光源向四面八方辐射出的光线的强度，因为我们不知道如何定义空间中任意一个方向。回顾平面中我们是如何定义任意一个方向的：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318151148501.png" alt="image-20220318151148501"></p>
-<p>显然是用角度来定义的，一个单位圆就可以定义平面中任意一个方向，高中知识也告诉我们这个角度等于弧长除以半径，因为整个圆的周长是 $2\pi r$，所以角度最大就是 $2\pi$，单位是弧度（radians）。那这个概念能不能推广到空间中呢？当然可以。</p>
-<p>空间中的一个单位球就可以定义任意一个方向，从圆心向球面投射出一块小的区域 A ，当这个区域足够小的时候这个锥体就指示了一个方向，我们用这个椎体的面积除以球的半径的平方就得到了类似于二维中的角度，我们把这个角度称为<strong>立体角（Solid Angle）</strong>，因为球的表面积是 $4\pi r^2$，所以立体角最大是 $4\pi$，单位是 sr（steradians）.</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318151731669.png" alt="image-20220318151731669"></p>
-<p>Radiant Intensity 就是用来描述<strong>一个点光源放射出的单位立体角上的光的强度</strong>的物理量。<strong>所谓单位立体角，我们永远可以理解为它就是一个方向。</strong>这句话非常关键，对于后面其他概念的理解很有帮助。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318151022165.png" alt="image-20220318151022165"></p>
-<p>根据上面的公式，Radiant Intensity 的单位是（lm &#x2F; sr），有一个专门的名字叫做 candela，candela 也是国际标准单位之一。</p>
-<p>其中微分立体角 $d\omega$ 如何表述呢？可以利用微积分知识得到另一个表达式，考虑空间中的单位球体：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318152452914.png" alt="image-20220318152452914"></p>
-<p>实际上之前定义空间中任意一个方向我们更为熟悉的方式是用角度 $\theta$ 和 $\phi$ 来唯一确定球上任意一个半径方向，也就指示了空间中任意一个方向，其中 $\theta$ 是半径与 Z 轴的夹角， $\phi$ 是半径绕 Z 轴旋转的角度。那么考虑一个单位立体角，假设这个立体角是半径分别在 $\theta$ 和 $\phi$ 方向上移动 $d\theta$ 和 $d\phi$ 角度形成的，于是它对应球面上一个非常小的矩形 $dA$，我们要计算这个矩形的面积就要求出它的两个边长，矩形垂直的边长对应的就是以 $r$ 为半径的圆上的一段圆弧，圆弧对应的角度是 $d\theta$ ，所以矩形的垂直边长就是 $r·d\theta$，同理矩形水平的边长对应的是以 $r·sin\theta$ 为半径的圆上的一段圆弧，圆弧对应的角度是 $d\phi$ ，所以矩形的水平边长就是 $r·sin\theta ·d\phi$，因此可以得到微分矩形的面积：<br>$$<br>\begin{split}<br>dA &amp;&#x3D; (r·d\theta)(r·sin\theta ·d\phi) \\<br>&amp;&#x3D; r^2 sin\theta \ d\theta \ d\phi<br>\end{split}<br>$$<br>于是微分立体角就是：<br>$$<br>d\omega &#x3D; \frac{dA}{r^2} &#x3D; sin\theta \ d\theta \ d\phi<br>$$<br>之前说过，因为立体角表示的是整个球面上某一块的面积与半径平方的比值，所以立体角最大就是 $4\pi$，因此在球面上对所有立体角 $\omega$ 积分一定得到的是 $4\pi$，整个球面对 $\omega$ 积分实际上就是对 $\theta$ 在 $[0,\pi]$， $\phi$ 在 $[0,2\pi]$ 上积分，就是一个简单的二重积分：<br>$$<br>\begin{split}<br>\Omega &amp;&#x3D; \int_{S^2} d \omega \\<br>&amp;&#x3D;\int_{0}^{2\pi} \int_{0}^{\pi} sin\theta \ d\theta \ d\phi \\<br>&amp;&#x3D; 4\pi<br>\end{split}<br>$$<br>现在再回顾 Radiant Intensity 的定义，Radiant Intensity 描述的就是一个点光源朝四面八方辐射出去的光的通量（功率）。如果我们假设一个点光源向各个方向辐射出的强度是相同的，那么每个单位立体角上的强度就是一样的，假设为 $I$，则光源本身的强度 $\Phi$ 相当于每个单位立体角上的强度 $I$ 的积分：<br>$$<br>\begin{split}<br>\Phi &amp;&#x3D; \int_{S^2} I \ d\omega \<br>&amp;&#x3D; 4\pi I<br>\end{split}<br>$$<br>因此每个单位立体角上的强度 $I$ 就是：<br>$$<br>I &#x3D; \frac{\Phi}{4\pi} \ (candelas)<br>$$<br>比如一个 LED 灯泡的功率是 815 流明，那么它的 Radiant Intensity 就是：<br>$$<br>Intensity &#x3D; \frac{815 \ lm}{4\pi \ sr} &#x3D; 65 \ candelas<br>$$</p>
-<h4 id="3-Irradiance"><a href="#3-Irradiance" class="headerlink" title="3 Irradiance"></a>3 Irradiance</h4><p>Intensity 是用来描述一个光源发出的光的强度的物理量，那自然要有一个物理量用来描述一个点接收的光有多少，Irradiance 表示<strong>单位面积入射的光的强度</strong>，单位是 $lm &#x2F; m^2$，也有一个专门的名字叫做 lux。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318160656284.png" alt="image-20220318160656284"></p>
-<p>这里的单位面积指的是<strong>投影单位面积</strong>，我们规定只有光线和这个面垂直，才去计算 Irradiance，因此如果这个面和光线入射方向不垂直，那就把这个面投影到垂直的方向上再计算，实际上这也是之前布林冯光照模型中用到的 Lambert’s 余弦定理的原理。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318161132535.png" alt="image-20220318161132535"></p>
-<p>因此一个表面和入射光的夹角越接近直角，它单位面积接收到的光的能量就越大。</p>
-<p>利用 Irradiance 还可以解释布林冯光照模型中光的强度随距离衰减为什么是 $I&#x2F;r^2$。回顾当时的一张图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318161604597.png" alt="image-20220318161604597"></p>
-<p>现在我们用辐射度量学的角度来理解这张图，如果光源的强度是 $\Phi$，假设光源向四面八方都是均匀辐射的，在光源处有一个单位球面把光源包起来，那么这个球面上每一处的 Irradiance 就是光源的强度除以球的表面积，单位球半径为1，因此：<br>$$<br>E &#x3D; \frac{\Phi}{4\pi}<br>$$<br>而距离光源半径为 $r$ 的球面上每一处的 Irradiance 就是：<br>$$<br>E’ &#x3D; \frac{\Phi}{4\pi r^2} &#x3D; \frac{E}{r^2}<br>$$<br>所以之前说的光的强度随距离衰减实际上是 Irradiance 在随着距离衰减。</p>
-<h4 id="4-Radiance"><a href="#4-Radiance" class="headerlink" title="4 Radiance"></a>4 Radiance</h4><p>到目前为止，我们已经有了描述光源发出的光的强度的物理量 Intensity 和描述单位面积接收到的光的强度的物理量 Irradiance，接下来就是最重要的一个概念——Radiance，Radiance 是用来描述光线的物理量，而我们后续渲染时的所有计算都是基于光线的计算，所以说 Radiance 是最重要的一个概念。</p>
-<p>Radiance 定义为<strong>单位立体角、单位投影面积上发射、反射、折射或入射的光的强度</strong>。单位是 $lm&#x2F;(sr·m^2)$，也有一个专门的名字叫做尼特（nit）。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318162959095.png" alt="image-20220318162959095"></p>
-<p>虽然已经有了心理准备，但这个概念还是太过抽象了。不过我们可以一点一点拆开来看。从上面的公式可以看到，实际上 Radiance 就是单位立体角、单位面积的光的强度。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318163414923.png" alt="image-20220318163414923"></p>
-<p>回顾 Radiant Intensity 的定义，Radiant Intensity 是单位立体角上的光的强度，那么 Radiance 不就是单位面积上的 Radiant Intensity 吗；同理，Irradiance 是单位面积上的光的强度，那么 Radiance 不也可以是单位立体角上的 Irradiance 吗。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318163639208.png" alt="image-20220318163639208"></p>
-<p>现在我们在抽象上好像明白 Radiance 是什么了，接下来分别分析一下这两种说法对应的都是什么物理意义。</p>
-<ul>
-<li>Radiance 相当于单位面积上的 Radiant Intensity，Radiant Intensity 是指一个点光源放射出的单位立体角上的强度，所以Radiance就是<strong>一个光源单位面积上放射出的单位立体角的上的光的强度</strong>。之前说过，单位立体角我们永远可以理解为它就是一个方向，因此上面这句话就可以理解成<strong>一个光源单位面积上放射出的某个方向上的光的强度</strong>。这相当于我们不考虑整个光源向某个方向放射出的能量有多少，而是只考虑光源上的某一个单位平面向某个方向放射出的能量有多少，同样这里的单位面积一定是投影单位面积。因此从这个角度来说，<strong>Radiance 表示的是沿着某个立体角表示的方向 $\omega$ 离开单位平面 dA 的光的强度</strong>。这里的”离开“自然可以代表发射、反射、折射等等。</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318164148266.png" alt="image-20220318164148266"></p>
-<ul>
-<li>Radiance 相当于单位立体角上的 Irradiance，Irradiance 表示单位面积入射的光的强度，单位立体角又表示方向，所以Radiance 就是单位面积在某个方向上入射的光的强度。也就是一个单位平面从四面八方都会接收到光，但 Radiance 只表示这个单位平面接收到的从某个方向 $\omega$ 入射来的光的强度。</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318165844563.png" alt="image-20220318165844563"></p>
-<p>下面的图有助于更进一步理解 Radiance 和 Irradiance 的关系：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/image-20220318170234173.png" alt="image-20220318170234173"></p>
-<p>Irradiance 是单位平面 $dA$ 从各个方向接收到的全部的光的强度，Radiance 是单位平面 $dA$ 从单位立体角 $d\omega$ 方向接收到的光的强度，因此对 Radiance 在半球面的各个方向 $d\omega$ 上积分，得到的就是各个方向接收到的光的强度的总和，也就是 Irradiance 。</p>
-<p>这样一来我们就可以理解 Radiance 的物理含义了，同时也就明白为什么开头说 Radiance 是表示光线的物理量，因为它既有方向，又有大小。</p>
-]]></content>
-      <categories>
-        <category>GAMES101</category>
-      </categories>
-      <tags>
-        <tag>计算机图形学</tag>
-        <tag>光线追踪</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>【RayTracer】（一）实现基本工具类</title>
     <url>/LycTechStack.github.io/2022/04/11/20220411-RayTracer-%E5%9F%BA%E6%9C%AC%E5%B7%A5%E5%85%B7%E7%B1%BB/</url>
     <content><![CDATA[<p>这部分我们将使用 C++ 从零开始实现一个光线追踪器。首先需要实现一些在简单的光线追踪器中要用到的基本工具类，包含三维向量类、光线类，以及一些之后可能频繁用到的工具函数。</p>
@@ -1642,25 +1642,6 @@
       </tags>
   </entry>
   <entry>
-    <title>【RayTracer】（八）构建随机场景</title>
-    <url>/LycTechStack.github.io/2022/04/16/20220416-RayTracer-%E6%9E%84%E5%BB%BA%E9%9A%8F%E6%9C%BA%E5%9C%BA%E6%99%AF/</url>
-    <content><![CDATA[<p>到目前为止，最简单的光线追踪器就构建完成了，在开始进一步完善之前，我们先随机向场景中加入许多不同材质不同属性的球体，渲染第一张“完整的”光线追踪图片。</p>
-<p><em><span id="more"></span></em></p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;omp.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> STB_IMAGE_WRITE_IMPLEMENTATION</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;stb_image_write.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;hittable_list.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;sphere.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;color.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;camera.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 随机构建场景</span></span><br><span class="line"><span class="function">hittable_list <span class="title">random_scene</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    hittable_list world;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">auto</span> ground_material = <span class="built_in">make_shared</span>&lt;lambertian&gt;(<span class="built_in">color</span>(<span class="number">0.5</span>, <span class="number">0.5</span>, <span class="number">0.5</span>));</span><br><span class="line">    world.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(<span class="built_in">point3</span>(<span class="number">0</span>, <span class="number">-1000</span>, <span class="number">0</span>), <span class="number">1000</span>, ground_material));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> a = <span class="number">-11</span>; a &lt; <span class="number">11</span>; a++) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> b = <span class="number">-11</span>; b &lt; <span class="number">11</span>; b++) &#123;</span><br><span class="line">            <span class="keyword">auto</span> choose_mat = <span class="built_in">random_double</span>();</span><br><span class="line">            <span class="function">point3 <span class="title">center</span><span class="params">(a + <span class="number">0.9</span> * random_double(), <span class="number">0.2</span>, b + <span class="number">0.9</span> * random_double())</span></span>;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> ((center - <span class="built_in">point3</span>(<span class="number">4</span>, <span class="number">0.2</span>, <span class="number">0</span>)).<span class="built_in">length</span>() &gt; <span class="number">0.9</span>) &#123;</span><br><span class="line">                shared_ptr&lt;material&gt; sphere_material;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> (choose_mat &lt; <span class="number">0.75</span>) &#123;</span><br><span class="line">                    <span class="comment">// diffuse</span></span><br><span class="line">                    <span class="keyword">auto</span> albedo = <span class="built_in">random_vec</span>() * <span class="built_in">random_vec</span>();</span><br><span class="line">                    sphere_material = <span class="built_in">make_shared</span>&lt;lambertian&gt;(albedo);</span><br><span class="line">                    world.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(center, <span class="number">0.2</span>, sphere_material));</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (choose_mat &lt; <span class="number">0.95</span>) &#123;</span><br><span class="line">                    <span class="comment">// metal</span></span><br><span class="line">                    <span class="keyword">auto</span> albedo = <span class="built_in">random_vec</span>(<span class="number">0.5</span>, <span class="number">1</span>);</span><br><span class="line">                    <span class="keyword">auto</span> fuzz = <span class="built_in">random_double</span>(<span class="number">0</span>, <span class="number">0.5</span>);</span><br><span class="line">                    sphere_material = <span class="built_in">make_shared</span>&lt;metal&gt;(albedo, fuzz);</span><br><span class="line">                    world.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(center, <span class="number">0.2</span>, sphere_material));</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="comment">// glass</span></span><br><span class="line">                    sphere_material = <span class="built_in">make_shared</span>&lt;dielectric&gt;(<span class="number">1.5</span>);</span><br><span class="line">                    world.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(center, <span class="number">0.2</span>, sphere_material));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">auto</span> material1 = <span class="built_in">make_shared</span>&lt;dielectric&gt;(<span class="number">1.5</span>);</span><br><span class="line">    world.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(<span class="built_in">point3</span>(<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>), <span class="number">1.0</span>, material1));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">auto</span> material2 = <span class="built_in">make_shared</span>&lt;lambertian&gt;(<span class="built_in">color</span>(<span class="number">0.4</span>, <span class="number">0.2</span>, <span class="number">0.1</span>));</span><br><span class="line">    world.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(<span class="built_in">point3</span>(<span class="number">-4</span>, <span class="number">1</span>, <span class="number">0</span>), <span class="number">1.0</span>, material2));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">auto</span> material3 = <span class="built_in">make_shared</span>&lt;metal&gt;(<span class="built_in">color</span>(<span class="number">0.7</span>, <span class="number">0.6</span>, <span class="number">0.5</span>), <span class="number">0.0</span>);</span><br><span class="line">    world.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(<span class="built_in">point3</span>(<span class="number">4</span>, <span class="number">1</span>, <span class="number">0</span>), <span class="number">1.0</span>, material3));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> world;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">/****图片保存，保存为png格式****/</span></span><br><span class="line">    std::string SavePath = <span class="string">&quot;D:\\TechStack\\ComputerGraphics\\Ray Tracing in One Weekend Series\\Results\\&quot;</span>;</span><br><span class="line">    std::string filename = <span class="string">&quot;final.png&quot;</span>;</span><br><span class="line">    std::string filepath = SavePath + filename;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/*******图片属性*******/</span> </span><br><span class="line">    <span class="comment">// 宽高比</span></span><br><span class="line">    <span class="type">const</span> <span class="keyword">auto</span> aspect_ratio = <span class="number">3.0</span> / <span class="number">2.0</span>;</span><br><span class="line">    <span class="type">const</span> <span class="type">int</span> image_width = <span class="number">1200</span>;</span><br><span class="line">    <span class="comment">// 使用static_cast可以明确告诉编译器，这种损失精度的转换是在知情的情况下进行的</span></span><br><span class="line">    <span class="comment">// 也可以让阅读程序的其他程序员明确你转换的目的而不是由于疏忽</span></span><br><span class="line">    <span class="type">const</span> <span class="type">int</span> image_height = <span class="built_in">static_cast</span>&lt;<span class="type">int</span>&gt;(image_width / aspect_ratio);</span><br><span class="line">    <span class="type">const</span> <span class="type">int</span> channel = <span class="number">3</span>;</span><br><span class="line">    <span class="comment">// 每个像素的采样数量</span></span><br><span class="line">    <span class="type">const</span> <span class="type">int</span> samples_per_pixel = <span class="number">500</span>;</span><br><span class="line">    <span class="comment">// 光线至少弹射次数</span></span><br><span class="line">    <span class="type">const</span> <span class="type">int</span> min_bounce = <span class="number">45</span>;</span><br><span class="line">    <span class="comment">// 俄罗斯轮盘赌算法生存概率</span></span><br><span class="line">    <span class="type">const</span> <span class="type">double</span> RR = <span class="number">0.9</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/*******创建相机*******/</span></span><br><span class="line">    <span class="function">point3 <span class="title">lookfrom</span><span class="params">(<span class="number">13</span>, <span class="number">2</span>, <span class="number">3</span>)</span></span>;</span><br><span class="line">    <span class="function">point3 <span class="title">lookat</span><span class="params">(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>)</span></span>;</span><br><span class="line">    <span class="function">vec3 <span class="title">vup</span><span class="params">(<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>)</span></span>;</span><br><span class="line">    <span class="keyword">auto</span> dist_to_focus = <span class="number">10.0</span>;</span><br><span class="line">    <span class="keyword">auto</span> aperture = <span class="number">0.1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function">camera <span class="title">cam</span><span class="params">(lookfrom, lookat, vup, <span class="number">20</span>, aspect_ratio, aperture, dist_to_focus)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/*******创建场景*******/</span></span><br><span class="line">    <span class="keyword">auto</span> world = <span class="built_in">random_scene</span>();</span><br><span class="line"></span><br><span class="line">    <span class="comment">/******渲染部分*****/</span></span><br><span class="line">    <span class="comment">// 3通道图像存在一维数组中</span></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">char</span>* odata = (<span class="type">unsigned</span> <span class="type">char</span>*)<span class="built_in">malloc</span>(image_width * image_height * channel);</span><br><span class="line">    <span class="type">unsigned</span> <span class="type">char</span>* p = odata;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> j = image_height - <span class="number">1</span>; j &gt;= <span class="number">0</span>; --j) &#123;</span><br><span class="line">        <span class="comment">// 标准错误流显示进度信息，单行刷新显示</span></span><br><span class="line">        std::cerr &lt;&lt; <span class="string">&quot;\rScanlines remaining: &quot;</span> &lt;&lt; j &lt;&lt; <span class="string">&#x27; &#x27;</span> &lt;&lt; std::flush;</span><br><span class="line">        <span class="meta">#<span class="keyword">pragma</span> omp parallel for</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; image_width; ++i) &#123;</span><br><span class="line">            <span class="function">color <span class="title">pixel_color</span><span class="params">(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>)</span></span>;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> s = <span class="number">0</span>; s &lt; samples_per_pixel; ++s) &#123;</span><br><span class="line">                <span class="comment">// 在像素内部随机采样</span></span><br><span class="line">                <span class="keyword">auto</span> u = (i + <span class="built_in">random_double</span>()) / (image_width - <span class="number">1</span>);</span><br><span class="line">                <span class="keyword">auto</span> v = (j + <span class="built_in">random_double</span>()) / (image_height - <span class="number">1</span>);</span><br><span class="line">                ray r = cam.<span class="built_in">get_ray</span>(u, v);</span><br><span class="line">                pixel_color += <span class="built_in">ray_color</span>(r, world, min_bounce, RR);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="built_in">write_color</span>(p, pixel_color, samples_per_pixel);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">stbi_write_png</span>(filepath.<span class="built_in">c_str</span>(), image_width, image_height, channel, odata, <span class="number">0</span>);</span><br><span class="line">    std::cerr &lt;&lt; <span class="string">&quot;\nDone.\n&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>得到的效果如下：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/16/20220416-RayTracer-%E6%9E%84%E5%BB%BA%E9%9A%8F%E6%9C%BA%E5%9C%BA%E6%99%AF/FinalRender2.png" alt="FinalRender2"></p>
-]]></content>
-      <categories>
-        <category>RayTracer</category>
-      </categories>
-      <tags>
-        <tag>计算机图形学</tag>
-        <tag>C++</tag>
-        <tag>光线追踪</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>【RayTracer】（六）电介质</title>
     <url>/LycTechStack.github.io/2022/04/16/20220416-RayTracer-%E7%94%B5%E4%BB%8B%E8%B4%A8/</url>
     <content><![CDATA[<p>这一节开始实现诸如水、玻璃、钻石等透明材质，他们都是电介质（dielectric ），光线到达电介质会发生折射，因此首先要计算折射光线。</p>
@@ -1702,6 +1683,25 @@
 
 <p>我们向场景中左边球体内加了一个同心半径为负的球体，使它们构成了一个空心玻璃球，渲染效果如下：</p>
 <p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/16/20220416-RayTracer-%E7%94%B5%E4%BB%8B%E8%B4%A8/RefractHollow.png" alt="RefractHollow"></p>
+]]></content>
+      <categories>
+        <category>RayTracer</category>
+      </categories>
+      <tags>
+        <tag>计算机图形学</tag>
+        <tag>C++</tag>
+        <tag>光线追踪</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>【RayTracer】（八）构建随机场景</title>
+    <url>/LycTechStack.github.io/2022/04/16/20220416-RayTracer-%E6%9E%84%E5%BB%BA%E9%9A%8F%E6%9C%BA%E5%9C%BA%E6%99%AF/</url>
+    <content><![CDATA[<p>到目前为止，最简单的光线追踪器就构建完成了，在开始进一步完善之前，我们先随机向场景中加入许多不同材质不同属性的球体，渲染第一张“完整的”光线追踪图片。</p>
+<p><em><span id="more"></span></em></p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;omp.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> STB_IMAGE_WRITE_IMPLEMENTATION</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;stb_image_write.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;hittable_list.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;sphere.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;color.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;camera.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 随机构建场景</span></span><br><span class="line"><span class="function">hittable_list <span class="title">random_scene</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    hittable_list world;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">auto</span> ground_material = <span class="built_in">make_shared</span>&lt;lambertian&gt;(<span class="built_in">color</span>(<span class="number">0.5</span>, <span class="number">0.5</span>, <span class="number">0.5</span>));</span><br><span class="line">    world.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(<span class="built_in">point3</span>(<span class="number">0</span>, <span class="number">-1000</span>, <span class="number">0</span>), <span class="number">1000</span>, ground_material));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> a = <span class="number">-11</span>; a &lt; <span class="number">11</span>; a++) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> b = <span class="number">-11</span>; b &lt; <span class="number">11</span>; b++) &#123;</span><br><span class="line">            <span class="keyword">auto</span> choose_mat = <span class="built_in">random_double</span>();</span><br><span class="line">            <span class="function">point3 <span class="title">center</span><span class="params">(a + <span class="number">0.9</span> * random_double(), <span class="number">0.2</span>, b + <span class="number">0.9</span> * random_double())</span></span>;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> ((center - <span class="built_in">point3</span>(<span class="number">4</span>, <span class="number">0.2</span>, <span class="number">0</span>)).<span class="built_in">length</span>() &gt; <span class="number">0.9</span>) &#123;</span><br><span class="line">                shared_ptr&lt;material&gt; sphere_material;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> (choose_mat &lt; <span class="number">0.75</span>) &#123;</span><br><span class="line">                    <span class="comment">// diffuse</span></span><br><span class="line">                    <span class="keyword">auto</span> albedo = <span class="built_in">random_vec</span>() * <span class="built_in">random_vec</span>();</span><br><span class="line">                    sphere_material = <span class="built_in">make_shared</span>&lt;lambertian&gt;(albedo);</span><br><span class="line">                    world.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(center, <span class="number">0.2</span>, sphere_material));</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (choose_mat &lt; <span class="number">0.95</span>) &#123;</span><br><span class="line">                    <span class="comment">// metal</span></span><br><span class="line">                    <span class="keyword">auto</span> albedo = <span class="built_in">random_vec</span>(<span class="number">0.5</span>, <span class="number">1</span>);</span><br><span class="line">                    <span class="keyword">auto</span> fuzz = <span class="built_in">random_double</span>(<span class="number">0</span>, <span class="number">0.5</span>);</span><br><span class="line">                    sphere_material = <span class="built_in">make_shared</span>&lt;metal&gt;(albedo, fuzz);</span><br><span class="line">                    world.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(center, <span class="number">0.2</span>, sphere_material));</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="comment">// glass</span></span><br><span class="line">                    sphere_material = <span class="built_in">make_shared</span>&lt;dielectric&gt;(<span class="number">1.5</span>);</span><br><span class="line">                    world.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(center, <span class="number">0.2</span>, sphere_material));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">auto</span> material1 = <span class="built_in">make_shared</span>&lt;dielectric&gt;(<span class="number">1.5</span>);</span><br><span class="line">    world.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(<span class="built_in">point3</span>(<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>), <span class="number">1.0</span>, material1));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">auto</span> material2 = <span class="built_in">make_shared</span>&lt;lambertian&gt;(<span class="built_in">color</span>(<span class="number">0.4</span>, <span class="number">0.2</span>, <span class="number">0.1</span>));</span><br><span class="line">    world.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(<span class="built_in">point3</span>(<span class="number">-4</span>, <span class="number">1</span>, <span class="number">0</span>), <span class="number">1.0</span>, material2));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">auto</span> material3 = <span class="built_in">make_shared</span>&lt;metal&gt;(<span class="built_in">color</span>(<span class="number">0.7</span>, <span class="number">0.6</span>, <span class="number">0.5</span>), <span class="number">0.0</span>);</span><br><span class="line">    world.<span class="built_in">add</span>(<span class="built_in">make_shared</span>&lt;sphere&gt;(<span class="built_in">point3</span>(<span class="number">4</span>, <span class="number">1</span>, <span class="number">0</span>), <span class="number">1.0</span>, material3));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> world;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">/****图片保存，保存为png格式****/</span></span><br><span class="line">    std::string SavePath = <span class="string">&quot;D:\\TechStack\\ComputerGraphics\\Ray Tracing in One Weekend Series\\Results\\&quot;</span>;</span><br><span class="line">    std::string filename = <span class="string">&quot;final.png&quot;</span>;</span><br><span class="line">    std::string filepath = SavePath + filename;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/*******图片属性*******/</span> </span><br><span class="line">    <span class="comment">// 宽高比</span></span><br><span class="line">    <span class="type">const</span> <span class="keyword">auto</span> aspect_ratio = <span class="number">3.0</span> / <span class="number">2.0</span>;</span><br><span class="line">    <span class="type">const</span> <span class="type">int</span> image_width = <span class="number">1200</span>;</span><br><span class="line">    <span class="comment">// 使用static_cast可以明确告诉编译器，这种损失精度的转换是在知情的情况下进行的</span></span><br><span class="line">    <span class="comment">// 也可以让阅读程序的其他程序员明确你转换的目的而不是由于疏忽</span></span><br><span class="line">    <span class="type">const</span> <span class="type">int</span> image_height = <span class="built_in">static_cast</span>&lt;<span class="type">int</span>&gt;(image_width / aspect_ratio);</span><br><span class="line">    <span class="type">const</span> <span class="type">int</span> channel = <span class="number">3</span>;</span><br><span class="line">    <span class="comment">// 每个像素的采样数量</span></span><br><span class="line">    <span class="type">const</span> <span class="type">int</span> samples_per_pixel = <span class="number">500</span>;</span><br><span class="line">    <span class="comment">// 光线至少弹射次数</span></span><br><span class="line">    <span class="type">const</span> <span class="type">int</span> min_bounce = <span class="number">45</span>;</span><br><span class="line">    <span class="comment">// 俄罗斯轮盘赌算法生存概率</span></span><br><span class="line">    <span class="type">const</span> <span class="type">double</span> RR = <span class="number">0.9</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/*******创建相机*******/</span></span><br><span class="line">    <span class="function">point3 <span class="title">lookfrom</span><span class="params">(<span class="number">13</span>, <span class="number">2</span>, <span class="number">3</span>)</span></span>;</span><br><span class="line">    <span class="function">point3 <span class="title">lookat</span><span class="params">(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>)</span></span>;</span><br><span class="line">    <span class="function">vec3 <span class="title">vup</span><span class="params">(<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>)</span></span>;</span><br><span class="line">    <span class="keyword">auto</span> dist_to_focus = <span class="number">10.0</span>;</span><br><span class="line">    <span class="keyword">auto</span> aperture = <span class="number">0.1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function">camera <span class="title">cam</span><span class="params">(lookfrom, lookat, vup, <span class="number">20</span>, aspect_ratio, aperture, dist_to_focus)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/*******创建场景*******/</span></span><br><span class="line">    <span class="keyword">auto</span> world = <span class="built_in">random_scene</span>();</span><br><span class="line"></span><br><span class="line">    <span class="comment">/******渲染部分*****/</span></span><br><span class="line">    <span class="comment">// 3通道图像存在一维数组中</span></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">char</span>* odata = (<span class="type">unsigned</span> <span class="type">char</span>*)<span class="built_in">malloc</span>(image_width * image_height * channel);</span><br><span class="line">    <span class="type">unsigned</span> <span class="type">char</span>* p = odata;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> j = image_height - <span class="number">1</span>; j &gt;= <span class="number">0</span>; --j) &#123;</span><br><span class="line">        <span class="comment">// 标准错误流显示进度信息，单行刷新显示</span></span><br><span class="line">        std::cerr &lt;&lt; <span class="string">&quot;\rScanlines remaining: &quot;</span> &lt;&lt; j &lt;&lt; <span class="string">&#x27; &#x27;</span> &lt;&lt; std::flush;</span><br><span class="line">        <span class="meta">#<span class="keyword">pragma</span> omp parallel for</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; image_width; ++i) &#123;</span><br><span class="line">            <span class="function">color <span class="title">pixel_color</span><span class="params">(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>)</span></span>;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> s = <span class="number">0</span>; s &lt; samples_per_pixel; ++s) &#123;</span><br><span class="line">                <span class="comment">// 在像素内部随机采样</span></span><br><span class="line">                <span class="keyword">auto</span> u = (i + <span class="built_in">random_double</span>()) / (image_width - <span class="number">1</span>);</span><br><span class="line">                <span class="keyword">auto</span> v = (j + <span class="built_in">random_double</span>()) / (image_height - <span class="number">1</span>);</span><br><span class="line">                ray r = cam.<span class="built_in">get_ray</span>(u, v);</span><br><span class="line">                pixel_color += <span class="built_in">ray_color</span>(r, world, min_bounce, RR);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="built_in">write_color</span>(p, pixel_color, samples_per_pixel);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">stbi_write_png</span>(filepath.<span class="built_in">c_str</span>(), image_width, image_height, channel, odata, <span class="number">0</span>);</span><br><span class="line">    std::cerr &lt;&lt; <span class="string">&quot;\nDone.\n&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>得到的效果如下：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/16/20220416-RayTracer-%E6%9E%84%E5%BB%BA%E9%9A%8F%E6%9C%BA%E5%9C%BA%E6%99%AF/FinalRender2.png" alt="FinalRender2"></p>
 ]]></content>
       <categories>
         <category>RayTracer</category>
@@ -4046,6 +4046,7 @@
       </categories>
       <tags>
         <tag>计算机图形学</tag>
+        <tag>游戏引擎</tag>
         <tag>实时渲染</tag>
       </tags>
   </entry>
@@ -4642,141 +4643,281 @@
       </tags>
   </entry>
   <entry>
-    <title>【计算机图形学】（十三）路径追踪</title>
-    <url>/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/</url>
-    <content><![CDATA[<h3 id="路径追踪（Path-Tracing）"><a href="#路径追踪（Path-Tracing）" class="headerlink" title="路径追踪（Path Tracing）"></a>路径追踪（Path Tracing）</h3><p>这一节我们正式开始学习路径追踪技术，首先我们要利用上一节的辐射度量学基础理解双向反射分布函数并推导出反射方程和渲染方程，然后利用渲染方程理解全局光照，之后简单复习一下蒙特卡洛积分的相关内容，最后通过解渲染方程来构建路径追踪算法。这一节内容可能非常硬核，涉及物理、微积分、概率论等多方面的知识，但这也是迈向真正的<strong>现代</strong>图形学大门的第一步。</p>
+    <title>【动态规划】（四）线性动态规划之矩阵和无串问题</title>
+    <url>/LycTechStack.github.io/2022/03/15/20220315-%E7%BA%BF%E6%80%A7%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92-%E7%9F%A9%E9%98%B5%E5%92%8C%E6%97%A0%E4%B8%B2/</url>
+    <content><![CDATA[<h3 id="1-矩阵问题"><a href="#1-矩阵问题" class="headerlink" title="1 矩阵问题"></a>1 矩阵问题</h3><p>除了数组和字符串外，矩阵也是一种线性结构，很多一维数组或字符串的问题可以推广到二维，因此矩阵上也有一些经典的动态规划问题，矩阵上的动态规划问题，基本的状态设计就是用二维变量 (i, j) 共同表示以 (0, 0) 为左上角，(i, j) 为右下角的子问题。因此矩阵问题的状态定义和双串 $dp[i][j]$ 类似，状态的推导方向以及推导公式与双串相同，但是物理意义不一样，且求解时所需的子问题的变化相对更多。</p>
 <p><em><span id="more"></span></em></p>
-<h4 id="1-双向反射分布函数（BRDF）"><a href="#1-双向反射分布函数（BRDF）" class="headerlink" title="1 双向反射分布函数（BRDF）"></a>1 双向反射分布函数（BRDF）</h4><p>在学习路径追踪之前我们还需要一系列的前置知识，第一个就从双向反射分布函数（Bidirectional Reflectance Distribution Function）开始。</p>
-<p>我们假设一个平面 dA 从某个方向 $\omega_i$ 接收到的 Radiance 会被转化成这个平面上的能量 $E(\omega_i)$ ，然后这些能量又会从 dA 向四面八方反射出去，但一般情况下不会全部反射出去，而是会有一部分能量被保留，另外的能量被反射出去，假设在某个方向 $\omega_r$ 反射出去的能量是 $L_r(\omega_r)$，那么在平面 dA 从方向 $\omega_i$ 接收到的能量 $E(\omega_i)$ 中有多少能量会被反射到 $\omega_r$ 方向成为 $L_r(\omega_r)$，这二者之间存在一个关系，这个关系就叫做双向反射分布函数。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320141430022.png" alt="image-20220320141430022"></p>
-<p>可以看到 BRDF 就是 $L_r(\omega_r)$ 和 $E(\omega_i)$ 的比值，它描述的就是一个平面从某个方向接收到的能量会往另外某个方向反射多少。</p>
-<p>从物理意义上来说，  BRDF 描述的其实就是物体表面的材质属性，物体之所以在我们看来会显示出不同的材质，就是因为它的表面对光的吸收能力不同，反射能力不同，BRDF 描述的正是一个表面的这种反射光的能力，因此我们说 BRDF 本质上表示的是表面的材质。</p>
-<h4 id="2-反射方程"><a href="#2-反射方程" class="headerlink" title="2 反射方程"></a>2 反射方程</h4><p>有了 BRDF，现在我们考虑一个着色点 $p$，回顾上一节最后我们说的 Radiance 和 Irradiance 的联系，$p$ 点的 Irradiance 就是 Radiance 在各个方向上的积分，那么现在我们从一个方向 $\omega_r$ 去观察点 $p$，也就相当于去计算 $p$ 点从各个方向接收到的能量在 $\omega_r$ 方向总共能反射出多少，那不就是点 $p$ 从每个方向 $\omega_i$ 接收到的能量 $L_i(p,\omega_i)$ 乘以 $\omega_i$ 方向到 $\omega_r$ 方向的 BRDF 再全部积分起来就可以了吗。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320142742653.png" alt="image-20220320142742653"></p>
-<p>上面的公式表达的意思就是刚才说的，点 $p$ 从每个方向 $\omega_i$ 接收到的能量 $L_i(p,\omega_i)$ 乘以 $\omega_i$ 方向到 $\omega_r$ 方向的 BRDF 再全部积分起来，就得到了一个着色点从四面八方接收到的能量往观察方向反射了多少。这个公式就叫做反射方程。</p>
-<h4 id="3-渲染方程"><a href="#3-渲染方程" class="headerlink" title="3 渲染方程"></a>3 渲染方程</h4><p>反射方程计算的是一个表面从外界接收到的光，能被我们看到多少，如果这个物体本身就会发光呢？那它本身也会向我们的观察方向 $\omega_r$ 发出能量，因此我们可以在反射方程上加上一个自发光项 $L_e(p,\omega_o)$：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320143225898.png" alt="image-20220320143225898"></p>
-<p>这样就得到了能描述更一般情况的渲染方程，上式中 $L_o(p,\omega_o)$ 就是 $p$ 点在 $\omega_o$ 方向反射出的总能量， $L_e(p,\omega_o)$ 是 $p$ 点自身在 $\omega_o$ 方向放射出的能量，球面积分就是 $p$ 点从四面八方接收到的光反射到 $\omega_o$ 方向的总能量，$\Omega^+$代表上半球面，$f_r(p,\omega_i,\omega_o)$ 表示点 $p$ 从 $\omega_i$ 方向到 $\omega_o$ 方向的 BRDF，这里的余弦同样用向量点乘表示，因为所有这些向量也都是指示方向的单位向量，并且都是和布林冯模型中一样，从点 $p$ 指向外边的。</p>
-<h4 id="4-全局光照"><a href="#4-全局光照" class="headerlink" title="4 全局光照"></a>4 全局光照</h4><p>渲染方程就可以描述我们之前经常说到的全局光照，这也是光栅化不好去解决的问题（不代表不能解决），因为光栅化中光线只弹射一次，而全局光照正是因为光线会弹射很多次使得本来光线达到不了的地方能被照亮。</p>
-<p>接下来我们就从简单情况开始，理解渲染方程为什么能表示全局光照。首先考虑只有一个点光源的情况，也是之前我们讨论的最多的情况：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320145641378.png" alt="image-20220320145641378"></p>
-<p>这时的渲染方程就可以写成上面的形式，相当于只有一个方向有入射的 Radiance ，那如果现在有多个点光源：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320145827348.png" alt="image-20220320145827348"></p>
-<p>渲染方程也很简单，就是把全部的点光源反射加起来。接下来如果点光源变成了面光源，相当于从离散到连续：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320145952914.png" alt="image-20220320145952914"></p>
-<p>我们也能理解，离散的求和就是连续的积分，这也是我们刚才得到的最一般的渲染方程。</p>
-<p>到此为止我们讨论的都是光源照射到物体上，也就是直接光照的情况，那对于一个物体表面，他接收到的光不全是从光源来的，还可能是从其他物体表面反射出来的光：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320150319277.png" alt="image-20220320150319277"></p>
-<p>比如上图中的 $X’$ 是其他物体的表面，反射出的光同样会被我们的观察点接收到，这时着色点 $x$ 接收到的从平面 $X’$ 反射来的光相当于我们从点 $x$ 沿着 $-\omega_i$ 方向观察平面 $X’$ 得到的结果，因此着色点 $x$ 接收到的从平面 $X’$ 反射来的光就是上面式子中的 $L_r(X’,-\omega_i)$，从这个渲染方程我们可以看出整个过程是一个递归的过程，当前物体反射的光不仅取决于光源，还取决于其他物体反射的光，其他物体反射的光又取决于光源和别的物体，这也正是渲染方程能够表示全局光照的原因。</p>
-<p>我们继续观察上面的渲染方程，我们要求解的未知数也包含在积分中，所以这是一个积分方程，并且这个看似复杂的积分方程实际上是一个经典的积分方程，叫做<strong>弗雷德霍姆积分方程（Fredholm Integral Equation）</strong>，这个方程可以简化的写成如下形式：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320151450998.png" alt="image-20220320151450998"></p>
-<p>这满足第二类弗雷德霍姆积分方程的一般形式，其中 $K(u,v)dv$ 被称为光线传播算子，表示的是光线 $l(v)$ 经过光线传播算子就传播到了 光线 $l(u)$ 上，这和我们之前说的一个点吸收的光再反射出去的概念其实是一样的。</p>
-<p>接下来我们再进一步简化，把这个方程写成矩阵形式：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320151703670.png" alt="image-20220320151703670"></p>
-<p>至于积分怎么写成矩阵形式，这里不展开讨论，这对我们来说也不重要，总之写成这样的形式之后，我们就可以进一步操作，移项之后再左乘对应的逆矩阵：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320153406232.png" alt="image-20220320153406232"></p>
-<p>然后根据二项式定理，对于矩阵也存在类似泰勒展开的形式， $(I-K)^{-1}$ 的泰勒展开就类似于 $\frac{1}{1-x}$ 的泰勒展开，于是上式可以写成：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320153729678.png" alt="image-20220320153729678"></p>
-<p>我们把这个式子展开进行分析：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320153751936.png" alt="image-20220320153751936"></p>
-<p>先明确这里面各个字母代表什么，在他们没变成这样之前，$L$ 是各个平面反射出的光（可能是我们观察的平面，也可能是其他平面），$E$ 是来自于光源的光，$K$ 是光线传播算子，所以直接来自于光源的光 $E$ 每乘一次光线传播算子 $K$ 就代表光线弹射了一次，所以 $KE$ 表示直接光照，也就是光线只在观察表面弹射了一次进入我们的眼睛，$K^nE$ 表示在多个表面弹射了 n 次之后进入我们的眼睛，我们观察到的光是所有这些光线的总和。 </p>
-<p>换句话说，渲染方程表示：我们看到的光是直接来自于光源的光和经过若干次反射后达到我们眼睛的光的总和。这显然是符合物理世界本身的规律的。而之前的光栅化着色过程，相当于只有前两项：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320155016764.png" alt="image-20220320155016764"></p>
-<p>因此渲染方程可以表示全局光照，因为它考虑了整个场景中经过若干次弹射的光线。</p>
-<p>下图是只有直接光照渲染出来的图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320155133357.png" alt="image-20220320155133357"></p>
-<p>可以看到因为只计算了直接光照，也就是光线只弹射一次，所以没有光线直接照射到的地方，比如点 $p$ 就是全黑的。下面是计算了一次全局光照渲染出来的图，一次全局光照是指光线额外弹射了一次：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320155335268.png" alt="image-20220320155335268"></p>
-<p>点 $p$ 可以被看到了，但是注意房顶上的吊灯，此时它还是黑色的，下面是计算了四次全局光照的效果：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320155447163.png" alt="image-20220320155447163"></p>
-<p>点 $p$ 变得更清晰了更亮了，而且房顶上的吊灯也变得透明了，因为它是玻璃材质，透射的光进入它的内部在只计算一次额外弹射的情况下是无法被反射出去被我们看到的，所以经过多次弹射后就会显示出来，这也是合理的。下面是计算了十六次全局光照的效果：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320155738534.png" alt="image-20220320155738534"></p>
-<p>可以看到整个画面已经没有太大的变化了，这说明光线弹射的次数越多并不会使画面越亮，而是会逐渐收敛到一个状态，因为光线弹射的越多能量衰减的也越多，这也是和现实世界完全一致的，因此整个渲染方程非常科学的描述了整个场景中光线的传播，所以用渲染方程渲染出的画面自然也就更加接近真实世界。</p>
-<h4 id="5-蒙特卡洛积分"><a href="#5-蒙特卡洛积分" class="headerlink" title="5 蒙特卡洛积分"></a>5 蒙特卡洛积分</h4><p>彻底理解了渲染方程之后，我们就要开始用渲染方程构建图像渲染算法了，但对于我们编码来说，只有这个渲染方程是不够的，因为我们要能够解出这个方程，得到一个计算便捷的表达式，才能去写代码，而我们知道计算机解方程使用的是数值的方法，尤其是对于这样复杂的积分方程，所以我们先简单复习一下计算定积分的常用数值方法——蒙特卡洛积分。</p>
-<p>一般来说计算定积分，我们会先把不定积分算出来，然后再把区间端点代入相减就得到了区间上的定积分，但是对于形态比较复杂的函数来说，我们不容易求出它的不定积分，如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320161415261.png" alt="image-20220320161415261"></p>
-<p>这时就要用数值方法去求积分了，我们知道积分就是面积，经典的黎曼积分就是在区间内取无数个小的长条把他们的面积加起来，而蒙特卡洛积分则是结合了概率论的方法，在区间 $(a,b)$ 内以某种概率分布随机的取一个点，把这个点的函数值作为矩形的高，然后区间长度作为矩形的宽，求出一个矩形面积，随着采样次数增多，把所有的矩形面积取平均就得到了整个区间的近似积分，采样点越多，结果自然也就越接近真实结果。</p>
-<p>所以假设我们要计算定积分：<br>$$<br>\int_{a}^{b}f(x)dx<br>$$<br>我们以一个概率分布 $p(x)$ 在区间 $(a,b)$ 内随机的选取采样点 $X_i$，概率论告诉我们 $p(x)$ 叫做概率密度函数（pdf），则该定积分的蒙特卡洛估计为：<br>$$<br>F_N &#x3D; \frac{1}{N}\sum_{i&#x3D;1}^{N}\frac{f(X_i)}{p(X_i)},\ X_i \sim p(x)<br>$$<br>以均匀分布为例，区间 $(a,b)$ 上的均匀分布的概率密度函数就是：<br>$$<br>X_i \sim p(x) &#x3D; \frac{1}{b-a}<br>$$<br>于是利用均匀分布采样的蒙特卡洛估计为：<br>$$<br>F_N &#x3D; \frac{b-a}{N}\sum_{i&#x3D;1}^{N}f(X_i)<br>$$</p>
-<h4 id="6-路径追踪"><a href="#6-路径追踪" class="headerlink" title="6 路径追踪"></a>6 路径追踪</h4><p>有了前面所有的前置知识，现在我们来正式学习路径追踪。学习一个方法的时候，要学习的第一件事就是为什么要学习这个方法？</p>
-<p>我们之前学习 Whitted 风格光线追踪是为了解决光栅化渲染中的不足，所以路径追踪自然是为了解决 Whitted 风格光线追踪的不足。现在来回顾 Whitted 风格光线追踪有哪些问题。</p>
-<p>首先，在一开始学习 Whitted 风格光线追踪时我们就假设了，所有光线的反射都是完美的镜面反射，也就是只沿着镜面反射方向传播，这显然是不合理的，比如我们之前也提到过的 Glossy 反射：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320163435750.png" alt="image-20220320163435750"></p>
-<p>不过之前我们没有说 Glossy 反射为什么会呈现出这样的效果，这就是因为它的表面没有那么光滑，不足以使光线完美的沿着镜面反射方向传播，而是使光线在镜面反射方向附近一定范围内散射出去，所以呈现出来就是这样模糊的效果。因此 Whitted 风格光线追踪不好处理 Glossy 反射。</p>
-<p>其次，光线遇到漫反射就会停下来。在之前的布林冯光照模型中，只有直接光照会使物体表面显示出颜色，而且这个颜色在之后的传播中也不会继续传播，所以相当于光线遇到漫反射就不再弹射了，如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320164359977.png" alt="image-20220320164359977"></p>
-<p>这是一个只有漫反射的场景，左图是只有直接光照的效果，所以天花板没有光源直接照射就是黑的，并且长的立方体左表面也是黑的；而右图是全局光照的效果，可以看到长的立方体左表面是红色的，这是因为左边的墙是红色的，显然右边的图更接近真实场景，这个真实场景也是存在的，后面我们会看到。</p>
-<p>综上， Whitted 风格光线追踪实际上是错误的，因为它并不符合现实世界的物理规律，而之前我们推导的渲染方程是绝对符合物理规律的正确的光线计算方式。而要使用渲染方程来渲染图像，就要解方程，接下来我们从最简单的情况来分析如何求解渲染方程。</p>
-<p>先考虑只有直接光照的情况，我们只考虑一个着色点，场景中只有一个<strong>面光源</strong>，如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320165056742.png" alt="image-20220320165056742"></p>
-<p>我们的观察方向是 $\omega_o$，不考虑着色点本身发射的光，于是可以得到一个渲染方程：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320165220430.png" alt="image-20220320165220430"></p>
-<p>现在用蒙特卡洛积分来解这个方程，回顾蒙特卡洛估计的一般形式：<br>$$<br>F_N &#x3D; \frac{1}{N}\sum_{i&#x3D;1}^{N}\frac{f(X_i)}{p(X_i)},\ X_i \sim p(x)<br>$$<br>我们只要知道被积函数 $f(x)$ 和概率密度函数 $p(x)$ 就可以了，在这里被积函数 $f(x)$ 显然就是：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320165509284.png" alt="image-20220320165509284"></p>
-<p>概率密度函数 $p(x)$ 我们就取均匀分布，但现在是一个半球面上的积分，半球面的均匀分布自然是：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320165552391.png" alt="image-20220320165552391"></p>
-<p>于是我们的渲染方程就可以写成：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320165624306.png" alt="image-20220320165624306"></p>
-<p>我们把积分转化成了求和的形式，这意味着我们可以写代码了，根据这个求和表达式，就能写出一个计算着色的算法：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">shade(p, wo)</span><br><span class="line">    Randomly choose N directions wi~pdf		//随机的选择N个方向，服从某个概率密度函数pdf的分布，这里是均匀分布</span><br><span class="line">    Lo = 0.0</span><br><span class="line">    For each wi		</span><br><span class="line">        Trace a ray r(p, wi) 		//对每一个方向从着色点打出一条光线</span><br><span class="line">        If ray r hit the light		//如果这个光线能到达光源，就按照公式计算着色</span><br><span class="line">            Lo += (1 / N) * L_i * f_r * cosine / pdf(wi) </span><br><span class="line">    Return Lo</span><br></pre></td></tr></table></figure>
+<h4 id="三角形最小路径和"><a href="#三角形最小路径和" class="headerlink" title="三角形最小路径和"></a><a href="https://leetcode-cn.com/problems/triangle/">三角形最小路径和</a></h4><blockquote>
+<p>问题描述：</p>
+<p>给定一个三角形 triangle ，找出自顶向下的最小路径和。</p>
+<p>每一步只能移动到下一行中相邻的结点上。相邻的结点 在这里指的是 下标 与 上一层结点下标 相同或者等于 上一层结点下标 + 1 的两个结点。也就是说，如果正位于当前行的下标 i ，那么下一步可以移动到下一行的下标 i 或 i + 1 。</p>
+</blockquote>
+<p>题目中都写出来状态该如何转移了，这里就不赘述了，主要讲一下优化的思路。先观察正常思路的代码：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">minimumTotal</span><span class="params">(vector&lt;vector&lt;<span class="type">int</span>&gt;&gt;&amp; triangle)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> n = triangle.<span class="built_in">size</span>();</span><br><span class="line">        vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; dp = triangle;</span><br><span class="line">        <span class="type">int</span> ans = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">1</span>; i &lt; n; ++i) </span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt; triangle[i].<span class="built_in">size</span>(); ++j)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(j == i) dp[i][j] += dp[i<span class="number">-1</span>][j<span class="number">-1</span>];</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(j == <span class="number">0</span>) dp[i][j] += dp[i<span class="number">-1</span>][j];</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(j &gt; <span class="number">0</span>) dp[i][j] += <span class="built_in">min</span>(dp[i<span class="number">-1</span>][j], dp[i<span class="number">-1</span>][j<span class="number">-1</span>]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> *<span class="built_in">min_element</span>(dp[n<span class="number">-1</span>].<span class="built_in">begin</span>(), dp[n<span class="number">-1</span>].<span class="built_in">end</span>());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
-<p>OK，现在我们考虑更复杂一点的情况，如果场景中有其他物体，那么公式中的来自各个方向的光就不一定是来自于光源了，也就是说我们从着色点打出一条光线可能不是达到光源，而是到达其他物体表面：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320170432437.png" alt="image-20220320170432437"></p>
-<p>这时就按我们之前的递归做法，把着色点 P 当成观察点，然后计算 Q 点的着色，所以我们的代码只要加上另一个 if 判断：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">shade(p, wo)</span><br><span class="line">    Randomly choose N directions wi~pdf		//随机的选择N个方向，服从某个概率密度函数pdf的分布，这里是均匀分布</span><br><span class="line">    Lo = 0.0</span><br><span class="line">    For each wi		</span><br><span class="line">        Trace a ray r(p, wi) 		//对每一个方向从着色点打出一条光线</span><br><span class="line">        If ray r hit the light		//如果这个光线能到达光源，就按照公式计算着色</span><br><span class="line">            Lo += (1 / N) * L_i * f_r * cosine / pdf(wi) </span><br><span class="line">        Else If ray r hit an object at q	//如果达到了其他物体表面，就递归地计算</span><br><span class="line">            Lo += (1 / N) * shade(q, -wi) * f_r * cosine / pdf(wi)</span><br><span class="line">    Return Lo</span><br></pre></td></tr></table></figure>
+<p>可以看出 $dp[i][j]$ 只与 $dp[i-1][j]$ 和 $dp[i-1][j-1]$ 有关，因此可以利用滚动数组优化，我们只需要一个 n 大小的数组，n是三角形的层数，然后一定需要一个变量记录 $dp[i-1][j-1]$，每次$dp[j]$更新时， $dp[i-1][j]$ 就是当前的更新的位置$dp[j]$，同时需要把没更新之前的$dp[j]$记下来，作为下一次更新时的 $dp[i-1][j-1]$。对于两个特殊位置：每一次层的开头要直接把 $dp[j]$ 记下来作为下一次的$dp[i-1][j-1]$；每一层的结尾不需要记录任何数直接更新即可。优化后的代码：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">minimumTotal</span><span class="params">(vector&lt;vector&lt;<span class="type">int</span>&gt;&gt;&amp; triangle)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> n = triangle.<span class="built_in">size</span>();</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">dp</span><span class="params">(n)</span></span>;</span><br><span class="line">        dp[<span class="number">0</span>] = triangle[<span class="number">0</span>][<span class="number">0</span>];</span><br><span class="line">        <span class="type">int</span> last = dp[<span class="number">0</span>];   <span class="comment">//记录dp[i-1][j-1]</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">1</span>; i &lt; n; ++i) </span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt; triangle[i].<span class="built_in">size</span>(); ++j)</span><br><span class="line">            &#123; </span><br><span class="line">                <span class="keyword">if</span>(j == i)</span><br><span class="line">                &#123;</span><br><span class="line">                    dp[j] = triangle[i][j] + last;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(j == <span class="number">0</span>) </span><br><span class="line">                &#123;</span><br><span class="line">                    last = dp[j];</span><br><span class="line">                    dp[j] = triangle[i][j] + dp[j];</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(j &gt; <span class="number">0</span>)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="type">int</span> temp = dp[j];</span><br><span class="line">                    dp[j] =  triangle[i][j] + <span class="built_in">min</span>(dp[j], last);</span><br><span class="line">                    last = temp;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> *<span class="built_in">min_element</span>(dp.<span class="built_in">begin</span>(), dp.<span class="built_in">end</span>());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
-<p>这样似乎就完成了一个像素的着色，但这样可以吗？一定是不行的，因为这样去追踪光线会导致计算量爆炸，下面的图说明了这种情况：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320170839308.png" alt="image-20220320170839308"></p>
-<p>假设我们每次随机采样就选了 100 个方向，那么我们就要追踪 100 条光线，每一条光线如果打到其他物体表面又会采样出 100 条光线，这样经过两次弹射我们就要追踪 100 万条光线，这显然是不能接受的，因此我们就要考虑怎么样才能不让光线数量爆炸，因为这是呈指数增长的，所以只有当光线数量为 1 的时候，不管怎么弹射，它都还是一条光线。于是我们就随机采样一条光线，只跟踪这一条光线，那循环也不需要了，我们的代码就可以简化为：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">shade(p, wo)</span><br><span class="line">    Randomly choose 1 direction wi~pdf		//随机的选择1个方向	</span><br><span class="line">    Trace a ray r(p, wi) 		//从这个方向打出一条光线</span><br><span class="line">    If ray r hit the light		//如果这个光线能到达光源，就按照公式计算着色</span><br><span class="line">        Lo += (1 / N) * L_i * f_r * cosine / pdf(wi) </span><br><span class="line">    Else If ray r hit an object at q	//如果达到了其他物体表面，就递归地计算</span><br><span class="line">        Lo += (1 / N) * shade(q, -wi) * f_r * cosine / pdf(wi)</span><br><span class="line">    Return Lo</span><br></pre></td></tr></table></figure>
+<h4 id="下降路径最小和"><a href="#下降路径最小和" class="headerlink" title="下降路径最小和"></a><a href="https://leetcode-cn.com/problems/minimum-falling-path-sum/">下降路径最小和</a></h4><blockquote>
+<p>问题描述：</p>
+<p>给你一个 n x n 的 方形 整数数组 matrix ，请你找出并返回通过 matrix 的下降路径 的 最小和 。</p>
+<p>下降路径 可以从第一行中的任何元素开始，并从每一行中选择一个元素。在下一行选择的元素和当前行所选元素最多相隔一列（即位于正下方或者沿对角线向左或者向右的第一个元素）。具体来说，位置 (row, col) 的下一个元素应当是 (row + 1, col - 1)、(row + 1, col) 或者 (row + 1, col + 1) 。</p>
+</blockquote>
+<p>类似于三角路经最小和，思路不赘述。<a href="https://leetcode-cn.com/problems/minimum-falling-path-sum-ii/">下降路径最小和 II</a>是本题的进阶版本，难度不大，但优化起来比较困难，可以了解。</p>
+<p>优化时的细节：可以申请数组长度为n+2，这样可以免去边界的判断，同时要注意变量的更新顺序。优化后的代码：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">minFallingPathSum</span><span class="params">(vector&lt;vector&lt;<span class="type">int</span>&gt;&gt;&amp; matrix)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> n = matrix.<span class="built_in">size</span>();</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">dp</span><span class="params">(n+<span class="number">2</span>, <span class="number">0</span>)</span></span>;	<span class="comment">//第一层全初始化为0</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//从第二层开始辅助位置都要设为最大值，不能还是0了</span></span><br><span class="line">            <span class="keyword">if</span>(i &gt; <span class="number">1</span>) dp[<span class="number">0</span>] = dp[n+<span class="number">1</span>] = INT_MAX;</span><br><span class="line">            <span class="comment">//每一层起始记录dp[i-1][j-1]、dp[i-1][j]、dp[i-1][j+1]</span></span><br><span class="line">            <span class="type">int</span> left = dp[<span class="number">0</span>], mid = dp[<span class="number">1</span>], right = dp[<span class="number">2</span>];</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">1</span>; j &lt;= n; ++j)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">//之后每次更新，dp[i-1][j+1]就是dp[j+1]</span></span><br><span class="line">                right = dp[j+<span class="number">1</span>];</span><br><span class="line">                <span class="type">int</span> choose = <span class="built_in">min</span>(left, <span class="built_in">min</span>(mid, right));</span><br><span class="line">                dp[j] = matrix[i<span class="number">-1</span>][j<span class="number">-1</span>] + choose;</span><br><span class="line">                <span class="comment">//当前的mid是下一个位置的left，当前的right是下个位置的mid</span></span><br><span class="line">                left = mid;</span><br><span class="line">                mid = right;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//返回时注意不要包含辅助的位置，取中间n个数求最小值</span></span><br><span class="line">        <span class="keyword">return</span> *<span class="built_in">min_element</span>(dp.<span class="built_in">begin</span>()+<span class="number">1</span>, dp.<span class="built_in">end</span>()<span class="number">-1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
-<p>上面的代码就是路径追踪的基本思路，只跟踪一条光线，就叫做<strong>路径追踪</strong>。</p>
-<p>显然，这样的方法计算出来的着色会有非常大的噪声，说白了这个着色算出来是多少全靠运气，没关系，我们可以透过一个像素投射出多条视线，然后把所有视线计算出的 Radiance 平均起来作为这个像素的结果：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320171940751.png" alt="image-20220320171940751"></p>
-<p>因此我们可以再写一个生成视线的函数：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ray_generation(camPos, pixel)</span><br><span class="line">    Uniformly choose N sample positions within the pixel	//在每个像素内选择N个采样点</span><br><span class="line">    pixel_radiance = 0.0</span><br><span class="line">    For each sample in the pixel</span><br><span class="line">        Shoot a ray r(camPos, cam_to_sample) 	//每个采样点投射出一根光线</span><br><span class="line">        If ray r hit the scene at p		//如果光线打到了着色点就调用着色函数</span><br><span class="line">            pixel_radiance += 1 / N * shade(p, sample_to_cam) </span><br><span class="line">    Return pixel_radiance</span><br></pre></td></tr></table></figure>
+<h4 id="最小路径和"><a href="#最小路径和" class="headerlink" title="最小路径和"></a><a href="https://leetcode-cn.com/problems/minimum-path-sum/">最小路径和</a></h4><blockquote>
+<p>问题描述：</p>
+<p>给定一个包含非负整数的 <code>m x n</code> 网格 <code>grid</code> ，请找出一条从左上角到右下角的路径，使得路径上的数字总和为最小。</p>
+<p><strong>说明：</strong>每次只能向下或者向右移动一步。</p>
+</blockquote>
+<p>最经典的矩阵动态规划问题，难度不大，直接给出优化后的代码：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">minPathSum</span><span class="params">(vector&lt;vector&lt;<span class="type">int</span>&gt;&gt;&amp; grid)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> m = grid.<span class="built_in">size</span>();</span><br><span class="line">        <span class="type">int</span> n = grid[<span class="number">0</span>].<span class="built_in">size</span>();</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">dp</span><span class="params">(n+<span class="number">1</span>, INT_MAX)</span></span>;</span><br><span class="line">        dp[<span class="number">1</span>] = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">1</span>; i &lt;= m; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">1</span>; j &lt;= n; ++j)</span><br><span class="line">            &#123;</span><br><span class="line">                dp[j] = grid[i<span class="number">-1</span>][j<span class="number">-1</span>] + <span class="built_in">min</span>(dp[j<span class="number">-1</span>], dp[j]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[n];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
-<p>这样就OK了，如果这时候代码都写完了而且能正确运行了，我们会发现渲染一张图片还是迟迟渲染不出来，这回绝不是因为效率太低，而是因为我们的着色函数是递归调用的，<strong>但是没有递归结束的条件</strong>。因此我们需要设定一个结束条件，最简单的就是规定弹射多少次就不再计算了，毕竟之前我们也看过渲染效果，弹射 4 次和弹射 16 次渲染出来的效果不会差太多，但是给定弹射次数太少会直接切断能量的传播，如果给定次数太多又有很多计算没有意义，因此这里要用一种相对妥善的解决方案，叫做<strong>俄罗斯轮盘赌（Russian Roulette ）</strong>，简称 <strong>RR</strong>，这类似于左轮手枪装弹后，再把弹匣一转，这时候打出子弹的概率如果是 P，那么打不出子弹的概率就是 1 - P，我们借鉴这样的方法，给定一个生存概率 P，每次还是按照正常流程计算 Lo，并且以 P 的概率返回 Lo &#x2F; P，以 1 - P 的概率返回 0 ，这样当返回 0 的时候递归就终止了，也就是递归每次会有 1 - P 的概率中止。</p>
-<p>可是为什么这样做呢？这是因为这样做可以<strong>保证我们最终计算出的 Lo 的期望是正确的</strong>。上面的方法相当于就是一个最简单的二值分布，那么它的期望就是：<br>$$<br>E &#x3D; P * \frac{Lo}{P} + (1-P)*0 &#x3D; Lo<br>$$<br>也就是说按照 RR 的方法我们既能保证中止递归，还能期望得到正确的 Lo ，非常巧妙！</p>
-<p>体现在代码上：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">shade(p, wo)</span><br><span class="line">    Manually specify a probability P_RR		//给定一个生存概率</span><br><span class="line">    Randomly select ksi in a uniform dist. in [0, 1] 	//随机生成一个[0,1]之间的数</span><br><span class="line">    If (ksi &gt; P_RR) return 0.0;		//如果这个数大于生存概率，直接返回0，对应1-P的情况</span><br><span class="line">    //否则和之前一样，但是要记得除以生存概率</span><br><span class="line">    Randomly choose 1 direction wi~pdf		//随机的选择1个方向	</span><br><span class="line">    Trace a ray r(p, wi) 		//从这个方向打出一条光线</span><br><span class="line">    If ray r hit the light		//如果这个光线能到达光源，就按照公式计算着色</span><br><span class="line">        Lo += (1 / N) * L_i * f_r * cosine / pdf(wi) / P_RR</span><br><span class="line">    Else If ray r hit an object at q	//如果达到了其他物体表面，就递归地计算</span><br><span class="line">        Lo += (1 / N) * shade(q, -wi) * f_r * cosine / pdf(wi) / P_RR</span><br><span class="line">    Return Lo</span><br></pre></td></tr></table></figure>
+<h4 id="地下城游戏"><a href="#地下城游戏" class="headerlink" title="地下城游戏"></a><a href="https://leetcode-cn.com/problems/dungeon-game/">地下城游戏</a></h4><blockquote>
+<p>问题描述：</p>
+<p>一些恶魔抓住了公主（P）并将她关在了地下城的右下角。地下城是由 M x N 个房间组成的二维网格。我们英勇的骑士（K）最初被安置在左上角的房间里，他必须穿过地下城并通过对抗恶魔来拯救公主。</p>
+<p>骑士的初始健康点数为一个正整数。如果他的健康点数在某一时刻降至 0 或以下，他会立即死亡。</p>
+<p>有些房间由恶魔守卫，因此骑士在进入这些房间时会失去健康点数（若房间里的值为负整数，则表示骑士将损失健康点数）；其他房间要么是空的（房间里的值为 0），要么包含增加骑士健康点数的魔法球（若房间里的值为正整数，则表示骑士将增加健康点数）。</p>
+<p>为了尽快到达公主，骑士决定每次只向右或向下移动一步。</p>
+<p>编写一个函数来计算确保骑士能够拯救到公主所需的最低初始健康点数。</p>
+</blockquote>
+<p>这是一道非常巧妙的题。按照最小路径和的思路我们定义状态 $dp[i][j]$ 表示从左上角到 $(i,j)$ 所需的最低初始生命，初始值为1，至少要有1点初始生命，之后每到一个格子只要用$dp[i-1][j]$和$dp[i][j-1]$中的最小值减去当前格子的值就可以，这个思路对于一般情况似乎没什么问题，但是如果我们在某一个格子恢复了大量生命，减去当前的格子的值再取最小那么当前格子的状态$dp[i][j]$就会是负数，这不符合我们的状态定义，这说明我们要么状态转移错了，要么状态定义错了。</p>
+<p>显然按照上面的状态定义，我们的状态转移没有问题，但是计算出的值不对，说明我们的状态定义有问题。这是因为在这个问题中我们不止要考虑每一个格子上原问题的解（最低初始生命），还要考虑我们走到这个格子的时候的当前生命值，也就是路径总和，回复大量生命值的时候我们的初始最低生命还是那么多，但是当前生命值增加了，意味着下一个格子我们可能不需要增加初始最低生命就可以到达，但是按照上面的状态定义，我们无法同时考虑初始最低生命和当前生命值，也就无法向下一状态正确传递信息。</p>
+<p>上面的解释比较抽象，下面我们举个例子来说明，就用题目的示例：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/15/20220315-%E7%BA%BF%E6%80%A7%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92-%E7%9F%A9%E9%98%B5%E5%92%8C%E6%97%A0%E4%B8%B2/image-20220314142502341.png" alt="image-20220314142502341"></p>
+<p>如果按照上面的状态定义，当我们到左下角 10 这个格子的时候，这个格子的状态 $dp[2][0] &#x3D; 8 - 10&#x3D;-2$，那么下一次到 30 格子的时候就会变成 -32，最终到达右下角的时候最低初始生命就会是-27，显然是不合理的。正确的情况是到达左下角格子 10 的时候虽然恢复了很多生命值，但是我们想要到达这里也至少还是需要8点初始生命值，那如果直接传递 8 这个状态，到右下角的时候通过-2、-5、10、30这条路径的最低初始生命值就是 8 - (-5) &#x3D; 13，依然是错误的，通过这条路径到达 右下角所需的初始最低生命就应该是8.</p>
+<p>因此这样的状态定义是不对的，无法正确传递有效信息，这是因为有两个同样重要的参数在影响后一步的选择：一个是最低初始生命，一个是当前生命（路径总和），而这不符合动态规划的<strong>无后效性</strong>，因此不能使用这样的状态定义。</p>
+<p>那如果改变一下定义，状态 $dp[i][j]$ 表示从 $(i,j)$ 到右下角所需的最低初始生命，我们从终点往起点推，这时我们的每一步都已经保证能到达终点，也就不需要考虑当前生命值了，只要关注从当前位置到终点的最低初始生命值即可。这时当我们再遇到回复大量生命值的格子，计算出的值是负的，这说明从这个格子到终点的生命值已经足够多了，只要我们在这个格子的时候是活着的（生命值为1）就能到达终点，因此直接将当前各自状态置 1 即可。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">calculateMinimumHP</span><span class="params">(vector&lt;vector&lt;<span class="type">int</span>&gt;&gt;&amp; dungeon)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> n = dungeon.<span class="built_in">size</span>(), m = dungeon[<span class="number">0</span>].<span class="built_in">size</span>();</span><br><span class="line">        vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">dp</span>(n + <span class="number">1</span>, <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(m + <span class="number">1</span>, INT_MAX));</span><br><span class="line">        dp[n][m - <span class="number">1</span>] = dp[n - <span class="number">1</span>][m] = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = n - <span class="number">1</span>; i &gt;= <span class="number">0</span>; --i) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> j = m - <span class="number">1</span>; j &gt;= <span class="number">0</span>; --j) &#123;</span><br><span class="line">                <span class="type">int</span> minn = <span class="built_in">min</span>(dp[i + <span class="number">1</span>][j], dp[i][j + <span class="number">1</span>]);</span><br><span class="line">                dp[i][j] = <span class="built_in">max</span>(minn - dungeon[i][j], <span class="number">1</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[<span class="number">0</span>][<span class="number">0</span>];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-<p>现在我们就基本得到了一个正确版本的路径追踪算法。当然这个算法还有问题，那就是我们对一个像素投射出多条光线，可又该投射多少呢？如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320174112743.png" alt="image-20220320174112743"></p>
-<p>对每个像素的采样数量简称为 SPP，SPP 低的时候得到的结果噪声会很大，这很好理解；而 SPP 高的时候效果很好但是效率又非常低，前人大佬们自然是不能容忍这样的问题存在的，那能不能既快效果又好呢，一定是可以的。</p>
-<p>考虑我们现在的方法，只跟踪一条光线，这条光线再朝哪个方向投射光线是完全随机的，对于下面几种情况：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320174506545.png" alt="image-20220320174506545"></p>
-<p>如果场景的光源面积很大，那投射出的光线到达光源的概率就高，可能每 5 条光线就有 1 条能打到光源上，就能计算出一个值；可如果光源面积很小，可能我们投射出了很多光线，但都没有打到光源上，那么这些光线就是没用的，对我们的计算结果没有任何影响，完全浪费掉了，可我们明明知道光源在哪，为什么还要随机选择投射方向呢？</p>
-<p>我们完全可以直接对面光源进行采样，直接在光源上进行采样，这样就能保证每一条光线都能打到光源上，一个都不浪费，但是蒙特卡洛积分要求，对谁积分就得对谁采样，因此我们要对光源平面 $dA$ 采样，就得把渲染方程对 $d\omega$ 的积分改写成对 $dA$ 的积分，实际上就是积分变量替换，只要找到 $dA$ 和 $d\omega$ 的关系就可以了。</p>
-<p>![屏幕截图 2022-03-20 175206]( 屏幕截图 2022-03-20 175206.png)</p>
-<p>我们知道 $d\omega$ 是立体角，立体角的定义是从球心向球面上投射出的一块区域的面积和球半径平方的比值，那么 dA 的立体角就是 dA 在球心方向的投影的面积除以到球心的距离的平方，而立体角是指示方向的，所以 dA 的立体角和 $d\omega$ 表示的是一样的，因此二者相等，所以可以得到：<br>$$<br>d\omega &#x3D; \frac{dA \ cos\theta’}{| x’ - x |^2}<br>$$<br>于是渲染方程就可以改写为：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320180100174.png" alt="image-20220320180100174"></p>
-<p>同时，对于一个面光源 A，均匀采样的概率密度函数就是：<br>$$<br>pdf &#x3D; \frac{1}{A}<br>$$<br>这样也就可以用蒙特卡洛积分解方程了。</p>
-<p>因此路径追踪的算法又要改一下，现在我们一个着色点从其他地方入射来的 Radiance 就分为两部分：</p>
+<p>在上一节双串问题中，状态 $dp[i][j]$ 无论表示从 0 到 i 和 j 的状态还是表示从 i 和 j 到 n - 1 的状态，都可以得出答案，但通过这道题我们发现，有时这两种状态定义并不等价，当从前往后推导无法解决问题时，可以试试从后向前推导。</p>
+<h4 id="统计全为-1-的正方形子矩阵"><a href="#统计全为-1-的正方形子矩阵" class="headerlink" title="统计全为 1 的正方形子矩阵"></a><a href="https://leetcode-cn.com/problems/count-square-submatrices-with-all-ones/solution/">统计全为 1 的正方形子矩阵</a></h4><blockquote>
+<p>题目描述：<br>给你一个 <code>m * n</code> 的矩阵，矩阵中的元素不是 <code>0</code> 就是 <code>1</code>，请你统计并返回其中完全由 <code>1</code> 组成的 <strong>正方形</strong> 子矩阵的个数。</p>
+</blockquote>
+<p>我们用 $dp[i][j]$ 表示以 (i, j) 为右下角，且只包含 1 的正方形的边长最大值，假设这个值为 a ，同时这个值也是以 (i, j) 为右下角，且只包含 1 的正方形的个数（边长为1，2，…，a）的正方形各一个。因此算出所有 $dp[i][j]$ 后累加起来就是全部子矩阵个数。</p>
+<p>那么如何计算 $dp[i][j]$ 中的每个元素值呢？对于每个位置 (i, j)，检查在矩阵中该位置的值：</p>
 <ul>
-<li>一部分来自光源，这部分直接对光源采样，按照上面的改写后的积分计算结果即可，并且不需要 RR 控制终止</li>
-<li>另一部分来自其他物体表面反射，按照原来的积分计算结果，并需要 RR 控制终止</li>
+<li><p>如果该位置的值是 0，则 $dp[i][j]&#x3D;0$，因为当前位置不可能在由 1 组成的正方形中；</p>
+</li>
+<li><p>如果该位置的值是 1，则 $dp[i][j]$ 的值由其上方、左方和左上方的三个相邻位置的 $dp$ 值决定。具体而言，当前位置的元素值等于三个相邻位置的元素中的最小值加 1，状态转移方程如下：<br>$$<br>dp[i][j] &#x3D; min(dp[i][j-1],dp[i-1][j],dp[i-1][j-1])+1<br>$$</p>
+</li>
 </ul>
-<p>于是现在的路径追踪算法的伪代码就是：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">shade(p, wo)</span><br><span class="line">    //来自于光源的部分</span><br><span class="line">    Uniformly sample the light at x’ (pdf_light = 1 / A)	//在光源平面采样</span><br><span class="line">    L_dir = L_i * f_r * cos θ * cos θ’ / |x’ - p|^2 / pdf_light		//计算着色</span><br><span class="line">	</span><br><span class="line">    //来自其他的部分</span><br><span class="line">    L_indir = 0.0</span><br><span class="line">    Test Russian Roulette with probability P_RR</span><br><span class="line">    Uniformly sample the hemisphere toward wi (pdf_hemi = 1 / 2pi) </span><br><span class="line">    Trace a ray r(p, wi)</span><br><span class="line">    If ray r hit a non-emitting object at q		//这里判断要改成光线打到非光源上才计算，不然就和上面重复了</span><br><span class="line">        L_indir = shade(q, -wi) * f_r * cos θ / pdf_hemi / P_RR </span><br><span class="line">    </span><br><span class="line">    Return L_dir + L_indir</span><br></pre></td></tr></table></figure>
+<p>关于这个状态转移方程的推导和证明比较复杂，可以参考<a href="https://leetcode-cn.com/problems/count-square-submatrices-with-all-ones/solution/">统计全为 1 的正方形子矩阵官方题解</a>。</p>
+<p>边界条件，如果 i 和 j 中至少有一个为 0，则以位置 (i, j) 为右下角的最大正方形的边长只能是 1。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">countSquares</span><span class="params">(vector&lt;vector&lt;<span class="type">int</span>&gt;&gt;&amp; matrix)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> m = matrix.<span class="built_in">size</span>(), n = matrix[<span class="number">0</span>].<span class="built_in">size</span>();</span><br><span class="line">        vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">f</span>(m, <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(n));</span><br><span class="line">        <span class="type">int</span> ans = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; m; ++i) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">0</span>; j &lt; n; ++j) &#123;</span><br><span class="line">                <span class="keyword">if</span> (i == <span class="number">0</span> || j == <span class="number">0</span>) &#123;</span><br><span class="line">                    f[i][j] = matrix[i][j];</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (matrix[i][j] == <span class="number">0</span>) &#123;</span><br><span class="line">                    f[i][j] = <span class="number">0</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> &#123;</span><br><span class="line">                    f[i][j] = <span class="built_in">min</span>(<span class="built_in">min</span>(f[i][j - <span class="number">1</span>], f[i - <span class="number">1</span>][j]), f[i - <span class="number">1</span>][j - <span class="number">1</span>]) + <span class="number">1</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                ans += f[i][j];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
-<p>到此为止我们就得到了一个完全正确的路径追踪算法。</p>
-<p>还有最后一个小问题，如何判断在光源平面采样的光线和着色点之间是否有阻挡？</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320180717009.png" alt="image-20220320180717009"></p>
-<p>只需要从着色点再打出一条光线看能不能达到光源就可以了，如果有阻挡，这条打出去的光线就会碰到其他物体。</p>
-<p>现在可以说路径追踪的全部<strong>入门</strong>内容就彻底结束了！</p>
-<p>最后来看看路径追踪的效果：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320181219602.png" alt="image-20220320181219602"></p>
-<p>左边是一张真实的相机拍摄的图片，右边是路径追踪算法渲染出来的图片，可以看到渲染的非常真实，可以说是无限接近真实场景，这就是路径追踪的强大之处。</p>
-<h4 id="7-总结"><a href="#7-总结" class="headerlink" title="7 总结"></a>7 总结</h4><p>以上就是路径追踪的全部基础内容，看似已经非常细节了，但实际上还有无数的细节问题没有讨论到，比如：</p>
+<h4 id="最大正方形"><a href="#最大正方形" class="headerlink" title="最大正方形"></a><a href="https://leetcode-cn.com/problems/maximal-square/">最大正方形</a></h4><blockquote>
+<p>问题描述：</p>
+<p>给你一个 <code>m * n</code> 的矩阵，矩阵中的元素不是 <code>0</code> 就是 <code>1</code>，请你统计并返回其中完全由 <code>1</code> 组成的 <strong>正方形</strong> 的最大面积。</p>
+</blockquote>
+<p>这是上一题的简化版，直接给出代码：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">maximalSquare</span><span class="params">(vector&lt;vector&lt;<span class="type">char</span>&gt;&gt;&amp; matrix)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> m = matrix.<span class="built_in">size</span>(), n = matrix[<span class="number">0</span>].<span class="built_in">size</span>();</span><br><span class="line">        vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">dp</span>(m, <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(n));</span><br><span class="line">        <span class="type">int</span> ans = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; m; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt; n; ++j)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(i == <span class="number">0</span> || j == <span class="number">0</span>)</span><br><span class="line">                &#123;</span><br><span class="line">                    dp[i][j] = matrix[i][j] - <span class="string">&#x27;0&#x27;</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(matrix[i][j] == <span class="string">&#x27;0&#x27;</span>) </span><br><span class="line">                &#123;</span><br><span class="line">                    dp[i][j] = <span class="number">0</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span>&#123;</span><br><span class="line">                    dp[i][j] = <span class="built_in">min</span>(dp[i<span class="number">-1</span>][j<span class="number">-1</span>], <span class="built_in">min</span>(dp[i<span class="number">-1</span>][j], dp[i][j<span class="number">-1</span>])) + <span class="number">1</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                ans = <span class="built_in">max</span>(ans, dp[i][j]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans * ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-无串线性问题"><a href="#2-无串线性问题" class="headerlink" title="2 无串线性问题"></a>2 无串线性问题</h3><p>线性动态规划有一类问题是没有显式的数组或字符串的。但在计算中依然可以分成若干子问题，且有动态规划的三条性质。因此也可以用动态规划来解。</p>
+<h4 id="只有两个键的键盘"><a href="#只有两个键的键盘" class="headerlink" title="只有两个键的键盘"></a><a href="https://leetcode-cn.com/problems/2-keys-keyboard/">只有两个键的键盘</a></h4><p>其实是质因数分解，用动态规划也不难，但需要额外空间。</p>
+<h4 id="丑数-II"><a href="#丑数-II" class="headerlink" title="丑数 II"></a><a href="https://leetcode-cn.com/problems/ugly-number-ii/">丑数 II</a></h4><p>比较奇特的动态规划，很巧妙。也可以用优先队列（堆）去做，但空间复杂度更高</p>
+<h4 id="完全平方数"><a href="#完全平方数" class="headerlink" title="完全平方数"></a><a href="https://leetcode-cn.com/problems/perfect-squares/">完全平方数</a></h4><p>之前用广搜做过，但广搜太暴力，空间复杂度也高，这次试试动态规划，实际上核心思路和广搜一样。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">numSquares</span><span class="params">(<span class="type">int</span> n)</span> </span>&#123;</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">dp</span><span class="params">(n+<span class="number">1</span>, INT_MAX)</span></span>;</span><br><span class="line">        dp[<span class="number">0</span>] = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">1</span>; j * j &lt;= i; ++j)</span><br><span class="line">            &#123;</span><br><span class="line">                dp[i] = <span class="built_in">min</span>(dp[i], dp[i-j*j] + <span class="number">1</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[n];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h4 id="整数拆分"><a href="#整数拆分" class="headerlink" title="整数拆分"></a><a href="https://leetcode-cn.com/problems/integer-break/">整数拆分</a></h4><p>和完全平方数思路差不多，转移时要考虑的情况稍微复杂一点。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">integerBreak</span><span class="params">(<span class="type">int</span> n)</span> </span>&#123;</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">dp</span><span class="params">(n+<span class="number">1</span>, <span class="number">0</span>)</span></span>;</span><br><span class="line">        dp[<span class="number">1</span>] = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">2</span>; i &lt;= n; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">1</span>; j &lt; i; ++j)</span><br><span class="line">            &#123;</span><br><span class="line">                dp[i] = <span class="built_in">max</span>(dp[i], <span class="built_in">max</span>(dp[j] * (i - j), j * (i - j)));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[n];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>当然这是最直观暴力的动态规划做法，还有进一步优化的空间，以及时空复杂度都只需要 O(1) 的数学方法，具体可看<a href="https://leetcode-cn.com/problems/integer-break/solution/zheng-shu-chai-fen-by-leetcode-solution/">官方题解</a>。</p>
+<h3 id="3-线性动态规划总结"><a href="#3-线性动态规划总结" class="headerlink" title="3 线性动态规划总结"></a>3 线性动态规划总结</h3><p>到此为止线性动态规划的几大类就都整理完了，线性动态规划是动态规划中最基础的一类，它的状态一般物理意义很明确，易于分析。在初学动态规划时，通过线性动态规划的大量练习，可以不断加深动态规划的概念理解，例如动态规划中最重要的三个概念：最优子结构，重复子问题，无后效性。下面对动态规划的三个基本概念做个简要回顾，在线性动态规划的题目练习中可以不断地加深理解，之后再学习其它的动态规划类型就会容易很多。</p>
 <ul>
-<li>如何对一个球面均匀采样？</li>
-<li>蒙特卡洛积分采样的概率分布是不是应该根据渲染的场景来选择合适的分布才能达到更好的效果，均匀采样只是最简单的一种；</li>
-<li>随机数的质量直接影响渲染效果，如何生成分布均匀概率准确的高质量随机数？</li>
-<li>是不是可以把着色点的方向采样和光源平面采样结合起来以达到更好的效果？</li>
-<li>渲染方程计算出来的就是最终显示在像素上的颜色吗？当然不是的，还要经过伽马矫正等一系列操作才能转变为颜色，而颜色这部分还涉及到颜色空间，HDR之类的问题……</li>
+<li>最优子结构：如果问题的最优解所包含的子问题的解也是最优的，就称该问题具有最优子结构。</li>
+<li>无后效性：即某阶段状态一旦确定，就不受这个状态以后决策的影响。也就是说，某状态以后的过程不会影响以前的状态，只与当前状态有关。</li>
+<li>重复子问题：即子问题之间是不独立的，一个子问题在下一阶段决策中可能被多次使用到。（该性质并不是动态规划适用的必要条件，但是如果没有这条性质，动态规划算法同其他算法相比就不具备优势）<br>线性动态规划是动态规划中变化最多的一类。</li>
 </ul>
-<p>所以我们看似搞懂了路径追踪，其实最多也只能算是刚刚入门，还有太多的东西没有了解到。这一路过来可以说整个路径追踪的流程非常复杂，光是最基础的理论推导都如此困难，那想把代码写对就更是难上加难，并且永远不要忘了我们还只是在学习前人留下的经验。这节课最后闫令琪老师说的话对我的启发非常大：“我学了十年渲染，至今还觉得我什么都不会”。更何况你我呢？</p>
-<p>敬畏科学，学无止境。</p>
+<p>首先线性动态规划针对的问题是最常见的数组，字符串，矩阵等，这三种数据结构本身就是线性的，因此出现这些类型的输入的时候，如果要用到动态规划，首先考虑线性动态规划就很合理了，因此很多问题不论最后正解是不是线性动态规划，都会首先想一下线性动态规划是否可行。</p>
+<p>其次由于大部分问题的数据都是以这三种形式给出的，因此题目的变化会非常多，很多常见的输入形式以及问题都非常经典，都存在经典的状态设计。因此不考虑一些比较 Trick 的解法，仅仅是经典问题的经典状态设计，就比其它种类的动态规划问题多很多了。</p>
+<p>例如单个数组或字符串上设计一维状态，两个数组或字符串上设计两维状态，以及矩阵上设计两维状态等等，同时以上三种情况的状态设计都有可能再加上额外的指标的状态，就是前面例题中的 state，这里面变化就很多了，比如有的题目在 state 这一维上要使用二分，贪心的策略，有的题目需要 DP 状态与数据结构配合来解决问题。</p>
+<p>除此之外还有一类问题没有显式的数组，字符串，但是在求解的时候依然满足前面提到的动态规划三条基本概念，可以用动态规划求解，这种问题通常也是线性动态规划。</p>
+<p>如此多的变化仅仅这几篇中列举的题目是远远不够的，因此还要多见多练多记。</p>
+<p>下一篇开始讨论动态规划另一大类问题：前缀和。</p>
+]]></content>
+      <categories>
+        <category>数据结构与算法</category>
+      </categories>
+      <tags>
+        <tag>C++</tag>
+        <tag>算法</tag>
+        <tag>动态规划</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>【计算机图形学】（十一）Whitted 风格光线追踪</title>
+    <url>/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/</url>
+    <content><![CDATA[<p>从这一节开始我们将了解图形学中的光线追踪（Ray Tracing）技术，包括经典的 Whitted 风格光线追踪技术和效果更好的路径追踪技术。并且在之后的高质量实时渲染专题中还会进一步学习最新的工业界实时光线追踪技术。</p>
+<p><em><span id="more"></span></em></p>
+<h2 id="Whitted-风格光线追踪（Whitted-Style-Ray-Tracing）"><a href="#Whitted-风格光线追踪（Whitted-Style-Ray-Tracing）" class="headerlink" title="Whitted 风格光线追踪（Whitted-Style Ray Tracing）"></a>Whitted 风格光线追踪（Whitted-Style Ray Tracing）</h2><h3 id="1-为什么需要光线追踪？"><a href="#1-为什么需要光线追踪？" class="headerlink" title="1 为什么需要光线追踪？"></a>1 为什么需要光线追踪？</h3><p>之前我们学习了光栅化渲染的基本原理，光栅化中，一开始就假设了光源是点光源且光线只弹射一次，但在大多数实际场景中并不是这样的，比如：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317153639301.png" alt="image-20220317153639301"></p>
+<p>Glossy 反射是指这种半磨砂材质的反射，这种材质用光栅化技术无法渲染的非常逼真，另外就是一些间接光照的场景，比如右边的图没有直接光源，但是因为光线在场景中弹射了许多次，所以我们可以看到整个场景中的各个物体。另外，上一节中我们学习了阴影映射，阴影映射生成的只能是边界清晰的硬阴影，无法生成更为逼真地软阴影。而光线追踪就可以解决以上这些问题，光线追踪尽可能地模拟光线的传播过程，对整个场景进行光照计算。</p>
+<p>但并不是说光线追踪就比光栅化好，现在的大多数游戏中还是使用实时光栅渲染，因为光栅渲染的快速高效是光线追踪无法比拟的，比如 PUBG超大的地图，为了保证游戏正常运行只能使用光栅渲染，并且牺牲一些图像细节：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317154826589.png" alt="image-20220317154826589"></p>
+<p>光线追踪能带来更好的画面细节，但速度慢，开销大，对硬件要求高，所以大多数情况下用来离线渲染一些动画、视频等，近些年游戏中的实时光线追踪技术我们将在另外一个专题更进一步讨论。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317155015560.png" alt="image-20220317155015560"></p>
+<h3 id="2-基础光线追踪算法"><a href="#2-基础光线追踪算法" class="headerlink" title="2 基础光线追踪算法"></a>2 基础光线追踪算法</h3><p>为了之后讨论光线追踪算法更方便，我们要先对光线做一个图形学上的定义，注意这里的图形学定义大多数都不符合物理学和光学规律，但一定是符合我们人类的直觉的。我们规定：</p>
+<ul>
+<li>光是沿直线传播的</li>
+<li>光线在发生交叉的时候不会产生碰撞，也就是光线传播互相不会产生影响</li>
+<li>我们能看到物体是因为光线从光源经过一系列反射、折射达到了人的眼睛</li>
+</ul>
+<p>虽然上面这些定义都不一定符合物理事实，但却为我们的光线追踪算法提供了很重要的思路，尤其是最后一条，也就是我们能看到的光线一定是达到了我们眼睛的光线。</p>
+<h4 id="2-1-光线投射"><a href="#2-1-光线投射" class="headerlink" title="2.1 光线投射"></a>2.1 光线投射</h4><p>根据上面的核心思想，我们能看到的光线一定是达到了我们眼睛的光线，那么我们可以从眼睛投射出一条“光线”到物体上，把这条“光线”称为视线（Eye Ray），视线将会和场景中的物体相交，把交点和光源相连就构成了一条光路，于是就说明存在一条光路使光线从光源经过物体上的这个点射进我们的眼睛。这就是光线投射的思想。</p>
+<p>我们把这个思想应用到渲染过程中，我们要把场景渲染到屏幕上才能被眼睛看到，因此我们就从眼睛透过屏幕上的每一个像素向场景中投射一条视线，这条视线会与场景中的物体存在很多交点，如下图，那么肯定离屏幕最近的交点才是我们能看到的点，也就是能显示在屏幕上的点，这一步相当于把屏幕上的像素所显示的场景中的点找到，并且顺便完成了深度测试。（注意体会和光栅化的区别）</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317160506856.png" alt="image-20220317160506856"></p>
+<p>然后连接交点和光源，这样一来，我们相当于拥有了光线入射方向，平面法线方向和观察方向三个方向向量，那就可以计算这一点的着色了，计算完成后把这个着色显示在像素上，之后对每个像素都这么做就完成了整个渲染过程。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317160857804.png" alt="image-20220317160857804"></p>
+<p>这只是光线投射的基本思想，到现在为止光线还是只弹射了一次，还谈不上“追踪”，要更真实的模拟光的传播就需要考虑光线的多次反射和折射，这就是 Whitted 风格光线追踪算法。</p>
+<h4 id="2-2-Whitted风格光线追踪"><a href="#2-2-Whitted风格光线追踪" class="headerlink" title="2.2 Whitted风格光线追踪"></a>2.2 Whitted风格光线追踪</h4><p>Whitted 风格光追是按照光线投射的思路递归地进行计算，具体过程如下：</p>
+<p>还是从眼睛透过屏幕上的每一个像素向场景中投射一条视线，找到与场景中的物体最近的一个交点：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317161755801.png" alt="image-20220317161755801"></p>
+<p>然后我们假设光线的反射是完美反射，也就是朝镜面反射方向传播，因此我们可以计算出反射后光线的方向，继续计算反射光线和其他物体的交点：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317161853335.png" alt="image-20220317161853335"></p>
+<p>当然如果物体是透明的，那光线不止发生反射，还会发生折射，我们还可以计算折射光线：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317162005677.png" alt="image-20220317162005677"></p>
+<p>算出这些光线的交点之后，把这些交点全部和光源连接起来，那么这个示例场景中就形成了四条光路：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317162056511.png" alt="image-20220317162056511"></p>
+<p>这些光路都是可以到达我们的眼睛的，因此我们计算每个点的着色，然后全部加起来给到这个像素上作为它显示的像素值。当然这里一定不是简单的累加，光线在传播过程中会有能量损失，具体到一个物体表面会有多少能量被反射，多少能量被折射是与材质有关的，我们只要知道把这些着色值全部作为像素显示的一部分就可以了，因为这些都是可以被看到的部分。下面是光线追踪渲染的一个效果图，可以看到透明球体的折射也显示出来了，并且透明球体的阴影也要比实心球体暗一些。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317162620685.png" alt="image-20220317162620685"></p>
+<p>那么了解了基本原理接下来就是解决具体的实现问题了，上面的流程中第一个要解决的问题就是如何计算视线和场景中物体的交点。</p>
+<h3 id="3-光线和平面的交点"><a href="#3-光线和平面的交点" class="headerlink" title="3 光线和平面的交点"></a>3 光线和平面的交点</h3><h4 id="3-1-光线的数学定义"><a href="#3-1-光线的数学定义" class="headerlink" title="3.1 光线的数学定义"></a>3.1 光线的数学定义</h4><p>这里的光线是广义的，就是指空间中一条射线，自然也可以是视线，定义很简单，空间中只要给定一个出发点和一个发射方向（单位向量）就可以唯一确定一条射线，如下图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317163243206.png" alt="image-20220317163243206"></p>
+<p>那么光线在时刻 t 所在的位置就可以表示为：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317163324324.png" alt="image-20220317163324324"></p>
+<h4 id="3-2-隐式表示求交点"><a href="#3-2-隐式表示求交点" class="headerlink" title="3.2 隐式表示求交点"></a>3.2 隐式表示求交点</h4><p>有了光线的数学定义，如果我们有物体的隐式表示，比如代数方程，那么很容易可以求出光线和物体表面的交点。以球面为例，对于空间中以 $c$ 为球心，$R$ 为半径的球面上的任意一点 $p$，代数形式可以表示为：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317163459536.png" alt="image-20220317163459536"></p>
+<p>我们要求光线和球面的交点，也就是联立两个方程求光线传播时间 t ：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317163725129.png" alt="image-20220317163725129"></p>
+<p>整理一下可以得到一个关于 t 的一元二次方程，剩下的就是高中数学知识：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317163840878.png" alt="image-20220317163840878"></p>
+<p>这里要特别强调的是 t 的物理意义，t 表示光线传播的时间，因此 t 需要大于0，并且必须是实数，所以要得到光线和物体表面离屏幕最近的一个交点就相当于解方程求一个最小的正实根。这个方法自然也可以推广到任意用隐式方程表示的物体：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317164210883.png" alt="image-20220317164210883"></p>
+<p>至于有些方程非常难解这个不需要我们担心，计算机本身也是用数值方法求解方程，所以无论多复杂都一定可以求出满足条件的解，关于复杂方程的数值求解方法这不是我们讨论的重点。</p>
+<h4 id="3-3-显示表示求交点"><a href="#3-3-显示表示求交点" class="headerlink" title="3.3 显示表示求交点"></a>3.3 显示表示求交点</h4><p>上面说的隐式方程求交点是我们早就了解的数学知识，只是应用到了这里，但通过之前的学习我们知道，图形学中更常用的表示方法是显式表示，并且计算光照、阴影等都要用显式表示去计算，因此计算光线和显式表示的交点是必须要解决的问题，并且解决了这个问题还可以顺便解决之前我们提到的，显式表示不好判断一个点是否在物体内部的问题。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317164516672.png" alt="image-20220317164516672"></p>
+<p>先说明如何通过光线和物体的交点判断一个点是否在物体内部。我们可以从空间中任意一点向任意方向发出一条射线，如果这条射线和物体表面有奇数个交点，那么它就在物体内部，如果有偶数个交点就一定在物体外部。可以在二维中验证这一理论。</p>
+<p>接下来具体讨论如何计算光线和显式表示的物体表面的交点。最简单的方法就是和每一个三角形计算交点，全算完之后就可以得到和物体的交点，但这显然太慢了，屏幕上每个像素投射一条视线，然后每条视线和场景中每个三角形计算一次交点，并且还要计算光线反射和折射之后的其他交点，对于下图这样的复杂场景，有两千万个三角形，如果是一张 4K 的图，那这个计算量无法被接受的，因此一定需要做加速，具体如何加速我们之后再看，在这之前要先了解怎么计算光线和一个三角形的交点。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317165225656.png" alt="image-20220317165225656"></p>
+<p>直接求光线和三角形的交点是不容易想到的，那我们可以分两步进行，先求光线和三角形所在平面的交点，再判断交点是否在三角形内部即可，而这两步计算都是很简单的。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317165740827.png" alt="image-20220317165740827"></p>
+<p>先考虑空间中对一个平面的定义，只要给定空间中一个点和一个法向量就可以唯一确定一个平面：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317165932411.png" alt="image-20220317165932411"></p>
+<p>于是平面上任意一点就可以表示为：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317170007930.png" alt="image-20220317170007930"></p>
+<p>那么求光线和平面的交点同样联立解方程即可，这次的方程还更加简单：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317170239867.png" alt="image-20220317170239867"></p>
+<p>至于算出交点后如何判断在否三角形内部就不多说了。</p>
+<p>上面是分了两步计算光线和三角形交点，那能不能直接计算呢？当然是可以的，这个计算的方法叫做 <strong>MT 算法（Möller Trumbore Algorithm）</strong>，实际上也很简单。</p>
+<p>回顾之前学过的三角形重心坐标，利用三角形的重心坐标可以表示三角形所在平面上的任意一点，因此光线和平面的交点一定满足：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317170625760.png" alt="image-20220317170625760"></p>
+<p>还是解方程，这里有三个未知数 $t、b_1、b_2$，而所有的坐标也都是三维坐标，所以这个关系式实际上表示的是一个三元一次方程组，利用克莱默法则可以快速求出解向量：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317170849910.png" alt="image-20220317170849910"></p>
+<p>当然还是要保证解出来的 t 为正才有意义，同时也可以直接判断交点是否在三角形内部，因为三角形内部的点重心坐标非负。</p>
+<p>知道了如何计算光线和三角形的交点，接下来就是一个更麻烦的问题，既然不可能每个三角形都算一次交点，那么如何加速？</p>
+<h3 id="4-交点计算加速"><a href="#4-交点计算加速" class="headerlink" title="4 交点计算加速"></a>4 交点计算加速</h3><p>加速实际上就是减少计算交点的三角形个数，那么首先想到的就是把一个物体看作整体，先判断和物体有交点再去一个一个三角形具体计算交点在哪。</p>
+<h4 id="4-1-包围体（Bounding-Volumes）"><a href="#4-1-包围体（Bounding-Volumes）" class="headerlink" title="4.1 包围体（Bounding Volumes）"></a>4.1 包围体（Bounding Volumes）</h4><p>类似于Bounding Box ，我们用简单的几何体把物体包围起来，然后计算光线和这个几何体是否存在交点。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317171519659.png" alt="image-20220317171519659"></p>
+<p>最常用的包围体自然是长方体，并且为了方便计算我们用的一般是<strong>轴对齐包围体（Axis-Aligned<br>Bounding Box）</strong>，简称为 AABB ，所谓轴对齐包围体就是指包围体每个平面的法向量都和坐标系三个坐标轴对其，通俗的说就是一个“横平竖直”的长方体。然后为了便于理解，我们把空间中的长方体理解为是<strong>由三对平面的交集形成的</strong>几何体。也就是把六个平面想成无限大，这个立方体就是这六个平面相交的部分形成的。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317171756933.png" alt="image-20220317171756933"></p>
+<p>那么计算光线和立方体的交点就是计算光线和六个平面的交点，再加以判断即可。首先我们从简单的二维情况开始，先计算一条光线和一个长方形的交点：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317171924483.png" alt="image-20220317171924483"></p>
+<p>首先计算光线和长方形两条垂直边的交点，两条垂直边可以理解为一对平面 $x_0$ 和 $x_1$，可以得到一条线段，如上图左；</p>
+<p>同理计算光线和长方形两条水平边的交点，两条水平边可以理解为一对平面 $y_0$ 和 $y_1$，可以得到另一条线段，如上图中，这里我们先假设光线是直线而不是射线，可以向两边延长，因此得到的 $t_{min}$ 可以为负数；</p>
+<p>然后将得到的两条线段取交集就是光线在长方形内部的部分。</p>
+<p>接下来推广到三维的情况，首先根据二维情况可以整理出两个关键的信息：</p>
+<ul>
+<li>光线必须进入所有三对平面才代表光线进入了整个立方体</li>
+<li>光线只需要离开任意一对平面就代表光线离开了整个立方体</li>
+</ul>
+<p>基于上面关键信息，我们分别计算光线和立方体三对平面交点，得到三个 $t_{min}$ 和 $t_{max}$，那么光线在立方体中的部分就是：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317173004886.png" alt="image-20220317173004886"></p>
+<p>如果 $t_{enter} &lt; t_{exit}$，那么就说明光线在这段时间是在立方体中的。接下来考虑几个特殊情况，刚才我们把光线当成了直线去计算交点，因此计算出来的  $t_{min}$ 和 $t_{max}$ 有正有负，所以最终得到的 $t_{enter}$ 和 $t_{exit}$ 也会有正有负：</p>
+<ul>
+<li>如果 $t_{exit} &lt; 0$，代表光线离开立方体的时间是负的，说明立方体在光线后面，因此光线不会和立方体有交点</li>
+<li>如果 $t_{enter} &lt; 0$ 且 $t_{exit} \geq 0$，代表光线起点就在立方体内，因此光线和立方体有交点</li>
+</ul>
+<p>综上，光线和立方体有交点，当且仅当 $t_{enter} &lt; t_{exit}$ &amp;&amp; $t_{exit} \geq 0$.</p>
+<p>回顾计算直线和平面的交点：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317173735804.png" alt="image-20220317173735804"></p>
+<p>正常情况下我们要带入三维向量去计算，但是因为这里使用的是 AABB ，每个平面都和坐标平面平行，因此我们计算每对平面的交点时，只要用一个维度的坐标代入计算即可：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317173915726.png" alt="image-20220317173915726"></p>
+<p>这也是使用轴对齐包围盒的原因之一，可以大幅减低计算量，使得计算光线和立方体的交点成为一个时间复杂度非常低的过程，为后续的优化奠定基础。</p>
+<h4 id="4-2-均匀空间划分（Uniform-Spatial-Partitions）"><a href="#4-2-均匀空间划分（Uniform-Spatial-Partitions）" class="headerlink" title="4.2 均匀空间划分（Uniform Spatial Partitions）"></a>4.2 均匀空间划分（Uniform Spatial Partitions）</h4><p>上面说了计算光线和三角形的交点不容易，但计算光线和立方体的交点非常方便，因此我们加速要尽量多做立方体判断以减少三角形计算。一种方法是对场景进行均匀空间划分，把给定的场景均匀的分成许多个小立方体，具体过程如下：</p>
+<ul>
+<li>首先找到整个场景中所有物体的 bounding box;</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317174601165.png" alt="image-20220317174601165"></p>
+<ul>
+<li>然后把把场景划分成均匀的网格：</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317174632633.png" alt="image-20220317174632633"></p>
+<ul>
+<li>然后看哪些网格中包含了物体的表面，在这个网格中把这个物体存下来：</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317174721424.png" alt="image-20220317174721424"></p>
+<ul>
+<li>光线射入的时候计算光线经过的每个立方体，如果这个立方体内有物体，就计算光线和这个立方体内存储的所有物体的交点，至于光线经过了哪些立方体，可以用类似于光栅化中画直线的方法，就不多说了：</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317174848937.png" alt="image-20220317174848937"></p>
+<p>均匀空间划分的方法对于网格划分的密度很敏感，网格太小会导致效率很低：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317175104056.png" alt="image-20220317175104056"></p>
+<p>因此需要一个好的划分细度，人们根据经验得出一般把场景划分为 27 倍的物体数量个网格：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317175217016.png" alt="image-20220317175217016"></p>
+<p>回顾均匀空间划分的方法我们发现对于物体很密集的场景，比如之前的草地，可以得到很好的效果，但是如果场景非常空旷，比如一个体育场中间有一个茶壶，那光线还是要经过许多次立方体的判断才能到达茶壶所在的立方体再去计算交点，因此我们希望空间划分不要非常均匀，很大一片没有物体的地方就可以划分成一个立方体，这样只要一次判断就能到达茶壶所在的立方体。</p>
+<h4 id="4-3-非均匀空间划分"><a href="#4-3-非均匀空间划分" class="headerlink" title="4.3 非均匀空间划分"></a>4.3 非均匀空间划分</h4><p>非均匀空间划分是一个经典的问题，有许多非常成熟的方法，图形学中只是拿来应用，常见的有以下几种方法：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317175644386.png" alt="image-20220317175644386"></p>
+<ul>
+<li>Oct树也叫八叉树，每次把立方体均匀的分成八块，上图是一个立方体的侧视图，然后看分开的每个空间内物体的密度，如果没有物体或者只有很少个就不用继续分了，否则按照这种方法继续划分，这样划分出来的区域就有大有小</li>
+<li>KD树是八叉树的改良，八叉树在四维的时候就会变成十六叉树，更高维会呈指数增长，并且每次都是平均分，并不灵活。KD树每次只切一刀把立方体分成两部分，比如第一次沿 x 轴切，分成两部分，下一次在两个区域中沿 y 轴切，再下一次每个区域都沿 z 轴切，这样每次都只把一个区域分成两块，且划分方向交替进行，也保证了相对均衡，因此在图形学中KD树更为合适</li>
+<li>BSP树类似于KD树，只是划分方向可以是任意方向，但因为我们图形学中用的是轴对齐包围盒所以这种方法不适用</li>
+</ul>
+<p>接下来我们按照上面说的KD树的思路我们来看KD树是如何工作的。</p>
+<p>首先是构造KD树，我们先把一个场景划分一次，形成两个子区域：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317180635314.png" alt="image-20220317180635314"></p>
+<p>然后对每个子区域继续划分又分别得到两个子区域，这里我们只划分了绿色的子区域，实际上蓝色的也应该继续划分：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317180753152.png" alt="image-20220317180753152"></p>
+<p>然后继续划分：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317180810286.png" alt="image-20220317180810286"></p>
+<p>这样我们得到了一个KD树，KD树中的节点分为两类：</p>
+<ul>
+<li>中间节点：代表一个大区域，中间节点不存储物体信息，只存储这个区域下一次的划分方向（沿 x，y，z轴），划分的位置（这里都是从中间划分，实际可以根据物体位置计算划分位置）以及孩子节点</li>
+<li>叶子节点：叶子节点存储在这个区域中所有的物体列表</li>
+</ul>
+<p>当我们预处理好了一个场景的 KD 树，在进行光线追踪时，每一条光线射入场景，先从 KD 树的根节点开始计算：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317181216719.png" alt="image-20220317181216719"></p>
+<p>得到光线和区域 A 有交点，那么开始遍历它的孩子节点，计算和蓝色区域的相交情况：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317181321483.png" alt="image-20220317181321483"></p>
+<p>也有交点，并且这是一个叶子节点，那就计算光线这个区域中所有的物体的交点，然后继续计算和 B 区域的交点：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317181418447.png" alt="image-20220317181418447"></p>
+<p>存在交点继续遍历：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317181441618.png" alt="image-20220317181441618"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317181454581.png" alt="image-20220317181454581"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317181513717.png" alt="image-20220317181513717"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317181546050.png" alt="image-20220317181546050"></p>
+<p>直到找到和物体的最近的交点，当然这只是一个示例情况，光线和所有区域都相交，实际过程中KD树显然可以大幅降低光线和立方体判断交点的次数，自然也就进一步降低了和三角形计算交点的次数。</p>
+<p>但是 KD 树也存在缺陷，每个叶子节点要存储在这个区域内的所有物体，那么如何判断一个物体在这个立方体中呢？这是非常困难的，但也不是不能克服，不过还有一个问题就像上图所示，有的物体会同时在好几个区域中，那么这几个区域的叶子节点就都要存储这个物体的信息，会有大量重复，因此 KD 树不是最好的划分方法。</p>
+<h4 id="4-4-物体划分和BVH（Bounding-Volume-Hierarchy）"><a href="#4-4-物体划分和BVH（Bounding-Volume-Hierarchy）" class="headerlink" title="4.4 物体划分和BVH（Bounding Volume Hierarchy）"></a>4.4 物体划分和BVH（Bounding Volume Hierarchy）</h4><p>最好的办法就是不对空间进行划分，而是对空间中的所有物体进行划分，类似于KD树，我们把空间中所有物体的 Bounding Box 找到，作为根节点：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317182135200.png" alt="image-20220317182135200"></p>
+<p>然后把物体分成两堆，并且重新计算这两堆物体的 Bounding Box ：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317182212919.png" alt="image-20220317182212919"></p>
+<p>接下来继续这个过程，直到每个区域中都有我们希望的数量的物体：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317182321796.png" alt="image-20220317182321796"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317182336400.png" alt="image-20220317182336400"></p>
+<p>可以看到 BVH 构建过程和 KD 树类似，只是每次划分是对物体进行划分然后重新计算 Bounding Box ，这样就可以保证每个叶子节点存储的物体不重复，并且还免去了判断物体是否在 Bounding Box 内的麻烦，是一个非常优秀的方法，因此 BVH 也是目前使用最广泛的方法。</p>
+<p>至于每次对物体如何划分，当然可以和 KD 树一样按照维度轮换划分，也可以用其他各种方法，比如：</p>
+<ul>
+<li>永远选择最长的那一个维度划分，有时可能场景是一个走廊之类的长条形状，那么其中的物体也一定是按这样排列的，如果还按照维度轮换划分，划分出来一定是不够均衡的，因此可以每次计算当前 Bounding Box 最长的那一维，就从最长维度划分，就可以保证相对均匀</li>
+<li>可以选择中间的物体划分，为了保证每个叶子节点存储的物体数量差不多，我们可以把物体的中心坐标排序取中位数，然后按照中间这个物体所在位置划分成两个区域，这样每个区域中物体数量都相当</li>
+</ul>
+<p>BVH 的数据结构中存储的内容和 KD 树类似，中间节点存储 Bounding Box 和孩子节点，叶子节点中存储 Bounding Box 和所有物体列表，当光线射入场景时，从根节点开始计算即可，下面是 BVH 的伪代码：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317183317587.png" alt="image-20220317183317587"></p>
+<h4 id="4-5-空间划分-VS-物体划分"><a href="#4-5-空间划分-VS-物体划分" class="headerlink" title="4.5 空间划分 VS 物体划分"></a>4.5 空间划分 VS 物体划分</h4><p>对比 KD 树和 BVH，一个是空间划分，一个是物体划分，空间划分的 Bounding Box 不会重合但是物体会重复，而物体划分 Bounding Box 可能重合但物体不会重复，显然物体划分更符合我们的需求。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317183536848.png" alt="image-20220317183536848"></p>
+<h3 id="5-总结"><a href="#5-总结" class="headerlink" title="5 总结"></a>5 总结</h3><p>以上就是 Whitted 风格光线追踪的基本原理和优化结构，从每个像素投射一条视线到场景中，利用 BVH 找到和场景中物体最近的交点，然后利用同样的方法计算反射和折射光线与其他物体的交点，最后计算所有交点的着色作为这个像素的颜色显示。</p>
 ]]></content>
       <categories>
         <category>GAMES101</category>
@@ -5175,108 +5316,148 @@
       </tags>
   </entry>
   <entry>
-    <title>【动态规划】（四）线性动态规划之矩阵和无串问题</title>
-    <url>/LycTechStack.github.io/2022/03/15/20220315-%E7%BA%BF%E6%80%A7%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92-%E7%9F%A9%E9%98%B5%E5%92%8C%E6%97%A0%E4%B8%B2/</url>
-    <content><![CDATA[<h3 id="1-矩阵问题"><a href="#1-矩阵问题" class="headerlink" title="1 矩阵问题"></a>1 矩阵问题</h3><p>除了数组和字符串外，矩阵也是一种线性结构，很多一维数组或字符串的问题可以推广到二维，因此矩阵上也有一些经典的动态规划问题，矩阵上的动态规划问题，基本的状态设计就是用二维变量 (i, j) 共同表示以 (0, 0) 为左上角，(i, j) 为右下角的子问题。因此矩阵问题的状态定义和双串 $dp[i][j]$ 类似，状态的推导方向以及推导公式与双串相同，但是物理意义不一样，且求解时所需的子问题的变化相对更多。</p>
+    <title>【计算机图形学】（十三）路径追踪</title>
+    <url>/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/</url>
+    <content><![CDATA[<h3 id="路径追踪（Path-Tracing）"><a href="#路径追踪（Path-Tracing）" class="headerlink" title="路径追踪（Path Tracing）"></a>路径追踪（Path Tracing）</h3><p>这一节我们正式开始学习路径追踪技术，首先我们要利用上一节的辐射度量学基础理解双向反射分布函数并推导出反射方程和渲染方程，然后利用渲染方程理解全局光照，之后简单复习一下蒙特卡洛积分的相关内容，最后通过解渲染方程来构建路径追踪算法。这一节内容可能非常硬核，涉及物理、微积分、概率论等多方面的知识，但这也是迈向真正的<strong>现代</strong>图形学大门的第一步。</p>
 <p><em><span id="more"></span></em></p>
-<h4 id="三角形最小路径和"><a href="#三角形最小路径和" class="headerlink" title="三角形最小路径和"></a><a href="https://leetcode-cn.com/problems/triangle/">三角形最小路径和</a></h4><blockquote>
-<p>问题描述：</p>
-<p>给定一个三角形 triangle ，找出自顶向下的最小路径和。</p>
-<p>每一步只能移动到下一行中相邻的结点上。相邻的结点 在这里指的是 下标 与 上一层结点下标 相同或者等于 上一层结点下标 + 1 的两个结点。也就是说，如果正位于当前行的下标 i ，那么下一步可以移动到下一行的下标 i 或 i + 1 。</p>
-</blockquote>
-<p>题目中都写出来状态该如何转移了，这里就不赘述了，主要讲一下优化的思路。先观察正常思路的代码：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">minimumTotal</span><span class="params">(vector&lt;vector&lt;<span class="type">int</span>&gt;&gt;&amp; triangle)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> n = triangle.<span class="built_in">size</span>();</span><br><span class="line">        vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; dp = triangle;</span><br><span class="line">        <span class="type">int</span> ans = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">1</span>; i &lt; n; ++i) </span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt; triangle[i].<span class="built_in">size</span>(); ++j)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(j == i) dp[i][j] += dp[i<span class="number">-1</span>][j<span class="number">-1</span>];</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(j == <span class="number">0</span>) dp[i][j] += dp[i<span class="number">-1</span>][j];</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(j &gt; <span class="number">0</span>) dp[i][j] += <span class="built_in">min</span>(dp[i<span class="number">-1</span>][j], dp[i<span class="number">-1</span>][j<span class="number">-1</span>]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> *<span class="built_in">min_element</span>(dp[n<span class="number">-1</span>].<span class="built_in">begin</span>(), dp[n<span class="number">-1</span>].<span class="built_in">end</span>());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h4 id="1-双向反射分布函数（BRDF）"><a href="#1-双向反射分布函数（BRDF）" class="headerlink" title="1 双向反射分布函数（BRDF）"></a>1 双向反射分布函数（BRDF）</h4><p>在学习路径追踪之前我们还需要一系列的前置知识，第一个就从双向反射分布函数（Bidirectional Reflectance Distribution Function）开始。</p>
+<p>我们假设一个平面 dA 从某个方向 $\omega_i$ 接收到的 Radiance 会被转化成这个平面上的能量 $E(\omega_i)$ ，然后这些能量又会从 dA 向四面八方反射出去，但一般情况下不会全部反射出去，而是会有一部分能量被保留，另外的能量被反射出去，假设在某个方向 $\omega_r$ 反射出去的能量是 $L_r(\omega_r)$，那么在平面 dA 从方向 $\omega_i$ 接收到的能量 $E(\omega_i)$ 中有多少能量会被反射到 $\omega_r$ 方向成为 $L_r(\omega_r)$，这二者之间存在一个关系，这个关系就叫做双向反射分布函数。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320141430022.png" alt="image-20220320141430022"></p>
+<p>可以看到 BRDF 就是 $L_r(\omega_r)$ 和 $E(\omega_i)$ 的比值，它描述的就是一个平面从某个方向接收到的能量会往另外某个方向反射多少。</p>
+<p>从物理意义上来说，  BRDF 描述的其实就是物体表面的材质属性，物体之所以在我们看来会显示出不同的材质，就是因为它的表面对光的吸收能力不同，反射能力不同，BRDF 描述的正是一个表面的这种反射光的能力，因此我们说 BRDF 本质上表示的是表面的材质。</p>
+<h4 id="2-反射方程"><a href="#2-反射方程" class="headerlink" title="2 反射方程"></a>2 反射方程</h4><p>有了 BRDF，现在我们考虑一个着色点 $p$，回顾上一节最后我们说的 Radiance 和 Irradiance 的联系，$p$ 点的 Irradiance 就是 Radiance 在各个方向上的积分，那么现在我们从一个方向 $\omega_r$ 去观察点 $p$，也就相当于去计算 $p$ 点从各个方向接收到的能量在 $\omega_r$ 方向总共能反射出多少，那不就是点 $p$ 从每个方向 $\omega_i$ 接收到的能量 $L_i(p,\omega_i)$ 乘以 $\omega_i$ 方向到 $\omega_r$ 方向的 BRDF 再全部积分起来就可以了吗。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320142742653.png" alt="image-20220320142742653"></p>
+<p>上面的公式表达的意思就是刚才说的，点 $p$ 从每个方向 $\omega_i$ 接收到的能量 $L_i(p,\omega_i)$ 乘以 $\omega_i$ 方向到 $\omega_r$ 方向的 BRDF 再全部积分起来，就得到了一个着色点从四面八方接收到的能量往观察方向反射了多少。这个公式就叫做反射方程。</p>
+<h4 id="3-渲染方程"><a href="#3-渲染方程" class="headerlink" title="3 渲染方程"></a>3 渲染方程</h4><p>反射方程计算的是一个表面从外界接收到的光，能被我们看到多少，如果这个物体本身就会发光呢？那它本身也会向我们的观察方向 $\omega_r$ 发出能量，因此我们可以在反射方程上加上一个自发光项 $L_e(p,\omega_o)$：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320143225898.png" alt="image-20220320143225898"></p>
+<p>这样就得到了能描述更一般情况的渲染方程，上式中 $L_o(p,\omega_o)$ 就是 $p$ 点在 $\omega_o$ 方向反射出的总能量， $L_e(p,\omega_o)$ 是 $p$ 点自身在 $\omega_o$ 方向放射出的能量，球面积分就是 $p$ 点从四面八方接收到的光反射到 $\omega_o$ 方向的总能量，$\Omega^+$代表上半球面，$f_r(p,\omega_i,\omega_o)$ 表示点 $p$ 从 $\omega_i$ 方向到 $\omega_o$ 方向的 BRDF，这里的余弦同样用向量点乘表示，因为所有这些向量也都是指示方向的单位向量，并且都是和布林冯模型中一样，从点 $p$ 指向外边的。</p>
+<h4 id="4-全局光照"><a href="#4-全局光照" class="headerlink" title="4 全局光照"></a>4 全局光照</h4><p>渲染方程就可以描述我们之前经常说到的全局光照，这也是光栅化不好去解决的问题（不代表不能解决），因为光栅化中光线只弹射一次，而全局光照正是因为光线会弹射很多次使得本来光线达到不了的地方能被照亮。</p>
+<p>接下来我们就从简单情况开始，理解渲染方程为什么能表示全局光照。首先考虑只有一个点光源的情况，也是之前我们讨论的最多的情况：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320145641378.png" alt="image-20220320145641378"></p>
+<p>这时的渲染方程就可以写成上面的形式，相当于只有一个方向有入射的 Radiance ，那如果现在有多个点光源：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320145827348.png" alt="image-20220320145827348"></p>
+<p>渲染方程也很简单，就是把全部的点光源反射加起来。接下来如果点光源变成了面光源，相当于从离散到连续：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320145952914.png" alt="image-20220320145952914"></p>
+<p>我们也能理解，离散的求和就是连续的积分，这也是我们刚才得到的最一般的渲染方程。</p>
+<p>到此为止我们讨论的都是光源照射到物体上，也就是直接光照的情况，那对于一个物体表面，他接收到的光不全是从光源来的，还可能是从其他物体表面反射出来的光：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320150319277.png" alt="image-20220320150319277"></p>
+<p>比如上图中的 $X’$ 是其他物体的表面，反射出的光同样会被我们的观察点接收到，这时着色点 $x$ 接收到的从平面 $X’$ 反射来的光相当于我们从点 $x$ 沿着 $-\omega_i$ 方向观察平面 $X’$ 得到的结果，因此着色点 $x$ 接收到的从平面 $X’$ 反射来的光就是上面式子中的 $L_r(X’,-\omega_i)$，从这个渲染方程我们可以看出整个过程是一个递归的过程，当前物体反射的光不仅取决于光源，还取决于其他物体反射的光，其他物体反射的光又取决于光源和别的物体，这也正是渲染方程能够表示全局光照的原因。</p>
+<p>我们继续观察上面的渲染方程，我们要求解的未知数也包含在积分中，所以这是一个积分方程，并且这个看似复杂的积分方程实际上是一个经典的积分方程，叫做<strong>弗雷德霍姆积分方程（Fredholm Integral Equation）</strong>，这个方程可以简化的写成如下形式：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320151450998.png" alt="image-20220320151450998"></p>
+<p>这满足第二类弗雷德霍姆积分方程的一般形式，其中 $K(u,v)dv$ 被称为光线传播算子，表示的是光线 $l(v)$ 经过光线传播算子就传播到了 光线 $l(u)$ 上，这和我们之前说的一个点吸收的光再反射出去的概念其实是一样的。</p>
+<p>接下来我们再进一步简化，把这个方程写成矩阵形式：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320151703670.png" alt="image-20220320151703670"></p>
+<p>至于积分怎么写成矩阵形式，这里不展开讨论，这对我们来说也不重要，总之写成这样的形式之后，我们就可以进一步操作，移项之后再左乘对应的逆矩阵：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320153406232.png" alt="image-20220320153406232"></p>
+<p>然后根据二项式定理，对于矩阵也存在类似泰勒展开的形式， $(I-K)^{-1}$ 的泰勒展开就类似于 $\frac{1}{1-x}$ 的泰勒展开，于是上式可以写成：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320153729678.png" alt="image-20220320153729678"></p>
+<p>我们把这个式子展开进行分析：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320153751936.png" alt="image-20220320153751936"></p>
+<p>先明确这里面各个字母代表什么，在他们没变成这样之前，$L$ 是各个平面反射出的光（可能是我们观察的平面，也可能是其他平面），$E$ 是来自于光源的光，$K$ 是光线传播算子，所以直接来自于光源的光 $E$ 每乘一次光线传播算子 $K$ 就代表光线弹射了一次，所以 $KE$ 表示直接光照，也就是光线只在观察表面弹射了一次进入我们的眼睛，$K^nE$ 表示在多个表面弹射了 n 次之后进入我们的眼睛，我们观察到的光是所有这些光线的总和。 </p>
+<p>换句话说，渲染方程表示：我们看到的光是直接来自于光源的光和经过若干次反射后达到我们眼睛的光的总和。这显然是符合物理世界本身的规律的。而之前的光栅化着色过程，相当于只有前两项：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320155016764.png" alt="image-20220320155016764"></p>
+<p>因此渲染方程可以表示全局光照，因为它考虑了整个场景中经过若干次弹射的光线。</p>
+<p>下图是只有直接光照渲染出来的图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320155133357.png" alt="image-20220320155133357"></p>
+<p>可以看到因为只计算了直接光照，也就是光线只弹射一次，所以没有光线直接照射到的地方，比如点 $p$ 就是全黑的。下面是计算了一次全局光照渲染出来的图，一次全局光照是指光线额外弹射了一次：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320155335268.png" alt="image-20220320155335268"></p>
+<p>点 $p$ 可以被看到了，但是注意房顶上的吊灯，此时它还是黑色的，下面是计算了四次全局光照的效果：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320155447163.png" alt="image-20220320155447163"></p>
+<p>点 $p$ 变得更清晰了更亮了，而且房顶上的吊灯也变得透明了，因为它是玻璃材质，透射的光进入它的内部在只计算一次额外弹射的情况下是无法被反射出去被我们看到的，所以经过多次弹射后就会显示出来，这也是合理的。下面是计算了十六次全局光照的效果：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320155738534.png" alt="image-20220320155738534"></p>
+<p>可以看到整个画面已经没有太大的变化了，这说明光线弹射的次数越多并不会使画面越亮，而是会逐渐收敛到一个状态，因为光线弹射的越多能量衰减的也越多，这也是和现实世界完全一致的，因此整个渲染方程非常科学的描述了整个场景中光线的传播，所以用渲染方程渲染出的画面自然也就更加接近真实世界。</p>
+<h4 id="5-蒙特卡洛积分"><a href="#5-蒙特卡洛积分" class="headerlink" title="5 蒙特卡洛积分"></a>5 蒙特卡洛积分</h4><p>彻底理解了渲染方程之后，我们就要开始用渲染方程构建图像渲染算法了，但对于我们编码来说，只有这个渲染方程是不够的，因为我们要能够解出这个方程，得到一个计算便捷的表达式，才能去写代码，而我们知道计算机解方程使用的是数值的方法，尤其是对于这样复杂的积分方程，所以我们先简单复习一下计算定积分的常用数值方法——蒙特卡洛积分。</p>
+<p>一般来说计算定积分，我们会先把不定积分算出来，然后再把区间端点代入相减就得到了区间上的定积分，但是对于形态比较复杂的函数来说，我们不容易求出它的不定积分，如下图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320161415261.png" alt="image-20220320161415261"></p>
+<p>这时就要用数值方法去求积分了，我们知道积分就是面积，经典的黎曼积分就是在区间内取无数个小的长条把他们的面积加起来，而蒙特卡洛积分则是结合了概率论的方法，在区间 $(a,b)$ 内以某种概率分布随机的取一个点，把这个点的函数值作为矩形的高，然后区间长度作为矩形的宽，求出一个矩形面积，随着采样次数增多，把所有的矩形面积取平均就得到了整个区间的近似积分，采样点越多，结果自然也就越接近真实结果。</p>
+<p>所以假设我们要计算定积分：<br>$$<br>\int_{a}^{b}f(x)dx<br>$$<br>我们以一个概率分布 $p(x)$ 在区间 $(a,b)$ 内随机的选取采样点 $X_i$，概率论告诉我们 $p(x)$ 叫做概率密度函数（pdf），则该定积分的蒙特卡洛估计为：<br>$$<br>F_N &#x3D; \frac{1}{N}\sum_{i&#x3D;1}^{N}\frac{f(X_i)}{p(X_i)},\ X_i \sim p(x)<br>$$<br>以均匀分布为例，区间 $(a,b)$ 上的均匀分布的概率密度函数就是：<br>$$<br>X_i \sim p(x) &#x3D; \frac{1}{b-a}<br>$$<br>于是利用均匀分布采样的蒙特卡洛估计为：<br>$$<br>F_N &#x3D; \frac{b-a}{N}\sum_{i&#x3D;1}^{N}f(X_i)<br>$$</p>
+<h4 id="6-路径追踪"><a href="#6-路径追踪" class="headerlink" title="6 路径追踪"></a>6 路径追踪</h4><p>有了前面所有的前置知识，现在我们来正式学习路径追踪。学习一个方法的时候，要学习的第一件事就是为什么要学习这个方法？</p>
+<p>我们之前学习 Whitted 风格光线追踪是为了解决光栅化渲染中的不足，所以路径追踪自然是为了解决 Whitted 风格光线追踪的不足。现在来回顾 Whitted 风格光线追踪有哪些问题。</p>
+<p>首先，在一开始学习 Whitted 风格光线追踪时我们就假设了，所有光线的反射都是完美的镜面反射，也就是只沿着镜面反射方向传播，这显然是不合理的，比如我们之前也提到过的 Glossy 反射：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320163435750.png" alt="image-20220320163435750"></p>
+<p>不过之前我们没有说 Glossy 反射为什么会呈现出这样的效果，这就是因为它的表面没有那么光滑，不足以使光线完美的沿着镜面反射方向传播，而是使光线在镜面反射方向附近一定范围内散射出去，所以呈现出来就是这样模糊的效果。因此 Whitted 风格光线追踪不好处理 Glossy 反射。</p>
+<p>其次，光线遇到漫反射就会停下来。在之前的布林冯光照模型中，只有直接光照会使物体表面显示出颜色，而且这个颜色在之后的传播中也不会继续传播，所以相当于光线遇到漫反射就不再弹射了，如下图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320164359977.png" alt="image-20220320164359977"></p>
+<p>这是一个只有漫反射的场景，左图是只有直接光照的效果，所以天花板没有光源直接照射就是黑的，并且长的立方体左表面也是黑的；而右图是全局光照的效果，可以看到长的立方体左表面是红色的，这是因为左边的墙是红色的，显然右边的图更接近真实场景，这个真实场景也是存在的，后面我们会看到。</p>
+<p>综上， Whitted 风格光线追踪实际上是错误的，因为它并不符合现实世界的物理规律，而之前我们推导的渲染方程是绝对符合物理规律的正确的光线计算方式。而要使用渲染方程来渲染图像，就要解方程，接下来我们从最简单的情况来分析如何求解渲染方程。</p>
+<p>先考虑只有直接光照的情况，我们只考虑一个着色点，场景中只有一个<strong>面光源</strong>，如下图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320165056742.png" alt="image-20220320165056742"></p>
+<p>我们的观察方向是 $\omega_o$，不考虑着色点本身发射的光，于是可以得到一个渲染方程：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320165220430.png" alt="image-20220320165220430"></p>
+<p>现在用蒙特卡洛积分来解这个方程，回顾蒙特卡洛估计的一般形式：<br>$$<br>F_N &#x3D; \frac{1}{N}\sum_{i&#x3D;1}^{N}\frac{f(X_i)}{p(X_i)},\ X_i \sim p(x)<br>$$<br>我们只要知道被积函数 $f(x)$ 和概率密度函数 $p(x)$ 就可以了，在这里被积函数 $f(x)$ 显然就是：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320165509284.png" alt="image-20220320165509284"></p>
+<p>概率密度函数 $p(x)$ 我们就取均匀分布，但现在是一个半球面上的积分，半球面的均匀分布自然是：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320165552391.png" alt="image-20220320165552391"></p>
+<p>于是我们的渲染方程就可以写成：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320165624306.png" alt="image-20220320165624306"></p>
+<p>我们把积分转化成了求和的形式，这意味着我们可以写代码了，根据这个求和表达式，就能写出一个计算着色的算法：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">shade(p, wo)</span><br><span class="line">    Randomly choose N directions wi~pdf		//随机的选择N个方向，服从某个概率密度函数pdf的分布，这里是均匀分布</span><br><span class="line">    Lo = 0.0</span><br><span class="line">    For each wi		</span><br><span class="line">        Trace a ray r(p, wi) 		//对每一个方向从着色点打出一条光线</span><br><span class="line">        If ray r hit the light		//如果这个光线能到达光源，就按照公式计算着色</span><br><span class="line">            Lo += (1 / N) * L_i * f_r * cosine / pdf(wi) </span><br><span class="line">    Return Lo</span><br></pre></td></tr></table></figure>
 
-<p>可以看出 $dp[i][j]$ 只与 $dp[i-1][j]$ 和 $dp[i-1][j-1]$ 有关，因此可以利用滚动数组优化，我们只需要一个 n 大小的数组，n是三角形的层数，然后一定需要一个变量记录 $dp[i-1][j-1]$，每次$dp[j]$更新时， $dp[i-1][j]$ 就是当前的更新的位置$dp[j]$，同时需要把没更新之前的$dp[j]$记下来，作为下一次更新时的 $dp[i-1][j-1]$。对于两个特殊位置：每一次层的开头要直接把 $dp[j]$ 记下来作为下一次的$dp[i-1][j-1]$；每一层的结尾不需要记录任何数直接更新即可。优化后的代码：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">minimumTotal</span><span class="params">(vector&lt;vector&lt;<span class="type">int</span>&gt;&gt;&amp; triangle)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> n = triangle.<span class="built_in">size</span>();</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">dp</span><span class="params">(n)</span></span>;</span><br><span class="line">        dp[<span class="number">0</span>] = triangle[<span class="number">0</span>][<span class="number">0</span>];</span><br><span class="line">        <span class="type">int</span> last = dp[<span class="number">0</span>];   <span class="comment">//记录dp[i-1][j-1]</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">1</span>; i &lt; n; ++i) </span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt; triangle[i].<span class="built_in">size</span>(); ++j)</span><br><span class="line">            &#123; </span><br><span class="line">                <span class="keyword">if</span>(j == i)</span><br><span class="line">                &#123;</span><br><span class="line">                    dp[j] = triangle[i][j] + last;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(j == <span class="number">0</span>) </span><br><span class="line">                &#123;</span><br><span class="line">                    last = dp[j];</span><br><span class="line">                    dp[j] = triangle[i][j] + dp[j];</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(j &gt; <span class="number">0</span>)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="type">int</span> temp = dp[j];</span><br><span class="line">                    dp[j] =  triangle[i][j] + <span class="built_in">min</span>(dp[j], last);</span><br><span class="line">                    last = temp;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> *<span class="built_in">min_element</span>(dp.<span class="built_in">begin</span>(), dp.<span class="built_in">end</span>());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>OK，现在我们考虑更复杂一点的情况，如果场景中有其他物体，那么公式中的来自各个方向的光就不一定是来自于光源了，也就是说我们从着色点打出一条光线可能不是达到光源，而是到达其他物体表面：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320170432437.png" alt="image-20220320170432437"></p>
+<p>这时就按我们之前的递归做法，把着色点 P 当成观察点，然后计算 Q 点的着色，所以我们的代码只要加上另一个 if 判断：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">shade(p, wo)</span><br><span class="line">    Randomly choose N directions wi~pdf		//随机的选择N个方向，服从某个概率密度函数pdf的分布，这里是均匀分布</span><br><span class="line">    Lo = 0.0</span><br><span class="line">    For each wi		</span><br><span class="line">        Trace a ray r(p, wi) 		//对每一个方向从着色点打出一条光线</span><br><span class="line">        If ray r hit the light		//如果这个光线能到达光源，就按照公式计算着色</span><br><span class="line">            Lo += (1 / N) * L_i * f_r * cosine / pdf(wi) </span><br><span class="line">        Else If ray r hit an object at q	//如果达到了其他物体表面，就递归地计算</span><br><span class="line">            Lo += (1 / N) * shade(q, -wi) * f_r * cosine / pdf(wi)</span><br><span class="line">    Return Lo</span><br></pre></td></tr></table></figure>
 
-<h4 id="下降路径最小和"><a href="#下降路径最小和" class="headerlink" title="下降路径最小和"></a><a href="https://leetcode-cn.com/problems/minimum-falling-path-sum/">下降路径最小和</a></h4><blockquote>
-<p>问题描述：</p>
-<p>给你一个 n x n 的 方形 整数数组 matrix ，请你找出并返回通过 matrix 的下降路径 的 最小和 。</p>
-<p>下降路径 可以从第一行中的任何元素开始，并从每一行中选择一个元素。在下一行选择的元素和当前行所选元素最多相隔一列（即位于正下方或者沿对角线向左或者向右的第一个元素）。具体来说，位置 (row, col) 的下一个元素应当是 (row + 1, col - 1)、(row + 1, col) 或者 (row + 1, col + 1) 。</p>
-</blockquote>
-<p>类似于三角路经最小和，思路不赘述。<a href="https://leetcode-cn.com/problems/minimum-falling-path-sum-ii/">下降路径最小和 II</a>是本题的进阶版本，难度不大，但优化起来比较困难，可以了解。</p>
-<p>优化时的细节：可以申请数组长度为n+2，这样可以免去边界的判断，同时要注意变量的更新顺序。优化后的代码：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">minFallingPathSum</span><span class="params">(vector&lt;vector&lt;<span class="type">int</span>&gt;&gt;&amp; matrix)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> n = matrix.<span class="built_in">size</span>();</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">dp</span><span class="params">(n+<span class="number">2</span>, <span class="number">0</span>)</span></span>;	<span class="comment">//第一层全初始化为0</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//从第二层开始辅助位置都要设为最大值，不能还是0了</span></span><br><span class="line">            <span class="keyword">if</span>(i &gt; <span class="number">1</span>) dp[<span class="number">0</span>] = dp[n+<span class="number">1</span>] = INT_MAX;</span><br><span class="line">            <span class="comment">//每一层起始记录dp[i-1][j-1]、dp[i-1][j]、dp[i-1][j+1]</span></span><br><span class="line">            <span class="type">int</span> left = dp[<span class="number">0</span>], mid = dp[<span class="number">1</span>], right = dp[<span class="number">2</span>];</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">1</span>; j &lt;= n; ++j)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">//之后每次更新，dp[i-1][j+1]就是dp[j+1]</span></span><br><span class="line">                right = dp[j+<span class="number">1</span>];</span><br><span class="line">                <span class="type">int</span> choose = <span class="built_in">min</span>(left, <span class="built_in">min</span>(mid, right));</span><br><span class="line">                dp[j] = matrix[i<span class="number">-1</span>][j<span class="number">-1</span>] + choose;</span><br><span class="line">                <span class="comment">//当前的mid是下一个位置的left，当前的right是下个位置的mid</span></span><br><span class="line">                left = mid;</span><br><span class="line">                mid = right;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//返回时注意不要包含辅助的位置，取中间n个数求最小值</span></span><br><span class="line">        <span class="keyword">return</span> *<span class="built_in">min_element</span>(dp.<span class="built_in">begin</span>()+<span class="number">1</span>, dp.<span class="built_in">end</span>()<span class="number">-1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>这样似乎就完成了一个像素的着色，但这样可以吗？一定是不行的，因为这样去追踪光线会导致计算量爆炸，下面的图说明了这种情况：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320170839308.png" alt="image-20220320170839308"></p>
+<p>假设我们每次随机采样就选了 100 个方向，那么我们就要追踪 100 条光线，每一条光线如果打到其他物体表面又会采样出 100 条光线，这样经过两次弹射我们就要追踪 100 万条光线，这显然是不能接受的，因此我们就要考虑怎么样才能不让光线数量爆炸，因为这是呈指数增长的，所以只有当光线数量为 1 的时候，不管怎么弹射，它都还是一条光线。于是我们就随机采样一条光线，只跟踪这一条光线，那循环也不需要了，我们的代码就可以简化为：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">shade(p, wo)</span><br><span class="line">    Randomly choose 1 direction wi~pdf		//随机的选择1个方向	</span><br><span class="line">    Trace a ray r(p, wi) 		//从这个方向打出一条光线</span><br><span class="line">    If ray r hit the light		//如果这个光线能到达光源，就按照公式计算着色</span><br><span class="line">        Lo += (1 / N) * L_i * f_r * cosine / pdf(wi) </span><br><span class="line">    Else If ray r hit an object at q	//如果达到了其他物体表面，就递归地计算</span><br><span class="line">        Lo += (1 / N) * shade(q, -wi) * f_r * cosine / pdf(wi)</span><br><span class="line">    Return Lo</span><br></pre></td></tr></table></figure>
 
-<h4 id="最小路径和"><a href="#最小路径和" class="headerlink" title="最小路径和"></a><a href="https://leetcode-cn.com/problems/minimum-path-sum/">最小路径和</a></h4><blockquote>
-<p>问题描述：</p>
-<p>给定一个包含非负整数的 <code>m x n</code> 网格 <code>grid</code> ，请找出一条从左上角到右下角的路径，使得路径上的数字总和为最小。</p>
-<p><strong>说明：</strong>每次只能向下或者向右移动一步。</p>
-</blockquote>
-<p>最经典的矩阵动态规划问题，难度不大，直接给出优化后的代码：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">minPathSum</span><span class="params">(vector&lt;vector&lt;<span class="type">int</span>&gt;&gt;&amp; grid)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> m = grid.<span class="built_in">size</span>();</span><br><span class="line">        <span class="type">int</span> n = grid[<span class="number">0</span>].<span class="built_in">size</span>();</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">dp</span><span class="params">(n+<span class="number">1</span>, INT_MAX)</span></span>;</span><br><span class="line">        dp[<span class="number">1</span>] = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">1</span>; i &lt;= m; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">1</span>; j &lt;= n; ++j)</span><br><span class="line">            &#123;</span><br><span class="line">                dp[j] = grid[i<span class="number">-1</span>][j<span class="number">-1</span>] + <span class="built_in">min</span>(dp[j<span class="number">-1</span>], dp[j]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[n];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>上面的代码就是路径追踪的基本思路，只跟踪一条光线，就叫做<strong>路径追踪</strong>。</p>
+<p>显然，这样的方法计算出来的着色会有非常大的噪声，说白了这个着色算出来是多少全靠运气，没关系，我们可以透过一个像素投射出多条视线，然后把所有视线计算出的 Radiance 平均起来作为这个像素的结果：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320171940751.png" alt="image-20220320171940751"></p>
+<p>因此我们可以再写一个生成视线的函数：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ray_generation(camPos, pixel)</span><br><span class="line">    Uniformly choose N sample positions within the pixel	//在每个像素内选择N个采样点</span><br><span class="line">    pixel_radiance = 0.0</span><br><span class="line">    For each sample in the pixel</span><br><span class="line">        Shoot a ray r(camPos, cam_to_sample) 	//每个采样点投射出一根光线</span><br><span class="line">        If ray r hit the scene at p		//如果光线打到了着色点就调用着色函数</span><br><span class="line">            pixel_radiance += 1 / N * shade(p, sample_to_cam) </span><br><span class="line">    Return pixel_radiance</span><br></pre></td></tr></table></figure>
 
-<h4 id="地下城游戏"><a href="#地下城游戏" class="headerlink" title="地下城游戏"></a><a href="https://leetcode-cn.com/problems/dungeon-game/">地下城游戏</a></h4><blockquote>
-<p>问题描述：</p>
-<p>一些恶魔抓住了公主（P）并将她关在了地下城的右下角。地下城是由 M x N 个房间组成的二维网格。我们英勇的骑士（K）最初被安置在左上角的房间里，他必须穿过地下城并通过对抗恶魔来拯救公主。</p>
-<p>骑士的初始健康点数为一个正整数。如果他的健康点数在某一时刻降至 0 或以下，他会立即死亡。</p>
-<p>有些房间由恶魔守卫，因此骑士在进入这些房间时会失去健康点数（若房间里的值为负整数，则表示骑士将损失健康点数）；其他房间要么是空的（房间里的值为 0），要么包含增加骑士健康点数的魔法球（若房间里的值为正整数，则表示骑士将增加健康点数）。</p>
-<p>为了尽快到达公主，骑士决定每次只向右或向下移动一步。</p>
-<p>编写一个函数来计算确保骑士能够拯救到公主所需的最低初始健康点数。</p>
-</blockquote>
-<p>这是一道非常巧妙的题。按照最小路径和的思路我们定义状态 $dp[i][j]$ 表示从左上角到 $(i,j)$ 所需的最低初始生命，初始值为1，至少要有1点初始生命，之后每到一个格子只要用$dp[i-1][j]$和$dp[i][j-1]$中的最小值减去当前格子的值就可以，这个思路对于一般情况似乎没什么问题，但是如果我们在某一个格子恢复了大量生命，减去当前的格子的值再取最小那么当前格子的状态$dp[i][j]$就会是负数，这不符合我们的状态定义，这说明我们要么状态转移错了，要么状态定义错了。</p>
-<p>显然按照上面的状态定义，我们的状态转移没有问题，但是计算出的值不对，说明我们的状态定义有问题。这是因为在这个问题中我们不止要考虑每一个格子上原问题的解（最低初始生命），还要考虑我们走到这个格子的时候的当前生命值，也就是路径总和，回复大量生命值的时候我们的初始最低生命还是那么多，但是当前生命值增加了，意味着下一个格子我们可能不需要增加初始最低生命就可以到达，但是按照上面的状态定义，我们无法同时考虑初始最低生命和当前生命值，也就无法向下一状态正确传递信息。</p>
-<p>上面的解释比较抽象，下面我们举个例子来说明，就用题目的示例：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/15/20220315-%E7%BA%BF%E6%80%A7%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92-%E7%9F%A9%E9%98%B5%E5%92%8C%E6%97%A0%E4%B8%B2/image-20220314142502341.png" alt="image-20220314142502341"></p>
-<p>如果按照上面的状态定义，当我们到左下角 10 这个格子的时候，这个格子的状态 $dp[2][0] &#x3D; 8 - 10&#x3D;-2$，那么下一次到 30 格子的时候就会变成 -32，最终到达右下角的时候最低初始生命就会是-27，显然是不合理的。正确的情况是到达左下角格子 10 的时候虽然恢复了很多生命值，但是我们想要到达这里也至少还是需要8点初始生命值，那如果直接传递 8 这个状态，到右下角的时候通过-2、-5、10、30这条路径的最低初始生命值就是 8 - (-5) &#x3D; 13，依然是错误的，通过这条路径到达 右下角所需的初始最低生命就应该是8.</p>
-<p>因此这样的状态定义是不对的，无法正确传递有效信息，这是因为有两个同样重要的参数在影响后一步的选择：一个是最低初始生命，一个是当前生命（路径总和），而这不符合动态规划的<strong>无后效性</strong>，因此不能使用这样的状态定义。</p>
-<p>那如果改变一下定义，状态 $dp[i][j]$ 表示从 $(i,j)$ 到右下角所需的最低初始生命，我们从终点往起点推，这时我们的每一步都已经保证能到达终点，也就不需要考虑当前生命值了，只要关注从当前位置到终点的最低初始生命值即可。这时当我们再遇到回复大量生命值的格子，计算出的值是负的，这说明从这个格子到终点的生命值已经足够多了，只要我们在这个格子的时候是活着的（生命值为1）就能到达终点，因此直接将当前各自状态置 1 即可。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">calculateMinimumHP</span><span class="params">(vector&lt;vector&lt;<span class="type">int</span>&gt;&gt;&amp; dungeon)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> n = dungeon.<span class="built_in">size</span>(), m = dungeon[<span class="number">0</span>].<span class="built_in">size</span>();</span><br><span class="line">        vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">dp</span>(n + <span class="number">1</span>, <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(m + <span class="number">1</span>, INT_MAX));</span><br><span class="line">        dp[n][m - <span class="number">1</span>] = dp[n - <span class="number">1</span>][m] = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = n - <span class="number">1</span>; i &gt;= <span class="number">0</span>; --i) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> j = m - <span class="number">1</span>; j &gt;= <span class="number">0</span>; --j) &#123;</span><br><span class="line">                <span class="type">int</span> minn = <span class="built_in">min</span>(dp[i + <span class="number">1</span>][j], dp[i][j + <span class="number">1</span>]);</span><br><span class="line">                dp[i][j] = <span class="built_in">max</span>(minn - dungeon[i][j], <span class="number">1</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[<span class="number">0</span>][<span class="number">0</span>];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>这样就OK了，如果这时候代码都写完了而且能正确运行了，我们会发现渲染一张图片还是迟迟渲染不出来，这回绝不是因为效率太低，而是因为我们的着色函数是递归调用的，<strong>但是没有递归结束的条件</strong>。因此我们需要设定一个结束条件，最简单的就是规定弹射多少次就不再计算了，毕竟之前我们也看过渲染效果，弹射 4 次和弹射 16 次渲染出来的效果不会差太多，但是给定弹射次数太少会直接切断能量的传播，如果给定次数太多又有很多计算没有意义，因此这里要用一种相对妥善的解决方案，叫做<strong>俄罗斯轮盘赌（Russian Roulette ）</strong>，简称 <strong>RR</strong>，这类似于左轮手枪装弹后，再把弹匣一转，这时候打出子弹的概率如果是 P，那么打不出子弹的概率就是 1 - P，我们借鉴这样的方法，给定一个生存概率 P，每次还是按照正常流程计算 Lo，并且以 P 的概率返回 Lo &#x2F; P，以 1 - P 的概率返回 0 ，这样当返回 0 的时候递归就终止了，也就是递归每次会有 1 - P 的概率中止。</p>
+<p>可是为什么这样做呢？这是因为这样做可以<strong>保证我们最终计算出的 Lo 的期望是正确的</strong>。上面的方法相当于就是一个最简单的二值分布，那么它的期望就是：<br>$$<br>E &#x3D; P * \frac{Lo}{P} + (1-P)*0 &#x3D; Lo<br>$$<br>也就是说按照 RR 的方法我们既能保证中止递归，还能期望得到正确的 Lo ，非常巧妙！</p>
+<p>体现在代码上：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">shade(p, wo)</span><br><span class="line">    Manually specify a probability P_RR		//给定一个生存概率</span><br><span class="line">    Randomly select ksi in a uniform dist. in [0, 1] 	//随机生成一个[0,1]之间的数</span><br><span class="line">    If (ksi &gt; P_RR) return 0.0;		//如果这个数大于生存概率，直接返回0，对应1-P的情况</span><br><span class="line">    //否则和之前一样，但是要记得除以生存概率</span><br><span class="line">    Randomly choose 1 direction wi~pdf		//随机的选择1个方向	</span><br><span class="line">    Trace a ray r(p, wi) 		//从这个方向打出一条光线</span><br><span class="line">    If ray r hit the light		//如果这个光线能到达光源，就按照公式计算着色</span><br><span class="line">        Lo += (1 / N) * L_i * f_r * cosine / pdf(wi) / P_RR</span><br><span class="line">    Else If ray r hit an object at q	//如果达到了其他物体表面，就递归地计算</span><br><span class="line">        Lo += (1 / N) * shade(q, -wi) * f_r * cosine / pdf(wi) / P_RR</span><br><span class="line">    Return Lo</span><br></pre></td></tr></table></figure>
 
-<p>在上一节双串问题中，状态 $dp[i][j]$ 无论表示从 0 到 i 和 j 的状态还是表示从 i 和 j 到 n - 1 的状态，都可以得出答案，但通过这道题我们发现，有时这两种状态定义并不等价，当从前往后推导无法解决问题时，可以试试从后向前推导。</p>
-<h4 id="统计全为-1-的正方形子矩阵"><a href="#统计全为-1-的正方形子矩阵" class="headerlink" title="统计全为 1 的正方形子矩阵"></a><a href="https://leetcode-cn.com/problems/count-square-submatrices-with-all-ones/solution/">统计全为 1 的正方形子矩阵</a></h4><blockquote>
-<p>题目描述：<br>给你一个 <code>m * n</code> 的矩阵，矩阵中的元素不是 <code>0</code> 就是 <code>1</code>，请你统计并返回其中完全由 <code>1</code> 组成的 <strong>正方形</strong> 子矩阵的个数。</p>
-</blockquote>
-<p>我们用 $dp[i][j]$ 表示以 (i, j) 为右下角，且只包含 1 的正方形的边长最大值，假设这个值为 a ，同时这个值也是以 (i, j) 为右下角，且只包含 1 的正方形的个数（边长为1，2，…，a）的正方形各一个。因此算出所有 $dp[i][j]$ 后累加起来就是全部子矩阵个数。</p>
-<p>那么如何计算 $dp[i][j]$ 中的每个元素值呢？对于每个位置 (i, j)，检查在矩阵中该位置的值：</p>
+<p>现在我们就基本得到了一个正确版本的路径追踪算法。当然这个算法还有问题，那就是我们对一个像素投射出多条光线，可又该投射多少呢？如下图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320174112743.png" alt="image-20220320174112743"></p>
+<p>对每个像素的采样数量简称为 SPP，SPP 低的时候得到的结果噪声会很大，这很好理解；而 SPP 高的时候效果很好但是效率又非常低，前人大佬们自然是不能容忍这样的问题存在的，那能不能既快效果又好呢，一定是可以的。</p>
+<p>考虑我们现在的方法，只跟踪一条光线，这条光线再朝哪个方向投射光线是完全随机的，对于下面几种情况：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320174506545.png" alt="image-20220320174506545"></p>
+<p>如果场景的光源面积很大，那投射出的光线到达光源的概率就高，可能每 5 条光线就有 1 条能打到光源上，就能计算出一个值；可如果光源面积很小，可能我们投射出了很多光线，但都没有打到光源上，那么这些光线就是没用的，对我们的计算结果没有任何影响，完全浪费掉了，可我们明明知道光源在哪，为什么还要随机选择投射方向呢？</p>
+<p>我们完全可以直接对面光源进行采样，直接在光源上进行采样，这样就能保证每一条光线都能打到光源上，一个都不浪费，但是蒙特卡洛积分要求，对谁积分就得对谁采样，因此我们要对光源平面 $dA$ 采样，就得把渲染方程对 $d\omega$ 的积分改写成对 $dA$ 的积分，实际上就是积分变量替换，只要找到 $dA$ 和 $d\omega$ 的关系就可以了。</p>
+<p>![屏幕截图 2022-03-20 175206]( 屏幕截图 2022-03-20 175206.png)</p>
+<p>我们知道 $d\omega$ 是立体角，立体角的定义是从球心向球面上投射出的一块区域的面积和球半径平方的比值，那么 dA 的立体角就是 dA 在球心方向的投影的面积除以到球心的距离的平方，而立体角是指示方向的，所以 dA 的立体角和 $d\omega$ 表示的是一样的，因此二者相等，所以可以得到：<br>$$<br>d\omega &#x3D; \frac{dA \ cos\theta’}{| x’ - x |^2}<br>$$<br>于是渲染方程就可以改写为：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320180100174.png" alt="image-20220320180100174"></p>
+<p>同时，对于一个面光源 A，均匀采样的概率密度函数就是：<br>$$<br>pdf &#x3D; \frac{1}{A}<br>$$<br>这样也就可以用蒙特卡洛积分解方程了。</p>
+<p>因此路径追踪的算法又要改一下，现在我们一个着色点从其他地方入射来的 Radiance 就分为两部分：</p>
 <ul>
-<li><p>如果该位置的值是 0，则 $dp[i][j]&#x3D;0$，因为当前位置不可能在由 1 组成的正方形中；</p>
-</li>
-<li><p>如果该位置的值是 1，则 $dp[i][j]$ 的值由其上方、左方和左上方的三个相邻位置的 $dp$ 值决定。具体而言，当前位置的元素值等于三个相邻位置的元素中的最小值加 1，状态转移方程如下：<br>$$<br>dp[i][j] &#x3D; min(dp[i][j-1],dp[i-1][j],dp[i-1][j-1])+1<br>$$</p>
-</li>
+<li>一部分来自光源，这部分直接对光源采样，按照上面的改写后的积分计算结果即可，并且不需要 RR 控制终止</li>
+<li>另一部分来自其他物体表面反射，按照原来的积分计算结果，并需要 RR 控制终止</li>
 </ul>
-<p>关于这个状态转移方程的推导和证明比较复杂，可以参考<a href="https://leetcode-cn.com/problems/count-square-submatrices-with-all-ones/solution/">统计全为 1 的正方形子矩阵官方题解</a>。</p>
-<p>边界条件，如果 i 和 j 中至少有一个为 0，则以位置 (i, j) 为右下角的最大正方形的边长只能是 1。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">countSquares</span><span class="params">(vector&lt;vector&lt;<span class="type">int</span>&gt;&gt;&amp; matrix)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> m = matrix.<span class="built_in">size</span>(), n = matrix[<span class="number">0</span>].<span class="built_in">size</span>();</span><br><span class="line">        vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">f</span>(m, <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(n));</span><br><span class="line">        <span class="type">int</span> ans = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; m; ++i) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">0</span>; j &lt; n; ++j) &#123;</span><br><span class="line">                <span class="keyword">if</span> (i == <span class="number">0</span> || j == <span class="number">0</span>) &#123;</span><br><span class="line">                    f[i][j] = matrix[i][j];</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (matrix[i][j] == <span class="number">0</span>) &#123;</span><br><span class="line">                    f[i][j] = <span class="number">0</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> &#123;</span><br><span class="line">                    f[i][j] = <span class="built_in">min</span>(<span class="built_in">min</span>(f[i][j - <span class="number">1</span>], f[i - <span class="number">1</span>][j]), f[i - <span class="number">1</span>][j - <span class="number">1</span>]) + <span class="number">1</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                ans += f[i][j];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>于是现在的路径追踪算法的伪代码就是：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">shade(p, wo)</span><br><span class="line">    //来自于光源的部分</span><br><span class="line">    Uniformly sample the light at x’ (pdf_light = 1 / A)	//在光源平面采样</span><br><span class="line">    L_dir = L_i * f_r * cos θ * cos θ’ / |x’ - p|^2 / pdf_light		//计算着色</span><br><span class="line">	</span><br><span class="line">    //来自其他的部分</span><br><span class="line">    L_indir = 0.0</span><br><span class="line">    Test Russian Roulette with probability P_RR</span><br><span class="line">    Uniformly sample the hemisphere toward wi (pdf_hemi = 1 / 2pi) </span><br><span class="line">    Trace a ray r(p, wi)</span><br><span class="line">    If ray r hit a non-emitting object at q		//这里判断要改成光线打到非光源上才计算，不然就和上面重复了</span><br><span class="line">        L_indir = shade(q, -wi) * f_r * cos θ / pdf_hemi / P_RR </span><br><span class="line">    </span><br><span class="line">    Return L_dir + L_indir</span><br></pre></td></tr></table></figure>
 
-<h4 id="最大正方形"><a href="#最大正方形" class="headerlink" title="最大正方形"></a><a href="https://leetcode-cn.com/problems/maximal-square/">最大正方形</a></h4><blockquote>
-<p>问题描述：</p>
-<p>给你一个 <code>m * n</code> 的矩阵，矩阵中的元素不是 <code>0</code> 就是 <code>1</code>，请你统计并返回其中完全由 <code>1</code> 组成的 <strong>正方形</strong> 的最大面积。</p>
-</blockquote>
-<p>这是上一题的简化版，直接给出代码：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">maximalSquare</span><span class="params">(vector&lt;vector&lt;<span class="type">char</span>&gt;&gt;&amp; matrix)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> m = matrix.<span class="built_in">size</span>(), n = matrix[<span class="number">0</span>].<span class="built_in">size</span>();</span><br><span class="line">        vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">dp</span>(m, <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(n));</span><br><span class="line">        <span class="type">int</span> ans = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; m; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt; n; ++j)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(i == <span class="number">0</span> || j == <span class="number">0</span>)</span><br><span class="line">                &#123;</span><br><span class="line">                    dp[i][j] = matrix[i][j] - <span class="string">&#x27;0&#x27;</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(matrix[i][j] == <span class="string">&#x27;0&#x27;</span>) </span><br><span class="line">                &#123;</span><br><span class="line">                    dp[i][j] = <span class="number">0</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span>&#123;</span><br><span class="line">                    dp[i][j] = <span class="built_in">min</span>(dp[i<span class="number">-1</span>][j<span class="number">-1</span>], <span class="built_in">min</span>(dp[i<span class="number">-1</span>][j], dp[i][j<span class="number">-1</span>])) + <span class="number">1</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                ans = <span class="built_in">max</span>(ans, dp[i][j]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans * ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-无串线性问题"><a href="#2-无串线性问题" class="headerlink" title="2 无串线性问题"></a>2 无串线性问题</h3><p>线性动态规划有一类问题是没有显式的数组或字符串的。但在计算中依然可以分成若干子问题，且有动态规划的三条性质。因此也可以用动态规划来解。</p>
-<h4 id="只有两个键的键盘"><a href="#只有两个键的键盘" class="headerlink" title="只有两个键的键盘"></a><a href="https://leetcode-cn.com/problems/2-keys-keyboard/">只有两个键的键盘</a></h4><p>其实是质因数分解，用动态规划也不难，但需要额外空间。</p>
-<h4 id="丑数-II"><a href="#丑数-II" class="headerlink" title="丑数 II"></a><a href="https://leetcode-cn.com/problems/ugly-number-ii/">丑数 II</a></h4><p>比较奇特的动态规划，很巧妙。也可以用优先队列（堆）去做，但空间复杂度更高</p>
-<h4 id="完全平方数"><a href="#完全平方数" class="headerlink" title="完全平方数"></a><a href="https://leetcode-cn.com/problems/perfect-squares/">完全平方数</a></h4><p>之前用广搜做过，但广搜太暴力，空间复杂度也高，这次试试动态规划，实际上核心思路和广搜一样。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">numSquares</span><span class="params">(<span class="type">int</span> n)</span> </span>&#123;</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">dp</span><span class="params">(n+<span class="number">1</span>, INT_MAX)</span></span>;</span><br><span class="line">        dp[<span class="number">0</span>] = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">1</span>; j * j &lt;= i; ++j)</span><br><span class="line">            &#123;</span><br><span class="line">                dp[i] = <span class="built_in">min</span>(dp[i], dp[i-j*j] + <span class="number">1</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[n];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<h4 id="整数拆分"><a href="#整数拆分" class="headerlink" title="整数拆分"></a><a href="https://leetcode-cn.com/problems/integer-break/">整数拆分</a></h4><p>和完全平方数思路差不多，转移时要考虑的情况稍微复杂一点。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">integerBreak</span><span class="params">(<span class="type">int</span> n)</span> </span>&#123;</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">dp</span><span class="params">(n+<span class="number">1</span>, <span class="number">0</span>)</span></span>;</span><br><span class="line">        dp[<span class="number">1</span>] = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">2</span>; i &lt;= n; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">1</span>; j &lt; i; ++j)</span><br><span class="line">            &#123;</span><br><span class="line">                dp[i] = <span class="built_in">max</span>(dp[i], <span class="built_in">max</span>(dp[j] * (i - j), j * (i - j)));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[n];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<p>当然这是最直观暴力的动态规划做法，还有进一步优化的空间，以及时空复杂度都只需要 O(1) 的数学方法，具体可看<a href="https://leetcode-cn.com/problems/integer-break/solution/zheng-shu-chai-fen-by-leetcode-solution/">官方题解</a>。</p>
-<h3 id="3-线性动态规划总结"><a href="#3-线性动态规划总结" class="headerlink" title="3 线性动态规划总结"></a>3 线性动态规划总结</h3><p>到此为止线性动态规划的几大类就都整理完了，线性动态规划是动态规划中最基础的一类，它的状态一般物理意义很明确，易于分析。在初学动态规划时，通过线性动态规划的大量练习，可以不断加深动态规划的概念理解，例如动态规划中最重要的三个概念：最优子结构，重复子问题，无后效性。下面对动态规划的三个基本概念做个简要回顾，在线性动态规划的题目练习中可以不断地加深理解，之后再学习其它的动态规划类型就会容易很多。</p>
+<p>到此为止我们就得到了一个完全正确的路径追踪算法。</p>
+<p>还有最后一个小问题，如何判断在光源平面采样的光线和着色点之间是否有阻挡？</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320180717009.png" alt="image-20220320180717009"></p>
+<p>只需要从着色点再打出一条光线看能不能达到光源就可以了，如果有阻挡，这条打出去的光线就会碰到其他物体。</p>
+<p>现在可以说路径追踪的全部<strong>入门</strong>内容就彻底结束了！</p>
+<p>最后来看看路径追踪的效果：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/image-20220320181219602.png" alt="image-20220320181219602"></p>
+<p>左边是一张真实的相机拍摄的图片，右边是路径追踪算法渲染出来的图片，可以看到渲染的非常真实，可以说是无限接近真实场景，这就是路径追踪的强大之处。</p>
+<h4 id="7-总结"><a href="#7-总结" class="headerlink" title="7 总结"></a>7 总结</h4><p>以上就是路径追踪的全部基础内容，看似已经非常细节了，但实际上还有无数的细节问题没有讨论到，比如：</p>
 <ul>
-<li>最优子结构：如果问题的最优解所包含的子问题的解也是最优的，就称该问题具有最优子结构。</li>
-<li>无后效性：即某阶段状态一旦确定，就不受这个状态以后决策的影响。也就是说，某状态以后的过程不会影响以前的状态，只与当前状态有关。</li>
-<li>重复子问题：即子问题之间是不独立的，一个子问题在下一阶段决策中可能被多次使用到。（该性质并不是动态规划适用的必要条件，但是如果没有这条性质，动态规划算法同其他算法相比就不具备优势）<br>线性动态规划是动态规划中变化最多的一类。</li>
+<li>如何对一个球面均匀采样？</li>
+<li>蒙特卡洛积分采样的概率分布是不是应该根据渲染的场景来选择合适的分布才能达到更好的效果，均匀采样只是最简单的一种；</li>
+<li>随机数的质量直接影响渲染效果，如何生成分布均匀概率准确的高质量随机数？</li>
+<li>是不是可以把着色点的方向采样和光源平面采样结合起来以达到更好的效果？</li>
+<li>渲染方程计算出来的就是最终显示在像素上的颜色吗？当然不是的，还要经过伽马矫正等一系列操作才能转变为颜色，而颜色这部分还涉及到颜色空间，HDR之类的问题……</li>
 </ul>
-<p>首先线性动态规划针对的问题是最常见的数组，字符串，矩阵等，这三种数据结构本身就是线性的，因此出现这些类型的输入的时候，如果要用到动态规划，首先考虑线性动态规划就很合理了，因此很多问题不论最后正解是不是线性动态规划，都会首先想一下线性动态规划是否可行。</p>
-<p>其次由于大部分问题的数据都是以这三种形式给出的，因此题目的变化会非常多，很多常见的输入形式以及问题都非常经典，都存在经典的状态设计。因此不考虑一些比较 Trick 的解法，仅仅是经典问题的经典状态设计，就比其它种类的动态规划问题多很多了。</p>
-<p>例如单个数组或字符串上设计一维状态，两个数组或字符串上设计两维状态，以及矩阵上设计两维状态等等，同时以上三种情况的状态设计都有可能再加上额外的指标的状态，就是前面例题中的 state，这里面变化就很多了，比如有的题目在 state 这一维上要使用二分，贪心的策略，有的题目需要 DP 状态与数据结构配合来解决问题。</p>
-<p>除此之外还有一类问题没有显式的数组，字符串，但是在求解的时候依然满足前面提到的动态规划三条基本概念，可以用动态规划求解，这种问题通常也是线性动态规划。</p>
-<p>如此多的变化仅仅这几篇中列举的题目是远远不够的，因此还要多见多练多记。</p>
-<p>下一篇开始讨论动态规划另一大类问题：前缀和。</p>
+<p>所以我们看似搞懂了路径追踪，其实最多也只能算是刚刚入门，还有太多的东西没有了解到。这一路过来可以说整个路径追踪的流程非常复杂，光是最基础的理论推导都如此困难，那想把代码写对就更是难上加难，并且永远不要忘了我们还只是在学习前人留下的经验。这节课最后闫令琪老师说的话对我的启发非常大：“我学了十年渲染，至今还觉得我什么都不会”。更何况你我呢？</p>
+<p>敬畏科学，学无止境。</p>
 ]]></content>
       <categories>
-        <category>数据结构与算法</category>
+        <category>GAMES101</category>
       </categories>
       <tags>
-        <tag>C++</tag>
-        <tag>算法</tag>
-        <tag>动态规划</tag>
+        <tag>计算机图形学</tag>
+        <tag>光线追踪</tag>
       </tags>
   </entry>
   <entry>
@@ -5475,186 +5656,6 @@
         <tag>计算机图形学</tag>
         <tag>Shader</tag>
         <tag>CG/HLSL</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>【计算机图形学】（十一）Whitted 风格光线追踪</title>
-    <url>/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/</url>
-    <content><![CDATA[<p>从这一节开始我们将了解图形学中的光线追踪（Ray Tracing）技术，包括经典的 Whitted 风格光线追踪技术和效果更好的路径追踪技术。并且在之后的高质量实时渲染专题中还会进一步学习最新的工业界实时光线追踪技术。</p>
-<p><em><span id="more"></span></em></p>
-<h2 id="Whitted-风格光线追踪（Whitted-Style-Ray-Tracing）"><a href="#Whitted-风格光线追踪（Whitted-Style-Ray-Tracing）" class="headerlink" title="Whitted 风格光线追踪（Whitted-Style Ray Tracing）"></a>Whitted 风格光线追踪（Whitted-Style Ray Tracing）</h2><h3 id="1-为什么需要光线追踪？"><a href="#1-为什么需要光线追踪？" class="headerlink" title="1 为什么需要光线追踪？"></a>1 为什么需要光线追踪？</h3><p>之前我们学习了光栅化渲染的基本原理，光栅化中，一开始就假设了光源是点光源且光线只弹射一次，但在大多数实际场景中并不是这样的，比如：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317153639301.png" alt="image-20220317153639301"></p>
-<p>Glossy 反射是指这种半磨砂材质的反射，这种材质用光栅化技术无法渲染的非常逼真，另外就是一些间接光照的场景，比如右边的图没有直接光源，但是因为光线在场景中弹射了许多次，所以我们可以看到整个场景中的各个物体。另外，上一节中我们学习了阴影映射，阴影映射生成的只能是边界清晰的硬阴影，无法生成更为逼真地软阴影。而光线追踪就可以解决以上这些问题，光线追踪尽可能地模拟光线的传播过程，对整个场景进行光照计算。</p>
-<p>但并不是说光线追踪就比光栅化好，现在的大多数游戏中还是使用实时光栅渲染，因为光栅渲染的快速高效是光线追踪无法比拟的，比如 PUBG超大的地图，为了保证游戏正常运行只能使用光栅渲染，并且牺牲一些图像细节：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317154826589.png" alt="image-20220317154826589"></p>
-<p>光线追踪能带来更好的画面细节，但速度慢，开销大，对硬件要求高，所以大多数情况下用来离线渲染一些动画、视频等，近些年游戏中的实时光线追踪技术我们将在另外一个专题更进一步讨论。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317155015560.png" alt="image-20220317155015560"></p>
-<h3 id="2-基础光线追踪算法"><a href="#2-基础光线追踪算法" class="headerlink" title="2 基础光线追踪算法"></a>2 基础光线追踪算法</h3><p>为了之后讨论光线追踪算法更方便，我们要先对光线做一个图形学上的定义，注意这里的图形学定义大多数都不符合物理学和光学规律，但一定是符合我们人类的直觉的。我们规定：</p>
-<ul>
-<li>光是沿直线传播的</li>
-<li>光线在发生交叉的时候不会产生碰撞，也就是光线传播互相不会产生影响</li>
-<li>我们能看到物体是因为光线从光源经过一系列反射、折射达到了人的眼睛</li>
-</ul>
-<p>虽然上面这些定义都不一定符合物理事实，但却为我们的光线追踪算法提供了很重要的思路，尤其是最后一条，也就是我们能看到的光线一定是达到了我们眼睛的光线。</p>
-<h4 id="2-1-光线投射"><a href="#2-1-光线投射" class="headerlink" title="2.1 光线投射"></a>2.1 光线投射</h4><p>根据上面的核心思想，我们能看到的光线一定是达到了我们眼睛的光线，那么我们可以从眼睛投射出一条“光线”到物体上，把这条“光线”称为视线（Eye Ray），视线将会和场景中的物体相交，把交点和光源相连就构成了一条光路，于是就说明存在一条光路使光线从光源经过物体上的这个点射进我们的眼睛。这就是光线投射的思想。</p>
-<p>我们把这个思想应用到渲染过程中，我们要把场景渲染到屏幕上才能被眼睛看到，因此我们就从眼睛透过屏幕上的每一个像素向场景中投射一条视线，这条视线会与场景中的物体存在很多交点，如下图，那么肯定离屏幕最近的交点才是我们能看到的点，也就是能显示在屏幕上的点，这一步相当于把屏幕上的像素所显示的场景中的点找到，并且顺便完成了深度测试。（注意体会和光栅化的区别）</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317160506856.png" alt="image-20220317160506856"></p>
-<p>然后连接交点和光源，这样一来，我们相当于拥有了光线入射方向，平面法线方向和观察方向三个方向向量，那就可以计算这一点的着色了，计算完成后把这个着色显示在像素上，之后对每个像素都这么做就完成了整个渲染过程。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317160857804.png" alt="image-20220317160857804"></p>
-<p>这只是光线投射的基本思想，到现在为止光线还是只弹射了一次，还谈不上“追踪”，要更真实的模拟光的传播就需要考虑光线的多次反射和折射，这就是 Whitted 风格光线追踪算法。</p>
-<h4 id="2-2-Whitted风格光线追踪"><a href="#2-2-Whitted风格光线追踪" class="headerlink" title="2.2 Whitted风格光线追踪"></a>2.2 Whitted风格光线追踪</h4><p>Whitted 风格光追是按照光线投射的思路递归地进行计算，具体过程如下：</p>
-<p>还是从眼睛透过屏幕上的每一个像素向场景中投射一条视线，找到与场景中的物体最近的一个交点：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317161755801.png" alt="image-20220317161755801"></p>
-<p>然后我们假设光线的反射是完美反射，也就是朝镜面反射方向传播，因此我们可以计算出反射后光线的方向，继续计算反射光线和其他物体的交点：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317161853335.png" alt="image-20220317161853335"></p>
-<p>当然如果物体是透明的，那光线不止发生反射，还会发生折射，我们还可以计算折射光线：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317162005677.png" alt="image-20220317162005677"></p>
-<p>算出这些光线的交点之后，把这些交点全部和光源连接起来，那么这个示例场景中就形成了四条光路：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317162056511.png" alt="image-20220317162056511"></p>
-<p>这些光路都是可以到达我们的眼睛的，因此我们计算每个点的着色，然后全部加起来给到这个像素上作为它显示的像素值。当然这里一定不是简单的累加，光线在传播过程中会有能量损失，具体到一个物体表面会有多少能量被反射，多少能量被折射是与材质有关的，我们只要知道把这些着色值全部作为像素显示的一部分就可以了，因为这些都是可以被看到的部分。下面是光线追踪渲染的一个效果图，可以看到透明球体的折射也显示出来了，并且透明球体的阴影也要比实心球体暗一些。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317162620685.png" alt="image-20220317162620685"></p>
-<p>那么了解了基本原理接下来就是解决具体的实现问题了，上面的流程中第一个要解决的问题就是如何计算视线和场景中物体的交点。</p>
-<h3 id="3-光线和平面的交点"><a href="#3-光线和平面的交点" class="headerlink" title="3 光线和平面的交点"></a>3 光线和平面的交点</h3><h4 id="3-1-光线的数学定义"><a href="#3-1-光线的数学定义" class="headerlink" title="3.1 光线的数学定义"></a>3.1 光线的数学定义</h4><p>这里的光线是广义的，就是指空间中一条射线，自然也可以是视线，定义很简单，空间中只要给定一个出发点和一个发射方向（单位向量）就可以唯一确定一条射线，如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317163243206.png" alt="image-20220317163243206"></p>
-<p>那么光线在时刻 t 所在的位置就可以表示为：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317163324324.png" alt="image-20220317163324324"></p>
-<h4 id="3-2-隐式表示求交点"><a href="#3-2-隐式表示求交点" class="headerlink" title="3.2 隐式表示求交点"></a>3.2 隐式表示求交点</h4><p>有了光线的数学定义，如果我们有物体的隐式表示，比如代数方程，那么很容易可以求出光线和物体表面的交点。以球面为例，对于空间中以 $c$ 为球心，$R$ 为半径的球面上的任意一点 $p$，代数形式可以表示为：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317163459536.png" alt="image-20220317163459536"></p>
-<p>我们要求光线和球面的交点，也就是联立两个方程求光线传播时间 t ：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317163725129.png" alt="image-20220317163725129"></p>
-<p>整理一下可以得到一个关于 t 的一元二次方程，剩下的就是高中数学知识：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317163840878.png" alt="image-20220317163840878"></p>
-<p>这里要特别强调的是 t 的物理意义，t 表示光线传播的时间，因此 t 需要大于0，并且必须是实数，所以要得到光线和物体表面离屏幕最近的一个交点就相当于解方程求一个最小的正实根。这个方法自然也可以推广到任意用隐式方程表示的物体：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317164210883.png" alt="image-20220317164210883"></p>
-<p>至于有些方程非常难解这个不需要我们担心，计算机本身也是用数值方法求解方程，所以无论多复杂都一定可以求出满足条件的解，关于复杂方程的数值求解方法这不是我们讨论的重点。</p>
-<h4 id="3-3-显示表示求交点"><a href="#3-3-显示表示求交点" class="headerlink" title="3.3 显示表示求交点"></a>3.3 显示表示求交点</h4><p>上面说的隐式方程求交点是我们早就了解的数学知识，只是应用到了这里，但通过之前的学习我们知道，图形学中更常用的表示方法是显式表示，并且计算光照、阴影等都要用显式表示去计算，因此计算光线和显式表示的交点是必须要解决的问题，并且解决了这个问题还可以顺便解决之前我们提到的，显式表示不好判断一个点是否在物体内部的问题。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317164516672.png" alt="image-20220317164516672"></p>
-<p>先说明如何通过光线和物体的交点判断一个点是否在物体内部。我们可以从空间中任意一点向任意方向发出一条射线，如果这条射线和物体表面有奇数个交点，那么它就在物体内部，如果有偶数个交点就一定在物体外部。可以在二维中验证这一理论。</p>
-<p>接下来具体讨论如何计算光线和显式表示的物体表面的交点。最简单的方法就是和每一个三角形计算交点，全算完之后就可以得到和物体的交点，但这显然太慢了，屏幕上每个像素投射一条视线，然后每条视线和场景中每个三角形计算一次交点，并且还要计算光线反射和折射之后的其他交点，对于下图这样的复杂场景，有两千万个三角形，如果是一张 4K 的图，那这个计算量无法被接受的，因此一定需要做加速，具体如何加速我们之后再看，在这之前要先了解怎么计算光线和一个三角形的交点。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317165225656.png" alt="image-20220317165225656"></p>
-<p>直接求光线和三角形的交点是不容易想到的，那我们可以分两步进行，先求光线和三角形所在平面的交点，再判断交点是否在三角形内部即可，而这两步计算都是很简单的。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317165740827.png" alt="image-20220317165740827"></p>
-<p>先考虑空间中对一个平面的定义，只要给定空间中一个点和一个法向量就可以唯一确定一个平面：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317165932411.png" alt="image-20220317165932411"></p>
-<p>于是平面上任意一点就可以表示为：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317170007930.png" alt="image-20220317170007930"></p>
-<p>那么求光线和平面的交点同样联立解方程即可，这次的方程还更加简单：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317170239867.png" alt="image-20220317170239867"></p>
-<p>至于算出交点后如何判断在否三角形内部就不多说了。</p>
-<p>上面是分了两步计算光线和三角形交点，那能不能直接计算呢？当然是可以的，这个计算的方法叫做 <strong>MT 算法（Möller Trumbore Algorithm）</strong>，实际上也很简单。</p>
-<p>回顾之前学过的三角形重心坐标，利用三角形的重心坐标可以表示三角形所在平面上的任意一点，因此光线和平面的交点一定满足：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317170625760.png" alt="image-20220317170625760"></p>
-<p>还是解方程，这里有三个未知数 $t、b_1、b_2$，而所有的坐标也都是三维坐标，所以这个关系式实际上表示的是一个三元一次方程组，利用克莱默法则可以快速求出解向量：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317170849910.png" alt="image-20220317170849910"></p>
-<p>当然还是要保证解出来的 t 为正才有意义，同时也可以直接判断交点是否在三角形内部，因为三角形内部的点重心坐标非负。</p>
-<p>知道了如何计算光线和三角形的交点，接下来就是一个更麻烦的问题，既然不可能每个三角形都算一次交点，那么如何加速？</p>
-<h3 id="4-交点计算加速"><a href="#4-交点计算加速" class="headerlink" title="4 交点计算加速"></a>4 交点计算加速</h3><p>加速实际上就是减少计算交点的三角形个数，那么首先想到的就是把一个物体看作整体，先判断和物体有交点再去一个一个三角形具体计算交点在哪。</p>
-<h4 id="4-1-包围体（Bounding-Volumes）"><a href="#4-1-包围体（Bounding-Volumes）" class="headerlink" title="4.1 包围体（Bounding Volumes）"></a>4.1 包围体（Bounding Volumes）</h4><p>类似于Bounding Box ，我们用简单的几何体把物体包围起来，然后计算光线和这个几何体是否存在交点。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317171519659.png" alt="image-20220317171519659"></p>
-<p>最常用的包围体自然是长方体，并且为了方便计算我们用的一般是<strong>轴对齐包围体（Axis-Aligned<br>Bounding Box）</strong>，简称为 AABB ，所谓轴对齐包围体就是指包围体每个平面的法向量都和坐标系三个坐标轴对其，通俗的说就是一个“横平竖直”的长方体。然后为了便于理解，我们把空间中的长方体理解为是<strong>由三对平面的交集形成的</strong>几何体。也就是把六个平面想成无限大，这个立方体就是这六个平面相交的部分形成的。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317171756933.png" alt="image-20220317171756933"></p>
-<p>那么计算光线和立方体的交点就是计算光线和六个平面的交点，再加以判断即可。首先我们从简单的二维情况开始，先计算一条光线和一个长方形的交点：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317171924483.png" alt="image-20220317171924483"></p>
-<p>首先计算光线和长方形两条垂直边的交点，两条垂直边可以理解为一对平面 $x_0$ 和 $x_1$，可以得到一条线段，如上图左；</p>
-<p>同理计算光线和长方形两条水平边的交点，两条水平边可以理解为一对平面 $y_0$ 和 $y_1$，可以得到另一条线段，如上图中，这里我们先假设光线是直线而不是射线，可以向两边延长，因此得到的 $t_{min}$ 可以为负数；</p>
-<p>然后将得到的两条线段取交集就是光线在长方形内部的部分。</p>
-<p>接下来推广到三维的情况，首先根据二维情况可以整理出两个关键的信息：</p>
-<ul>
-<li>光线必须进入所有三对平面才代表光线进入了整个立方体</li>
-<li>光线只需要离开任意一对平面就代表光线离开了整个立方体</li>
-</ul>
-<p>基于上面关键信息，我们分别计算光线和立方体三对平面交点，得到三个 $t_{min}$ 和 $t_{max}$，那么光线在立方体中的部分就是：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317173004886.png" alt="image-20220317173004886"></p>
-<p>如果 $t_{enter} &lt; t_{exit}$，那么就说明光线在这段时间是在立方体中的。接下来考虑几个特殊情况，刚才我们把光线当成了直线去计算交点，因此计算出来的  $t_{min}$ 和 $t_{max}$ 有正有负，所以最终得到的 $t_{enter}$ 和 $t_{exit}$ 也会有正有负：</p>
-<ul>
-<li>如果 $t_{exit} &lt; 0$，代表光线离开立方体的时间是负的，说明立方体在光线后面，因此光线不会和立方体有交点</li>
-<li>如果 $t_{enter} &lt; 0$ 且 $t_{exit} \geq 0$，代表光线起点就在立方体内，因此光线和立方体有交点</li>
-</ul>
-<p>综上，光线和立方体有交点，当且仅当 $t_{enter} &lt; t_{exit}$ &amp;&amp; $t_{exit} \geq 0$.</p>
-<p>回顾计算直线和平面的交点：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317173735804.png" alt="image-20220317173735804"></p>
-<p>正常情况下我们要带入三维向量去计算，但是因为这里使用的是 AABB ，每个平面都和坐标平面平行，因此我们计算每对平面的交点时，只要用一个维度的坐标代入计算即可：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317173915726.png" alt="image-20220317173915726"></p>
-<p>这也是使用轴对齐包围盒的原因之一，可以大幅减低计算量，使得计算光线和立方体的交点成为一个时间复杂度非常低的过程，为后续的优化奠定基础。</p>
-<h4 id="4-2-均匀空间划分（Uniform-Spatial-Partitions）"><a href="#4-2-均匀空间划分（Uniform-Spatial-Partitions）" class="headerlink" title="4.2 均匀空间划分（Uniform Spatial Partitions）"></a>4.2 均匀空间划分（Uniform Spatial Partitions）</h4><p>上面说了计算光线和三角形的交点不容易，但计算光线和立方体的交点非常方便，因此我们加速要尽量多做立方体判断以减少三角形计算。一种方法是对场景进行均匀空间划分，把给定的场景均匀的分成许多个小立方体，具体过程如下：</p>
-<ul>
-<li>首先找到整个场景中所有物体的 bounding box;</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317174601165.png" alt="image-20220317174601165"></p>
-<ul>
-<li>然后把把场景划分成均匀的网格：</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317174632633.png" alt="image-20220317174632633"></p>
-<ul>
-<li>然后看哪些网格中包含了物体的表面，在这个网格中把这个物体存下来：</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317174721424.png" alt="image-20220317174721424"></p>
-<ul>
-<li>光线射入的时候计算光线经过的每个立方体，如果这个立方体内有物体，就计算光线和这个立方体内存储的所有物体的交点，至于光线经过了哪些立方体，可以用类似于光栅化中画直线的方法，就不多说了：</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317174848937.png" alt="image-20220317174848937"></p>
-<p>均匀空间划分的方法对于网格划分的密度很敏感，网格太小会导致效率很低：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317175104056.png" alt="image-20220317175104056"></p>
-<p>因此需要一个好的划分细度，人们根据经验得出一般把场景划分为 27 倍的物体数量个网格：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317175217016.png" alt="image-20220317175217016"></p>
-<p>回顾均匀空间划分的方法我们发现对于物体很密集的场景，比如之前的草地，可以得到很好的效果，但是如果场景非常空旷，比如一个体育场中间有一个茶壶，那光线还是要经过许多次立方体的判断才能到达茶壶所在的立方体再去计算交点，因此我们希望空间划分不要非常均匀，很大一片没有物体的地方就可以划分成一个立方体，这样只要一次判断就能到达茶壶所在的立方体。</p>
-<h4 id="4-3-非均匀空间划分"><a href="#4-3-非均匀空间划分" class="headerlink" title="4.3 非均匀空间划分"></a>4.3 非均匀空间划分</h4><p>非均匀空间划分是一个经典的问题，有许多非常成熟的方法，图形学中只是拿来应用，常见的有以下几种方法：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317175644386.png" alt="image-20220317175644386"></p>
-<ul>
-<li>Oct树也叫八叉树，每次把立方体均匀的分成八块，上图是一个立方体的侧视图，然后看分开的每个空间内物体的密度，如果没有物体或者只有很少个就不用继续分了，否则按照这种方法继续划分，这样划分出来的区域就有大有小</li>
-<li>KD树是八叉树的改良，八叉树在四维的时候就会变成十六叉树，更高维会呈指数增长，并且每次都是平均分，并不灵活。KD树每次只切一刀把立方体分成两部分，比如第一次沿 x 轴切，分成两部分，下一次在两个区域中沿 y 轴切，再下一次每个区域都沿 z 轴切，这样每次都只把一个区域分成两块，且划分方向交替进行，也保证了相对均衡，因此在图形学中KD树更为合适</li>
-<li>BSP树类似于KD树，只是划分方向可以是任意方向，但因为我们图形学中用的是轴对齐包围盒所以这种方法不适用</li>
-</ul>
-<p>接下来我们按照上面说的KD树的思路我们来看KD树是如何工作的。</p>
-<p>首先是构造KD树，我们先把一个场景划分一次，形成两个子区域：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317180635314.png" alt="image-20220317180635314"></p>
-<p>然后对每个子区域继续划分又分别得到两个子区域，这里我们只划分了绿色的子区域，实际上蓝色的也应该继续划分：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317180753152.png" alt="image-20220317180753152"></p>
-<p>然后继续划分：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317180810286.png" alt="image-20220317180810286"></p>
-<p>这样我们得到了一个KD树，KD树中的节点分为两类：</p>
-<ul>
-<li>中间节点：代表一个大区域，中间节点不存储物体信息，只存储这个区域下一次的划分方向（沿 x，y，z轴），划分的位置（这里都是从中间划分，实际可以根据物体位置计算划分位置）以及孩子节点</li>
-<li>叶子节点：叶子节点存储在这个区域中所有的物体列表</li>
-</ul>
-<p>当我们预处理好了一个场景的 KD 树，在进行光线追踪时，每一条光线射入场景，先从 KD 树的根节点开始计算：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317181216719.png" alt="image-20220317181216719"></p>
-<p>得到光线和区域 A 有交点，那么开始遍历它的孩子节点，计算和蓝色区域的相交情况：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317181321483.png" alt="image-20220317181321483"></p>
-<p>也有交点，并且这是一个叶子节点，那就计算光线这个区域中所有的物体的交点，然后继续计算和 B 区域的交点：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317181418447.png" alt="image-20220317181418447"></p>
-<p>存在交点继续遍历：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317181441618.png" alt="image-20220317181441618"></p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317181454581.png" alt="image-20220317181454581"></p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317181513717.png" alt="image-20220317181513717"></p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317181546050.png" alt="image-20220317181546050"></p>
-<p>直到找到和物体的最近的交点，当然这只是一个示例情况，光线和所有区域都相交，实际过程中KD树显然可以大幅降低光线和立方体判断交点的次数，自然也就进一步降低了和三角形计算交点的次数。</p>
-<p>但是 KD 树也存在缺陷，每个叶子节点要存储在这个区域内的所有物体，那么如何判断一个物体在这个立方体中呢？这是非常困难的，但也不是不能克服，不过还有一个问题就像上图所示，有的物体会同时在好几个区域中，那么这几个区域的叶子节点就都要存储这个物体的信息，会有大量重复，因此 KD 树不是最好的划分方法。</p>
-<h4 id="4-4-物体划分和BVH（Bounding-Volume-Hierarchy）"><a href="#4-4-物体划分和BVH（Bounding-Volume-Hierarchy）" class="headerlink" title="4.4 物体划分和BVH（Bounding Volume Hierarchy）"></a>4.4 物体划分和BVH（Bounding Volume Hierarchy）</h4><p>最好的办法就是不对空间进行划分，而是对空间中的所有物体进行划分，类似于KD树，我们把空间中所有物体的 Bounding Box 找到，作为根节点：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317182135200.png" alt="image-20220317182135200"></p>
-<p>然后把物体分成两堆，并且重新计算这两堆物体的 Bounding Box ：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317182212919.png" alt="image-20220317182212919"></p>
-<p>接下来继续这个过程，直到每个区域中都有我们希望的数量的物体：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317182321796.png" alt="image-20220317182321796"></p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317182336400.png" alt="image-20220317182336400"></p>
-<p>可以看到 BVH 构建过程和 KD 树类似，只是每次划分是对物体进行划分然后重新计算 Bounding Box ，这样就可以保证每个叶子节点存储的物体不重复，并且还免去了判断物体是否在 Bounding Box 内的麻烦，是一个非常优秀的方法，因此 BVH 也是目前使用最广泛的方法。</p>
-<p>至于每次对物体如何划分，当然可以和 KD 树一样按照维度轮换划分，也可以用其他各种方法，比如：</p>
-<ul>
-<li>永远选择最长的那一个维度划分，有时可能场景是一个走廊之类的长条形状，那么其中的物体也一定是按这样排列的，如果还按照维度轮换划分，划分出来一定是不够均衡的，因此可以每次计算当前 Bounding Box 最长的那一维，就从最长维度划分，就可以保证相对均匀</li>
-<li>可以选择中间的物体划分，为了保证每个叶子节点存储的物体数量差不多，我们可以把物体的中心坐标排序取中位数，然后按照中间这个物体所在位置划分成两个区域，这样每个区域中物体数量都相当</li>
-</ul>
-<p>BVH 的数据结构中存储的内容和 KD 树类似，中间节点存储 Bounding Box 和孩子节点，叶子节点中存储 Bounding Box 和所有物体列表，当光线射入场景时，从根节点开始计算即可，下面是 BVH 的伪代码：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317183317587.png" alt="image-20220317183317587"></p>
-<h4 id="4-5-空间划分-VS-物体划分"><a href="#4-5-空间划分-VS-物体划分" class="headerlink" title="4.5 空间划分 VS 物体划分"></a>4.5 空间划分 VS 物体划分</h4><p>对比 KD 树和 BVH，一个是空间划分，一个是物体划分，空间划分的 Bounding Box 不会重合但是物体会重复，而物体划分 Bounding Box 可能重合但物体不会重复，显然物体划分更符合我们的需求。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220317183536848.png" alt="image-20220317183536848"></p>
-<h3 id="5-总结"><a href="#5-总结" class="headerlink" title="5 总结"></a>5 总结</h3><p>以上就是 Whitted 风格光线追踪的基本原理和优化结构，从每个像素投射一条视线到场景中，利用 BVH 找到和场景中物体最近的交点，然后利用同样的方法计算反射和折射光线与其他物体的交点，最后计算所有交点的着色作为这个像素的颜色显示。</p>
-]]></content>
-      <categories>
-        <category>GAMES101</category>
-      </categories>
-      <tags>
-        <tag>计算机图形学</tag>
-        <tag>光线追踪</tag>
       </tags>
   </entry>
   <entry>
@@ -7437,6 +7438,7 @@
       </categories>
       <tags>
         <tag>计算机图形学</tag>
+        <tag>游戏引擎</tag>
         <tag>实时渲染</tag>
       </tags>
   </entry>
@@ -7583,6 +7585,7 @@
       </categories>
       <tags>
         <tag>计算机图形学</tag>
+        <tag>游戏引擎</tag>
         <tag>实时渲染</tag>
       </tags>
   </entry>
@@ -7717,6 +7720,7 @@
       </categories>
       <tags>
         <tag>计算机图形学</tag>
+        <tag>游戏引擎</tag>
         <tag>实时渲染</tag>
       </tags>
   </entry>
@@ -7842,6 +7846,7 @@
       </categories>
       <tags>
         <tag>计算机图形学</tag>
+        <tag>游戏引擎</tag>
         <tag>实时渲染</tag>
       </tags>
   </entry>
