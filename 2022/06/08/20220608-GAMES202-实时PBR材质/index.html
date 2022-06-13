@@ -58,8 +58,12 @@
 <meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608174727016.png">
 <meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608174837806.png">
 <meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608175902209.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220613104930087.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220613105637113.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220613110249250.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220613110606512.png">
 <meta property="article:published_time" content="2022-06-08T10:06:47.000Z">
-<meta property="article:modified_time" content="2022-06-08T10:34:31.332Z">
+<meta property="article:modified_time" content="2022-06-13T03:24:52.512Z">
 <meta property="article:author" content="Lyc">
 <meta property="article:tag" content="计算机图形学">
 <meta property="article:tag" content="实时渲染">
@@ -252,10 +256,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2022-06-08 18:06:47 / 修改时间：18:34:31" itemprop="dateCreated datePublished" datetime="2022-06-08T18:06:47+08:00">2022-06-08</time>
+              <time title="创建时间：2022-06-08 18:06:47" itemprop="dateCreated datePublished" datetime="2022-06-08T18:06:47+08:00">2022-06-08</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-06-13 11:24:52" itemprop="dateModified" datetime="2022-06-13T11:24:52+08:00">2022-06-13</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -279,14 +289,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>5.5k</span>
+              <span>6.8k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>5 分钟</span>
+              <span>6 分钟</span>
             </span>
 
         </div>
@@ -324,7 +334,7 @@
 <p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608162719493.png" alt="image-20220608162719493"></p>
 <p>在 TR 模型的基础上还有一个更加通用的 GTR 法线分布，引入了一个可调的参数来控制长尾分布的程度：</p>
 <p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608162902522.png" alt="image-20220608162902522"></p>
-<p>总之，法线分布函数描述的是微表面的法线方向分布，对于给定的入射和出射方向，可以得到半程向量，法线分布函数可以给出这个材质的表面上有多少为微表面的法线是在这个半程向量方向上的，那么这些微表面才可以被看到。更准确的说，NDF 描述的是法线方向的概率分布，渲染时，对于每一个着色点都有不同的半程向量，这个半程向量对应的可以被看到的概率可以通过 NDF 得出，可以被看到也就是表面法线和半程向量方向一致，因此 NDF 给出的概率实际上是当前着色点的法线刚好和当前半程向量重合的概率，而一个点的着色结果是许多不同的半程向量的结果的加权平均，权值就是这个概率，这样就能得到这个着色点正确期望的着色结果。</p>
+<p>总之，法线分布函数描述的是微表面的法线方向分布，对于给定的入射和出射方向，可以得到半程向量，法线分布函数可以给出这个材质的表面上有多少微表面的法线是在这个半程向量方向上的，那么这些微表面才可以被看到。更准确的说，NDF 描述的是法线方向的概率分布，渲染时，对于每一个着色点都有不同的半程向量，这个半程向量对应的可以被看到的概率可以通过 NDF 得出，可以被看到也就是表面法线和半程向量方向一致，因此 NDF 给出的概率实际上是当前着色点的法线刚好和当前半程向量重合的概率，而一个点的着色结果是许多不同的半程向量的结果的加权平均，权值就是这个概率，这样就能得到这个着色点正确期望的着色结果。</p>
 <h4 id="1-3-几何项"><a href="#1-3-几何项" class="headerlink" title="1.3 几何项"></a>1.3 几何项</h4><p>几何项描述的是微表面之间的自遮挡现象，自遮挡现象有两种情况：</p>
 <p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608163456607.png" alt="image-20220608163456607"></p>
 <p>一种是入射光被其他微表面遮挡入射不进来，一种是反射光被其他微表面遮挡反射不出去，前者称为 shadowing，后者称为 masking，因此几何项也被称为 Shadowing-Masking Term。</p>
@@ -368,11 +378,11 @@
 <p>在离线渲染中处理这样的渲染自然是对面光源进行采样计算，但实时渲染需要快速得到渲染结果，而不同的 BRDF 我们不知道它的分布是什么样的，所以也不容易快速求出这个 BRDF 积分的渲染方程的解析解，因此 LTC 将 BRDF 变换成一个 cos 函数，然后对所有的方向、以及面光源（积分区域）都做同样的变换：</p>
 <p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608174038845.png" alt="image-20220608174038845"></p>
 <p>这样就将原积分转化为了一个对余弦函数的积分，保证可以快速求出解析解。具体来说，就是将原本的函数 $F(w_i)$ 变换为 $cos(w_i)$，为了便于理解，我们假设 BRDF 是各向同性的，于是 $F(w_i)$ 实际上和方位角无关，在出射方向固定的情况下就是一个只与俯仰角有关的一维函数，所以可以变换到一维的 cos 函数上，事实上 LTC 也可以处理各向异性的情况，这里就不展开讨论了。</p>
-<p>然后将积分变量 $dw_i$ 同样变换为 $dw_{i’}$，实际上就是对原积分进行了换元：</p>
+<p>然后将积分变量 $dw_i$ 同样变换为 $dw’_{i}$，实际上就是对原积分进行了换元：</p>
 <p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608174727016.png" alt="image-20220608174727016"></p>
 <p>这样就可以快速求出解析解了。LTC 方法虽然思路很简单，但是效果却非常优秀，因此目前被广泛使用：</p>
 <p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220608174837806.png" alt="image-20220608174837806"></p>
-<h3 id="4-Disney’s-Principled-BRDF"><a href="#4-Disney’s-Principled-BRDF" class="headerlink" title="4 Disney’s Principled BRDF"></a>4 Disney’s Principled BRDF</h3><p>最后简单了解一下目前工业界知名的，非常强大的迪士尼的开源 BRDF。微表面 BRDF 的问题之一在于不能够表达复合材质，现实世界中许多材质不是单一的，是多种材质的组合，比如蒙上一层塑料布的木头桌子，那么它的表面就有多层材质，光照表现自然和普通桌子不同，而 Disney’s Principled BRDF 具有强大的表达能力，可以表达各种复合材质。</p>
+<h3 id="4-Disney’s-Principled-BRDF"><a href="#4-Disney’s-Principled-BRDF" class="headerlink" title="4 Disney’s Principled BRDF"></a>4 Disney’s Principled BRDF</h3><p>Disney’s Principled BRDF 是目前工业界非常知名的，非常强大的开源 BRDF。微表面 BRDF 的问题之一在于不能够表达复合材质，现实世界中许多材质不是单一的，是多种材质的组合，比如蒙上一层塑料布的木头桌子，那么它的表面就有多层材质，光照表现自然和普通桌子不同，而 Disney’s Principled BRDF 具有强大的表达能力，可以表达各种复合材质。</p>
 <p>并且 Disney’s Principled BRDF 摒弃了传统基于物理的材质的各种物理参数，只使用一些非常符合人直觉的参数就可以进行调节，对于艺术家非常友好，这也是迪士尼设计这个 BRDF 的原则之一，这些原则有：</p>
 <ul>
 <li>使用符合人直觉的参数而不是各种难懂的物理量</li>
@@ -398,6 +408,19 @@
 <li>表面通透颜色 clearcoatGloss：表面通透高光的锐利度，值越大高光越锐利</li>
 </ul>
 <p>上面的所有参数可以随意组合，表达各种复合材质，所以迪士尼 BRDF 的表达能力非常强。</p>
+<h3 id="5-Specular-Glossiness-模型"><a href="#5-Specular-Glossiness-模型" class="headerlink" title="5 Specular Glossiness 模型"></a>5 Specular Glossiness 模型</h3><p>Specular Glossiness（SG）模型是在 Disney’s Principled BRDF 的启发下提出的便于实时渲染的 PBR 材质模型，SG 将所有描述材质需要用到的值都存在各种纹理中，渲染时只需要通过简单的纹理采样就可以计算出基于物理的光照结果，不需要调整任何参数，非常方便。</p>
+<p>SG 模型使用三张纹理来存储信息，分别是：Diffuse、Specular 和 Glossiness。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220613104930087.png" alt="image-20220613104930087"></p>
+<p>Diffuse 存储物体的基础颜色，使用 RGB 三个通道；Specular 存储菲涅尔项的基础反射率，也就是菲涅尔近似公式中的 F0，同样对应 RGB 三个通道；Glossiness 是一个标量，用于控制表面光滑程度。</p>
+<p>通过这三张纹理，就可以得到物体表面任何一个点对应的 F、D 和 G 项，从而根据微表面模型计算光照结果，下面是使用 SG 模型计算着色的代码，可以非常直观的感受到 SG 模型有多方便：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220613105637113.png" alt="image-20220613105637113"></p>
+<p>首先根据漫反射颜色计算出了漫反射项，然后根据微表面模型计算高光反射项，其中粗糙程度根据 Glossiness 采样结果得到，基础反射率 F0 根据 Specular 采样结果得到，再结合各种简单的点乘就可以得到 D、F 和 G 项，最后根据公式计算微表面 specular 结果，加上漫反射结果就是整个 BRDF 结果。有了 BRDF 就可以根据渲染方程得到着色结果了。</p>
+<h3 id="6-Metallic-Roughness-模型"><a href="#6-Metallic-Roughness-模型" class="headerlink" title="6 Metallic Roughness 模型"></a>6 Metallic Roughness 模型</h3><p>Metallic Roughness（MR）是对 SG 模型的又一层封装，SG 模型可以自由地调节漫反射颜色和基础反射率，但有时这对于艺术家来说还是不够直观，因此 MR 使用了另外三个贴图来描述材质：Base Color、Roughness 和 Metallic。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220613110249250.png" alt="image-20220613110249250"></p>
+<p>其中 Base Color 是物体的基础颜色，RGB 三通道；Roughness 和 Metallic 都是标量，分别代表表面粗糙程度和金属度。使用的时候游戏引擎内部会将这些值转化为 SG 模型中的值，下面是转化代码：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/08/20220608-GAMES202-%E5%AE%9E%E6%97%B6PBR%E6%9D%90%E8%B4%A8/image-20220613110606512.png" alt="image-20220613110606512"></p>
+<p>可以看到金属度 Metallic 是一个插值系数，用来从 base color 中取出一定的颜色到介质基本的颜色上，从而构成 SG 模型中的 F0，回顾前文中菲涅尔项的曲线图，金属的基础反射率是非常高的，所以金属度高的时候 base color 中很大一部分颜色就被取出到 F0 中，使得基础反射率变高，而 base color  剩下的颜色就作为 SG 中的 diffuse，于是金属度高就会使 diffuse 很小，也就是金属几乎不会发生漫反射，这和菲涅尔项描述的是完全一致的，所以 MR 模型中的基础颜色就是 diffuse 和 specular 的结合，金属度 Metallic 可以将他们拆分开来，但 base color 的概念对于艺术家来说要比 diffuse 和 specular 更好理解。粗糙程度 Roughness 和 SG 中的光滑程度 Glossiness 相反，二者之间可以互相转化，本质上是一样的。</p>
+<p>MR 和 SG 相比，更便于人们理解，但没有 SG 灵活，因为 MR 不能够自己调节 F0，而是全部包含在了 base color 中，但也因此避免了艺术家如果使用 SG，但给出了错误的 F0 而导致的菲涅尔项错误的情况，各有利弊。</p>
 
     </div>
 
@@ -543,7 +566,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%86%8D%E8%B0%88%E5%BE%AE%E8%A1%A8%E9%9D%A2"><span class="nav-text">1 再谈微表面</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-%E8%8F%B2%E6%B6%85%E5%B0%94%E9%A1%B9"><span class="nav-text">1.1 菲涅尔项</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-%E6%B3%95%E7%BA%BF%E5%88%86%E5%B8%83%E5%87%BD%E6%95%B0"><span class="nav-text">1.2 法线分布函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-%E5%87%A0%E4%BD%95%E9%A1%B9"><span class="nav-text">1.3 几何项</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Kulla-Conty-Approximation"><span class="nav-text">2 Kulla-Conty Approximation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Linearly-Transformed-Cosines%EF%BC%88LTC%EF%BC%89"><span class="nav-text">3 Linearly Transformed Cosines（LTC）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-Disney%E2%80%99s-Principled-BRDF"><span class="nav-text">4 Disney’s Principled BRDF</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%86%8D%E8%B0%88%E5%BE%AE%E8%A1%A8%E9%9D%A2"><span class="nav-text">1 再谈微表面</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-%E8%8F%B2%E6%B6%85%E5%B0%94%E9%A1%B9"><span class="nav-text">1.1 菲涅尔项</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-%E6%B3%95%E7%BA%BF%E5%88%86%E5%B8%83%E5%87%BD%E6%95%B0"><span class="nav-text">1.2 法线分布函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-%E5%87%A0%E4%BD%95%E9%A1%B9"><span class="nav-text">1.3 几何项</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Kulla-Conty-Approximation"><span class="nav-text">2 Kulla-Conty Approximation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Linearly-Transformed-Cosines%EF%BC%88LTC%EF%BC%89"><span class="nav-text">3 Linearly Transformed Cosines（LTC）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-Disney%E2%80%99s-Principled-BRDF"><span class="nav-text">4 Disney’s Principled BRDF</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-Specular-Glossiness-%E6%A8%A1%E5%9E%8B"><span class="nav-text">5 Specular Glossiness 模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-Metallic-Roughness-%E6%A8%A1%E5%9E%8B"><span class="nav-text">6 Metallic Roughness 模型</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -617,13 +640,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">791k</span>
+    <span title="站点总字数">792k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">11:59</span>
+    <span title="站点阅读时长">12:01</span>
 </div>
 
         
