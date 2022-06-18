@@ -275,7 +275,7 @@
 <li>环境光遮蔽</li>
 </ul>
 <p><em><span id="more"></span></em></p>
-<h3 id="1-全局光照"><a href="#1-全局光照" class="headerlink" title="1 全局光照"></a>1 全局光照</h3><p>全局光照 (Global Illumination，GI)，是指既考虑场景中直接来自光源的光照（Direct Light）又考虑经过场景中其他物体反射后的光照（Indirect Light）的一种渲染技术。使用全局光照能够有效地增强场景的真实感。<br>可以理解为：全局光照    &#x3D;  直接光照(Direct Light) +  间接光照(Indirect Light)</p>
+<h3 id="1-全局光照"><a href="#1-全局光照" class="headerlink" title="1 全局光照"></a>1 全局光照</h3><p>全局光照 (Global Illumination，GI)，是指既考虑场景中直接来自光源的光照（Direct Light）又考虑经过场景中其他物体反射后的光照（Indirect Light）的一种渲染技术。使用全局光照能够有效地增强场景的真实感。<br>可以理解为：全局光照    =  直接光照(Direct Light) +  间接光照(Indirect Light)</p>
 <p>虽说实际应用中只有漫反射全局照明的模拟算法被称为全局照明算法，但其实理论上说反射、折射、阴影都属于全局光照的范畴，因为模拟它们的时候不仅仅要考虑光源对物体的直接作用还要考虑物体与物体之间的相互作用。也是因为，镜面反射、折射、阴影一般不需要进行复杂的光照方程求解，也不需要进行迭代的计算。因此，这些部分的算法已经十分高效，甚至可以做到实时。不同于镜面反射，光的漫反射表面反弹时的方向是近似“随机”，因此不能用简单的光线跟踪得到反射的结果，往往需要利用多种方法进行多次迭代，直到光能分布达到一个基本平衡的状态。</p>
 <p>经过几十年的发展，全局光照现今已有多种实现方向，常见的全局光照主要流派列举如下：</p>
 <ul>
@@ -295,8 +295,8 @@
 <p>而其中的每种流派，又可以划分为 N 种改进和衍生算法。<br>如光线追踪（Ray Tracing）派系，其实就是一个框架，符合条件的都可称为光线追踪，其又分为递归式光线追踪（Whitted-style Ray Tracing），分布式光线追踪（Distribution Ray Tracing），蒙特卡洛光线追踪（Monte Carlo Ray Tracing）等。<br>而路径追踪（Path tracing）派系，又分为蒙特卡洛路径追踪（Monte Carlo Path Tracing），双向路径追踪（Bidirectional Path Tracing），能量再分配路径追踪（Energy Redistribution Path Tracing）等。<br>其中有些派系又相互关联，如路径追踪，就是基于光线追踪，结合了蒙特卡洛方法而成的一种新的派系。</p>
 <h3 id="2-光线投射、光线追踪和路径追踪的区别"><a href="#2-光线投射、光线追踪和路径追踪的区别" class="headerlink" title="2 光线投射、光线追踪和路径追踪的区别"></a>2 光线投射、光线追踪和路径追踪的区别</h3><p>关于光线追踪和路径追踪可以查看之前的笔记：</p>
 <ul>
-<li><a href="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/">【计算机图形学】（十一）Whitted 风格光线追踪</a></li>
-<li><a href="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/">【计算机图形学】（十三）路径追踪</a></li>
+<li><a href="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted风格光线追踪/">【计算机图形学】（十一）Whitted 风格光线追踪</a></li>
+<li><a href="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-路径追踪/">【计算机图形学】（十三）路径追踪</a></li>
 <li><a href="https://lz328.github.io/LycTechStack.github.io/categories/RayTracer/">RayTracer 系列</a>前半部分实现的是光线追踪，后半部分加入蒙特卡洛后最终实现的是一个路径追踪器</li>
 </ul>
 <p>这里总结一下光线追踪、光线投射和路径追踪的区别：</p>
@@ -480,7 +480,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/LycTechStack.github.io/archives/">
         
-          <span class="site-state-item-count">101</span>
+          <span class="site-state-item-count">102</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
