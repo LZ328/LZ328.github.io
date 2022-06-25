@@ -29,21 +29,21 @@
 <meta property="og:site_name" content="LycTechStack">
 <meta property="og:description" content="本篇对《Real-Time Rendering》一书中图形渲染管线的相关知识进行概括总结。主要内容包括：  图形渲染管线整体架构 图形渲染管线各阶段工作 思维导图">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220512152034788.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220512152716026.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220512153245093.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220512154019834.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220512160053289.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220512163021922.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220512163755234.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/图形渲染管线思维导图.jpg">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/12/20220512-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/image-20220512152034788.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/12/20220512-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/image-20220512152716026.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/12/20220512-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/image-20220512153245093.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/12/20220512-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/image-20220512154019834.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/12/20220512-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/image-20220512160053289.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/12/20220512-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/image-20220512163021922.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/12/20220512-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/image-20220512163755234.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/12/20220512-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF%E6%80%9D%E7%BB%B4%E5%AF%BC%E5%9B%BE.jpg">
 <meta property="article:published_time" content="2022-05-12T09:41:09.000Z">
 <meta property="article:modified_time" content="2022-05-12T09:43:20.381Z">
 <meta property="article:author" content="Lyc">
 <meta property="article:tag" content="计算机图形学">
 <meta property="article:tag" content="实时渲染">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220512152034788.png">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/12/20220512-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/image-20220512152034788.png">
 
 <link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/05/12/20220512-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/">
 
@@ -291,7 +291,7 @@
 <li>光栅化阶段（The Rasterizer Stage）</li>
 </ul>
 <p>如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220512152034788.png" alt="image-20220512152034788"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/12/20220512-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/image-20220512152034788.png" alt="image-20220512152034788"></p>
 <p>图形渲染管线的每个阶段也可能是一条管线，比如上图中几何阶段所示。此外，还可以对有的阶段进行全部或者部分的并行化处理，如图中的光栅化阶段。应用程序阶段虽然是一个单独的过程，但是依然可以对之进行管线化或者并行化处理。</p>
 <h3 id="1-2-应用程序阶段"><a href="#1-2-应用程序阶段" class="headerlink" title="1.2 应用程序阶段"></a>1.2 应用程序阶段</h3><p>应用程序阶段一般是图形渲染管线概念上的第一个阶段。应用程序阶段是通过软件方式来实现的阶段，开发者能够对该阶段发生的情况进行完全控制，可以通过改变实现方法来改变实际性能。其他阶段，他们全部或者部分建立在硬件基础上，因此要改变实现过程会非常困难。</p>
 <p>正因应用程序阶段是软件方式实现，因此不能像几何和光栅化阶段那样继续分为若干个子阶段。但为了提高性能，该阶段还是可以在几个并行处理器上同时执行。在 CPU 设计上，称这种形式为超标量体系（superscalar）结构，因为它可以在同一阶段同一时间做不同的几件事情。</p>
@@ -307,7 +307,7 @@
 <li>屏幕映射 Screen Mapping</li>
 </ul>
 <p>如下图所示：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220512152716026.png" alt="image-20220512152716026"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/12/20220512-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/image-20220512152716026.png" alt="image-20220512152716026"></p>
 <p>几个注意点：</p>
 <ul>
 <li>根据具体实现，这些阶段可以和管线阶段等同，也可以不等同。在一些情况下，一系列连续的功能阶段可以形成单个管线阶段（和其他管线阶段并行运行）。在另外情况下，一个功能阶段可以划分成其他更细小的管线阶段。</li>
@@ -316,7 +316,7 @@
 <h4 id="1-3-1-模型和视图变换"><a href="#1-3-1-模型和视图变换" class="headerlink" title="1.3.1 模型和视图变换"></a>1.3.1 模型和视图变换</h4><p>在屏幕上的显示过程中，模型通常需要变换到若干不同的空间或坐标系中。<strong>模型变换的变换对象一般是模型的顶点和法线</strong>。物体的坐标称为模型坐标。世界空间是唯一的，所有的模型经过变换后都位于同一个空间中。</p>
 <p>为了便于投影和裁剪，必须对相机和所有的模型进行视点变换。变换的目的就是要把相机放在原点，然后进行视点校准，使其朝向 Z 轴负方向，y 轴指向上方,x 轴指向右边。在视点变换后，实际位置和方向就依赖于当前的 API。我们称上述空间为相机空间或者观察空间。</p>
 <p>下图显示了模型和视图变换的过程：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220512153245093.png" alt="image-20220512153245093"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/12/20220512-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/image-20220512153245093.png" alt="image-20220512153245093"></p>
 <p>在左图中，摄像机根据用户指定的位置进行放置和定位。在右图中，视点变换从 原点沿着 Z 轴负方向对相机重新定位，这样可以使裁剪和投影操作更简单、更快速。可视范围是一个平截椎体，因此可以认为它是透视模式。</p>
 <p><strong>【总结】</strong>模型和视图变换阶段分为模型变换和视图变换。模型变换的目的是将模型变换到适合渲染的空间当中，而视图变换的目的是将摄像机放置于坐标原点，方便后续步骤的操作。</p>
 <h4 id="1-3-2-顶点着色"><a href="#1-3-2-顶点着色" class="headerlink" title="1.3.2 顶点着色"></a>1.3.2 顶点着色</h4><p>为了产生逼真的场景，渲染形状和位置是远远不够的，我们需要对物体的外观进行建模。而物体经过建模，会得到对包括每个对象的材质，以及照射在对象上的任何光源的效果在内的一些描述。且光照和材质可以用任意数量的方式，从简单的颜色描述到复杂的物理描述来模拟。</p>
@@ -330,7 +330,7 @@
 <li>透视投影（perspective projection）</li>
 </ul>
 <p>如下图所示：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220512154019834.png" alt="image-20220512154019834"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/12/20220512-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/image-20220512154019834.png" alt="image-20220512154019834"></p>
 <p>正交投影的可视体通常是一个矩形，正交投影可以把这个视体变换为单位立方体。正交投影的主要特性是平行线在变换之后彼此之间仍然保持平行，这种变换是平移与缩放的组合。而在透视投影中，越远离摄像机的物体，它在投影后看起来越小。更进一步来说，平行线将在地平线处会聚。透视投影的变换其实就是模拟人类感知物体的方式。</p>
 <p>正交投影和透视投影都可以通过 4 x 4 的矩阵来实现，在任何一种变换之后，都可以认为模型位于归一化处理之后的设备坐标系中。</p>
 <p><strong>【总结】</strong>投影的目的在于将模型顶点变换到归一化的设备坐标系中，便于后续处理。</p>
@@ -342,11 +342,11 @@
 <li>当图元部分位于视体内部，则需要对那些部分位于视体内的图元进行裁剪处理</li>
 </ul>
 <p>裁剪的过程如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220512160053289.png" alt="image-20220512160053289"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/12/20220512-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/image-20220512160053289.png" alt="image-20220512160053289"></p>
 <p>投影变换后，只对单位立方体内的图元（相应的是视锥内可见图元）继续进行处理，因此，将单位立方体之外的图元剔除掉，保留单位立方体内部的图元，同时沿着单位立方体将与单位立方体相交的图元裁剪掉，于是就会产生新的图元，同时舍弃旧的图元。</p>
 <p><strong>【总结】</strong>裁剪阶段的目的，就是对部分位于视体内部的图元进行裁剪操作以只保留在视体内的部分。</p>
 <h4 id="1-3-5-屏幕映射"><a href="#1-3-5-屏幕映射" class="headerlink" title="1.3.5 屏幕映射"></a>1.3.5 屏幕映射</h4><p>只有在视体内部经过裁剪的图元，以及之前完全位于视体内部的图元，才可以进入到屏幕映射阶段。进入到这个阶段时，坐标仍然是三维的（但显示状态在经过投影阶段后已经成了二维），每个图元的 x 和 y 坐标变换到了屏幕坐标系中，屏幕坐标系连同 z 坐标一起称为窗口<br>坐标系。<br>假定在一个窗口里对场景进行绘制，窗口的最小坐标为（x1，y1），最大坐标为（x2， y2），其中  x1 &lt; x2，y1 &lt; y2。屏幕映射首先进行平移，随后进行缩放，在映射过程中 z 坐标不受影响。新的 x 和 y 坐标称为屏幕坐标系，与 z 坐标一起（-1 ≦ z ≦ 1）进入光栅化阶段。<br>屏幕映射过程如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220512163021922.png" alt="image-20220512163021922"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/12/20220512-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/image-20220512163021922.png" alt="image-20220512163021922"></p>
 <p><strong>【总结】</strong>屏幕映射阶段的主要目的，是将之前步骤得到的坐标映射到对应的屏幕坐标系上。</p>
 <h3 id="1-4-光栅化阶段"><a href="#1-4-光栅化阶段" class="headerlink" title="1.4 光栅化阶段"></a>1.4 光栅化阶段</h3><p>给定经过变换和投影之后的顶点，颜色以及纹理坐标（均来自于几何阶段），给每个像素（Pixel）正确配色，以便正确绘制整幅图像。这个过个过程叫光珊化（rasterization）或扫描变换（scan conversion），即从二维顶点所处的屏幕空间（所有顶点都包含 Z 值即深度值，及各种与相关的着色信息）到屏幕上的像素的转换。</p>
 <p>与几何阶段相似，该阶段细分为几个功能阶段：</p>
@@ -357,7 +357,7 @@
 <li>融合（Merging）阶段</li>
 </ul>
 <p>如下图所示：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220512163755234.png" alt="image-20220512163755234"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/12/20220512-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/image-20220512163755234.png" alt="image-20220512163755234"></p>
 <h4 id="1-4-1-三角形设定"><a href="#1-4-1-三角形设定" class="headerlink" title="1.4.1 三角形设定"></a>1.4.1 三角形设定</h4><p>三角形设定阶段主要用来计算三角形表面的差异和三角形表面的其他相关数据。该数据主要用于扫描转换（scan conversion），以及由几何阶段处理的各种着色数据的插值操作所用。<strong>该过程在专门为其设计的硬件上执行</strong>。</p>
 <h4 id="1-4-2-三角形遍历"><a href="#1-4-2-三角形遍历" class="headerlink" title="1.4.2 三角形遍历"></a>1.4.2 三角形遍历</h4><p>在三角形遍历阶段将进行逐像素检查操作，检查该像素处的像素中心是否由三角形覆盖，而对于有三角形部分重合的像素，将在其重合部分生成<strong>片元（fragment）</strong>。找到哪些采样点或像素在三角形中的过程通常叫三角形遍历（TriangleTraversal）或扫描转换（scan conversion）。<strong>每个片元的属性均由三个三角形顶点的数据插值而生成，这些属性包括片元的深度，以及来自几何阶段的着色数据等。</strong><br><strong>【总结】</strong>找到哪些采样点或像素在三角形中的过程通常叫三角形遍历（TriangleTraversal）或扫描转换（scan conversion）。</p>
 <h4 id="1-4-3-像素着色"><a href="#1-4-3-像素着色" class="headerlink" title="1.4.3 像素着色"></a>1.4.3 像素着色</h4><p><strong>所有逐像素的着色计算都在像素着色阶段进行，使用插值得来的着色数据作为输入，输出结果为一种或多种将被传送到下一阶段的颜色信息。</strong>纹理贴图操作就是在这阶段进行的。像素着色阶段是在可编程 GPU 内执行的，在这一阶段有大量的技术可以使用，其中最常见，<br>最重要的技术之一就是纹理贴图（Texturing），将会在之后进行总结。</p>
@@ -377,7 +377,7 @@
 <p><strong>应用程序阶段</strong>的主要任务，是将需要绘制图元输入到绘制管线的下一个阶段，以及实现一些软件方式来实现的方法。主要方法有碰撞检测、加速算法、输入检测，动画，力反馈以及纹理动画，变换仿真、几何变形，以及一些不在其他阶段执行的计算，如层次视锥裁剪等加速算法。对于被渲染的每一帧，应用程序阶段将摄像机位置，光照和模型的图元输出到管线的下一个主要阶段，即几何阶段。</p>
 <p><strong>几何阶段</strong>首先对模型的顶点和法线进行矩阵变换，并将模型置于观察空间中（模型和视图变换），然后根据材质、纹理、以及光源属性进行顶点光照的计算（顶点着色阶段），接着将该模型投影变换到一个单位立方体内，并舍弃所有立方体之外的图元（投影阶段），而为了得到所有位于立方体内部的图元，接下来对与单位立方体相交的图元进行裁剪（裁剪阶段），然后将顶点映射到屏幕上的窗口中（屏幕映射阶段）。在对每个多边形执行完这些操作后，将最终数据传递到光栅，这样就来到了管线中的最后一个阶段，光栅化阶段。</p>
 <p><strong>光栅化阶段</strong>中，所有图元会被光栅化，进而转换为屏幕上的像素。首先，计算三角形表面的差异和三角形表面的其他相关数据（三角形设定阶段），然后，找到哪些采样点或像素在三角形中（三角形遍历阶段），接着计算所有需逐像素计算操作（像素着色阶段），然后，合成当前储存于缓冲器中的由之前的像素着色阶段产生的片段颜色，可见性问题可通过 Z 缓存算法解决，随同的还有可选的 alpha 测试和模版测试（融合阶段）。所有对象依次处理，而最后的图像显示在屏幕上。</p>
-<h2 id="2-思维导图"><a href="#2-思维导图" class="headerlink" title="2 思维导图"></a>2 思维导图</h2><p><img src="https://lz328.github.io/LycTechStack.github.io/图形渲染管线思维导图.jpg" alt="图形渲染管线思维导图"></p>
+<h2 id="2-思维导图"><a href="#2-思维导图" class="headerlink" title="2 思维导图"></a>2 思维导图</h2><p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/12/20220512-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF%E6%80%9D%E7%BB%B4%E5%AF%BC%E5%9B%BE.jpg" alt="图形渲染管线思维导图"></p>
 
     </div>
 
@@ -597,13 +597,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">818k</span>
+    <span title="站点总字数">824k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">12:23</span>
+    <span title="站点阅读时长">12:29</span>
 </div>
 
         
