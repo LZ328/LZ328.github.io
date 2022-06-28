@@ -256,14 +256,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>943</span>
+              <span>3.8k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>3 分钟</span>
             </span>
 
         </div>
@@ -284,17 +284,11 @@
 <blockquote>
 <p>问题描述：</p>
 <p>给你一个整数数组 <code>nums</code> ，找到其中最长严格递增子序列的长度。</p>
-<p>子序列 是由数组派生而来的序列，删除（或不删除）数组中的元素而不改变其余元素的顺序。例如，<code>[3,6,2,7]</code>是数组 <code>[0,3,1,6,2,2,7]</code>的子序列。</p>
+<p>子序列 是由数组派生而来的序列，删除（或不删除）数组中的元素而不改变其余元素的顺序。例如，<code>[3,6,2,7] </code>是数组 <code>[0,3,1,6,2,2,7] </code>的子序列。</p>
 </blockquote>
-<p>我们用$f(i)$表示以nums[i]结尾的子数组的LIS长度，因为子序列需要上升，因此以 nums[i] 结尾的子序列中，nums[i] 之前的数字一定要比 nums[i] 小才行，因此目标就是先找到以此前比 nums[i] 小的各个元素，然后每个所选元素对应一个以它们结尾的最长子序列，从这些子序列中选择最长的，其长度加 1 就是当前的问题的结果。如果此前没有比 nums[i] 小的数字，则当前问题的结果就是 1 。于是可以写出状态转移方程：</p>
-<script type="math/tex; mode=display">
-f(i)=\left\{
-\begin{aligned}
-max(f(i),f(j))+1 & , & nums[i]>nums[j], \\
-1 & , & nums[i]<=nums[j].
-\end{aligned}
-\right.</script><p>其中$j &lt; i$，显然求解$f(i)$需要遍历所有$f(j)$，因此我们要考虑 O(n) 个子问题的解。</p>
+<p>我们用$f(i)$表示以nums[i]结尾的子数组的LIS长度，因为子序列需要上升，因此以 nums[i] 结尾的子序列中，nums[i] 之前的数字一定要比 nums[i] 小才行，因此目标就是先找到以此前比 nums[i] 小的各个元素，然后每个所选元素对应一个以它们结尾的最长子序列，从这些子序列中选择最长的，其长度加 1 就是当前的问题的结果。如果此前没有比 nums[i] 小的数字，则当前问题的结果就是 1 。于是可以写出状态转移方程：<br>$$<br>f(i)&#x3D;\left{<br>\begin{aligned}<br>max(f(i),f(j))+1 &amp; , &amp; nums[i]&gt;nums[j], \<br>1 &amp; , &amp; nums[i]&lt;&#x3D;nums[j].<br>\end{aligned}<br>\right.<br>$$<br>其中$j &lt; i$，显然求解$f(i)$需要遍历所有$f(j)$，因此我们要考虑 O(n) 个子问题的解。</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">lengthOfLIS</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">dp</span><span class="params">(nums.size(),<span class="number">1</span>)</span></span>;</span><br><span class="line">        <span class="type">int</span> ans = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; nums.<span class="built_in">size</span>(); i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> j = <span class="number">0</span>; j &lt; i; j++)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span>(nums[j] &lt; nums[i])</span><br><span class="line">                &#123;</span><br><span class="line">                    dp[i] = <span class="built_in">max</span>(dp[i],dp[j] + <span class="number">1</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            ans = <span class="built_in">max</span>(ans, dp[i]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
 <p><strong>LIS问题及其变体问题：</strong></p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/longest-increasing-subsequence/">最长递增子序列</a></li>
@@ -309,8 +303,10 @@ max(f(i),f(j))+1 & , & nums[i]>nums[j], \\
 </blockquote>
 <p>同样的思路，我们用 dp[i] 表示以nums[i]结尾的最大子数组和，因为状态的推导是按照 i 从 0 到 n - 1 按顺序推的，推到 dp[i]，时，dp[i - 1], …, dp[0] 已经计算完。因为子数组是连续的，所以子问题 dp[i] 其实只与子问题 dp[i - 1] 有关。如果 [0..i-1] 上以 nums[i-1] 结尾的最大子数组和(缓存在 dp[i-1] )为非负数，则以 nums[i] 结尾的最大子数组和就在 dp[i-1] 的基础上加上 nums[i] 就是 dp[i] 的结果否则以 i 结尾的子数组就不要 i-1 及之前的数，因为选了的话子数组的和只会更小。因此可以写出状态转移方程：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dp[i] = nums[i] + max(dp[i - 1], 0)</span><br></pre></td></tr></table></figure>
+
 <p>显然这个问题中，我们只要考虑O(1)个子问题的解，因此也没有必要维护 dp 数组了，运用滚动数组的思想，只要记录下来 dp[i-1] 就可以了。</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">maxSubArray</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> fi = <span class="number">0</span>;</span><br><span class="line">        <span class="type">int</span> res = INT_MIN;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i&lt;nums.<span class="built_in">size</span>();i++)</span><br><span class="line">        &#123;</span><br><span class="line">            fi = <span class="built_in">max</span>(fi + nums[i], nums[i]);</span><br><span class="line">            res = <span class="built_in">max</span>(res,fi);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
 <p><strong>最大子数组和及其变体问题：</strong></p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/maximum-subarray/">最大子数组和</a></li>
@@ -325,8 +321,9 @@ max(f(i),f(j))+1 & , & nums[i]>nums[j], \\
 <p>你是一个专业的小偷，计划偷窃沿街的房屋。每间房内都藏有一定的现金，<strong>影响你偷窃的唯一制约因素就是相邻的房屋装有相互连通的防盗系统</strong>，如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警。</p>
 <p>给定一个代表每个房屋存放金额的非负整数数组，计算你不触动警报装置的情况下，一夜之内能够偷窃到的最高金额。</p>
 </blockquote>
-<p>问题的关键在于我们如果偷了第 i 个房间，那么就不能偷第 i-1 个房间，所以 dp[i] 表示到第 i 个房间为止的最大金额，这个最大金额的取值有两种情况，如果我们不偷第 i 个房间，那么 dp[i] = dp[i-1]；如果我们偷第 i 个房间， 那么 dp[i] = dp[i-2] + num[i]。</p>
+<p>问题的关键在于我们如果偷了第 i 个房间，那么就不能偷第 i-1 个房间，所以 dp[i] 表示到第 i 个房间为止的最大金额，这个最大金额的取值有两种情况，如果我们不偷第 i 个房间，那么 dp[i] &#x3D; dp[i-1]；如果我们偷第 i 个房间， 那么 dp[i] &#x3D; dp[i-2] + num[i]。</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">rob</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(nums.<span class="built_in">size</span>() &lt;= <span class="number">2</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> *<span class="built_in">max_element</span>(nums.<span class="built_in">begin</span>(),nums.<span class="built_in">end</span>());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">int</span> dp1 = nums[<span class="number">0</span>];              <span class="comment">//屋子能偷盗的最大金额</span></span><br><span class="line">        <span class="type">int</span> dp2 = <span class="built_in">max</span>(dp1,nums[<span class="number">1</span>]);     <span class="comment">//前一间屋子能偷到的最大金额</span></span><br><span class="line">        <span class="type">int</span> ans = <span class="built_in">max</span>(dp1, dp2);</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">2</span>; i &lt; nums.<span class="built_in">size</span>(); i++)</span><br><span class="line">        &#123;</span><br><span class="line">            ans = <span class="built_in">max</span>(dp1 + nums[i], dp2);</span><br><span class="line">            dp1 = dp2;</span><br><span class="line">            dp2 = ans;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
 <p><strong>打家劫舍及其变体问题：</strong></p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/house-robber/">打家劫舍</a></li>
@@ -345,7 +342,7 @@ max(f(i),f(j))+1 & , & nums[i]>nums[j], \\
 <li><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/arithmetic-slices/">等差数列划分</a>：最长等差数列的简单版本，给定的数组是严格递增或递减的，处理起来会简单很多</li>
 <li><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/decode-ways/">解码方法</a>：关键在于有效数字只有可能是一位或者两位，因此对于任何一个数字，要么本身一位进行编码，要么和前一位组成两位数字进行编码</li>
 <li><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/palindrome-partitioning/">分割回文串</a>：主要考察的是深搜回溯的方法，但是使用动态规划对字符串预处理可以在O(1)时间内判断回文子串</li>
-<li><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/palindrome-partitioning-ii/">分割回文串 II</a>：dp[i] 表示以 s[i] 结尾的字符串的最小分割次数，状态转移时如果 s[i] 能与前面的某个位置 j 组成回文子串 s[j…i]，那么dp[i] = dp[j] + 1，遍历所有满足条件的 j &lt; i ，dp[i]取这些值里面的最小值，判断回文子串 s[j…i] 时同样可以用分割回文串中的动态规划方法，所以本题进行了两次动态规划，较为复杂。</li>
+<li><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/palindrome-partitioning-ii/">分割回文串 II</a>：dp[i] 表示以 s[i] 结尾的字符串的最小分割次数，状态转移时如果 s[i] 能与前面的某个位置 j 组成回文子串 s[j…i]，那么dp[i] &#x3D; dp[j] + 1，遍历所有满足条件的 j &lt; i ，dp[i]取这些值里面的最小值，判断回文子串 s[j…i] 时同样可以用分割回文串中的动态规划方法，所以本题进行了两次动态规划，较为复杂。</li>
 <li><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/delete-operation-for-two-strings/solution/liang-ge-zi-fu-chuan-de-shan-chu-cao-zuo-14uw/">两个字符串的删除操作</a>：转化成LCS问题可以很简单的解决，但还可以用更符合题意的状态定义$dp[i][j]$</li>
 <li><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/counting-bits/">比特位计数</a>：比较简单</li>
 </ul>
@@ -569,13 +566,13 @@ max(f(i),f(j))+1 & , & nums[i]>nums[j], \\
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">819k</span>
+    <span title="站点总字数">826k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">12:25</span>
+    <span title="站点阅读时长">12:31</span>
 </div>
 
         
