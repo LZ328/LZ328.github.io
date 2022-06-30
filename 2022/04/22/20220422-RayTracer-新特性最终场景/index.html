@@ -29,7 +29,7 @@
 <meta property="og:site_name" content="LycTechStack">
 <meta property="og:description" content="现在我们新建一个非常复杂的场景来测试到目前为止光线追踪器的全部特性，生成我们的第二张光线追踪“大片”。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/04/22/20220422-RayTracer-%E6%96%B0%E7%89%B9%E6%80%A7%E6%9C%80%E7%BB%88%E5%9C%BA%E6%99%AF/2022/04/22/20220422-RayTracer-%E6%96%B0%E7%89%B9%E6%80%A7%E6%9C%80%E7%BB%88%E5%9C%BA%E6%99%AF/FinalSence.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io2022/04/22/20220422-RayTracer-%E6%96%B0%E7%89%B9%E6%80%A7%E6%9C%80%E7%BB%88%E5%9C%BA%E6%99%AF/FinalSence.png">
 <meta property="article:published_time" content="2022-04-22T12:46:58.000Z">
 <meta property="article:modified_time" content="2022-04-23T11:39:14.771Z">
 <meta property="article:author" content="Lyc">
@@ -37,7 +37,7 @@
 <meta property="article:tag" content="C++">
 <meta property="article:tag" content="光线追踪">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2022/04/22/20220422-RayTracer-%E6%96%B0%E7%89%B9%E6%80%A7%E6%9C%80%E7%BB%88%E5%9C%BA%E6%99%AF/2022/04/22/20220422-RayTracer-%E6%96%B0%E7%89%B9%E6%80%A7%E6%9C%80%E7%BB%88%E5%9C%BA%E6%99%AF/FinalSence.png">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io2022/04/22/20220422-RayTracer-%E6%96%B0%E7%89%B9%E6%80%A7%E6%9C%80%E7%BB%88%E5%9C%BA%E6%99%AF/FinalSence.png">
 
 <link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/04/22/20220422-RayTracer-%E6%96%B0%E7%89%B9%E6%80%A7%E6%9C%80%E7%BB%88%E5%9C%BA%E6%99%AF/">
 
@@ -286,7 +286,7 @@
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">switch</span> (sence) &#123;</span><br><span class="line">        ...</span><br><span class="line">        <span class="keyword">default</span>:</span><br><span class="line">        <span class="keyword">case</span> <span class="number">8</span>:</span><br><span class="line">            world = <span class="built_in">final_scene</span>();</span><br><span class="line">            aspect_ratio = <span class="number">1.0</span>;</span><br><span class="line">            image_width = <span class="number">800</span>;</span><br><span class="line">            samples_per_pixel = <span class="number">10000</span>;</span><br><span class="line">            min_bounce = <span class="number">95</span>;</span><br><span class="line">            background = <span class="built_in">color</span>(<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>);</span><br><span class="line">            lookfrom = <span class="built_in">point3</span>(<span class="number">478</span>, <span class="number">278</span>, <span class="number">-600</span>);</span><br><span class="line">            lookat = <span class="built_in">point3</span>(<span class="number">278</span>, <span class="number">278</span>, <span class="number">0</span>);</span><br><span class="line">            vfov = <span class="number">40.0</span>;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>渲染效果如下：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/22/20220422-RayTracer-%E6%96%B0%E7%89%B9%E6%80%A7%E6%9C%80%E7%BB%88%E5%9C%BA%E6%99%AF/2022/04/22/20220422-RayTracer-%E6%96%B0%E7%89%B9%E6%80%A7%E6%9C%80%E7%BB%88%E5%9C%BA%E6%99%AF/FinalSence.png" alt="FinalSence"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io2022/04/22/20220422-RayTracer-%E6%96%B0%E7%89%B9%E6%80%A7%E6%9C%80%E7%BB%88%E5%9C%BA%E6%99%AF/FinalSence.png" alt="FinalSence"></p>
 
     </div>
 
@@ -349,7 +349,7 @@
       <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\04\16\20220416-RayTracer-改进相机\" rel="bookmark">【RayTracer】（七）景深效果</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\04\16\20220416-RayTracer-构建随机场景\" rel="bookmark">【RayTracer】（八）构建随机场景</a></div>
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\04\16\20220416-RayTracer-电介质\" rel="bookmark">【RayTracer】（六）电介质</a></div>
     </li>
   </ul>
 
