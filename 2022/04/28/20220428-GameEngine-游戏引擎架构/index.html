@@ -29,18 +29,18 @@
 <meta property="og:site_name" content="LycTechStack">
 <meta property="og:description" content="游戏引擎是一个庞大的软件系统，也是最接近操作系统的大型软件，因此会涉及非常复杂的架构设计、资源管理和和代码实现。这一节我们简要学习一个游戏引擎必备的几个重要模块及其功能，了解游戏引擎的宏观分层架构。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/image-20220428155123811.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/image-20220428155356486.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/image-20220428161522013.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/image-20220428162147284.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/image-20220428162301962.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/image-20220428163516740.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/image-20220428155123811.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/image-20220428155356486.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/image-20220428161522013.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/image-20220428162147284.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/image-20220428162301962.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/image-20220428163516740.png">
 <meta property="article:published_time" content="2022-04-28T08:47:37.000Z">
 <meta property="article:modified_time" content="2022-04-28T08:58:22.544Z">
 <meta property="article:author" content="Lyc">
 <meta property="article:tag" content="游戏引擎">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/image-20220428155123811.png">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/image-20220428155123811.png">
 
 <link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/">
 
@@ -277,12 +277,12 @@
         <p>游戏引擎是一个庞大的软件系统，也是最接近操作系统的大型软件，因此会涉及非常复杂的架构设计、资源管理和和代码实现。这一节我们简要学习一个游戏引擎必备的几个重要模块及其功能，了解游戏引擎的宏观分层架构。</p>
 <p><em><span id="more"></span></em></p>
 <h3 id="1-游戏引擎分层架构"><a href="#1-游戏引擎分层架构" class="headerlink" title="1 游戏引擎分层架构"></a>1 游戏引擎分层架构</h3><p>现代游戏引擎的架构极为复杂，如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/image-20220428155123811.png" alt="image-20220428155123811"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/image-20220428155123811.png" alt="image-20220428155123811"></p>
 <p>但大致可分为以下几个层次：</p>
 <ul>
 <li>工具层：工具层是面向游戏开发者，能够让游戏开发者使用引擎制作游戏的接口，包括一些系列可视化的编辑器，比如角色编辑器、纹理编辑器、动画编辑器等等。</li>
 </ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/image-20220428155356486.png" alt="image-20220428155356486"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/image-20220428155356486.png" alt="image-20220428155356486"></p>
 <ul>
 <li>功能层：功能层包含一个游戏需要的各种功能，包括物理碰撞、动画、渲染、音效、逻辑脚本等等，是能够让一款游戏充满可玩性的核心驱动。</li>
 <li>资源层：资源层负责管理游戏引擎中的各种资源，比如纹理、模型、音频、视频、脚本等，资源层需要将这些资源合理的、有层次的组织起来，并管理他们的生命周期，在合适的时间加载某些资源，在另外一些时候释放某些资源。</li>
@@ -292,18 +292,18 @@
 </ul>
 <p>游戏引擎架构当然没有这么简单，但是大致总结起来可以认为就是由这几部分组成的，分层架构的设计要求必须由上层调用下层功能，这样既便于开发，也便于管理。接下来我们对其中的重要模块稍作深入了解。</p>
 <h3 id="2-资源层"><a href="#2-资源层" class="headerlink" title="2 资源层"></a>2 资源层</h3><p>游戏开发中需要利用各种资源来达到目的，而各类资源有不同的格式，即使是同一类资源，它们的格式也不尽相同，比如不同的 3D 建模软件导出的模型就存在各种各样的格式差异，资源层需要将这些不同的资源，统一转化为游戏引擎使用的格式，转换后的资源被称为 Asset，从资源到 Asset 的过程可以认为是对资源文件的提纯过程，这个过程会去掉那些游戏引擎不需要的信息，比如 3D 模型中的编辑信息，而只保留游戏引擎中需要的信息，并组织成统一的格式。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/image-20220428161522013.png" alt="image-20220428161522013"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/image-20220428161522013.png" alt="image-20220428161522013"></p>
 <p>除此之外，资源层还要对海量的资源进行合理的管理，包括每个资源的唯一标识（GUID）、不同资源之间的关系、资源的生命周期等等。高效的管理资源是一个游戏稳定运行的基础，比如在游戏场景切换的时候就需要卸载大量资源再加载大量资源，如果资源管理做的不好，轻则加载时间长，影响游戏体验，重则出现卡顿，甚至崩溃。</p>
 <h3 id="3-功能层"><a href="#3-功能层" class="headerlink" title="3 功能层"></a>3 功能层</h3><p>从某种程度上说，功能层是游戏引擎最核心的部分，因为它实现了一个游戏之所以能称之为游戏的全部重要功能，包括渲染、物理、动画、音效、网络、游戏性等等。因此功能层也是构建游戏世界的核心。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/image-20220428162147284.png" alt="image-20220428162147284"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/image-20220428162147284.png" alt="image-20220428162147284"></p>
 <p>游戏世界是依靠 Tick 来驱动的，类似于秒针走动一下，我们的世界就会发生一次改变。在游戏世界中，“秒针”每次走动，我们的计算机就会将所有的功能全部运行一遍，来计算这一秒游戏世界中发生的事情，因此在游戏引擎的代码中，入口就是 Tick：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/image-20220428162301962.png" alt="image-20220428162301962"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/image-20220428162301962.png" alt="image-20220428162301962"></p>
 <p>Tick 一般分为逻辑 Tick 和渲染 Tick，逻辑 Tick 负责计算相机、运动、动画、物理等功能，相当于在构建整个游戏世界；渲染 Tick 则负责将游戏在世界呈现在玩家面前，包括剔除、渲染、后处理等等。因此在每一个 Tick 中，都是先计算逻辑 Tick，再计算渲染 Tick。</p>
 <p>功能层的许多功能可以在游戏中实现，也可以在游戏引擎中实现，这完全取决于需求，对于一些通用的商业引擎，它们可能会用于制作各种类型的游戏，因此功能层提供的功能要尽可能的丰富，而对于一些专用的引擎，比如寒霜、RED ENGINE等，它们被用于制作特定类型的游戏，因此就会在功能层对特定的功能进行实现，而抛弃一些不需要的功能。</p>
 <h3 id="4-核心层"><a href="#4-核心层" class="headerlink" title="4 核心层"></a>4 核心层</h3><p>核心层为上层实现提供核心驱动，在核心层会实现包括数学计算、数据结构、内存管理、线程管理在内的基本代码，这部分要保证绝对的安全、稳定、高效。因此对编码要求也极高，一般核心层的代码不会轻易修改。</p>
 <p>数学计算包括一些基本运算、向量、矩阵、四元数、随机数等的实现，游戏中许多计算可能并不要求结果的绝对精确，而是更需要计算的高效性，结果允许存在一定误差，因此在实现上就和 C++ 提供的数学库完全不同了。</p>
 <p>数据结构也是同样，STL 提供的各种数据结构和容器实现有时候可能在内存、效率上达不到游戏中的要求，比如 C++11 中的 vector 在扩容时就可能造成大量的空间碎片，因此我们需要实现更高效、内存管理更严格的数据结构和容器供上层使用。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/image-20220428163516740.png" alt="image-20220428163516740"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/2022/04/28/20220428-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84/image-20220428163516740.png" alt="image-20220428163516740"></p>
 <h3 id="5-平台层"><a href="#5-平台层" class="headerlink" title="5 平台层"></a>5 平台层</h3><p>平台层需要处理不同软硬件平台的差异，使得游戏和引擎能够在不同平台上运行。平台之间的差异说起来简单，但是实际情况却非常复杂，比如图形 API 之间的差异，DirectX 11、OpenGL、Vulkan 等图形接口就有相当大的差异，即便是同为微软的 DirectX 11 和 DirectX 12 也有着完全不同的实现框架，并且不同的显卡架构也完全不同，因此需要一个统一的渲染接口将这些差异统一起来，使得上层使用者只需要关注功能实现，而不需要关注底层接口和硬件之间的差异。</p>
 <p>除此之外，平台差异还包括核心处理器架构的差异，PS、XBox、PC 等平台的核心处理架构设计是完全不同的，需要对这样的差异进行处理；另外还有游戏输入设备之间的差异，键鼠、手柄、方向盘、感应器等等，需要一个统一的接口处理这些设备的输入，使它们能得到相同的响应效果。</p>
 <h3 id="6-总结"><a href="#6-总结" class="headerlink" title="6 总结"></a>6 总结</h3><p>总而言之，游戏引擎架构极为复杂，但概括来说就是由分层架构搭建而成，并且只允许上层功能调用下层功能，不允许下层功能调用上层功能。越底层的功能越稳定，越上层的功能越灵活。</p>
