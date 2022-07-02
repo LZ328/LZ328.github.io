@@ -29,13 +29,13 @@
 <meta property="og:site_name" content="LycTechStack">
 <meta property="og:description" content="本篇总结 C++ 相关知识点，提供之前笔记的索引，并补充部分内容，方便查找，将持续更新。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/25/20220626-%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB-C++%E9%83%A8%E5%88%86/image-20220625132147566.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220625132147566.png">
 <meta property="article:published_time" content="2022-06-25T09:01:46.000Z">
 <meta property="article:modified_time" content="2022-06-25T09:21:37.637Z">
 <meta property="article:author" content="Lyc">
 <meta property="article:tag" content="C++">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/25/20220626-%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB-C++%E9%83%A8%E5%88%86/image-20220625132147566.png">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220625132147566.png">
 
 <link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/06/25/20220626-%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB-C++%E9%83%A8%E5%88%86/">
 
@@ -271,23 +271,23 @@
       
         <p>本篇总结 C++ 相关知识点，提供之前笔记的索引，并补充部分内容，方便查找，将持续更新。</p>
 <p><em><span id="more"></span></em></p>
-<h2 id="1-多态"><a href="#1-多态" class="headerlink" title="1 多态"></a>1 多态</h2><h4 id="多态的定义、种类、如何实现"><a href="#多态的定义、种类、如何实现" class="headerlink" title="多态的定义、种类、如何实现"></a>多态的定义、种类、如何实现</h4><p>多态简单概括就是“一种接口，多种方法”，是面向对象编程的核心，主要指不同的对象收到相同的消息做出不同的动作。C++ 通过指针或引用实现多态，具体查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/05/20220505-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E5%AF%B9%E8%B1%A1/">【C++ 对象模型】（一）关于对象</a>。</p>
+<h2 id="1-多态"><a href="#1-多态" class="headerlink" title="1 多态"></a>1 多态</h2><h4 id="多态的定义、种类、如何实现"><a href="#多态的定义、种类、如何实现" class="headerlink" title="多态的定义、种类、如何实现"></a>多态的定义、种类、如何实现</h4><p>多态简单概括就是“一种接口，多种方法”，是面向对象编程的核心，主要指不同的对象收到相同的消息做出不同的动作。C++ 通过指针或引用实现多态，具体查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/05/20220505-对象模型-关于对象/">【C++ 对象模型】（一）关于对象</a>。</p>
 <h4 id="虚函数如何实现多态"><a href="#虚函数如何实现多态" class="headerlink" title="虚函数如何实现多态"></a>虚函数如何实现多态</h4><p>基类指针指向派生类对象，可以调用不同派生类的方法，这是通过虚函数来实现的。每一个类都有一张虚函数表，类的对象中包含指向虚函数表的指针，派生类对象中包含基类子对象并且在内存布局的最前面，而虚函数表指针又位于实例对象内存的最前面，因此使用基类指针可以指向任何派生类对象并且正确寻址到虚函数表，这样通过一个基类指针就可以在运行时找到不同派生类的虚函数表从而调用对应的函数，实现多态。</p>
 <h4 id="虚表指针什么时候产生"><a href="#虚表指针什么时候产生" class="headerlink" title="虚表指针什么时候产生"></a>虚表指针什么时候产生</h4><p>首先每一个类的虚函数表在编译期间确定，虚函数表指针在虚函数表确定后，对象被构造出来的时候就可以确定了，实际上编译器会在构造函数时中加入对虚函数表指针的赋值操作，并且这些操作会在用于自己定义的初始化操作之前执行。同样的，虚基类指针也在编译期确定。</p>
 <h4 id="关于纯虚函数"><a href="#关于纯虚函数" class="headerlink" title="关于纯虚函数"></a>关于纯虚函数</h4><p>纯虚函数没有定义，必须在派生类中实现，在虚函数表中会存在一个纯虚函数调用（<code>pure_virtual_called()</code> ）实体，它既可以扮演纯虚函数的空间占用者，也可以当作执行期的异常处理函数，当调用一个基类中的纯虚函数（即未被定义）时，会抛出异常并终止程序。</p>
 <h4 id="重载、重写与覆盖"><a href="#重载、重写与覆盖" class="headerlink" title="重载、重写与覆盖"></a>重载、重写与覆盖</h4><p>重载允许有多个同名的函数，而这些函数可以参数列表不同，返回类型不同，参数个数不同，参数类型不同等等。编译器会根据这些函数的不同列表，将同名的函数的名称做修饰，从而生成一些不同名称的预处理函数，来实现同名函数调用时的重载问题。但这并没有体现多态性。重写可以有两种，直接重写成员函数和重写虚函数，只有重写了虚函数的才能算作是体现了C++多态性。在派生类中重写了基类中的函数会覆盖基类中定义的函数，重写虚函数会覆盖虚函数表对应位置的函数指针。</p>
 <h4 id="多继承的实现及可能出现的问题"><a href="#多继承的实现及可能出现的问题" class="headerlink" title="多继承的实现及可能出现的问题"></a>多继承的实现及可能出现的问题</h4><p>多继承会将基类子对象按照继承顺序放在派生类对象中。菱形继承中可能出现重复继承同一个基类的情况。解决办法是使用虚继承。</p>
-<h4 id="菱形继承类大小的计算"><a href="#菱形继承类大小的计算" class="headerlink" title="菱形继承类大小的计算"></a>菱形继承类大小的计算</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/">【C++ 对象模型】（三）关于数据成员</a>第2部分</p>
-<h4 id="类对象的内存存储形式"><a href="#类对象的内存存储形式" class="headerlink" title="类对象的内存存储形式"></a>类对象的内存存储形式</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/">【C++ 对象模型】（三）关于数据成员</a>第3部分</p>
+<h4 id="菱形继承类大小的计算"><a href="#菱形继承类大小的计算" class="headerlink" title="菱形继承类大小的计算"></a>菱形继承类大小的计算</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-对象模型-关于数据成员/">【C++ 对象模型】（三）关于数据成员</a>第2部分</p>
+<h4 id="类对象的内存存储形式"><a href="#类对象的内存存储形式" class="headerlink" title="类对象的内存存储形式"></a>类对象的内存存储形式</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-对象模型-关于数据成员/">【C++ 对象模型】（三）关于数据成员</a>第3部分</p>
 <h4 id="override-和-final"><a href="#override-和-final" class="headerlink" title="override 和 final"></a>override 和 final</h4><p>override 关键字告诉编译器这个函数是重写基类的函数，如果该函数和基类函数的标识不是完全一样就会报错，比如基类函数中有 const 修饰，派生类重写的时候忘记了 const，如果没有 override，就会导致我们以为重写了基类的函数，但实际上因为没有加 const ，这是两个完全不同的函数而产生错误。同时因为 override 可以说明这是一个重写的基类虚函数，因此派生类中函数的 virtual 关键字就可以去掉了。</p>
 <p>final 关键字用于类声明可以禁止继承该类，用于方法可以禁止该方法在派生类中被重写。</p>
 <h4 id="为什么构造函数不能是虚函数"><a href="#为什么构造函数不能是虚函数" class="headerlink" title="为什么构造函数不能是虚函数"></a>为什么构造函数不能是虚函数</h4><p>因为虚函数会在放在虚函数表中，构造对象时给对象的 vptr 赋值，如果构造函数是虚函数，那调用构造函数的时候就要用 vptr 去找构造函数，但此时 vptr 还没有被赋值。</p>
 <h4 id="为什么析构函数可以是虚函数"><a href="#为什么析构函数可以是虚函数" class="headerlink" title="为什么析构函数可以是虚函数"></a>为什么析构函数可以是虚函数</h4><p>与构造函数不同，vptr 已经完成初始化，析构函数可以声明为虚函数，且类有继承时，析构函数常常必须为虚函数。</p>
 <p>当我们使用基类指针可以指向派生类的对象时，如果删除该指针，就会调用该指针指向的派生类析构函数，而派生类的析构函数又自动调用基类的析构函数，这样整个派生类的对象完全被释放。而如果析构函数不定义为虚函数，编译器会实施静态绑定，在删除基类指针时，只会调用基类的析构函数而不调用派生类析构函数，这样就会造成派生类对象析构不完全，从而存在内存泄露的风险。</p>
-<p>更多关于析构函数可以查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/09/20220509-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%AF%B9%E8%B1%A1%E5%A4%8D%E5%88%B6%E5%92%8C%E6%9E%90%E6%9E%84/">【C++ 对象模型】（五）对象复制和析构</a></p>
-<h4 id="关于构造函数和析构函数的细节"><a href="#关于构造函数和析构函数的细节" class="headerlink" title="关于构造函数和析构函数的细节"></a>关于构造函数和析构函数的细节</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/06/20220506-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0/">【C++ 对象模型】（二）关于构造函数</a>第 1 部分</p>
-<h4 id="关于拷贝构造函数"><a href="#关于拷贝构造函数" class="headerlink" title="关于拷贝构造函数"></a>关于拷贝构造函数</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/06/20220506-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0/">【C++ 对象模型】（二）关于构造函数</a>第 2 部分</p>
-<h4 id="new、placement-new-和-malloc"><a href="#new、placement-new-和-malloc" class="headerlink" title="new、placement new 和 malloc"></a>new、placement new 和 malloc</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/11/20220511-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%89%A7%E8%A1%8C%E6%9C%9F/">【C++ 对象模型】（六）关于执行期</a></p>
+<p>更多关于析构函数可以查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/09/20220509-对象模型-对象复制和析构/">【C++ 对象模型】（五）对象复制和析构</a></p>
+<h4 id="关于构造函数和析构函数的细节"><a href="#关于构造函数和析构函数的细节" class="headerlink" title="关于构造函数和析构函数的细节"></a>关于构造函数和析构函数的细节</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/06/20220506-对象模型-关于构造函数/">【C++ 对象模型】（二）关于构造函数</a>第 1 部分</p>
+<h4 id="关于拷贝构造函数"><a href="#关于拷贝构造函数" class="headerlink" title="关于拷贝构造函数"></a>关于拷贝构造函数</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/06/20220506-对象模型-关于构造函数/">【C++ 对象模型】（二）关于构造函数</a>第 2 部分</p>
+<h4 id="new、placement-new-和-malloc"><a href="#new、placement-new-和-malloc" class="headerlink" title="new、placement new 和 malloc"></a>new、placement new 和 malloc</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/11/20220511-对象模型-关于执行期/">【C++ 对象模型】（六）关于执行期</a></p>
 <h2 id="2-智能指针"><a href="#2-智能指针" class="headerlink" title="2 智能指针"></a>2 智能指针</h2><h4 id="内存泄漏"><a href="#内存泄漏" class="headerlink" title="内存泄漏"></a>内存泄漏</h4><p>指针指向内存后在使用完毕不释放内存导致这块内存既没有用处也无法再被分配出去。智能指针会在对象生命周期结束后自动释放内存。</p>
 <h4 id="unique-ptr"><a href="#unique-ptr" class="headerlink" title="unique_ptr"></a>unique_ptr</h4><p>它持有对对象的独有权——两个unique_ptr 不能指向一个对象，即 unique_ptr 不共享它所管理的对象。它无法复制到其他 unique_ptr，无法通过值传递到函数，也无法用于需要副本的任何标准模板库 （STL）算法。只能移动 unique_ptr，即对资源管理权限可以实现转移。这意味着，内存资源所有权可以转移到另一个 unique_ptr，并且原始 unique_ptr 不再拥有此资源。</p>
 <h4 id="shared-ptr"><a href="#shared-ptr" class="headerlink" title="shared_ptr"></a>shared_ptr</h4><p>shared_ptr 是一个标准的共享所有权的智能指针，允许多个指针指向同一个对象。shared_ptr 对资源做引用计数，当引用计数为 0 的时候，自动释放资源。</p>
@@ -297,7 +297,7 @@
 <li>引用计数等共享资源的控制信息——实现上是维护一个指向控制信息的指针。</li>
 </ol>
 <p>所以，一个 shared_ptr 对象有两个指针。一个是指向共享资源的指针，一个是指向控制信息的指针。shared_ptr 的自定义 deleter 是保存在控制信息中，所以，是否有自定义 deleter 不影响 shared_ptr 对象的大小。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/25/20220626-%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB-C++%E9%83%A8%E5%88%86/image-20220625132147566.png" alt="image-20220625132147566"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220625132147566.png" alt="image-20220625132147566"></p>
 <h4 id="weak-ptr"><a href="#weak-ptr" class="headerlink" title="weak_ptr"></a>weak_ptr</h4><p>它更像是 shared_ptr 的一个助手而不是智能指针，因为它不具有普通指针的行为，没有重载 operator* 和 operator-&gt; ，因此取名为 weak，表明其是功能较弱的智能指针。它的最大作用在于协助 shared_ptr 工作，可获得资源的观测权，像旁观者那样观测资源的使用情况。观察者意味着 weak_ptr 只对 shared_ptr 进行引用，而不改变其引用计数，当被观察的 shared_ptr 失效后，相应的 weak_ptr 也相应失效。</p>
 <p>总结一下，std::weak_ptr 要与 std::shared_ptr 一起使用。 一个 std::weak_ptr 对象看做是 std::shared_ptr 对象管理的资源的观察者，它不影响共享资源的生命周期：</p>
 <ol>
@@ -309,15 +309,15 @@
 <h4 id="关于循环引用"><a href="#关于循环引用" class="headerlink" title="关于循环引用"></a>关于循环引用</h4><p>引用计数的一个问题就是不能处理循环引用的情况，当两个对象互相引用的时候，引用计数永远为 1，导致二者都无法释放从而造成内存泄露。这时将其中一个 shared_ptr 改为 weak_ptr，在需要获取操作权的时候使用 <code>weak_ptr.lock()</code>函数将 weak_ptr 提升为 shared_ptr 即可，这样既解决了循环引用问题也达到了原本的目的。</p>
 <p>关于循环引用的例子可以查看<a target="_blank" rel="noopener" href="https://blog.csdn.net/u012442719/article/details/55045583">c++ weak ptr解除指针循环引用</a>加深理解。</p>
 <h4 id="shared-ptr-的实现"><a href="#shared-ptr-的实现" class="headerlink" title="shared_ptr 的实现"></a>shared_ptr 的实现</h4><p>查看<a target="_blank" rel="noopener" href="https://blog.csdn.net/xiaodu655/article/details/85780240">智能指针（shared_ptr的实现）</a>。</p>
-<h4 id="关于野指针"><a href="#关于野指针" class="headerlink" title="关于野指针"></a>关于野指针</h4><p>初始化指针时没有给初始值或者释放内存后没有将指针置空就会产生野指针，具体可以查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/11/20220511-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%89%A7%E8%A1%8C%E6%9C%9F/">【C++ 对象模型】（六）关于执行期</a>中 2.2 部分。</p>
+<h4 id="关于野指针"><a href="#关于野指针" class="headerlink" title="关于野指针"></a>关于野指针</h4><p>初始化指针时没有给初始值或者释放内存后没有将指针置空就会产生野指针，具体可以查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/11/20220511-对象模型-关于执行期/">【C++ 对象模型】（六）关于执行期</a>中 2.2 部分。</p>
 <p>避免野指针的方法是：</p>
 <ul>
 <li>初始化指针的时候将其置为 nullptr，之后再对其操作</li>
 <li>释放指针的时候将其置为 nullptr</li>
 </ul>
-<h2 id="3-STL"><a href="#3-STL" class="headerlink" title="3 STL"></a>3 STL</h2><h4 id="迭代器"><a href="#迭代器" class="headerlink" title="迭代器"></a>迭代器</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/04/30/20220430-STL-%E8%BF%AD%E4%BB%A3%E5%99%A8/">【STL】迭代器</a></p>
-<h4 id="序列式容器"><a href="#序列式容器" class="headerlink" title="序列式容器"></a>序列式容器</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/04/30/20220430-STL-%E5%BA%8F%E5%88%97%E5%BC%8F%E5%AE%B9%E5%99%A8/">【STL】序列式容器</a></p>
-<h4 id="关联式容器"><a href="#关联式容器" class="headerlink" title="关联式容器"></a>关联式容器</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/03/20220503-STL-%E5%85%B3%E8%81%94%E5%BC%8F%E5%AE%B9%E5%99%A8/">【STL】关联式容器</a></p>
+<h2 id="3-STL"><a href="#3-STL" class="headerlink" title="3 STL"></a>3 STL</h2><h4 id="迭代器"><a href="#迭代器" class="headerlink" title="迭代器"></a>迭代器</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/04/30/20220430-STL-迭代器/">【STL】迭代器</a></p>
+<h4 id="序列式容器"><a href="#序列式容器" class="headerlink" title="序列式容器"></a>序列式容器</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/04/30/20220430-STL-序列式容器/">【STL】序列式容器</a></p>
+<h4 id="关联式容器"><a href="#关联式容器" class="headerlink" title="关联式容器"></a>关联式容器</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/03/20220503-STL-关联式容器/">【STL】关联式容器</a></p>
 <h2 id="4-其他"><a href="#4-其他" class="headerlink" title="4 其他"></a>4 其他</h2><h4 id="C-程序编译过程"><a href="#C-程序编译过程" class="headerlink" title="C++ 程序编译过程"></a>C++ 程序编译过程</h4><ol>
 <li><strong>预编译</strong>（.cpp -&gt; .i），预编译主要进行代码文本替换工作。编译器执行预编译指令（以 # 开头，例如 #include），这个过程会得到不包含 # 指令的 .i 文件。这个过程会拷贝 #include 包含的文件代码，进行 #define 宏定义的替换 ， 处理条件编译指令（#ifndef、#ifdef、#endif）等等。</li>
 <li><strong>编译优化</strong>（.i -&gt; .s），通过预编译输出的 .i 文件中，只包含常量、字符串、变量的定义，以及关键字：main、if、else、for、while等。编译优化阶段则是通过语法分析和词法分析，确定所有指令是否符合规则，之后翻译成汇编代码。</li>
@@ -326,12 +326,13 @@
 <li>数据段：存放程序用到的全局变量或静态数据。可读、可写、可执行</li>
 </ul>
 </li>
-<li><strong>链接</strong>（.o -&gt; .exe &#x2F; .a &#x2F; .so &#x2F; .lib &#x2F; .dll 等），由汇编程序生成的目标文件并不能立即就执行，还要通过链接过程。这是因为某个源文件调用了另一个源文件中的函数或常量或在程序中调用了某个库文件中的函数，链接的主要工作就是将有关的目标文件连接起来，形成最终的可执行文件。</li>
+<li><strong>链接</strong>（.o -&gt; .exe / .a / .so / .lib / .dll 等），由汇编程序生成的目标文件并不能立即就执行，还要通过链接过程。这是因为某个源文件调用了另一个源文件中的函数或常量或在程序中调用了某个库文件中的函数，链接的主要工作就是将有关的目标文件连接起来，形成最终的可执行文件。</li>
 </ol>
 <h4 id="堆和栈"><a href="#堆和栈" class="headerlink" title="堆和栈"></a>堆和栈</h4><p>堆是由程序员控制的内存区域，通过 new 和 delete 来申请堆上的内存和释放堆上的内存。</p>
 <p>栈是由编译器管理的内存，在需要时自动分配，不需要时自动清除。栈通常存放局部变量、函数参数等。</p>
 <p>除了堆和栈之外，还有存储全局变量和静态变量的存储区以及存放常量的存储区。</p>
 <p>堆和栈的对比：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -340,7 +341,8 @@
 <th>栈（Stack）</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td><strong>管理方式</strong></td>
 <td>堆中资源由程序员控制（需要注意内存泄漏）</td>
 <td>栈资源由编译器自动管理，无需手工控制</td>
@@ -357,7 +359,7 @@
 </tr>
 <tr>
 <td><strong>碎片问题</strong></td>
-<td>对于堆，频繁的 new &#x2F; delete 会造成大量内存碎片，使程序效率降低。</td>
+<td>对于堆，频繁的 new / delete 会造成大量内存碎片，使程序效率降低。</td>
 <td>对于栈，它是一个先进后出的队列，进出一一对应，不会产生碎片。</td>
 </tr>
 <tr>
@@ -370,15 +372,17 @@
 <td>堆由 C++ 函数库提供，机制很复杂。所以堆的效率比栈低很多。</td>
 <td>栈是极其系统提供的数据结构，计算机在底层对栈提供支持，分配专门寄存器存放栈地址，栈操作有专门指令。</td>
 </tr>
-</tbody></table>
-<h4 id="为什么要内存对齐"><a href="#为什么要内存对齐" class="headerlink" title="为什么要内存对齐"></a>为什么要内存对齐</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/">【C++ 对象模型】（三）关于数据成员</a>第 1 部分。</p>
+</tbody>
+</table>
+</div>
+<h4 id="为什么要内存对齐"><a href="#为什么要内存对齐" class="headerlink" title="为什么要内存对齐"></a>为什么要内存对齐</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-对象模型-关于数据成员/">【C++ 对象模型】（三）关于数据成员</a>第 1 部分。</p>
 <h4 id="内联函数与宏的区别"><a href="#内联函数与宏的区别" class="headerlink" title="内联函数与宏的区别"></a>内联函数与宏的区别</h4><p>宏在预编译时在调用处执行字符串的原样替换（宏展开）。而内联函数在编译时在调用处展开，同时进行<strong>参数类型检查，宏定义不会进行参数类型检查。</strong></p>
 <p>内联函数可以作为某个类的成员函数，这样可以使用类的保护成员和私有成员。而当一个表达式涉及到类保护成员或私有成员时，宏就不能实现了。</p>
-<p>一般来说内联函数可以完全替代宏，更多关于内联函数可以查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/09/20220509-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E5%87%BD%E6%95%B0%E6%88%90%E5%91%98/">【C++ 对象模型】（四）关于函数成员</a>第 3 部分。</p>
+<p>一般来说内联函数可以完全替代宏，更多关于内联函数可以查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/09/20220509-对象模型-关于函数成员/">【C++ 对象模型】（四）关于函数成员</a>第 3 部分。</p>
 <h4 id="浅拷贝和深拷贝"><a href="#浅拷贝和深拷贝" class="headerlink" title="浅拷贝和深拷贝"></a>浅拷贝和深拷贝</h4><p>浅拷贝就是在拷贝时直接进行简单的对应赋值操作，类似于参数的引用传递，源对象与拷贝对象共用一份实体，对其中任何一个对象的改动都会影响另外一个对象。</p>
 <p>深拷贝则类似于参数的值传递，源对象与拷贝对象互相独立 ，其中任何一个对象的改动都不会对另外一个对象造成影响。</p>
 <h4 id="什么时候需要深拷贝"><a href="#什么时候需要深拷贝" class="headerlink" title="什么时候需要深拷贝"></a>什么时候需要深拷贝</h4><p>当一个类中有对其他类对象成员时需要深拷贝，也就是不能直接将一个类对象的某个对象成员赋值给另一个类对象，而是要单独开辟一块内存，重新构造一个相同的对象成员，否则当类对象析构时，拷贝的类对象的该对象成员也被析构掉了就会产生错误。</p>
-<p>关于拷贝构造函数可以查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/06/20220506-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0/">【C++ 对象模型】（二）关于构造函数</a>第 2 部分。</p>
+<p>关于拷贝构造函数可以查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/06/20220506-对象模型-关于构造函数/">【C++ 对象模型】（二）关于构造函数</a>第 2 部分。</p>
 <h4 id="C-的强制类型转换"><a href="#C-的强制类型转换" class="headerlink" title="C++ 的强制类型转换"></a>C++ 的强制类型转换</h4><p>C++ 提供四种强制类型转换关键字：static_cast、const_cast、reinterpret_cast 和 dynamic_cast。</p>
 <ul>
 <li><strong>static_cast</strong> 用于数据类型的强制转换，强制将一种数据类型转换为另一种数据类型。主要用于内置类型之间的转换或者将空指针转化为对应类型的指针。static_cast 也可以用于类层次结构中基类和派生类之间指针或引用的转换，但<strong>需要注意</strong>：进行上行转换（把派生类的指针或引用转换成基类表示）是安全的，但进行下行转换（把基类的指针或引用转换为派生类表示），由于没有动态类型检查，所以是不安全的。</li>
@@ -388,7 +392,7 @@
 <li>不能用于内置的基本数据类型的强制转换。</li>
 <li>dynamic_cast 转换如果成功的话返回的是指向类的指针或引用，转换失败的话则会返回 nullptr。</li>
 <li>使用 dynamic_cast 进行转换时，基类中一定要有虚函数，否则编译不通过。这是因为类中存在虚函数，就说明它有想要让基类指针或引用指向派生类对象的情况，此时转换才有意义。</li>
-<li>在类层次间进行上行转换时，dynamic_cast 和 static_cast 的效果是完全一样的。在进行下行转换时，由于 dynamic_cast 具有运行时类型检查的功能，即要转换的指针指向的对象的实际类型与转换以后的对象类型一定要相同，否则转换失败，因此要比 static_cast 更安全。运行时类型检查需要运行时类型信息，这个信息存储在虚函数表中，关于这部分可以查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/05/20220505-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E5%AF%B9%E8%B1%A1/">【C++ 对象模型】（一）关于对象</a>第 2 部分和<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/11/20220511-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E6%A8%A1%E6%9D%BF%E5%92%8CRTTI/">【C++ 对象模型】（七）模板和 RTTI</a>第 2 部分。</li>
+<li>在类层次间进行上行转换时，dynamic_cast 和 static_cast 的效果是完全一样的。在进行下行转换时，由于 dynamic_cast 具有运行时类型检查的功能，即要转换的指针指向的对象的实际类型与转换以后的对象类型一定要相同，否则转换失败，因此要比 static_cast 更安全。运行时类型检查需要运行时类型信息，这个信息存储在虚函数表中，关于这部分可以查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/05/20220505-对象模型-关于对象/">【C++ 对象模型】（一）关于对象</a>第 2 部分和<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/11/20220511-对象模型-模板和RTTI/">【C++ 对象模型】（七）模板和 RTTI</a>第 2 部分。</li>
 </ul>
 </li>
 </ul>
@@ -398,37 +402,29 @@
 <p>所以模板类的实现，脱离具体的使用，是无法单独的编译的；把声明和实现分开的做法也是不可取的，必须把实现全部写在头文件里面。为了清晰，实现可以不写在 class 后面的花括号里面，可以写在 class 的外面。</p>
 <p>但也可以实现模板声明和实现分离，比如有下面的模板类：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Node&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">TestTemplate</span>&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line"> </span><br><span class="line">  <span class="built_in">TestTemplate</span>(Node node):</span><br><span class="line">  <span class="built_in">data</span>(node) &#123; &#125;</span><br><span class="line"> </span><br><span class="line">  Node data;</span><br><span class="line"> </span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">print</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>它的实现如下：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> node&gt;</span><br><span class="line"><span class="type">void</span> TestTemplate&lt;node&gt;::<span class="built_in">print</span>()&#123;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;TestTemplate &quot;</span> &lt;&lt; data &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>如果把它们分别放在 .h 和 .cpp 文件中，链接器会报错，提示找不到实现。但在 .h 文件中模板类的声明下加这一句：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;TestTemplate.tpp&quot;</span></span></span><br></pre></td></tr></table></figure>
-
 <p>然后把实现放在名为 TestTemplate.tpp 文件中，即可实现模板声明和实现的文件分离。</p>
 <h4 id="类的静态成员变量何时初始化"><a href="#类的静态成员变量何时初始化" class="headerlink" title="类的静态成员变量何时初始化"></a>类的静态成员变量何时初始化</h4><p>在 main 函数运行前，程序加载时进行初始化，分为静态初始化和动态初始化。</p>
 <p>静态初始化是用常量堆静态成员初始化，静态初始化在程序加载的过程中完成。</p>
-<p>动态初始化主要是指需要经过函数调用才能完成的初始化，比如说：int a &#x3D; foo()，或者是复杂类型（类）的初始化（需要调用构造函数）等。这些变量的初始化会在 main 函数执行前由运行时调用相应的代码从而得以进行(函数内的 static 变量除外)。</p>
+<p>动态初始化主要是指需要经过函数调用才能完成的初始化，比如说：int a = foo()，或者是复杂类型（类）的初始化（需要调用构造函数）等。这些变量的初始化会在 main 函数执行前由运行时调用相应的代码从而得以进行(函数内的 static 变量除外)。</p>
 <h4 id="左值和右值"><a href="#左值和右值" class="headerlink" title="左值和右值"></a>左值和右值</h4><p>左值指既能够出现在等号左边，也能出现在等号右边的变量；右值则是只能出现在等号右边的变量。</p>
 <p>左值是可寻址的变量，有持久性；右值一般是不可寻址的常量，或在表达式求值过程中创建的无名临时对象，短暂性的。</p>
 <p>左值和右值主要的区别之一是左值可以被修改，而右值不能。</p>
 <h4 id="左值引用和右值引用"><a href="#左值引用和右值引用" class="headerlink" title="左值引用和右值引用"></a>左值引用和右值引用</h4><p>引用本质是别名，可以通过引用修改变量的值，传参时传引用可以避免拷贝，其实现原理和指针类似。</p>
 <p>能指向左值，不能指向右值的就是左值引用：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> a = <span class="number">5</span>;</span><br><span class="line"><span class="type">int</span> &amp;ref_a = a; <span class="comment">// 左值引用指向左值，编译通过</span></span><br><span class="line"><span class="type">int</span> &amp;ref_a = <span class="number">5</span>; <span class="comment">// 左值引用指向了右值，会编译失败</span></span><br></pre></td></tr></table></figure>
-
 <p>引用是变量的别名，由于右值没有地址，没法被修改，所以左值引用无法指向右值。但是，const 左值引用是可以指向右值的：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">const</span> <span class="type">int</span> &amp;ref_a = <span class="number">5</span>;  <span class="comment">// 编译通过</span></span><br></pre></td></tr></table></figure>
-
-<p>const 左值引用不会修改指向值，因此可以指向右值，这也是为什么通常要使用 <code>const &amp;</code> 作为函数参数的原因之一，如 <code>std::vector </code>的 <code>push_back</code> ：</p>
+<p>const 左值引用不会修改指向值，因此可以指向右值，这也是为什么通常要使用 <code>const &amp;</code> 作为函数参数的原因之一，如 <code>std::vector</code>的 <code>push_back</code> ：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">push_back</span> <span class="params">(<span class="type">const</span> value_type&amp; val)</span></span>;</span><br></pre></td></tr></table></figure>
-
 <p>如果没有 <code>const</code>，<code>vec.push_back(5)</code> 这样的代码就无法编译通过了。</p>
 <p>右值引用的标志是 <code>&amp;&amp;</code>，顾名思义，右值引用专门为右值而生，可以指向右值，不能指向左值：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> &amp;&amp;ref_a_right = <span class="number">5</span>; <span class="comment">// ok</span></span><br><span class="line"> </span><br><span class="line"><span class="type">int</span> a = <span class="number">5</span>;</span><br><span class="line"><span class="type">int</span> &amp;&amp;ref_a_left = a; <span class="comment">// 编译不过，右值引用不可以指向左值</span></span><br><span class="line"> </span><br><span class="line">ref_a_right = <span class="number">6</span>; <span class="comment">// 右值引用的用途：可以修改右值</span></span><br></pre></td></tr></table></figure>
-
 <h4 id="move-和-forward-的作用"><a href="#move-和-forward-的作用" class="headerlink" title="move 和 forward 的作用"></a>move 和 forward 的作用</h4><p><code>std::move</code> 可以将左值强制转化为右值，从而让右值引用可以指向左值：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> a = <span class="number">5</span>; <span class="comment">// a是个左值</span></span><br><span class="line"><span class="type">int</span> &amp;ref_a_left = a; <span class="comment">// 左值引用指向左值</span></span><br><span class="line"><span class="type">int</span> &amp;&amp;ref_a_right = std::<span class="built_in">move</span>(a); <span class="comment">// 通过std::move将左值转化为右值，可以被右值引用指向</span></span><br><span class="line"> </span><br><span class="line">cout &lt;&lt; a; <span class="comment">// 打印结果：5</span></span><br></pre></td></tr></table></figure>
-
 <p>那么 move 到底有什么用处呢？首先来总结一下左右值引用：</p>
 <ol>
 <li>从性能上讲，左右值引用没有区别，传参使用左右值引用都可以避免拷贝。</li>
@@ -438,10 +434,8 @@
 <p>上面已经给出了 move 的作用之一，就是比左值引用更加灵活，但其本身只是一个类型转换工具，不会对性能有任何提升，但使用 move 可以实现移动语义从而提升性能。</p>
 <p>在没有右值引用之前，当一个类中有其他对象成员的时候，拷贝构造或者赋值运算都需要深拷贝，相当于复制了一份对象成员，比如：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Array</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Array</span>(<span class="type">int</span> size) : <span class="built_in">size_</span>(size) &#123;</span><br><span class="line">        data = <span class="keyword">new</span> <span class="type">int</span>[size_];</span><br><span class="line">    &#125;</span><br><span class="line">     </span><br><span class="line">    <span class="comment">// 深拷贝构造</span></span><br><span class="line">    <span class="built_in">Array</span>(<span class="type">const</span> Array&amp; temp_array) &#123;</span><br><span class="line">        size_ = temp_array.size_;</span><br><span class="line">        data_ = <span class="keyword">new</span> <span class="type">int</span>[size_];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; size_; i ++) &#123;</span><br><span class="line">            data_[i] = temp_array.data_[i];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">     </span><br><span class="line">    <span class="comment">// 深拷贝赋值</span></span><br><span class="line">    Array&amp; <span class="keyword">operator</span>=(<span class="type">const</span> Array&amp; temp_array) &#123;</span><br><span class="line">        <span class="keyword">delete</span>[] data_;</span><br><span class="line"> </span><br><span class="line">        size_ = temp_array.size_;</span><br><span class="line">        data_ = <span class="keyword">new</span> <span class="type">int</span>[size_];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; size_; i ++) &#123;</span><br><span class="line">            data_[i] = temp_array.data_[i];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    ~<span class="built_in">Array</span>() &#123;</span><br><span class="line">        <span class="keyword">delete</span>[] data_;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="type">int</span> *data_;</span><br><span class="line">    <span class="type">int</span> size_;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
 <p>虽然拷贝构造函数的参数是左值引用的，左值引用就是为了防止拷贝，但函数内还是进行了深拷贝，如果被拷贝者之后就不需要了，那这样的拷贝函数会显得非常呆，于是有人提出是不是可以写一个移动构造函数，进行浅拷贝：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 移动构造函数，可以浅拷贝</span></span><br><span class="line"><span class="built_in">Array</span>(<span class="type">const</span> Array&amp; temp_array, <span class="type">bool</span> move) &#123;</span><br><span class="line">    data_ = temp_array.data_;</span><br><span class="line">    size_ = temp_array.size_;</span><br><span class="line">    <span class="comment">// 为防止temp_array析构时delete data，提前置空其data_      </span></span><br><span class="line">    temp_array.data_ = <span class="literal">nullptr</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>但是使用 const 左值引用实现移动构造函数有两个问题：</p>
 <ul>
 <li>不优雅，表示移动语义还需要一个额外的参数(或者其他方式)</li>
@@ -449,22 +443,17 @@
 </ul>
 <p>可以看出左值引用使用起来非常不方便，而使用右值引用作为参数可以完美的解决这个问题，实现成员数据的移动。</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Array</span>(Array&amp;&amp; temp_array) &#123;</span><br><span class="line">    data_ = temp_array.data_;</span><br><span class="line">    size_ = temp_array.size_;</span><br><span class="line">    <span class="comment">// 为防止 temp_array 析构时 delete data，提前置空其data_      </span></span><br><span class="line">    temp_array.data_ = <span class="literal">nullptr</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>在调用时使用 move 转化为右值传入函数：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    Array a;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// 做一些操作</span></span><br><span class="line">    .....</span><br><span class="line">     </span><br><span class="line">    <span class="comment">// 左值a，用std::move转化为右值</span></span><br><span class="line">    <span class="function">Array <span class="title">b</span><span class="params">(std::move(a))</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>事实上在 STL 的很多容器中都使用了以右值引用为参数的移动构造函数和移动赋值重载函数，或者其他函数，最常见的如 std::vector 的 <code>push_back</code> 和 <code>emplace_back</code>。参数为左值引用意味着拷贝，为右值引用意味着移动。</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">push_back</span> <span class="params">(<span class="type">const</span> value_type&amp; val)</span></span>;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">push_back</span> <span class="params">(value_type&amp;&amp; val)</span></span>;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">emplace_back</span> <span class="params">(Args&amp;&amp;... args)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    std::string str1 = <span class="string">&quot;aacasxs&quot;</span>;</span><br><span class="line">    std::vector&lt;std::string&gt; vec;</span><br><span class="line">     </span><br><span class="line">    vec.<span class="built_in">push_back</span>(str1); <span class="comment">// 传统方法，copy</span></span><br><span class="line">    vec.<span class="built_in">push_back</span>(std::<span class="built_in">move</span>(str1)); <span class="comment">// 调用移动语义的push_back方法，避免拷贝，str1会失去原有值，变成空字符串</span></span><br><span class="line">    vec.<span class="built_in">emplace_back</span>(std::<span class="built_in">move</span>(str1)); <span class="comment">// emplace_back效果相同，str1会失去原有值</span></span><br><span class="line">    vec.<span class="built_in">emplace_back</span>(<span class="string">&quot;axcsddcas&quot;</span>); <span class="comment">// 当然可以直接接右值</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>除非设计不允许移动，STL 中的类大都支持移动语义函数。另外，编译器会默认在用户自定义的类和结构体中生成移动语义函数，但前提是用户没有主动定义该类的拷贝构造等函数。因此，<strong>可移动对象在需要拷贝且被拷贝者之后不再被需要的场景中，建议使用 <code>std::move</code> 触发移动语义，提升性能。</strong></p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">moveable_objecta = moveable_objectb; </span><br><span class="line"><span class="comment">// 改为： </span></span><br><span class="line">moveable_objecta = std::<span class="built_in">move</span>(moveable_objectb);</span><br></pre></td></tr></table></figure>
-
 <p>还有些 STL 类是 <code>move-only</code> 的，比如智能指针中的 <code>unique_ptr</code>，这种类只有移动构造函数，因此只能移动（转移内部对象所有权，或者叫浅拷贝），不能拷贝（深拷贝）。</p>
 <p>与 move 相比，forward 更强大，move 只能将左值转化为右值，forward 都可以。</p>
 <p><code>std::forward&lt;T&gt;(u)</code> 有两个参数 T 与 u。当 T 为左值引用类型时，u 将被转换为 T 类型的左值；否则 u 将被转换为 T 类型右值。</p>
 <h4 id="什么是引用折叠"><a href="#什么是引用折叠" class="headerlink" title="什么是引用折叠"></a>什么是引用折叠</h4><p>右值引用比左值引用更加灵活，但如果右值引用绑定的对象类型是未知的话，就既可能是左值，又可能是右值。比如模板：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">f</span><span class="params">(T&amp;&amp; param)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="built_in">f</span>(<span class="number">10</span>); <span class="comment">// 10是右值</span></span><br><span class="line"><span class="type">int</span> x = <span class="number">10</span>;</span><br><span class="line"><span class="built_in">f</span>(x);  <span class="comment">// x是左值</span></span><br></pre></td></tr></table></figure>
-
 <p>由于存在 <code>T&amp;&amp;</code> 这种未定的引用类型，当它作为参数时，有可能被一个左值引用或右值引用的参数初始化，这时相比普通的右值引用(&amp;&amp;)会发生类型的变化，这种变化就称为引用折叠。</p>
 <p>引用折叠规则如下：</p>
 <p>1.所有右值引用折叠到右值引用上仍然是一个右值引用。（A&amp;&amp; &amp;&amp; 变成 A&amp;&amp;）</p>
@@ -479,7 +468,7 @@
 </ul>
 <h4 id="const-的用法"><a href="#const-的用法" class="headerlink" title="const 的用法"></a>const 的用法</h4><ul>
 <li>定义常量</li>
-<li>防止内容被修改（const char* p 是指针指向的内容不可变，而 char* const p 是指针本身不可变）</li>
+<li>防止内容被修改（const char<em> p 是指针指向的内容不可变，而 char</em> const p 是指针本身不可变）</li>
 <li>左值引用指向右值</li>
 </ul>
 <h4 id="extern-关键字"><a href="#extern-关键字" class="headerlink" title="extern 关键字"></a>extern 关键字</h4><p>extern 可以引用不在同一个文件中的变量或者函数</p>
@@ -488,7 +477,7 @@
 <h4 id="auto-和-decltype"><a href="#auto-和-decltype" class="headerlink" title="auto 和 decltype"></a>auto 和 decltype</h4><ul>
 <li><a target="_blank" rel="noopener" href="http://c.biancheng.net/view/6984.html">C++ auto类型推导</a></li>
 <li><a target="_blank" rel="noopener" href="http://c.biancheng.net/view/7151.html">C++ decltype类型推导</a></li>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/tcy23456/article/details/110530204?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_baidulandingword~default-1.pc_relevant_antiscanv2&spm=1001.2101.3001.4242.2&utm_relevant_index=4">C++20 decltype和decltype(auto)用法</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/tcy23456/article/details/110530204?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_baidulandingword~default-1.pc_relevant_antiscanv2&amp;spm=1001.2101.3001.4242.2&amp;utm_relevant_index=4">C++20 decltype和decltype(auto)用法</a></li>
 </ul>
 <h4 id="Lambda-表达式"><a href="#Lambda-表达式" class="headerlink" title="Lambda 表达式"></a>Lambda 表达式</h4><ul>
 <li><a target="_blank" rel="noopener" href="https://blog.csdn.net/A1138474382/article/details/111149792">C++ Lambda表达式原理及应用</a></li>
@@ -589,8 +578,8 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/LycTechStack.github.io/2022/06/18/20220618-Pilot-%E6%B8%B2%E6%9F%93%E7%B3%BB%E7%BB%9F%EF%BC%88%E4%B8%80%EF%BC%89%E6%B8%B2%E6%9F%93%E6%B5%81%E7%A8%8B/" rel="prev" title="【Pilot代码解读】渲染系统（一）渲染流程">
-      <i class="fa fa-chevron-left"></i> 【Pilot代码解读】渲染系统（一）渲染流程
+    <a href="/LycTechStack.github.io/2022/06/18/20220618-Pilot-%E6%B8%B2%E6%9F%93%E7%B3%BB%E7%BB%9F%EF%BC%88%E4%B8%80%EF%BC%89%E6%B8%B2%E6%9F%93%E6%B5%81%E7%A8%8B/" rel="prev" title="【Piccolo代码解读】渲染系统（一）渲染流程">
+      <i class="fa fa-chevron-left"></i> 【Piccolo代码解读】渲染系统（一）渲染流程
     </a></div>
       <div class="post-nav-item">
     <a href="/LycTechStack.github.io/2022/06/28/20220628-%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB-3D%E6%95%B0%E5%AD%A6%E9%83%A8%E5%88%86/" rel="next" title="【知识汇总】数学相关">
@@ -729,13 +718,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">830k</span>
+    <span title="站点总字数">824k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">12:34</span>
+    <span title="站点阅读时长">12:29</span>
 </div>
 
         

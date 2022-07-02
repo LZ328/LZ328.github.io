@@ -29,49 +29,49 @@
 <meta property="og:site_name" content="LycTechStack">
 <meta property="og:description" content="阴影是渲染中极其重要的一部分，好的阴影能够大幅提升画面表现力，离线渲染中的各种阴影生成算法或者光线追踪算法都能够做到非常精细和逼真的阴影，但在游戏等实时渲染中，对帧率要求很高的情况下如何以最低的代价生成高质量的阴影就是一个难题。这一节将对实时渲染中的阴影相关的算法原理进行总结。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530152415189.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530152854014.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530153029862.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530153303843.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530145535937.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530145805637.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530150153504.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530150232576.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530150705056.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530151628306.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530154335327.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530154413210.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530155053026.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530155441750.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530160458278.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530160930593.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530162415880.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530174618341.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530170245397.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530170818733.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530171327752.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530171632090.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530171726482.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530173458126.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530175426796.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530175756313.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530175829567.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530180032457.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530180617122.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220601142044408.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220601142307684.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220601142714292.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220601143236308.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/2022-06-01144018.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220601144718966.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220530152415189.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220530152854014.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220530153029862.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220530153303843.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220530145535937.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220530145805637.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220530150153504.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220530150232576.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220530150705056.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220530151628306.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220530154335327.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220530154413210.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220530155053026.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220530155441750.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220530160458278.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220530160930593.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220530162415880.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220530174618341.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220530170245397.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220530170818733.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220530171327752.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220530171632090.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220530171726482.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220530173458126.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220530175426796.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220530175756313.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220530175829567.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220530180032457.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220530180617122.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220601142044408.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220601142307684.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220601142714292.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220601143236308.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022-06-01144018.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220601144718966.png">
 <meta property="article:published_time" content="2022-05-30T12:49:23.000Z">
 <meta property="article:modified_time" content="2022-06-13T03:31:52.570Z">
 <meta property="article:author" content="Lyc">
 <meta property="article:tag" content="计算机图形学">
-<meta property="article:tag" content="实时渲染">
 <meta property="article:tag" content="游戏引擎">
+<meta property="article:tag" content="实时渲染">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530152415189.png">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220530152415189.png">
 
 <link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/">
 
@@ -292,14 +292,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>9.4k</span>
+              <span>9.3k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>9 分钟</span>
+              <span>8 分钟</span>
             </span>
 
         </div>
@@ -313,17 +313,17 @@
       
         <p>阴影是渲染中极其重要的一部分，好的阴影能够大幅提升画面表现力，离线渲染中的各种阴影生成算法或者光线追踪算法都能够做到非常精细和逼真的阴影，但在游戏等实时渲染中，对帧率要求很高的情况下如何以最低的代价生成高质量的阴影就是一个难题。这一节将对实时渲染中的阴影相关的算法原理进行总结。</p>
 <p><em><span id="more"></span></em></p>
-<h3 id="1-再谈-Shadow-Map"><a href="#1-再谈-Shadow-Map" class="headerlink" title="1 再谈 Shadow Map"></a>1 再谈 Shadow Map</h3><h4 id="1-1-Shadow-Map-背后的数学原理"><a href="#1-1-Shadow-Map-背后的数学原理" class="headerlink" title="1.1 Shadow Map 背后的数学原理"></a>1.1 Shadow Map 背后的数学原理</h4><p>关于 Shadow Map，我们在之前已经了解过，原理非常简单，首先从光源的视角看向整个场景生成一张深度图，然后再从真正的相机视角渲染场景，并对每一个着色点计算其到光源的距离，和深度图中的距离作比较，就可以判断该着色点和光源中间是否有遮挡物，从而产生阴影。整个过程可以查看之前的笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-%E9%98%B4%E5%BD%B1/">【计算机图形学】（十）阴影</a>。</p>
+<h3 id="1-再谈-Shadow-Map"><a href="#1-再谈-Shadow-Map" class="headerlink" title="1 再谈 Shadow Map"></a>1 再谈 Shadow Map</h3><h4 id="1-1-Shadow-Map-背后的数学原理"><a href="#1-1-Shadow-Map-背后的数学原理" class="headerlink" title="1.1 Shadow Map 背后的数学原理"></a>1.1 Shadow Map 背后的数学原理</h4><p>关于 Shadow Map，我们在之前已经了解过，原理非常简单，首先从光源的视角看向整个场景生成一张深度图，然后再从真正的相机视角渲染场景，并对每一个着色点计算其到光源的距离，和深度图中的距离作比较，就可以判断该着色点和光源中间是否有遮挡物，从而产生阴影。整个过程可以查看之前的笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/03/13/20220313-阴影/">【计算机图形学】（十）阴影</a>。</p>
 <p>那么 Shadow Map 为什么可以这么做，可以利用数学知识简单的进行解释，同时了解实时渲染中的优化方向。</p>
 <p>首先是在实时渲染领域非常重要的一个思想，那就是只要看起来是对的，那么它就是对的。也就是说我们不需要精确地计算出结果，只要能够得到结果的正确近似，使最终的渲染效果看起来正确就足够了。因此在实时渲染中会用到各种近似的方法，后面就可以看到，这里先熟悉一个实时渲染中经常用到的近似等式：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530152415189.png" alt="image-20220530152415189"></p>
-<p>也就是把两个函数乘积的积分近似转化为两个函数积分的乘积，其中分母是一个缩放因子，为了将积分的乘积缩小到和原积分同样的大小，可以通过一个例子来理解：比如 $f(x)$ 是一个常量函数，函数值恒为 2，积分区间是一个长度为 3 的一维区间，那么原积分相当于两倍的 $g(x)$ 在该区间上的积分，转化后的分子，也就是对 $f(x)$ 的积分结果为 3 * 2 &#x3D;  6，如果不除以缩放因子那么结果就是 6 倍的 $g(x)$ 在该区间上的积分，而除以分母的缩放因子，也就是积分区间长度 3，结果刚好就是 2 倍的 $g(x)$ 在该区间上的积分。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220530152415189.png" alt="image-20220530152415189"></p>
+<p>也就是把两个函数乘积的积分近似转化为两个函数积分的乘积，其中分母是一个缩放因子，为了将积分的乘积缩小到和原积分同样的大小，可以通过一个例子来理解：比如 $f(x)$ 是一个常量函数，函数值恒为 2，积分区间是一个长度为 3 的一维区间，那么原积分相当于两倍的 $g(x)$ 在该区间上的积分，转化后的分子，也就是对 $f(x)$ 的积分结果为 3 * 2 =  6，如果不除以缩放因子那么结果就是 6 倍的 $g(x)$ 在该区间上的积分，而除以分母的缩放因子，也就是积分区间长度 3，结果刚好就是 2 倍的 $g(x)$ 在该区间上的积分。</p>
 <p>这个式子在实时渲染中非常有用，比如我们的渲染方程：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530152854014.png" alt="image-20220530152854014"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220530152854014.png" alt="image-20220530152854014"></p>
 <p>在实时渲染中经常会改写为下面的形式：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530153029862.png" alt="image-20220530153029862"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220530153029862.png" alt="image-20220530153029862"></p>
 <p>其中 V 代表可见项，表示了该点的可见程度，可以理解为阴影项，于是上面的渲染方程根据之前的近似等式就可以写成：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530153303843.png" alt="image-20220530153303843"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220530153303843.png" alt="image-20220530153303843"></p>
 <p>我们在之前的 Shader 中就是在光照计算结果上乘了一个阴影项，这就是可以这么做的道理所在。当然使用这样的近似结果要想估计的准确需要一定的条件：</p>
 <ul>
 <li>$g(x)$ 在积分区间上的波动要尽可能小，或者说积分区间要足够小，体现到渲染中就是光源最好是点光源或者平行光</li>
@@ -331,66 +331,66 @@
 </ul>
 <h4 id="1-2-Shadow-Map-的问题"><a href="#1-2-Shadow-Map-的问题" class="headerlink" title="1.2 Shadow Map 的问题"></a>1.2 Shadow Map 的问题</h4><p>Shadow Map 是最基础的阴影算法，优点在于它是一个屏幕空间的算法，不需要知道场景的几何信息，只要知道光源位置和每一个片段的位置就可以完成（世界空间或者裁剪空间都可以），但是正因为其简单，所以有不少缺点，这也是后面的阴影算法的改进方向，总的来说 Shadow Map 有三个最大的问题：</p>
 <p>首先是<strong>自遮挡问题。</strong> Shadow Map 是一个需要两个 Pass 完成的算法，在第一个 Pass 中先从光源位置渲染一遍场景，并将每个像素的深度信息存下来，第二个 Pass 中利用这些深度信息产生阴影。问题在于 Shadow Map 分辨率有限，Shadow Map 中每个像素对应到场景中的一块区域，当第二次进行深度对比的时候，就可能会产生错误，如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530145535937.png" alt="image-20220530145535937"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220530145535937.png" alt="image-20220530145535937"></p>
 <p>由于 Shadow Map 分辨率有限，因此每个 texel 对应于场景中一个区域，如图中的区域 1。点 p1 和 p2 对应于屏幕上的不同像素点，由于我们判断一个像素是否位于阴影中，是通过比较该点在以光源为视点的空间中的深度和对应 texel 中储存的深度值。在这种情况下 d(p1) &gt; s，而 d(p2) &lt; s，因此 p1 将会被认为是在阴影中，但其实 p1 和 p2 应该都不在阴影中。于是渲染出来的图就会产生下面的结果：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530145805637.png" alt="image-20220530145805637"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220530145805637.png" alt="image-20220530145805637"></p>
 <p>存在很多阴影纹路，解决这个问题最简单的方法就是在深度比较的时候加上一个容忍度，也就是当着色点的深度比 Shadow Map 中的深度大且它们的差在一定范围内我们就不认为该点被遮挡了。但是如果我们手动设定一个固定的容忍度，也就相当于为 Shadow Map 中的深度进行了一个统一的偏移，如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530150153504.png" alt="image-20220530150153504"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220530150153504.png" alt="image-20220530150153504"></p>
 <p>这样虽然解决了自遮挡的问题，但会产生新的问题，也就是一部分本该在阴影中的点就不在阴影中了，比如：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530150232576.png" alt="image-20220530150232576"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220530150232576.png" alt="image-20220530150232576"></p>
 <p>脚的部分阴影就会断掉，原因如下图所示：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530150705056.png" alt="image-20220530150705056"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220530150705056.png" alt="image-20220530150705056"></p>
 <p>当三角形平面相对于光源的斜率比较大的时候，Shadow Map 中的深度偏移了一段距离，原本被遮挡的点就会变成没有被遮挡从而不产生阴影，如果使用相同的偏移量就会在斜率大的地方有更多的点不被遮挡，从而造成阴影断裂，也就是上图中鞋的部分显然相对于光源的斜率更大，因此会产生阴影断裂现象。因此我们希望可以根据三角形相对于光源的斜率来自适应的调整容忍度，现代显卡已经支持了这种操作。</p>
 <p>Shadow Map 的第二个问题是会<strong>产生走样</strong>，如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530151628306.png" alt="image-20220530151628306"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220530151628306.png" alt="image-20220530151628306"></p>
 <p>这同样是由于 Shadow Map 的分辨率有限造成的，可以通过 PCF 来解决，下面会详细介绍。</p>
 <p>Shadow Map 的第三个问题是<strong>只能产生硬阴影</strong>。于是产生了各种软阴影算法，同样在之后详细介绍。</p>
 <h3 id="2-Percentage-Closer-Filtering（PCF）"><a href="#2-Percentage-Closer-Filtering（PCF）" class="headerlink" title="2 Percentage Closer Filtering（PCF）"></a>2 Percentage Closer Filtering（PCF）</h3><p>PCF 是解决 Shadow Map 的走样问题而被提出的。其思想是获取着色点周围的一系列点的深度值，与 P 点深度比较再对比较结果计算一个平均值，也就是说，在比较着色点和 Shadow Map 中的深度的时候，不仅和一个 texel 作比较，而是和多个 texel 作比较，然后将比较的结果进行一个平均作为该点的最终比较结果，这样就得到了一个平滑的，不是非 0 即 1 的阴影项。下面通过一个例子来说明：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530154335327.png" alt="image-20220530154335327"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220530154335327.png" alt="image-20220530154335327"></p>
 <p>对于点 P，我们将其周围 3 * 3 的深度值和当前像素作比较，得到一个比较结果：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530154413210.png" alt="image-20220530154413210"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220530154413210.png" alt="image-20220530154413210"></p>
 <p>然后将这些结果（加权）平均起来，作为最终该像素的阴影项，这个例子中阴影项最终结果是 0.667，当然一般来说不会取 3 * 3 这么小的邻域。现在的硬件也支持 PCF，但只会取离纹理坐标最近的四个 texel 做平均，效果有限，因此大多数情况下还是在软件 Shader 中做 PCF。</p>
 <p>需要注意的是，PCF 既不是对 Shadow Map 中的深度进行平均，也不是对生成的阴影图像进行滤波，而是对深度比较的结果进行平均。</p>
 <p>下图是 PCF 的效果，可以一定程度上改善阴影的走样问题：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530155053026.png" alt="image-20220530155053026"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220530155053026.png" alt="image-20220530155053026"></p>
 <h3 id="3-Percentage-Closer-Soft-Shadows（PCSS）"><a href="#3-Percentage-Closer-Soft-Shadows（PCSS）" class="headerlink" title="3 Percentage Closer Soft Shadows（PCSS）"></a>3 Percentage Closer Soft Shadows（PCSS）</h3><p>PCSS 是利用 PCF 产生软阴影的算法，为了解决 Shadow Map 无法产生软阴影的问题，实际上所有阴影反走样算法都可以用来产生软阴影。</p>
 <p>从 PCF 的原理可以看出，当我们使用的邻域面积越大，也就是卷积核越大，得到的阴影就会越软，因此我们完全可以使用大卷积核的 PCF 来产生软阴影，但是卷积核选择多大合适呢？如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530155441750.png" alt="image-20220530155441750"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220530155441750.png" alt="image-20220530155441750"></p>
 <p>笔尖附近的阴影非常锐利，而笔杆部分的阴影就变得比较软，这是因为在笔尖处，阴影投射物（Shadow Caster）和阴影接收物（Shadow Reciever）之间的距离很近，而在笔杆部分 Shadow Caster 和 Shadow Reciever 之间的距离较远。因此我们希望 Shadow Caster 和 Shadow Reciever 之间的距离越远，使用的卷积核越大，也就使得阴影越软。</p>
 <p>这可以通过几何关系来描述：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530160458278.png" alt="image-20220530160458278"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220530160458278.png" alt="image-20220530160458278"></p>
 <p>绿色虚线是遮挡物（Blocker）到光源平面的距离，蓝色虚线是阴影接收平面到光源平面的距离，当 Blocker 离光源平面越远，也就是离阴影接收平面越近，光源平面经过 Blocker 上一点映射到阴影接收平面上的面积就越小，我们根据这个映射后的面积决定使用多大的卷积核，这样一来，Blocker 离阴影接收平面越近，使用的卷积核就越小，当 Blocker 离光源平面越近，也就是离阴影接收平面越远，使用的卷积核就越大，这样就可以产生比较真实的软阴影效果。从图中也很容易根据相似三角形原理得出映射后的光源面积：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530160930593.png" alt="image-20220530160930593"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220530160930593.png" alt="image-20220530160930593"></p>
 <p>现在的问题是，Blocker 的深度 $d_{Blocker}$ 如何得到？我们在渲染时只知道阴影接收平面上的一点，并不知道遮挡物距离光源的深度是多少，这时可以再次利用 PCF 的思想，将这一点和其周围一定邻域内的 Shadow Map 中的深度进行比较，将所有小于该点深度的值平均起来，也就是将所有该点周围能够遮挡到该点的深度都平均起来，作为 Blocker 的深度。</p>
 <p>于是 PCSS 算法的整个流程就是：</p>
 <ul>
 <li>对于每个像素，首先利用上述方法计算其 $d_{Blocker}$ </li>
-<li>然后根据 $d_{Blocker}$ 计算得到卷积核大小 $w_{Penumbra}$</li>
+<li>然后根据 $d<em>{Blocker}$ 计算得到卷积核大小 $w</em>{Penumbra}$</li>
 <li>使用对应大小的卷积核进行 PCF</li>
 </ul>
-<p>那么又产生了一个问题，计算 $d_{Blocker}$ 时，又该选用多大的邻域范围呢？当然可以是一个固定的大小，比如 5 * 5，但是更好的方法是根据光源面积大小和着色点到光源的距离远近来选择不同的卷积核大小，一种方法是从着色点到光源平面构建一个锥体，然后看该点在  Shadow Map 上对应了多大的区域，将该区域内的深度和该点的深度进行比较，把所有小于该点深度的值平均起来作为 $d_{Blocker}$，如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530162415880.png" alt="image-20220530162415880"></p>
+<p>那么又产生了一个问题，计算 $d<em>{Blocker}$ 时，又该选用多大的邻域范围呢？当然可以是一个固定的大小，比如 5 * 5，但是更好的方法是根据光源面积大小和着色点到光源的距离远近来选择不同的卷积核大小，一种方法是从着色点到光源平面构建一个锥体，然后看该点在  Shadow Map 上对应了多大的区域，将该区域内的深度和该点的深度进行比较，把所有小于该点深度的值平均起来作为 $d</em>{Blocker}$，如下图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220530162415880.png" alt="image-20220530162415880"></p>
 <p>另外需要说明的是对于面光源，生成 Shadow Map 时也要像点光源一样，取光源平面中心一点，作为渲染深度图的视点，从该视点出发构建视锥体进行渲染，而 Shadow Map 也就是视锥体的近平面，所以使用上面的方法就可以从空间中一点覆盖到 Shadow Map 上的一块区域。</p>
 <h3 id="4-Variance-Soft-Shadow-Mapping（VSM）"><a href="#4-Variance-Soft-Shadow-Mapping（VSM）" class="headerlink" title="4 Variance Soft Shadow Mapping（VSM）"></a>4 Variance Soft Shadow Mapping（VSM）</h3><h4 id="4-1-PCSS-的问题"><a href="#4-1-PCSS-的问题" class="headerlink" title="4.1 PCSS 的问题"></a>4.1 PCSS 的问题</h4><p>PCSS 利用 PCF 产生软阴影，但是速度并不快，因为 PCSS 在第一步计算 $d_{Blocker}$ 和最后一步进行 PCF 都需要对 Shadow Map 进行采样，而且当卷积核比较大的时候，需要采样很多纹理值，造成性能下降。一种解决方法是不对卷积核内的所有纹理进行采样，而是选取其中一些样本进行计算，但是这样得到的结果中一定存在噪声，不过可以利用后期的去噪方法来优化结果。</p>
 <p>进一步思考这个问题，PCF 的精髓在于 “Percentage Closer”，也就是有多少百分比的 texel 是能够遮挡到当前位置的，换一种说法就是在当前点的一定邻域范围内有多少深度是小于当前点深度的。这就将原问题转化为了一个统计问题，因此使用少量样本也一定程度上能够得到近似正确的结果，但有没有更好的方法来得到相对准确的近似呢？</p>
 <p>从概率与统计的角度来解决上述问题，我们只要能够知道这个邻域范围内的深度是如何分布的，就可以快速地得到一个近似的百分比。最容易想到的就是将深度的分布近似的看作是正态分布，而得到一个正态分布只需要两个量：均值和方差。</p>
 <p><strong>因此 VSM 的核心思想就是</strong>，利用区域查询方法快速地得到 Shadow Map 中一个区域内深度的均值和方差，从而得到深度的近似分布，根据深度分布得到这个区域内有多少深度是小于当前点深度的，然后就可以改进 PCSS 的第一步和第三步中 PCF 的多次纹理采样，从而获得效率提升。</p>
 <h4 id="4-2-区域查询方法"><a href="#4-2-区域查询方法" class="headerlink" title="4.2 区域查询方法"></a>4.2 区域查询方法</h4><p>对于一个区域内的均值，可以利用 MipMap 来快速查询，但是 MipMap 得到的均值是近似值，因为需要三线性插值，即在同一层级的不同平均值之间插值，然后还得在不同层级之间再插值一次得到结果：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530174618341.png" alt="image-20220530174618341"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220530174618341.png" alt="image-20220530174618341"></p>
 <p>更准确的查询区域均值的方法是利用 Summed Area Tables (SAT)。SAT 实际上就是二维前缀和，具体细节就不赘述了，如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530170245397.png" alt="image-20220530170245397"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220530170245397.png" alt="image-20220530170245397"></p>
 <p>因此使用 SAT 获取区域均值是绝对准确的，非近似的，而且还支持矩形区域查询，MipMap 只支持正方形区域。</p>
 <p>至于 SAT 的构建，需要随着 Shadow Map 的更新而重新计算，而 Shadow Map 也要在场景中的物体运动或者光源运动的情况下不断更新，所以还是存在一定的开销的，但 SAT 一旦构建完成就可以使用 VSM 算法快速得到的 PCF 的结果，而不需要再对 Shadow Map 进行多次采样再平均，所以降低了 PCSS 的开销。</p>
 <h4 id="4-3-VSM-的实现"><a href="#4-3-VSM-的实现" class="headerlink" title="4.3 VSM 的实现"></a>4.3 VSM 的实现</h4><p>利用区域查询方法可以快速得到深度的均值，那么如何得到区域内深度的方差呢？利用一个经典概率论公式：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530170818733.png" alt="image-20220530170818733"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220530170818733.png" alt="image-20220530170818733"></p>
 <p>我们只需要在构建 Shadow Map 的时候，将深度的平方也存在一张纹理中，就可以计算出区域内深度的方差了。在实际实现中，深度和深度的平方可以存在一张纹理的两个不同通道，甚至不需要两张纹理，也不需要 MRT 支持，非常方便。</p>
-<p>于是根据均值和方差就可以构建出该区域内深度的近似分布了，下一步就是得到有多少深度比当前点深度小，也就是算出 $P(x &lt; x_{cur})$，已知概率密度函数（PDF）求概率就是对 PDF 进行积分，而如果能够提前算出所有的概率，对于给定的 $x_{cur}$，只需要查询就可以了，这正是分段概率函数（CDF），如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530171327752.png" alt="image-20220530171327752"></p>
+<p>于是根据均值和方差就可以构建出该区域内深度的近似分布了，下一步就是得到有多少深度比当前点深度小，也就是算出 $P(x &lt; x<em>{cur})$，已知概率密度函数（PDF）求概率就是对 PDF 进行积分，而如果能够提前算出所有的概率，对于给定的 $x</em>{cur}$，只需要查询就可以了，这正是分段概率函数（CDF），如下图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220530171327752.png" alt="image-20220530171327752"></p>
 <p>但是对于一个连续的概率分布，求其 CDF 是非常困难的，于是 VSM 又利用了一个巧妙的方法来近似 CDF —— 利用切比雪夫不等式。</p>
 <p>切比雪夫不等式（Chebychev’s inequality）在单峰概率分布时如下：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530171632090.png" alt="image-20220530171632090"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220530171632090.png" alt="image-20220530171632090"></p>
 <p>这个不等式甚至不需要知道具体的概率分布，只要给定均值和方差，就可以得到上面的关系，如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530171726482.png" alt="image-20220530171726482"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220530171726482.png" alt="image-20220530171726482"></p>
 <p>切比雪夫不等式描述的是 $x&gt;t$ 的概率不大于右边通过均值和方差计算出来的值。而在图形学中一个常规操作就是把不等式看作约等式，因此可以直接把切比雪夫不等式的右边的值作为 $P(x&gt;t)$ 的估计值，这样自然也就得到了我们需要的 $P(x &lt; t)$ 的估计值。</p>
 <p>但是切比雪夫不等式要求 t 必须大于均值才有效，不过对于图形学来说，这样的近似估计已经足够好了，因为它足够简单快速。</p>
 <p>现在我们可以总结一下 VSM 算法对 PCF 的改进流程：</p>
@@ -400,55 +400,59 @@
 <li>然后在渲染时，只需要查询 SAT 获得对应区域内的深度均值和深度平方均值，然后计算切比雪夫估计就相当于完成了 PCF，这一系列操作只需要 O(1) 时间，不需要任何循环和多次纹理采样</li>
 </ul>
 <p>于是就解决了 PCSS 中的第三步 PCF，那么第一步获取 $d_{Blocker}$ 又该如何优化呢？</p>
-<p>回顾获取 $d_{Blocker}$ 的方法：将当前点和其周围一定邻域内的 Shadow Map 中的深度进行比较，将所有小于该点深度的值平均起来，也就是将所有该点周围能够遮挡到该点的深度都平均起来，作为 $d_{Blocker}$。</p>
+<p>回顾获取 $d<em>{Blocker}$ 的方法：将当前点和其周围一定邻域内的 Shadow Map 中的深度进行比较，将所有小于该点深度的值平均起来，也就是将所有该点周围能够遮挡到该点的深度都平均起来，作为 $d</em>{Blocker}$。</p>
 <p>对于一个区域，区域内所有深度可以分为两类：</p>
 <ul>
 <li>一类是小于当前点深度的，也就是会遮挡到当前点的深度，这些点的深度均值为 $z_{occ}$</li>
 <li>另一类是小于当前点深度的，也就是不会遮挡到当前点的深度，这些点的深度均值为 $z_{unocc}$</li>
 </ul>
 <p>于是区域内所有深度的均值 $z_{avg}$ 可以表示成：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530173458126.png" alt="image-20220530173458126"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220530173458126.png" alt="image-20220530173458126"></p>
 <p>其中 N 是区域内 texel 总数量， N1 和 N2 分别是不会遮挡和会遮挡当前点的 texel 数量。</p>
-<p>我们希望得到的是会遮挡到当前点的深度的均值 $z_{occ}$。而 N1&#x2F;N 就是我们上面切比雪夫不等式计算的 $P(x &gt; x_{cur})$，那么自然 N2&#x2F;N 就是 $1-P(x &gt; x_{cur})$，于是现在我们只要知道 $z_{unocc}$ 就可以得到 $z_{occ}$ 了，VSM 直接假设 $z_{unocc}&#x3D;x_{cur}$ ，也就是假设不会遮挡到当前点的深度的均值就是当前点的深度，根据这些值，就可以得到一个 $z_{occ}$ 的近似值了，这个值就作为 $d_{Blocker}$ 去计算 PCF 卷积核大小。</p>
+<p>我们希望得到的是会遮挡到当前点的深度的均值 $z<em>{occ}$。而 N1/N 就是我们上面切比雪夫不等式计算的 $P(x &gt; x</em>{cur})$，那么自然 N2/N 就是 $1-P(x &gt; x<em>{cur})$，于是现在我们只要知道 $z</em>{unocc}$ 就可以得到 $z<em>{occ}$ 了，VSM 直接假设 $z</em>{unocc}=x<em>{cur}$ ，也就是假设不会遮挡到当前点的深度的均值就是当前点的深度，根据这些值，就可以得到一个 $z</em>{occ}$ 的近似值了，这个值就作为 $d_{Blocker}$ 去计算 PCF 卷积核大小。</p>
 <p>于是 PCSS 中第一步的多次采样问题也解决了，最后总结一下 VSM 的算法流程：</p>
 <ul>
 <li>首先正常得到存有深度的 Shadow Map，顺便把深度平方也存在 Shadow Map 的一个通道中</li>
 <li>然后预处理得到 Shadow Map 的 SAT</li>
-<li>渲染时，对于每个像素，根据之前说的方法得到计算 $d_{Blocker}$ 时的卷积核大小，查询 SAT 获得对应区域内的深度均值和深度平方均值，然后计算切比雪夫估计，利用上述方法计算 $z_{occ}$ 作为 $d_{Blocker}$ </li>
-<li>然后根据 $d_{Blocker}$ 计算得到卷积核大小 $w_{Penumbra}$</li>
+<li>渲染时，对于每个像素，根据之前说的方法得到计算 $d<em>{Blocker}$ 时的卷积核大小，查询 SAT 获得对应区域内的深度均值和深度平方均值，然后计算切比雪夫估计，利用上述方法计算 $z</em>{occ}$ 作为 $d_{Blocker}$ </li>
+<li>然后根据 $d<em>{Blocker}$ 计算得到卷积核大小 $w</em>{Penumbra}$</li>
 <li>使用对应大小的卷积核查询 SAT 获得对应区域内的深度均值和深度平方均值，然后计算切比雪夫估计就相当于完成了 PCF，将切比雪夫估计值作为该像素的阴影项</li>
 </ul>
 <h4 id="4-4-VSM-的优缺点"><a href="#4-4-VSM-的优缺点" class="headerlink" title="4.4 VSM 的优缺点"></a>4.4 VSM 的优缺点</h4><p>VSM 实际上就是 PCSS 的改进方法，加速了 PCF 的计算过程，效率更高，且阴影不会产生噪声，但也存在一些问题。最严重的问题就是会产生漏光（Light Leaking）现象。</p>
 <p>所谓漏光是指当两个 shadow caster 的阴影出现重叠时，在阴影的交界处会出现漏光，如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530175426796.png" alt="image-20220530175426796"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220530175426796.png" alt="image-20220530175426796"></p>
 <p>汽车底盘下方有些亮的地方，但是汽车底盘不应该是透光的，这是因为这些地方处于多个 shadow caster 的交界处，车顶有镂空的架子。</p>
 <p>漏光的原因在于 VSM 中使用了单峰概率分布的切比雪夫不等式作为 PCF 的估计值，也就是默认当前点周围的深度分布是一个单峰的概率分布。对于一些复杂的情况，比如树枝，确实一个点周围的深度分布很复杂，可以近似为正态分布，所以阴影也不会有问题，如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530175756313.png" alt="image-20220530175756313"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220530175756313.png" alt="image-20220530175756313"></p>
 <p>但是有些情况下，深度分布很简单，如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530175829567.png" alt="image-20220530175829567"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220530175829567.png" alt="image-20220530175829567"></p>
 <p>这时如果一个着色点刚好在多个镂空区域的下方，那么该点周围的深度分布可能就是多个峰值或者像上图那样的极端情况，只有几个离散的深度，这时还是用单峰切比雪夫不等式就会使得估计出来的 $P(x &gt; x_{cur})$ 偏大或者偏小，如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530180032457.png" alt="image-20220530180032457"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220530180032457.png" alt="image-20220530180032457"></p>
 <p>也就会导致阴影项偏小或者偏大，体现在图像上就是该像素更暗或者更亮，对于阴影来说，更暗我们一般看不出来，但是更亮就会很敏感地被捕捉到，也就是漏光现象。</p>
 <h3 id="5-Moment-Shadow-Mapping（MSM）"><a href="#5-Moment-Shadow-Mapping（MSM）" class="headerlink" title="5 Moment Shadow Mapping（MSM）"></a>5 Moment Shadow Mapping（MSM）</h3><p>MSM 就是为了解决 VSM 的漏光现象而提出的。VSM 漏光的本质原因在于对深度分布的估计不准确，因为 VSM 只使用了均值和方差来估计分布，也就是只使用了深度的一阶矩和二阶矩，MEM 使用更高阶的矩来估计深度分布，得到的分布估计自然更加准确，MEM 经过实验指出，一般情况下使用前四阶矩就可以很好的拟合 PCF 的深度分布了：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220530180617122.png" alt="image-20220530180617122"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220530180617122.png" alt="image-20220530180617122"></p>
 <p>最后值得一提的是，现在更多的实时阴影还是使用在区域内采样深度的 PCSS，得益于时间和空间上的去噪和模糊算法可以在很短时间内达到很好的效果，因此我们可以在很小的开销下得到一张有噪声的结果，然后使用去噪或者模糊算法来优化这个结果得到好的渲染图片。</p>
 <h3 id="6-Distance-Field-Soft-Shadows"><a href="#6-Distance-Field-Soft-Shadows" class="headerlink" title="6 Distance Field Soft Shadows"></a>6 Distance Field Soft Shadows</h3><p>基于距离场的软阴影是另一种软阴影的近似算法，与以上基于 Shadow Map 的软阴影算法完全不同。相比于 Shadow Map，距离场更加快速，效果也不错，同时也不存在走样、自遮挡等问题，因此目前基于距离场的软阴影算法也逐渐被广泛使用。</p>
 <p>首先回顾一下距离场，距离场是由空间中所有点的距离函数组成的场，而距离函数是指一个点到离它最近的物体表面的距离。下图是一个字母 A 的距离场可视化的结果：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220601142044408.png" alt="image-20220601142044408"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220601142044408.png" alt="image-20220601142044408"></p>
 <p>距离场的优势在于可以使用插值得到物体表面的中间状态，如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220601142307684.png" alt="image-20220601142307684"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220601142307684.png" alt="image-20220601142307684"></p>
 <p>上面一行是直接对图像进行插值的结果，黑色部分代表物体，从状态 A 到状态 B 表示一个物体从左向右运动，黑白的边界就表示物体的表面。如果直接对两幅图像的每个像素进行插值是无法得到这两个状态的中间状态的，而如果转化为距离场，对距离场插值之后再逆变换回图像，就可以得到两个状态的中间状态。</p>
 <h4 id="6-1-距离场的用途"><a href="#6-1-距离场的用途" class="headerlink" title="6.1 距离场的用途"></a>6.1 距离场的用途</h4><p>距离场的一个用途就是用来做 Ray marching，也叫做 sphere tracing，也就是可以通过距离场来求光线和表面的交点，如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220601142714292.png" alt="image-20220601142714292"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220601142714292.png" alt="image-20220601142714292"></p>
 <p>因为距离场表示的是空间中一点到离它最近的物体表面的距离，因此在任意一点处的距离函数 SDF(p) 表示了这点周围的安全距离，也就是不会碰到物体的距离，所以在该点处 SDF(p) 范围内，光线不会与任何物体有交点，于是光线就可以前进 SDF(p) 距离到达边界，到达边界后又会得到一点，然后再去查找该点的 SDF(p) 并继续前进，直到光线足够接近物体或者追踪了足够多次，因此这种方法也叫做 sphere tracing。</p>
 <h4 id="6-2-基于距离场的软阴影"><a href="#6-2-基于距离场的软阴影" class="headerlink" title="6.2 基于距离场的软阴影"></a>6.2 基于距离场的软阴影</h4><p>在 Ray marching 中就可以顺便完成阴影项的计算，得到一个软阴影，上面说到，任意一点处的距离函数 SDF(p) 表示了这点周围的安全距离，那么也就表示了这一点的安全角度，所谓安全角度是指该点不会被遮挡到的角度，如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220601143236308.png" alt="image-20220601143236308"></p>
-<p>而这个安全角度是很容易算出的，我们知道着色点到该点的距离，也知道该点到离他最近的物体表面的距离，那么安全角度就是：<br>$$<br>arcsin(\frac{SDF(p)}{|p - o|})<br>$$<br>该值就可以直接作为阴影项，安全角度越小，被遮挡的概率就越大，因此该着色点的阴影也就越暗。</p>
-<p>但是在着色过程中，反三角函数的计算还是太过复杂，为了简化计算，我们直接使用该点的距离函数值和着色点到该点的距离的比值乘上一个系数来近似 arcsin 值，并且将其限制在 [0, 1] 范围内：<br>$$<br>min(k·\frac{SDF(p)}{|p - o|},1.0)<br>$$<br>这样近似不仅降低了计算开销，还能使软阴影更加灵活，因为 k 值越大，相当于在一个很小的安全角度阴影项就达到了 1.0，因此从0 到 1 的过渡就越陡峭，阴影和非阴影的边界就越明显，阴影也就越硬，如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/2022-06-01144018.png" alt="2022-06-01 144018"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220601143236308.png" alt="image-20220601143236308"></p>
+<p>而这个安全角度是很容易算出的，我们知道着色点到该点的距离，也知道该点到离他最近的物体表面的距离，那么安全角度就是：</p>
+<script type="math/tex; mode=display">
+arcsin(\frac{SDF(p)}{|p - o|})</script><p>该值就可以直接作为阴影项，安全角度越小，被遮挡的概率就越大，因此该着色点的阴影也就越暗。</p>
+<p>但是在着色过程中，反三角函数的计算还是太过复杂，为了简化计算，我们直接使用该点的距离函数值和着色点到该点的距离的比值乘上一个系数来近似 arcsin 值，并且将其限制在 [0, 1] 范围内：</p>
+<script type="math/tex; mode=display">
+min(k·\frac{SDF(p)}{|p - o|},1.0)</script><p>这样近似不仅降低了计算开销，还能使软阴影更加灵活，因为 k 值越大，相当于在一个很小的安全角度阴影项就达到了 1.0，因此从0 到 1 的过渡就越陡峭，阴影和非阴影的边界就越明显，阴影也就越硬，如下图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022-06-01144018.png" alt="2022-06-01 144018"></p>
 <h4 id="6-3-距离场的优缺点"><a href="#6-3-距离场的优缺点" class="headerlink" title="6.3 距离场的优缺点"></a>6.3 距离场的优缺点</h4><p>相比于 Shadow Map，距离场更加快速，效果也不错，同时也不存在走样、自遮挡等问题，但是距离场是定义在三维空间中的，三维空间中的每个点的 SDF 都要存下来，需要非常大的存储开销，虽然有一些距离场的压缩算法，但相比于一张 Shadow Map 二维纹理，依然是极大的开销。</p>
 <p>此外，使用距离场自然需要预先对一个场景计算其距离场，对于一些有形变的物体每次还要重新计算，也是一个很大开销，一个场景中有多个物体还要先计算点到不同物体表面的距离，再取所有距离的最小值作为该点的 SDF，当然也可以使用场景管理的 BVH 等数据结构来优化距离场的计算过程，下图是一个复杂场景的距离场可视化结果：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/image-20220601144718966.png" alt="image-20220601144718966"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220601144718966.png" alt="image-20220601144718966"></p>
 <p>除了上面的缺点外，距离场实际上也存在一些 artifact，这里不赘述，有必要可以之后再做深入了解。</p>
 <h3 id="7-Cascaded-Shadow-Maps（CSM）"><a href="#7-Cascaded-Shadow-Maps（CSM）" class="headerlink" title="7 Cascaded Shadow Maps（CSM）"></a>7 Cascaded Shadow Maps（CSM）</h3><p>CSM 也称为级联阴影，通常用于大型场景的实时阴影中，当场景很大的时候，在一张阴影贴图中捕捉所有对象需要阴影贴图具有非常高的分辨率，否则就会造成阴影的严重锯齿。CSM 的思想是使用多张不同分辨率的阴影贴图，对于<strong>近处</strong>的场景使用<strong>较高分辨率</strong>的阴影贴图，对于远处的场景使用粗糙的阴影贴图，在两张阴影贴图过渡的地方选择其中一张使用。因为远处的对象只占画面的很少一部分像素，而近处的对象占据了画面的很大一部分，进行这样的处理显然非常合理。</p>
 <p>CSM 根据场景的远近来划分 camera frustum，靠近 camera 的区域划分的较密，远离 camera 的区域划分的比较稀疏，这就使得靠近 camera 的区域能够使用一个相对较大分辨率的 shandow map，减少失真现象。CSM的具体流程如下：</p>
@@ -530,8 +534,8 @@
       <footer class="post-footer">
           <div class="post-tags">
               <a href="/LycTechStack.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/" rel="tag"># 计算机图形学</a>
-              <a href="/LycTechStack.github.io/tags/%E5%AE%9E%E6%97%B6%E6%B8%B2%E6%9F%93/" rel="tag"># 实时渲染</a>
               <a href="/LycTechStack.github.io/tags/%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E/" rel="tag"># 游戏引擎</a>
+              <a href="/LycTechStack.github.io/tags/%E5%AE%9E%E6%97%B6%E6%B8%B2%E6%9F%93/" rel="tag"># 实时渲染</a>
           </div>
 
         
@@ -680,13 +684,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">830k</span>
+    <span title="站点总字数">824k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">12:34</span>
+    <span title="站点阅读时长">12:29</span>
 </div>
 
         
