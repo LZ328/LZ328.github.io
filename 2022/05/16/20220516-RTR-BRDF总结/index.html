@@ -29,26 +29,26 @@
 <meta property="og:site_name" content="LycTechStack">
 <meta property="og:description" content="本篇对《Real-Time Rendering》一书中 BRDF 相关知识进行概括总结和扩展。主要内容包括：  BRDF 前置知识：数学、辐射度量学 BRDF 的定义、理解和性质 BRDF 模型分类 基于物理的 BRDF BRDF 引申">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-BRDF%E6%80%BB%E7%BB%93/image-20220516100712194.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-BRDF%E6%80%BB%E7%BB%93/image-20220516100727310.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-BRDF%E6%80%BB%E7%BB%93/image-20220516101214326.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-BRDF%E6%80%BB%E7%BB%93/image-20220516102543469.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-BRDF%E6%80%BB%E7%BB%93/image-20220516103729812.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-BRDF%E6%80%BB%E7%BB%93/image-20220516104422175.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-BRDF%E6%80%BB%E7%BB%93/image-20220516105824543.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-BRDF%E6%80%BB%E7%BB%93/image-20220516105922147.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-BRDF%E6%80%BB%E7%BB%93/image-20220516110118379.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-BRDF%E6%80%BB%E7%BB%93/image-20220516110240348.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-BRDF%E6%80%BB%E7%BB%93/image-20220516111305718.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-BRDF%E6%80%BB%E7%BB%93/image-20220516111833838.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-BRDF%E6%80%BB%E7%BB%93/image-20220516111851009.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220516100712194.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220516100727310.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220516101214326.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220516102543469.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220516103729812.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220516104422175.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220516105824543.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220516105922147.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220516110118379.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220516110240348.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220516111305718.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220516111833838.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220516111851009.png">
 <meta property="article:published_time" content="2022-05-16T06:55:13.000Z">
 <meta property="article:modified_time" content="2022-05-16T06:56:26.456Z">
 <meta property="article:author" content="Lyc">
 <meta property="article:tag" content="计算机图形学">
 <meta property="article:tag" content="实时渲染">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-BRDF%E6%80%BB%E7%BB%93/image-20220516100712194.png">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220516100712194.png">
 
 <link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-BRDF%E6%80%BB%E7%BB%93/">
 
@@ -263,14 +263,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>6.1k</span>
+              <span>6k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>6 分钟</span>
+              <span>5 分钟</span>
             </span>
 
         </div>
@@ -291,35 +291,37 @@
 <li>BRDF 引申</li>
 </ul>
 <p><em><span id="more"></span></em></p>
-<h3 id="1-BRDF-前置知识"><a href="#1-BRDF-前置知识" class="headerlink" title="1 BRDF 前置知识"></a>1 BRDF 前置知识</h3><p>BRDF 需要的前置数学和辐射度量学的相关内容，可以查看之前的笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-%E8%BE%90%E5%B0%84%E5%BA%A6%E9%87%8F%E5%AD%A6/">【计算机图形学】（十二）辐射度量学基础</a>，这里不再赘述。</p>
-<h3 id="2-BRDF-的定义、理解和性质"><a href="#2-BRDF-的定义、理解和性质" class="headerlink" title="2 BRDF 的定义、理解和性质"></a>2 BRDF 的定义、理解和性质</h3><h4 id="2-1-BRDF-的定义"><a href="#2-1-BRDF-的定义" class="headerlink" title="2.1 BRDF 的定义"></a>2.1 BRDF 的定义</h4><p>BRDF 的定义可以参考之前的笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/">【计算机图形学】（十三）路径追踪</a>第一部分。为了更进一步加深理解，这里再进行一个总结。</p>
+<h3 id="1-BRDF-前置知识"><a href="#1-BRDF-前置知识" class="headerlink" title="1 BRDF 前置知识"></a>1 BRDF 前置知识</h3><p>BRDF 需要的前置数学和辐射度量学的相关内容，可以查看之前的笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/03/18/20220318-辐射度量学/">【计算机图形学】（十二）辐射度量学基础</a>，这里不再赘述。</p>
+<h3 id="2-BRDF-的定义、理解和性质"><a href="#2-BRDF-的定义、理解和性质" class="headerlink" title="2 BRDF 的定义、理解和性质"></a>2 BRDF 的定义、理解和性质</h3><h4 id="2-1-BRDF-的定义"><a href="#2-1-BRDF-的定义" class="headerlink" title="2.1 BRDF 的定义"></a>2.1 BRDF 的定义</h4><p>BRDF 的定义可以参考之前的笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-路径追踪/">【计算机图形学】（十三）路径追踪</a>第一部分。为了更进一步加深理解，这里再进行一个总结。</p>
 <p>可以将给一个表面着色的过程，理解为给定入射的光线数量和方向，计算出指定方向的出射光亮度（radiance）。在计算机图形学领域，BRDF（Bidirectional Reflectance Distribution Function，译作双向反射分布函数）是一个用来描述表面如何反射光线的方程。顾名思义，BRDF 就是一个描述光如何从给定的两个方向（入射光方向 $l$ 和出射方向 $v$）在表面进行反射的函数。</p>
 <p>BRDF 的精确定义是出射辐射率的微分（differential outgoing radiance）和入射辐照度的微分（differential incoming irradiance）之比：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-BRDF%E6%80%BB%E7%BB%93/image-20220516100712194.png" alt="image-20220516100712194"></p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-BRDF%E6%80%BB%E7%BB%93/image-20220516100727310.png" alt="image-20220516100727310"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220516100712194.png" alt="image-20220516100712194"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220516100727310.png" alt="image-20220516100727310"></p>
 <p>一个最常见的疑问是，BRDF 为什么要取这样的定义。BRDF 为什么被定义为辐射率（radiance）和辐照度（irradiance）之比，而不是 radiance 和  radiance 之比，或者 irradiance 和 irradiance 之比呢？</p>
 <p>首先，我们分别重温它们的定义：</p>
 <ul>
-<li>辐照度（Irradiance，又译作辉度，辐射照度），表示单位时间内到达单位面积的辐射通量，也就是辐射通量对于面积的密度，通常用符号 $E$ 表示，单位 $W&#x2F;m^2$ ，瓦特每平方米。</li>
+<li>辐照度（Irradiance，又译作辉度，辐射照度），表示单位时间内到达单位面积的辐射通量，也就是辐射通量对于面积的密度，通常用符号 $E$ 表示，单位 $W/m^2$ ，瓦特每平方米。</li>
 <li>辐射率（Radiance，又译作光亮度），表示每单位立体角每单位投影面积的辐射通量，通常用符号 $L$ 表示,单位是 $W·sr^{-1}·m^{-2}$，瓦特每球面弧度每平方米。</li>
 </ul>
 <p>那么关于这个问题，我们可以这样理解：因为照射到入射点的不同方向的光，都可能从指定的反射方向出射，所以当考虑入射时，需要对面积进行积分。而辐照度 irradiance 正好表示单位时间内到达单位面积的辐射通量。所以 BRDF 函数，选取入射时的辐照度 Irradiance，和出射时的辐射率 Radiance，可以简单明了地描述出<strong>入射光线经过某个表面反射后如何在各个出射方向上分布</strong>。而直观来说，<strong>BRDF 的值给定了入射方向和出射方向能量的相对量</strong>。</p>
 <h4 id="2-2-BRDF-的非微分形式"><a href="#2-2-BRDF-的非微分形式" class="headerlink" title="2.2 BRDF 的非微分形式"></a>2.2 BRDF 的非微分形式</h4><p>当光源类型不是面光源，而是诸如点光源或方向光源时，BRDF 定义可以用非微分形式表示：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-BRDF%E6%80%BB%E7%BB%93/image-20220516101214326.png" alt="image-20220516101214326"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220516101214326.png" alt="image-20220516101214326"></p>
 <p>其中：</p>
 <ul>
 <li>$E(l)$ 是光源从入射方向 $l$ 投影到平面法线方向的光的辐照度（irradiance）</li>
 <li>$L_o(v)$ 是在视线 $v$ 的方向上产生的出射辐射率（radiance）</li>
 </ul>
-<h4 id="2-3-BRDF-与着色方程"><a href="#2-3-BRDF-与着色方程" class="headerlink" title="2.3 BRDF 与着色方程"></a>2.3 BRDF 与着色方程</h4><p>根据 BRDF 定义，可以很容易写出用 n 个非面光源来拟合一般的着色方程：<br>$$<br>L_o(v) &#x3D; \sum_{k&#x3D;1}^{n} f(l_k, v) \otimes E_{L_k}cos\theta_{i_k}<br>$$<br>其中，k 是每个非面光源编号，符号 $\otimes$ 表示分段向量乘法，$E_{L_k}$ 表示着色点接收到的第 k 个非面光源入射的光的能量，即辉度（irradiance），因为 BRDF 和辉度都是 RGB 向量，所以需要对应的进行向量乘法再累加起来。</p>
+<h4 id="2-3-BRDF-与着色方程"><a href="#2-3-BRDF-与着色方程" class="headerlink" title="2.3 BRDF 与着色方程"></a>2.3 BRDF 与着色方程</h4><p>根据 BRDF 定义，可以很容易写出用 n 个非面光源来拟合一般的着色方程：</p>
+<script type="math/tex; mode=display">
+L_o(v) = \sum_{k=1}^{n} f(l_k, v) \otimes E_{L_k}cos\theta_{i_k}</script><p>其中，k 是每个非面光源编号，符号 $\otimes$ 表示分段向量乘法，$E_{L_k}$ 表示着色点接收到的第 k 个非面光源入射的光的能量，即辉度（irradiance），因为 BRDF 和辉度都是 RGB 向量，所以需要对应的进行向量乘法再累加起来。</p>
 <p>同理可以得到对于面光源的积分形式的着色方程：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-BRDF%E6%80%BB%E7%BB%93/image-20220516102543469.png" alt="image-20220516102543469"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220516102543469.png" alt="image-20220516102543469"></p>
 <p>含义同上，只是将累加变成了各个方向的积分。这在之前的笔记中有详细解释，这里不再赘述。</p>
 <p>考虑到入射和出射方向都拥有两个自由度（通常参数化是使用两个角度：相对于表面法线的仰角 $\theta$ 和关于法线的旋转角度 $\phi$），一般情况下，BRDF 是拥有四个标量变量的函数。特别地，各向同性 BRDF（Isotropic BRDF）是一个重要的特殊情况，这样的 BRDF 在入射和出射方向围绕表面法线变化（保持相同的相对夹角）时保持不变。所以，各向同性 BRDF 是关于三个标量的函数。</p>
 <h4 id="2-4-BRDF-可视化"><a href="#2-4-BRDF-可视化" class="headerlink" title="2.4 BRDF 可视化"></a>2.4 BRDF 可视化</h4><p>一种理解 BRDF 的方法就是在输入方向保持恒定的情况下对它进行可视化表示，如下图。对于给定方向的入射光来说，图中显示了出射光的能力分布：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-BRDF%E6%80%BB%E7%BB%93/image-20220516103729812.png" alt="image-20220516103729812"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220516103729812.png" alt="image-20220516103729812"></p>
 <p>在交点附近球形部分是漫反射分量，因此出射光来任何方向上的反射概率相等。椭圆部分是一个反射波瓣（Reflectance Lobe）。它形成了镜面分量。显然，这些波瓣位于入射光的反射方向上，波瓣厚度对应反射的模糊性。根据互易原理，可以将这些相同的可视化形成认为是每个不同入射光方向对单个出射方向的贡献量大小。</p>
-<h4 id="2-5-BRDF-的性质"><a href="#2-5-BRDF-的性质" class="headerlink" title="2.5 BRDF 的性质"></a>2.5 BRDF 的性质</h4><p>BRDF 的性质包括：非负性、可逆性、线性、能量守恒，具体可以参考之前的笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%9D%90%E8%B4%A8/">【计算机图形学】（十四）材质</a>的第七部分。</p>
+<h4 id="2-5-BRDF-的性质"><a href="#2-5-BRDF-的性质" class="headerlink" title="2.5 BRDF 的性质"></a>2.5 BRDF 的性质</h4><p>BRDF 的性质包括：非负性、可逆性、线性、能量守恒，具体可以参考之前的笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-材质/">【计算机图形学】（十四）材质</a>的第七部分。</p>
 <h3 id="3-BRDF-的模型分类"><a href="#3-BRDF-的模型分类" class="headerlink" title="3 BRDF 的模型分类"></a>3 BRDF 的模型分类</h3><p>BRDF 模型可以分为如下几类：</p>
 <ul>
 <li><strong>经验模型（Empirical Models）</strong>：使用基于实验提出的公式对 BRDF 做快速估计</li>
@@ -341,7 +343,7 @@
 </ul>
 <h4 id="3-2-数据驱动的-BRDF-模型"><a href="#3-2-数据驱动的-BRDF-模型" class="headerlink" title="3.2 数据驱动的 BRDF 模型"></a>3.2 数据驱动的 BRDF 模型</h4><p>数据驱动的 BRDF 模型可以理解为，度量一个大的 BRDF 材质集合，并将其记录为高维向量，利用降维的方法从这些数据中计算出一个低维模型，这样基于查表的方式，可以直接找到渲染结果，省去大量的实时计算。</p>
 <p>需要注意的是，由于这些数据由于采集自真实材质，即便渲染出来的结果很真实，但缺点是没有可供调整效果的参数，无法基于这些数据修改成想要的效果，另外部分极端角度由于仪器限制，无法获取到数据，而且采样点密集，数据量非常庞大，所以并不适合游戏等实时领域，一般可用在电影等离线渲染领域，也可以用来做图形学研究，衡量其他模型的真实程度。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-BRDF%E6%80%BB%E7%BB%93/image-20220516104422175.png" alt="image-20220516104422175"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220516104422175.png" alt="image-20220516104422175"></p>
 <h4 id="3-3-基于物理的-BRDF-模型"><a href="#3-3-基于物理的-BRDF-模型" class="headerlink" title="3.3 基于物理的 BRDF 模型"></a>3.3 基于物理的 BRDF 模型</h4><p><strong>基于物理的渲染 (PBR, Physically-based rendering)</strong> 是计算机图形学中用数学建模的方式模拟物体表面各种材质散射光线的属性从而渲染照片真实图片的技术，是近年来是实时渲染领域的大趋势。<br>基于物理的 BRDF 模型通过包含材质的各种几何及光学性质来尽可能精确的近似现实世界中的材料。<strong>而一个基于物理的 BRDF 要必须满足至少如下两条 BRDF 的特性：能量守恒、亥姆霍兹光路可逆性（Helmholtz Recoprpcity Rule）。</strong></p>
 <p>常见的基于物理的  BRDF 模型有：</p>
 <ul>
@@ -349,20 +351,24 @@
 <li>Ward BRDF 模型</li>
 </ul>
 <p>下文将先介绍基于物理的 BRDF 常常用到到的菲涅尔反射，次表面散射和微平面理论等理论，然后分别概括这两种基于物理的 BRDF 模型。</p>
-<h3 id="4-基于物理的-BRDF"><a href="#4-基于物理的-BRDF" class="headerlink" title="4 基于物理的 BRDF"></a>4 基于物理的 BRDF</h3><h4 id="4-1-前置知识"><a href="#4-1-前置知识" class="headerlink" title="4.1 前置知识"></a>4.1 前置知识</h4><p>前置知识包含次表面散射、菲涅尔项和微表面理论，具体可以参考之前的笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%9D%90%E8%B4%A8/">【计算机图形学】（十四）材质的</a>第四、五部分。这里挑重点进行补充和总结。</p>
+<h3 id="4-基于物理的-BRDF"><a href="#4-基于物理的-BRDF" class="headerlink" title="4 基于物理的 BRDF"></a>4 基于物理的 BRDF</h3><h4 id="4-1-前置知识"><a href="#4-1-前置知识" class="headerlink" title="4.1 前置知识"></a>4.1 前置知识</h4><p>前置知识包含次表面散射、菲涅尔项和微表面理论，具体可以参考之前的笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-材质/">【计算机图形学】（十四）材质的</a>第四、五部分。这里挑重点进行补充和总结。</p>
 <p>菲涅耳方程（Fresnel equations）是一组用于描述光在两种不同折射率的介质中传播时的反射和折射的光学方程。方程中所描述的反射被称作“菲涅耳反射”。菲涅尔反射（Fresnel Reflectance）或者菲涅尔效果（Fresnel Effect），即当光入射到折射率不同的两个材质的分界面时，一部分光会被反射，而我们所看到的光线会根据我们的观察角度以不同强度反射的现象。菲涅尔反射能够真实地模拟真实世界中的反射。在真实世界中，除了金属之外，其它物质均有不同程度的菲涅尔反射效果。</p>
 <p>简单来说，视线垂直于表面时，反射较弱，而当视线并非垂直表面时，夹角越小，反射越明显。对于粗糙表面来说，在接近平行方向的高光反射也会增强但不够达到 100% 的强度。为何如此是因为影响菲涅尔效应的关键参数在于每个微平面的法向量和入射光线的角度，而不是宏观平面的法向量和入射光线的角度。因此我们在宏观层面看到的实际上是微平面的菲涅尔效应的一个平均结果。</p>
 <p>根据菲涅尔反射，若你看向一个圆球，那么圆球中心的反射会较弱，而靠近边缘是反射会较强，如下图所示。另外需注意，这种关系也受折射率影响。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-BRDF%E6%80%BB%E7%BB%93/image-20220516105824543.png" alt="image-20220516105824543"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220516105824543.png" alt="image-20220516105824543"></p>
 <p>微表面理论假设表面是由不同方向的微小细节表面，也就是微平面（microfacets）组成。每一个微小的平面都会根据它的法线方向在一个方向上反射光线。表面法线朝向光源方向和视线方向中间的微表面会反射可见光。然而，不是所有的表面法线和半角法线（half normal）相等的微表面都会反射光线，因为其中有些会被遮挡，如下图所示：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-BRDF%E6%80%BB%E7%BB%93/image-20220516105922147.png" alt="image-20220516105922147"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220516105922147.png" alt="image-20220516105922147"></p>
 <p>我们用法线分布函数（Normal Distribution Function，简写为 NDF）—— D(h) 来描述组成表面一点的所有微表面的法线分布概率。可以这样理解：向 NDF 输入一个朝向 h，NDF 会返回朝向是 h 的微表面数占微表面总数的比例，比如有 8% 的微表面朝向是 h，那么就有 8% 的微表面可能将光线反射到观察方向，如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-BRDF%E6%80%BB%E7%BB%93/image-20220516110118379.png" alt="image-20220516110118379"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220516110118379.png" alt="image-20220516110118379"></p>
 <p>仅红色微平面的表面法线和半程向量 h 对齐，能参与从入射光线方向到视线方向的光线反射。</p>
-<p>NDF 的定义公式为：<br>$$<br>D(h) &#x3D; \frac{\alpha^2}{\pi((n·h)^2(\alpha^2-1)+1)^2}<br>$$<br>在微观层面上不规则的表面会造成光的漫反射。例如，模糊的反射是由于光线的散射造成的。而反射的光线并不均匀，因此我们得到的高光反射是模糊的，如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-BRDF%E6%80%BB%E7%BB%93/image-20220516110240348.png" alt="image-20220516110240348"></p>
+<p>NDF 的定义公式为：</p>
+<script type="math/tex; mode=display">
+D(h) = \frac{\alpha^2}{\pi((n·h)^2(\alpha^2-1)+1)^2}</script><p>在微观层面上不规则的表面会造成光的漫反射。例如，模糊的反射是由于光线的散射造成的。而反射的光线并不均匀，因此我们得到的高光反射是模糊的，如下图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220516110240348.png" alt="image-20220516110240348"></p>
 <h4 id="4-2-Cook-Torrance-BRDF-模型"><a href="#4-2-Cook-Torrance-BRDF-模型" class="headerlink" title="4.2 Cook-Torrance BRDF 模型"></a>4.2 Cook-Torrance BRDF 模型</h4><p>Cook-Torrance 模型作为图形学中最早的基于物理的 BRDF 模型，由 Cook 和 Torrance 提出，是 Torrance-Sparrow 模型的一个应用版本。现今，Cook-Torrance 模型已经成为基于物理着色的标准模型之一。Cook-Torrance 模型将物理学中的菲涅尔反射引入了图形学，实现了比较逼真的效果。</p>
-<p>Cook-Torrance 微平面着色模型（Cook-Torrance microfacet specular shading model），即 Microfacet Specular BRDF，定义为：<br>$$<br>f(l,v) &#x3D; \frac{F(l,h)G(l,v,h)D(h)}{4(n·h)(n·v)}<br>$$<br>其中：</p>
+<p>Cook-Torrance 微平面着色模型（Cook-Torrance microfacet specular shading model），即 Microfacet Specular BRDF，定义为：</p>
+<script type="math/tex; mode=display">
+f(l,v) = \frac{F(l,h)G(l,v,h)D(h)}{4(n·h)(n·v)}</script><p>其中：</p>
 <ul>
 <li>$F(l,h)$ 为菲涅尔反射函数，表示根据入射方向和观察方向，能够参与光的反射的微表面有多少光会被反射</li>
 <li>$G(l,v,h)$ 为阴影遮罩函数（Geometry Factor，几何因子），即未被 shadow 或 mask 的比例，因为微表面凹凸不平，那么当入射光线贴着表面入射时，表面上就会有一部分微表面被其他微表面遮挡住而产生阴影，类似于环境光遮蔽，G 就是用来描述法线方向是半程向量的微表面中有多少微表面会因为互相遮挡而不被看到</li>
@@ -375,7 +381,7 @@
 </ul>
 <p>Phong 和 Cook-Torrance BRDF 模型都不能处理各项异性的效果，Ward 模型却可以。</p>
 <p>Ward 模型介绍了更一般的表面法向表达方式：通过椭圆体（ellipsoids）这种允许各向异性反射的形式来表达。然而，由于没有考虑菲涅耳因子（Fresnel factor）和几何衰减因子（geometric attenuation factor），该模型更像是一种经验模型，但还是属于基于物理的 BRDF 模型。各向同性的 Ward 模型定义为：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-BRDF%E6%80%BB%E7%BB%93/image-20220516111305718.png" alt="image-20220516111305718"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220516111305718.png" alt="image-20220516111305718"></p>
 <h3 id="5-BRDF-引申"><a href="#5-BRDF-引申" class="headerlink" title="5 BRDF 引申"></a>5 BRDF 引申</h3><p>有不少与  BRDF 类似的函数：</p>
 <ul>
 <li>BSSRDF：Bidirectional Surface Scattering Reflectance Distribution，双向表面散反射分布函数</li>
@@ -385,8 +391,8 @@
 </ul>
 <h4 id="5-1-BSSRDF"><a href="#5-1-BSSRDF" class="headerlink" title="5.1 BSSRDF"></a>5.1 BSSRDF</h4><p>BRDF 只是更一般方程的一种近似，这个方程就是 BSSRDF（Bidirectional scattering-surface reflectance distribution function，双向表面散反射分布函数）。BSSRDF 描述了出射辐射率与入射通量之间的关系，BSSRDF 函数通过把<strong>入射和出射位置作为函数的输入</strong>，描述了沿入射方向从物体表面的一点到另外一点，最后顺着出射方向出去的光线的相对量。注意，这个函数还考虑了物体表面的一点到另外一点，顺着出射方向出去的光线相对量，即光线从一点进入，并在内部发生了各种次表面散射，再从另一点出去，而 BRDF 只考虑了表面上的同一点。这个函数还考虑了物体表面不一致的情况，因为随着位置的变化，反射系数也会发生变化。在实时绘制中，物体表面上的位置可以用来获取颜色纹理、光泽度，以及凹凸纹理图等信息。</p>
 <p>下图对比了 BRDF（上） 和 BSSRDF（下） 的渲染效果：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-BRDF%E6%80%BB%E7%BB%93/image-20220516111833838.png" alt="image-20220516111833838"></p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-BRDF%E6%80%BB%E7%BB%93/image-20220516111851009.png" alt="image-20220516111851009"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220516111833838.png" alt="image-20220516111833838"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220516111851009.png" alt="image-20220516111851009"></p>
 <h4 id="5-2-SBRDF-SVBRDF"><a href="#5-2-SBRDF-SVBRDF" class="headerlink" title="5.2 SBRDF (SVBRDF)"></a>5.2 SBRDF (SVBRDF)</h4><p>一个捕获基于空间位置 BRDF 变化的函数被称为空间变化的 BRDF（Spatially Varying BRDF，SVBRDF）或称空间 BRDF，空间双向反射分布函数（Spatial BRDF，SBRDF）。</p>
 <h4 id="5-3-BTDF-与-BSDF"><a href="#5-3-BTDF-与-BSDF" class="headerlink" title="5.3 BTDF 与 BSDF"></a>5.3 BTDF 与 BSDF</h4><p>即使一般的 BSSRDF 函数，无论其多么复杂，仍然忽略了现实世界中非常重要的一些变量，比如说光的偏振。此外，也没有处理穿过物体表面的光线传播，只是对反射情况进行了处理。为了处理光线传播的问题，对物体表面定义了两个 BRDF 和两个 BTDF（T 表示传播 “Transmittance”），每侧各有一个，这样就组成了 BSDF（S 表示散射“Scattering”）。</p>
 <p>而在实践中，这些更复杂的函数很少使用，BRDF 和 SVBRDF 足以胜任一般情况下表面渲染的效果。</p>
@@ -609,13 +615,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">836k</span>
+    <span title="站点总字数">829k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">12:40</span>
+    <span title="站点阅读时长">12:34</span>
 </div>
 
         
