@@ -1,78 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>【计算机图形学】（二）旋转与四元数</title>
-    <url>/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/</url>
-    <content><![CDATA[<h3 id="旋转与四元数"><a href="#旋转与四元数" class="headerlink" title="旋转与四元数"></a>旋转与四元数</h3><blockquote>
-<p><strong>摘要</strong></p>
-<p>本文主要介绍三维旋转的几类重要表示方式，以及在游戏及其他工程领域最为常用的四元数的相关概念、性质、运算法则和常用公式。</p>
-</blockquote>
-<p><em><span id="more"></span></em></p>
-<h4 id="一、三维旋转变换的表示方式"><a href="#一、三维旋转变换的表示方式" class="headerlink" title="一、三维旋转变换的表示方式"></a>一、三维旋转变换的表示方式</h4><p><strong>1、欧拉角</strong></p>
-<p>直接给出$x$（俯仰）、$y$（偏航）、$z$（滚转）三个轴向的旋转角，优点是表示简单直接，容易理解，但存在万向节死锁的问题（当两个轴重合时，会损失一个自由度）。</p>
-<p><strong>2、轴角</strong></p>
-<p>顾名思义，用一个轴$n$和一个角$\theta$表示旋转，其中轴是旋转轴，默认用一个过坐标原点的三维向量表示，角表示绕这个轴旋转的角度，轴角表示为一个四元组$(x,y,z,\theta)$。</p>
-<p>但轴角也存在明显的缺陷，一方面，因为角度的周期性，任何$2n\pi$的旋转都等价于没有旋转，这在某些情况下是不可接受的；另一方面，由于轴角描述的“四元组”并不是一个空间下的东西，首先$(x,y,z)$是一个3维坐标下的矢量，而$\theta$则是极坐标下的角度，简单的将他们组合到一起并不能保证他们插值结果的稳定性，因为他们无法归一化，所以不能保证最终插值后得到的矢量长度（经过旋转变换后两点之间的距离）相等；此外，轴角形式的旋转不能直接施于点或矢量，必转换为矩阵或者四元数。</p>
-<p><strong>3、矩阵</strong></p>
-<p>计算机图形学中，一般以矩阵形式表示旋转，对于三维空间的点或向量，将其表示为齐次坐标形式，则绕不同旋转轴的旋转矩阵为：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301162321017.png" alt="image-20220301162321017"></p>
-<p>而对于任意旋转，都可以分解为这三个轴的旋转，可以利用<strong>Rodrigues旋转公式</strong>将轴角表示的任意旋转转换为矩阵形式：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301162445459.png" alt="image-20220301162445459"></p>
-<p>矩阵表示法可以直接施加于点或向量，计算相对方便，也叫容易理解，但在实际工程中，如果我们要存储一个对象的旋转参数，就要存储这个对象的旋转矩阵，一共16个浮点数，对空间消耗较大，并且矩阵形式同样无法进行简单的插值，因此在实际的游戏开发及其他工程应用中，存储一个对象的旋转，通常采用四元数的形式。</p>
-<p><strong>4、四元数</strong></p>
-<p>四元数像是轴角表示法的优化版本，但解决了所有轴角可能存在的问题，最大的优势就是便于插值，并且存储时只需要存储4个浮点数，而且求逆、串联等操作比矩阵更方便，相比于轴角和矩阵优势巨大。</p>
-<p>对于四元数的理解，可以看作是有一个实部和三个虚部构成的虚数，描述的是四维空间，具体可以看<a href="https://zhuanlan.zhihu.com/p/53872740">可视化理解四元数</a>。</p>
-<hr>
-<h4 id="二、四元数"><a href="#二、四元数" class="headerlink" title="二、四元数"></a>二、四元数</h4><p>四元数的全部公式和运算法则以及与矩阵等形式的转化，可以查看<a href="https://zhuanlan.zhihu.com/p/97186723">四元数(Quaternions)</a>，这里对常用的关键公式进行总结。</p>
-<p>四元数表示为$(x,y,z,w)$，其中<br>$$<br>x&#x3D;i·q_1·sin(\theta&#x2F;2) \<br>y&#x3D;j·q_2·sin(\theta&#x2F;2) \<br>z&#x3D;k·q_3·sin(\theta&#x2F;2) \<br>w&#x3D;cos(\theta&#x2F;2)<br>$$<br>其中$(iq_1,jq_2,kq_3)$是表示旋转轴的矢量，$\theta$表示绕此轴旋转的角度。对四元数$q_2$左乘一个四元数$q_1$，其作用是将$q_2$拉伸$q_1$的模长，再作用一个特殊的四维旋转。所以我们用<strong>单位四元数</strong>来表示三维空间中的旋转，因为单位四元数模长为1$(w^2+x^2+y^2+z^2&#x3D;1)$，而旋转时必须要保证的就是，一个向量旋转前后模长不变。</p>
-<ul>
-<li>乘法</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301184920885.png" alt="image-20220301184920885"></p>
-<ul>
-<li>标量乘法</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185303072.png" alt="image-20220301185303072"></p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185318122.png" alt="image-20220301185318122"></p>
-<ul>
-<li>加法</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301184949807.png" alt="image-20220301184949807"></p>
-<ul>
-<li>共轭</li>
-</ul>
-<p>$$<br>q&#x3D;(w,x,y,z) \<br>q^*&#x3D;(w,-x,-y,-z)<br>$$</p>
-<ul>
-<li>模</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185026298.png" alt="image-20220301185026298"></p>
-<ul>
-<li>Identity</li>
-</ul>
-<p>$$<br>i&#x3D;(0,0,0,1)<br>$$</p>
-<ul>
-<li>逆</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185208658.png" alt="image-20220301185208658"></p>
-<ul>
-<li>单位四元数表示旋转：单位四元数模为1，因此可以表示为</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185635142.png" alt="image-20220301185635142"></p>
-<p>将一个三维向量$p$写成四元数形式</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185811398.png" alt="image-20220301185811398"></p>
-<p>则运算</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185855191.png" alt="image-20220301185855191"></p>
-<p>表示向量$p$在三维空间中绕轴$u_q$旋转$2\phi$弧度。</p>
-]]></content>
-      <categories>
-        <category>GAMES101</category>
-      </categories>
-      <tags>
-        <tag>计算机图形学</tag>
-        <tag>3D数学</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>【计算机图形学】（一）变换</title>
     <url>/LycTechStack.github.io/2022/03/02/20200302-%E5%8F%98%E6%8D%A2/</url>
     <content><![CDATA[<h2 id="变换（Transform）"><a href="#变换（Transform）" class="headerlink" title="变换（Transform）"></a>变换（Transform）</h2><blockquote>
@@ -207,6 +135,78 @@
 <p>在这之前先考虑一个顶点的切线如果使用原矩阵变换会不会有问题，切线就是两个顶点的差，因此用顶点变换的矩阵对切线进行变换不会有任何影响，可以得到正确的结果，那么我们要保证变换后的法线依然和切线垂直，假设原变换矩阵为 $M_{A-&gt;B}$，顶点切线为 $T$，法线为 $N$，对法线进行变换的矩阵是 $G$，于是有以下关系：</p>
 <p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20200302-%E5%8F%98%E6%8D%A2/image-20220331111633664.png" alt="image-20220331111633664"></p>
 <p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/02/20200302-%E5%8F%98%E6%8D%A2/image-20220331111727818.png" alt="image-20220331111727818"></p>
+]]></content>
+      <categories>
+        <category>GAMES101</category>
+      </categories>
+      <tags>
+        <tag>计算机图形学</tag>
+        <tag>3D数学</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>【计算机图形学】（二）旋转与四元数</title>
+    <url>/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/</url>
+    <content><![CDATA[<h3 id="旋转与四元数"><a href="#旋转与四元数" class="headerlink" title="旋转与四元数"></a>旋转与四元数</h3><blockquote>
+<p><strong>摘要</strong></p>
+<p>本文主要介绍三维旋转的几类重要表示方式，以及在游戏及其他工程领域最为常用的四元数的相关概念、性质、运算法则和常用公式。</p>
+</blockquote>
+<p><em><span id="more"></span></em></p>
+<h4 id="一、三维旋转变换的表示方式"><a href="#一、三维旋转变换的表示方式" class="headerlink" title="一、三维旋转变换的表示方式"></a>一、三维旋转变换的表示方式</h4><p><strong>1、欧拉角</strong></p>
+<p>直接给出$x$（俯仰）、$y$（偏航）、$z$（滚转）三个轴向的旋转角，优点是表示简单直接，容易理解，但存在万向节死锁的问题（当两个轴重合时，会损失一个自由度）。</p>
+<p><strong>2、轴角</strong></p>
+<p>顾名思义，用一个轴$n$和一个角$\theta$表示旋转，其中轴是旋转轴，默认用一个过坐标原点的三维向量表示，角表示绕这个轴旋转的角度，轴角表示为一个四元组$(x,y,z,\theta)$。</p>
+<p>但轴角也存在明显的缺陷，一方面，因为角度的周期性，任何$2n\pi$的旋转都等价于没有旋转，这在某些情况下是不可接受的；另一方面，由于轴角描述的“四元组”并不是一个空间下的东西，首先$(x,y,z)$是一个3维坐标下的矢量，而$\theta$则是极坐标下的角度，简单的将他们组合到一起并不能保证他们插值结果的稳定性，因为他们无法归一化，所以不能保证最终插值后得到的矢量长度（经过旋转变换后两点之间的距离）相等；此外，轴角形式的旋转不能直接施于点或矢量，必转换为矩阵或者四元数。</p>
+<p><strong>3、矩阵</strong></p>
+<p>计算机图形学中，一般以矩阵形式表示旋转，对于三维空间的点或向量，将其表示为齐次坐标形式，则绕不同旋转轴的旋转矩阵为：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301162321017.png" alt="image-20220301162321017"></p>
+<p>而对于任意旋转，都可以分解为这三个轴的旋转，可以利用<strong>Rodrigues旋转公式</strong>将轴角表示的任意旋转转换为矩阵形式：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301162445459.png" alt="image-20220301162445459"></p>
+<p>矩阵表示法可以直接施加于点或向量，计算相对方便，也叫容易理解，但在实际工程中，如果我们要存储一个对象的旋转参数，就要存储这个对象的旋转矩阵，一共16个浮点数，对空间消耗较大，并且矩阵形式同样无法进行简单的插值，因此在实际的游戏开发及其他工程应用中，存储一个对象的旋转，通常采用四元数的形式。</p>
+<p><strong>4、四元数</strong></p>
+<p>四元数像是轴角表示法的优化版本，但解决了所有轴角可能存在的问题，最大的优势就是便于插值，并且存储时只需要存储4个浮点数，而且求逆、串联等操作比矩阵更方便，相比于轴角和矩阵优势巨大。</p>
+<p>对于四元数的理解，可以看作是有一个实部和三个虚部构成的虚数，描述的是四维空间，具体可以看<a href="https://zhuanlan.zhihu.com/p/53872740">可视化理解四元数</a>。</p>
+<hr>
+<h4 id="二、四元数"><a href="#二、四元数" class="headerlink" title="二、四元数"></a>二、四元数</h4><p>四元数的全部公式和运算法则以及与矩阵等形式的转化，可以查看<a href="https://zhuanlan.zhihu.com/p/97186723">四元数(Quaternions)</a>，这里对常用的关键公式进行总结。</p>
+<p>四元数表示为$(x,y,z,w)$，其中<br>$$<br>x&#x3D;i·q_1·sin(\theta&#x2F;2) \<br>y&#x3D;j·q_2·sin(\theta&#x2F;2) \<br>z&#x3D;k·q_3·sin(\theta&#x2F;2) \<br>w&#x3D;cos(\theta&#x2F;2)<br>$$<br>其中$(iq_1,jq_2,kq_3)$是表示旋转轴的矢量，$\theta$表示绕此轴旋转的角度。对四元数$q_2$左乘一个四元数$q_1$，其作用是将$q_2$拉伸$q_1$的模长，再作用一个特殊的四维旋转。所以我们用<strong>单位四元数</strong>来表示三维空间中的旋转，因为单位四元数模长为1$(w^2+x^2+y^2+z^2&#x3D;1)$，而旋转时必须要保证的就是，一个向量旋转前后模长不变。</p>
+<ul>
+<li>乘法</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301184920885.png" alt="image-20220301184920885"></p>
+<ul>
+<li>标量乘法</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185303072.png" alt="image-20220301185303072"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185318122.png" alt="image-20220301185318122"></p>
+<ul>
+<li>加法</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301184949807.png" alt="image-20220301184949807"></p>
+<ul>
+<li>共轭</li>
+</ul>
+<p>$$<br>q&#x3D;(w,x,y,z) \<br>q^*&#x3D;(w,-x,-y,-z)<br>$$</p>
+<ul>
+<li>模</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185026298.png" alt="image-20220301185026298"></p>
+<ul>
+<li>Identity</li>
+</ul>
+<p>$$<br>i&#x3D;(0,0,0,1)<br>$$</p>
+<ul>
+<li>逆</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185208658.png" alt="image-20220301185208658"></p>
+<ul>
+<li>单位四元数表示旋转：单位四元数模为1，因此可以表示为</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185635142.png" alt="image-20220301185635142"></p>
+<p>将一个三维向量$p$写成四元数形式</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185811398.png" alt="image-20220301185811398"></p>
+<p>则运算</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/03/20200303-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%9B%9B%E5%85%83%E6%95%B0/image-20220301185855191.png" alt="image-20220301185855191"></p>
+<p>表示向量$p$在三维空间中绕轴$u_q$旋转$2\phi$弧度。</p>
 ]]></content>
       <categories>
         <category>GAMES101</category>
@@ -1080,118 +1080,6 @@
       </tags>
   </entry>
   <entry>
-    <title>【计算机图形学】（十五）高级渲染和材质概述</title>
-    <url>/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/</url>
-    <content><![CDATA[<h3 id="高级渲染和材质概述"><a href="#高级渲染和材质概述" class="headerlink" title="高级渲染和材质概述"></a>高级渲染和材质概述</h3><p>这一节的内容涉及许多比较复杂的高级渲染方法和材质的知识，只做了解，增长见识，如果以后对哪方面需要深入学习可以方便查找。</p>
-<p><em><span id="more"></span></em></p>
-<h4 id="1-无偏方法和有偏方法"><a href="#1-无偏方法和有偏方法" class="headerlink" title="1 无偏方法和有偏方法"></a>1 无偏方法和有偏方法</h4><p>所谓无偏（Unbiased）方法是指利用无偏蒙特卡洛估计的光线传播方法，无偏是指无论采样点多与少，最终得到的估计的期望是正确的；那自然有偏（Biased）就是指估计的期望和真实值有偏差，但如果随着采样点数量增多，估计的期望最终会收敛到正确的期望，那么称这样的估计是有偏但一致（consistent）的。</p>
-<h4 id="2-无偏光线传播方法"><a href="#2-无偏光线传播方法" class="headerlink" title="2 无偏光线传播方法"></a>2 无偏光线传播方法</h4><h5 id="2-1-双向路径追踪（Bidirectional-Path-Tracing）"><a href="#2-1-双向路径追踪（Bidirectional-Path-Tracing）" class="headerlink" title="2.1 双向路径追踪（Bidirectional Path Tracing）"></a>2.1 双向路径追踪（Bidirectional Path Tracing）</h5><p>路径追踪是从相机投射光线，BDPT 是既从相机又从光源投射出光线，称为半路径，对两条半路径进行追踪，最后将两条半路径的端点连接起来形成一条通路：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324152353955.png" alt="image-20220324152353955"></p>
-<p>当然实现起来非常困难且速度极慢，但是这种方法能够产生一些传统路径追踪难以采样到的光路，所以能够很有效地降低噪声，对于光线在光源附近传播比较复杂的场景来说，效果会非常好：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324152449127.png" alt="image-20220324152449127"></p>
-<h5 id="2-2-Metropolis-光线传播"><a href="#2-2-Metropolis-光线传播" class="headerlink" title="2.2 Metropolis 光线传播"></a>2.2 Metropolis 光线传播</h5><p>路径追踪中一个核心问题就是怎样去尽可能多的采样一些贡献大的路径，而 MLT 方法可以自适应的生成贡献大的路径。简单来说它会避开贡献小的路径，而在贡献大的路径附近做更多局部的探索，通过特殊的变异方法，生成一些新的路径，这些局部的路径的贡献往往也很高。与双向路径追踪相比，MLT  更加鲁棒，能处理各种复杂的场景。比如说整个场景只通过门缝透进来的间接光照亮，此时传统的路径追踪方法因为难以采样到透过门缝的这样的特殊路径而产生非常大的噪声。</p>
-<p>MLT 是马尔科夫链蒙特卡洛估计（Markov Chain Monte Carlo）的应用，我们知道蒙特卡洛估计以不同的概率密度函数采样得到的结果是不同的，理论上来说概率密度函数分布和被积函数分布一致的时候，得到的估计值最准确，马尔科夫链可以通过一个样本在其附近推导出另外一些样本，并且尽量使这些样本的分布和被积函数分布相似。</p>
-<p>MLT 可以通过一条已知光路推导出其附近的其他光路进行渲染：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324152843564.png" alt="image-20220324152843564"></p>
-<p>这种方法对一些光线传播极其复杂的场景效果很好：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324152927402.png" alt="image-20220324152927402"></p>
-<p>缺点是无法确定什么时候会收敛，并且由于每个像素是独立计算的，每个像素的收敛时间也不同，因此有时渲染的结果会显得比较“脏”：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324153048554.png" alt="image-20220324153048554"></p>
-<h4 id="3-有偏光线传播方法"><a href="#3-有偏光线传播方法" class="headerlink" title="3 有偏光线传播方法"></a>3 有偏光线传播方法</h4><h5 id="3-1-光子映射（Photon-Mapping）"><a href="#3-1-光子映射（Photon-Mapping）" class="headerlink" title="3.1 光子映射（Photon Mapping）"></a>3.1 光子映射（Photon Mapping）</h5><p>光子映射非常适合渲染 caustics 情景，就是光线聚焦产生的现象，比如：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324153218599.png" alt="image-20220324153218599"></p>
-<p>再比如之前见过的水面在阳光下会有很明亮的纹路，这都是由于光线聚焦产生的。</p>
-<p>光子映射首先 追踪从光源放射出的所有的光子，当光子打到漫反射表面的时候就停下，停留在当前位置，然后追踪从相机射出的光线，同样打到漫反射表面就停下：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324153431048.png" alt="image-20220324153431048"></p>
-<p>这样对于每一个相机射出的光线所到达的位置，取其周围 N 个光源发出的光子，然后利用这些光子数量除以他们围成的面积，就可以得到当前位置的光子密度，光子密度越大的地方自然也就越亮。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324153559255.png" alt="image-20220324153559255"></p>
-<p>但是由于我们是用光子数量除以面积，但实际上面积应该是一个非常小的面积的时候，这样的除法才能代表密度，因此这只是对密度的近似，所以是一个有偏估计，但是当我们射出的光子足够多的时候，所取得 N 个光子所围成的面积也会足够小，这时得到的密度就是无限接近正确密度，因此这个方法是有偏但一致的。</p>
-<p>体现到渲染结果上，如果 N 取得非常小，那结果噪声就会很大，因为偏差很大，如果 N 很大，得到的结果就会很模糊，这是因为方法本身是有偏的，有偏体现的图像上就是模糊：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324153904111.png" alt="image-20220324153904111"></p>
-<p>因此我们说：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324153945548.png" alt="image-20220324153945548"></p>
-<h5 id="3-2-Vertex-Connection-and-Merging"><a href="#3-2-Vertex-Connection-and-Merging" class="headerlink" title="3.2 Vertex Connection and Merging"></a>3.2 Vertex Connection and Merging</h5><p>VCM 是一种应用非常广泛的光线传播算法，结合了双向路径跟踪和光子映射。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324154056618.png" alt="image-20220324154056618"></p>
-<h5 id="3-3-实时辐射（Instant-Radiosity）"><a href="#3-3-实时辐射（Instant-Radiosity）" class="headerlink" title="3.3 实时辐射（Instant Radiosity）"></a>3.3 实时辐射（Instant Radiosity）</h5><p>IR 的核心思想非常简单，把每一个被光源间接照亮的点都当成新的光源。渲染其他点时考虑所有这些虚拟光源，这样相当于考虑了光线的多次弹射，因此只需要用计算直接光照的方法就可以得到间接光照的结果。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324154257580.png" alt="image-20220324154257580"></p>
-<p>这种方法效率高，效果也不错，但无法渲染 glossy 反射，并且有时边缘会莫名发光，这和采样时积分转换过程有关，这里不展开讨论。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324154348327.png" alt="image-20220324154348327"></p>
-<h4 id="4-高级材质"><a href="#4-高级材质" class="headerlink" title="4 高级材质"></a>4 高级材质</h4><h5 id="4-1-散射介质"><a href="#4-1-散射介质" class="headerlink" title="4.1 散射介质"></a>4.1 散射介质</h5><p>散射介质（Participating Media）也叫参与介质，是指云、雾一类的会对光具有散射作用的介质。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324154623569.png" alt="image-20220324154623569"></p>
-<p>我们可以把他们当成空间中的颗粒，光线传播到每个颗粒上时，会有一部分被吸收，有一部分发生散射：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324154711282.png" alt="image-20220324154711282"></p>
-<p>因此只要描述颗粒吸收光线和散射光线的性质就可以，吸收光线由散射介质的性质决定，比如乌云就会吸收大量光导致光线传播不出去，而散射性质由相位函数（Phase Function）来描述，相位函数描述一个颗粒散射的时候向各个方向会散射多少，有的是均匀散射，有的向前方散射多后方散射少：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324154909876.png" alt="image-20220324154909876"></p>
-<p>渲染的时候我们可以假设光线向前传播一段距离就会发生一次散射，具体传播多远由介质性质决定，具体怎么散射由相位函数决定，然后最终到达光源，将光源和所有散射点链接，计算每个散射点的着色就可以形成云雾透过光线的效果：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324155103056.png" alt="image-20220324155103056"></p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324155121487.png" alt="image-20220324155121487"></p>
-<h5 id="4-2-毛发材质"><a href="#4-2-毛发材质" class="headerlink" title="4.2 毛发材质"></a>4.2 毛发材质</h5><p>毛发材质的渲染最早采用的是很简单的方式，将头发当作一根圆柱，光线打到圆柱上时，一部分会正常发生镜面反射，另一部分会呈锥形散射出去，将这两种计算叠加起来就得到头发的渲染结果：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324155339434.png" alt="image-20220324155339434"></p>
-<p>但是这样渲染出来的效果并不好，因为这和布林冯光照模型几乎一样，没有体现出头发的材质特性：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324155414673.png" alt="image-20220324155414673"></p>
-<p>头发实际上是可以被光线穿过的，穿过头发的光线还会在头发内部发生反射再折射出去，因此人们把头发看作一个玻璃管：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324155506941.png" alt="image-20220324155506941"></p>
-<p>射到头发表面的光线，一部分发生反射，即为 R，另一部分折射进头发内部再从另外一面折射出去，即为 TT，还有一部分在头发内部反射再从这边的表面折射出去，即为 TRT，这三部分的总和构成最终渲染结果。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324155652739.png" alt="image-20220324155652739"></p>
-<p>同时我们把头发外表面称作 cuticle，头发内部称作 cortex，头发内部是有色素的，因此也决定了光线在内部传播的性质。这个方法称为Marschner model，效果非常不错：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324155821388.png" alt="image-20220324155821388"></p>
-<p>但对于动物毛发，也是用这样的方法会得到不太好的结果：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324155848465.png" alt="image-20220324155848465"></p>
-<p>这是由于动物毛发和人类毛发构造有些不同：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324155910248.png" alt="image-20220324155910248"></p>
-<p>在头发中心还有一部分叫做髓质（Medulla），这部分非常复杂，光线进去之后会像在散射介质中一样发生复杂的散射，由于人类毛发髓质只占很小一部分，因此忽略掉也不会有太大影响，但是动物毛发中髓质占很大一部分，因此必须考虑光线在髓质中的散射。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324160108209.png" alt="image-20220324160108209"></p>
-<p>可以看到髓质对渲染结果的影响非常大，因此使用双圆柱来描述头发的结构：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324160144068.png" alt="image-20220324160144068"></p>
-<p>除了之前的 R 、T、TRT之外，双圆柱模型还考虑了光现在髓质中散射后的 TTs 和 TRTs：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324160245669.png" alt="image-20220324160245669"></p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324160325405.png" alt="image-20220324160325405"></p>
-<p>这也是闫令琪老师的主要贡献之一，感兴趣可以找来论文细看。</p>
-<h5 id="4-3-颗粒材质"><a href="#4-3-颗粒材质" class="headerlink" title="4.3 颗粒材质"></a>4.3 颗粒材质</h5><p>颗粒材质也非常复杂，可以定义在空间中，然后计算光线和每个小颗粒的作用。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324160506385.png" alt="image-20220324160506385"></p>
-<h5 id="4-4-半透明材质"><a href="#4-4-半透明材质" class="headerlink" title="4.4 半透明材质"></a>4.4 半透明材质</h5><p>半透明材质是因为光线打到物体表面后，在物体内部发生了多次散射，之后又从其表面的其他地方出去。光线在物体内部的散射称为次表面散射（Subsurface Scattering）。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324160705666.png" alt="image-20220324160705666"></p>
-<p>按照这样的性质可以把 BRDF 稍作改进， BRDF 描述光线从一个方向入射会有多少从另一个方向射出，但是这两个方向都是从表面上同一个点出发的，次表面散射的 BRDF 称为 BSSRDF，描述的是光线从一个方向入射，会从表面的其他点沿着某个方向射出：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324160907689.png" alt="image-20220324160907689"></p>
-<p>因此这回渲染方程的积分除了要对所有方向积分外，还要对整个表面进行积分。</p>
-<p>后来人们发现半透明就好像物体内部有一个光源一样，所以可以按照这种思路在物体内部放一个光源来模拟半透明的效果，但是还要在外部有另一个虚拟光源才能达到正确的半透明效果。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324161102328.png" alt="image-20220324161102328"></p>
-<p>次表面散射非常强大，因此应用非常广泛，比如人的皮肤，因为人的皮肤本身就是透光的，所以用 BSSRDF 会更加真实：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324161143507.png" alt="image-20220324161143507"></p>
-<p>再比如玉质物体：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324161219954.png" alt="image-20220324161219954"></p>
-<h5 id="4-5-布料材质"><a href="#4-5-布料材质" class="headerlink" title="4.5 布料材质"></a>4.5 布料材质</h5><p>布料是由一根根地线织成的，每根线又是由一股股纤维构成的，因此渲染布料可以像喧染头发一样对每根纤维进行渲染，但计算量自然非常庞大。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324161605583.png" alt="image-20220324161605583"></p>
-<p>因此可以把布料当成一个表面，根据织物针织的方法，定义不同的 BRDF：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324161706245.png" alt="image-20220324161706245"></p>
-<p>但对于天鹅绒这类布料，它的线是向外发散分布的，并不是按规律织起来的：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324161915668.png" alt="image-20220324161915668"></p>
-<p>因此不适合当成一个表面去渲染，这时可以把它当成空间中的散射介质，像渲染云雾一样去渲染：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324161825842.png" alt="image-20220324161825842"></p>
-<p>当然效果最好的还是一开始说的渲染每一根纤维，只是计算量太大：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324162002053.png" alt="image-20220324162002053"></p>
-<h5 id="4-6-细节材质"><a href="#4-6-细节材质" class="headerlink" title="4.6 细节材质"></a>4.6 细节材质</h5><p>有时渲染的不真实不是因为渲染的不好，而是因为渲染出来的物体太过完美而显得不真实，比如：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324162108682.png" alt="image-20220324162108682"></p>
-<p>而实际的车和鼠标的表面是这样的：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324162127568.png" alt="image-20220324162127568"></p>
-<p>另外当光线在非常细小的地方传播的时候就不得不考虑光的波动性，而不能只考虑光的几何特性，比如渲染出金属表面的颗粒效果：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324162342490.png" alt="image-20220324162342490"></p>
-<p>如何做出这些细节，这也是闫令琪老师的另一大贡献，更多可以看论文。</p>
-<h5 id="4-7-程序化生成材质"><a href="#4-7-程序化生成材质" class="headerlink" title="4.7 程序化生成材质"></a>4.7 程序化生成材质</h5><p>这个我们之前在纹理映射部分提到过，对于一些没有规律的花纹，比如花瓶以及它内部的纹路：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324162506356.png" alt="image-20220324162506356"></p>
-<p>我们如果把这些空间中的每个点的材质都存下来是不现实的，因此会定义一个空间中的噪声函数去生成这样的噪声，这就是程序化生成材质，应用也非常广泛，除了上面的花瓶纹路，再比如木质品：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324162620934.png" alt="image-20220324162620934"></p>
-<p>水面的波浪：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324162634485.png" alt="image-20220324162634485"></p>
-]]></content>
-      <categories>
-        <category>GAMES101</category>
-      </categories>
-      <tags>
-        <tag>计算机图形学</tag>
-        <tag>光线追踪</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>【计算机图形学】（十四）材质</title>
     <url>/LycTechStack.github.io/2022/03/24/20220324-%E6%9D%90%E8%B4%A8/</url>
     <content><![CDATA[<h3 id="材质（Materials）"><a href="#材质（Materials）" class="headerlink" title="材质（Materials）"></a>材质（Materials）</h3><p>这一节开始学习图形学中材质的相关内容。我们之所以能看到现实世界中不同的物体有不同的材质，本质上就是因为不同材质对光线的吸收、反射、折射的能力不同，而描述这种能力的函数就是我们上一节中简单了解过的双向反射分布函数（BRDF），上一节中也说过，BRDF 就是材质，因此这一节讨论的内容实际上就是 BRDF。</p>
@@ -1313,6 +1201,118 @@
 <li><p><a href="https://zhuanlan.zhihu.com/p/357190332">什么是菲涅尔</a></p>
 </li>
 </ul>
+]]></content>
+      <categories>
+        <category>GAMES101</category>
+      </categories>
+      <tags>
+        <tag>计算机图形学</tag>
+        <tag>光线追踪</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>【计算机图形学】（十五）高级渲染和材质概述</title>
+    <url>/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/</url>
+    <content><![CDATA[<h3 id="高级渲染和材质概述"><a href="#高级渲染和材质概述" class="headerlink" title="高级渲染和材质概述"></a>高级渲染和材质概述</h3><p>这一节的内容涉及许多比较复杂的高级渲染方法和材质的知识，只做了解，增长见识，如果以后对哪方面需要深入学习可以方便查找。</p>
+<p><em><span id="more"></span></em></p>
+<h4 id="1-无偏方法和有偏方法"><a href="#1-无偏方法和有偏方法" class="headerlink" title="1 无偏方法和有偏方法"></a>1 无偏方法和有偏方法</h4><p>所谓无偏（Unbiased）方法是指利用无偏蒙特卡洛估计的光线传播方法，无偏是指无论采样点多与少，最终得到的估计的期望是正确的；那自然有偏（Biased）就是指估计的期望和真实值有偏差，但如果随着采样点数量增多，估计的期望最终会收敛到正确的期望，那么称这样的估计是有偏但一致（consistent）的。</p>
+<h4 id="2-无偏光线传播方法"><a href="#2-无偏光线传播方法" class="headerlink" title="2 无偏光线传播方法"></a>2 无偏光线传播方法</h4><h5 id="2-1-双向路径追踪（Bidirectional-Path-Tracing）"><a href="#2-1-双向路径追踪（Bidirectional-Path-Tracing）" class="headerlink" title="2.1 双向路径追踪（Bidirectional Path Tracing）"></a>2.1 双向路径追踪（Bidirectional Path Tracing）</h5><p>路径追踪是从相机投射光线，BDPT 是既从相机又从光源投射出光线，称为半路径，对两条半路径进行追踪，最后将两条半路径的端点连接起来形成一条通路：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324152353955.png" alt="image-20220324152353955"></p>
+<p>当然实现起来非常困难且速度极慢，但是这种方法能够产生一些传统路径追踪难以采样到的光路，所以能够很有效地降低噪声，对于光线在光源附近传播比较复杂的场景来说，效果会非常好：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324152449127.png" alt="image-20220324152449127"></p>
+<h5 id="2-2-Metropolis-光线传播"><a href="#2-2-Metropolis-光线传播" class="headerlink" title="2.2 Metropolis 光线传播"></a>2.2 Metropolis 光线传播</h5><p>路径追踪中一个核心问题就是怎样去尽可能多的采样一些贡献大的路径，而 MLT 方法可以自适应的生成贡献大的路径。简单来说它会避开贡献小的路径，而在贡献大的路径附近做更多局部的探索，通过特殊的变异方法，生成一些新的路径，这些局部的路径的贡献往往也很高。与双向路径追踪相比，MLT  更加鲁棒，能处理各种复杂的场景。比如说整个场景只通过门缝透进来的间接光照亮，此时传统的路径追踪方法因为难以采样到透过门缝的这样的特殊路径而产生非常大的噪声。</p>
+<p>MLT 是马尔科夫链蒙特卡洛估计（Markov Chain Monte Carlo）的应用，我们知道蒙特卡洛估计以不同的概率密度函数采样得到的结果是不同的，理论上来说概率密度函数分布和被积函数分布一致的时候，得到的估计值最准确，马尔科夫链可以通过一个样本在其附近推导出另外一些样本，并且尽量使这些样本的分布和被积函数分布相似。</p>
+<p>MLT 可以通过一条已知光路推导出其附近的其他光路进行渲染：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324152843564.png" alt="image-20220324152843564"></p>
+<p>这种方法对一些光线传播极其复杂的场景效果很好：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324152927402.png" alt="image-20220324152927402"></p>
+<p>缺点是无法确定什么时候会收敛，并且由于每个像素是独立计算的，每个像素的收敛时间也不同，因此有时渲染的结果会显得比较“脏”：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324153048554.png" alt="image-20220324153048554"></p>
+<h4 id="3-有偏光线传播方法"><a href="#3-有偏光线传播方法" class="headerlink" title="3 有偏光线传播方法"></a>3 有偏光线传播方法</h4><h5 id="3-1-光子映射（Photon-Mapping）"><a href="#3-1-光子映射（Photon-Mapping）" class="headerlink" title="3.1 光子映射（Photon Mapping）"></a>3.1 光子映射（Photon Mapping）</h5><p>光子映射非常适合渲染 caustics 情景，就是光线聚焦产生的现象，比如：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324153218599.png" alt="image-20220324153218599"></p>
+<p>再比如之前见过的水面在阳光下会有很明亮的纹路，这都是由于光线聚焦产生的。</p>
+<p>光子映射首先 追踪从光源放射出的所有的光子，当光子打到漫反射表面的时候就停下，停留在当前位置，然后追踪从相机射出的光线，同样打到漫反射表面就停下：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324153431048.png" alt="image-20220324153431048"></p>
+<p>这样对于每一个相机射出的光线所到达的位置，取其周围 N 个光源发出的光子，然后利用这些光子数量除以他们围成的面积，就可以得到当前位置的光子密度，光子密度越大的地方自然也就越亮。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324153559255.png" alt="image-20220324153559255"></p>
+<p>但是由于我们是用光子数量除以面积，但实际上面积应该是一个非常小的面积的时候，这样的除法才能代表密度，因此这只是对密度的近似，所以是一个有偏估计，但是当我们射出的光子足够多的时候，所取得 N 个光子所围成的面积也会足够小，这时得到的密度就是无限接近正确密度，因此这个方法是有偏但一致的。</p>
+<p>体现到渲染结果上，如果 N 取得非常小，那结果噪声就会很大，因为偏差很大，如果 N 很大，得到的结果就会很模糊，这是因为方法本身是有偏的，有偏体现的图像上就是模糊：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324153904111.png" alt="image-20220324153904111"></p>
+<p>因此我们说：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324153945548.png" alt="image-20220324153945548"></p>
+<h5 id="3-2-Vertex-Connection-and-Merging"><a href="#3-2-Vertex-Connection-and-Merging" class="headerlink" title="3.2 Vertex Connection and Merging"></a>3.2 Vertex Connection and Merging</h5><p>VCM 是一种应用非常广泛的光线传播算法，结合了双向路径跟踪和光子映射。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324154056618.png" alt="image-20220324154056618"></p>
+<h5 id="3-3-实时辐射（Instant-Radiosity）"><a href="#3-3-实时辐射（Instant-Radiosity）" class="headerlink" title="3.3 实时辐射（Instant Radiosity）"></a>3.3 实时辐射（Instant Radiosity）</h5><p>IR 的核心思想非常简单，把每一个被光源间接照亮的点都当成新的光源。渲染其他点时考虑所有这些虚拟光源，这样相当于考虑了光线的多次弹射，因此只需要用计算直接光照的方法就可以得到间接光照的结果。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324154257580.png" alt="image-20220324154257580"></p>
+<p>这种方法效率高，效果也不错，但无法渲染 glossy 反射，并且有时边缘会莫名发光，这和采样时积分转换过程有关，这里不展开讨论。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324154348327.png" alt="image-20220324154348327"></p>
+<h4 id="4-高级材质"><a href="#4-高级材质" class="headerlink" title="4 高级材质"></a>4 高级材质</h4><h5 id="4-1-散射介质"><a href="#4-1-散射介质" class="headerlink" title="4.1 散射介质"></a>4.1 散射介质</h5><p>散射介质（Participating Media）也叫参与介质，是指云、雾一类的会对光具有散射作用的介质。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324154623569.png" alt="image-20220324154623569"></p>
+<p>我们可以把他们当成空间中的颗粒，光线传播到每个颗粒上时，会有一部分被吸收，有一部分发生散射：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324154711282.png" alt="image-20220324154711282"></p>
+<p>因此只要描述颗粒吸收光线和散射光线的性质就可以，吸收光线由散射介质的性质决定，比如乌云就会吸收大量光导致光线传播不出去，而散射性质由相位函数（Phase Function）来描述，相位函数描述一个颗粒散射的时候向各个方向会散射多少，有的是均匀散射，有的向前方散射多后方散射少：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324154909876.png" alt="image-20220324154909876"></p>
+<p>渲染的时候我们可以假设光线向前传播一段距离就会发生一次散射，具体传播多远由介质性质决定，具体怎么散射由相位函数决定，然后最终到达光源，将光源和所有散射点链接，计算每个散射点的着色就可以形成云雾透过光线的效果：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324155103056.png" alt="image-20220324155103056"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324155121487.png" alt="image-20220324155121487"></p>
+<h5 id="4-2-毛发材质"><a href="#4-2-毛发材质" class="headerlink" title="4.2 毛发材质"></a>4.2 毛发材质</h5><p>毛发材质的渲染最早采用的是很简单的方式，将头发当作一根圆柱，光线打到圆柱上时，一部分会正常发生镜面反射，另一部分会呈锥形散射出去，将这两种计算叠加起来就得到头发的渲染结果：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324155339434.png" alt="image-20220324155339434"></p>
+<p>但是这样渲染出来的效果并不好，因为这和布林冯光照模型几乎一样，没有体现出头发的材质特性：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324155414673.png" alt="image-20220324155414673"></p>
+<p>头发实际上是可以被光线穿过的，穿过头发的光线还会在头发内部发生反射再折射出去，因此人们把头发看作一个玻璃管：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324155506941.png" alt="image-20220324155506941"></p>
+<p>射到头发表面的光线，一部分发生反射，即为 R，另一部分折射进头发内部再从另外一面折射出去，即为 TT，还有一部分在头发内部反射再从这边的表面折射出去，即为 TRT，这三部分的总和构成最终渲染结果。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324155652739.png" alt="image-20220324155652739"></p>
+<p>同时我们把头发外表面称作 cuticle，头发内部称作 cortex，头发内部是有色素的，因此也决定了光线在内部传播的性质。这个方法称为Marschner model，效果非常不错：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324155821388.png" alt="image-20220324155821388"></p>
+<p>但对于动物毛发，也是用这样的方法会得到不太好的结果：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324155848465.png" alt="image-20220324155848465"></p>
+<p>这是由于动物毛发和人类毛发构造有些不同：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324155910248.png" alt="image-20220324155910248"></p>
+<p>在头发中心还有一部分叫做髓质（Medulla），这部分非常复杂，光线进去之后会像在散射介质中一样发生复杂的散射，由于人类毛发髓质只占很小一部分，因此忽略掉也不会有太大影响，但是动物毛发中髓质占很大一部分，因此必须考虑光线在髓质中的散射。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324160108209.png" alt="image-20220324160108209"></p>
+<p>可以看到髓质对渲染结果的影响非常大，因此使用双圆柱来描述头发的结构：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324160144068.png" alt="image-20220324160144068"></p>
+<p>除了之前的 R 、T、TRT之外，双圆柱模型还考虑了光现在髓质中散射后的 TTs 和 TRTs：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324160245669.png" alt="image-20220324160245669"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324160325405.png" alt="image-20220324160325405"></p>
+<p>这也是闫令琪老师的主要贡献之一，感兴趣可以找来论文细看。</p>
+<h5 id="4-3-颗粒材质"><a href="#4-3-颗粒材质" class="headerlink" title="4.3 颗粒材质"></a>4.3 颗粒材质</h5><p>颗粒材质也非常复杂，可以定义在空间中，然后计算光线和每个小颗粒的作用。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324160506385.png" alt="image-20220324160506385"></p>
+<h5 id="4-4-半透明材质"><a href="#4-4-半透明材质" class="headerlink" title="4.4 半透明材质"></a>4.4 半透明材质</h5><p>半透明材质是因为光线打到物体表面后，在物体内部发生了多次散射，之后又从其表面的其他地方出去。光线在物体内部的散射称为次表面散射（Subsurface Scattering）。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324160705666.png" alt="image-20220324160705666"></p>
+<p>按照这样的性质可以把 BRDF 稍作改进， BRDF 描述光线从一个方向入射会有多少从另一个方向射出，但是这两个方向都是从表面上同一个点出发的，次表面散射的 BRDF 称为 BSSRDF，描述的是光线从一个方向入射，会从表面的其他点沿着某个方向射出：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324160907689.png" alt="image-20220324160907689"></p>
+<p>因此这回渲染方程的积分除了要对所有方向积分外，还要对整个表面进行积分。</p>
+<p>后来人们发现半透明就好像物体内部有一个光源一样，所以可以按照这种思路在物体内部放一个光源来模拟半透明的效果，但是还要在外部有另一个虚拟光源才能达到正确的半透明效果。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324161102328.png" alt="image-20220324161102328"></p>
+<p>次表面散射非常强大，因此应用非常广泛，比如人的皮肤，因为人的皮肤本身就是透光的，所以用 BSSRDF 会更加真实：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324161143507.png" alt="image-20220324161143507"></p>
+<p>再比如玉质物体：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324161219954.png" alt="image-20220324161219954"></p>
+<h5 id="4-5-布料材质"><a href="#4-5-布料材质" class="headerlink" title="4.5 布料材质"></a>4.5 布料材质</h5><p>布料是由一根根地线织成的，每根线又是由一股股纤维构成的，因此渲染布料可以像喧染头发一样对每根纤维进行渲染，但计算量自然非常庞大。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324161605583.png" alt="image-20220324161605583"></p>
+<p>因此可以把布料当成一个表面，根据织物针织的方法，定义不同的 BRDF：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324161706245.png" alt="image-20220324161706245"></p>
+<p>但对于天鹅绒这类布料，它的线是向外发散分布的，并不是按规律织起来的：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324161915668.png" alt="image-20220324161915668"></p>
+<p>因此不适合当成一个表面去渲染，这时可以把它当成空间中的散射介质，像渲染云雾一样去渲染：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324161825842.png" alt="image-20220324161825842"></p>
+<p>当然效果最好的还是一开始说的渲染每一根纤维，只是计算量太大：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324162002053.png" alt="image-20220324162002053"></p>
+<h5 id="4-6-细节材质"><a href="#4-6-细节材质" class="headerlink" title="4.6 细节材质"></a>4.6 细节材质</h5><p>有时渲染的不真实不是因为渲染的不好，而是因为渲染出来的物体太过完美而显得不真实，比如：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324162108682.png" alt="image-20220324162108682"></p>
+<p>而实际的车和鼠标的表面是这样的：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324162127568.png" alt="image-20220324162127568"></p>
+<p>另外当光线在非常细小的地方传播的时候就不得不考虑光的波动性，而不能只考虑光的几何特性，比如渲染出金属表面的颗粒效果：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324162342490.png" alt="image-20220324162342490"></p>
+<p>如何做出这些细节，这也是闫令琪老师的另一大贡献，更多可以看论文。</p>
+<h5 id="4-7-程序化生成材质"><a href="#4-7-程序化生成材质" class="headerlink" title="4.7 程序化生成材质"></a>4.7 程序化生成材质</h5><p>这个我们之前在纹理映射部分提到过，对于一些没有规律的花纹，比如花瓶以及它内部的纹路：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324162506356.png" alt="image-20220324162506356"></p>
+<p>我们如果把这些空间中的每个点的材质都存下来是不现实的，因此会定义一个空间中的噪声函数去生成这样的噪声，这就是程序化生成材质，应用也非常广泛，除了上面的花瓶纹路，再比如木质品：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324162620934.png" alt="image-20220324162620934"></p>
+<p>水面的波浪：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/03/24/20220324-%E6%B8%B2%E6%9F%93%E5%92%8C%E6%9D%90%E8%B4%A8%E5%89%8D%E6%B2%BF/image-20220324162634485.png" alt="image-20220324162634485"></p>
 ]]></content>
       <categories>
         <category>GAMES101</category>
@@ -2638,268 +2638,6 @@
       </tags>
   </entry>
   <entry>
-    <title>【C++对象模型】（三）关于数据成员</title>
-    <url>/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/</url>
-    <content><![CDATA[<p>《深度探索C++对象模型》第三章重点梳理。主要内容包括：</p>
-<ul>
-<li>C++ 字节对齐和类大小计算</li>
-<li>数据成员的布局、虚函数表和虚基类表的布局</li>
-</ul>
-<p><em><span id="more"></span></em></p>
-<h3 id="1-C-字节对齐"><a href="#1-C-字节对齐" class="headerlink" title="1 C++ 字节对齐"></a>1 C++ 字节对齐</h3><p>关于 C++ 字节对齐这篇文章讲得非常细致：<a href="https://blog.csdn.net/sweetfather/article/details/78487563">C++ 字节对齐的总结(原因和作用)</a></p>
-<p>这里只做简要总结：</p>
-<ul>
-<li><p>字节对齐的原因：各个硬件平台对存储空间的处理上有很大的不同。一些平台对某些特定类型的数据只能从某些特定地址开始存取。比如有些架构的CPU在访问 一个没有进行对齐的变量的时候会发生错误，那么在这种架构下编程必须保证字节对齐。其他平台可能没有这种情况，但是最常见的是，如果不按照适合其平台要求对数据存放进行对齐，会在存取效率上带来损失。比如有些平台每次读都是从偶地址开始，如果一个 int 型数据存放在偶地址开始的地方，那么一个读周期就可以读出这 32 位数据，而如果存放在奇地址开始的地方，就需要 2 个读周期，并对两次读出的结果的高低字节进行拼凑才能得到该 32 位数据，显然在读取效率上下降很多</p>
-</li>
-<li><p>可以使用 <code>pragma pack(n)</code> 指定以 n 字节方式对齐，不指定则按默认方式对齐</p>
-</li>
-<li><p>字节对齐是要看变量所在偏移地址是否为变量字节数（或指定对齐字节数 n，取二者较小值）的整数倍</p>
-</li>
-<li><p>对于结构成员，要按照结构成员中对齐长度最大的一个对齐</p>
-</li>
-<li><p>对齐后还要看结构或类的总大小是否为其中最长变量（或指定对齐字节数 n，取二者较小值）的整数倍</p>
-</li>
-</ul>
-<p>按照以上规则可以保证对齐后整个结构或类对象所占空间最小，并保证读取效率。</p>
-<h3 id="2-C-类大小计算"><a href="#2-C-类大小计算" class="headerlink" title="2 C++ 类大小计算"></a>2 C++ 类大小计算</h3><p>关于 C++ 类的大小计算这篇文章讲的非常全面：<a href="https://www.cnblogs.com/fengyaoyao/p/10262312.html">C++类的大小计算汇总</a></p>
-<p>这里只做简要总结：</p>
-<p>C++ 中的类由于涉及虚函数、静态成员、虚拟继承、多继承、空类等情况，类对象的大小较为复杂，但总结起来遵循以下几个原则：</p>
-<ul>
-<li>类的大小是指类对象实体的大小，类大小的计算遵循字节对齐原则</li>
-<li>类的大小与普通数据成员有关，与成员函数和静态成员无关。即普通成员函数、静态成员函数、静态数据成员、静态常量数据成员，均对类的大小无影响；静态数据成员之所以不计算在类的对象大小内，是因为类的静态数据成员被该类所有的对象所共享，并不属于具体哪个对象，静态数据成员定义在内存的全局区</li>
-<li>虚函数对类的大小有影响，是因为虚函数表指针带来的影响</li>
-<li>虚继承对类的大小有影响，是因为虚基表指针带来的影响</li>
-<li>空类的大小为 1，因为 C++ 要为某一个实体分配内存就要求这个实体必须有大小，不能为大小为 0 的实体分配内存，所以 C++ 会为空类指定 1 个字节作为其大小，防止 sizeof 为 0，含有虚函数，虚继承，多继承是特殊情况</li>
-</ul>
-<h4 id="2-1-关于空类"><a href="#2-1-关于空类" class="headerlink" title="2.1 关于空类"></a>2.1 关于空类</h4><p>C++ 空类大小为 1，这之中有两种情况需要注意：</p>
-<ul>
-<li>如果一个派生类继承自空类，且派生类有自己的数据成员，则基类子对象的一个字节不会加入到派生类中，因为派生类有自己的数据成员意味着有大小，可以分配内存，所以不需要空类的 1 个字节</li>
-<li>一个类包含一个空类对象成员，这时空类的一个字节是要被计算进去的，因为空类对象必须有自己大小</li>
-</ul>
-<h4 id="2-2-关于虚函数"><a href="#2-2-关于虚函数" class="headerlink" title="2.2 关于虚函数"></a>2.2 关于虚函数</h4><p>虚函数是通过一张虚函数表来实现的。编译器必需要<strong>保证虚函数表的指针存在于对象实例中最前面的位置</strong>（这是为了保证正确取到虚函数的偏移量）。</p>
-<p>每当创建一个包含有虚函数的类或从包含有虚函数的类派生一个类时，编译器就会为这个类创建一个虚函数表保存该类所有虚函数的地址，其实这个虚函数表的作用就是保存自己类中所有虚函数的地址，可以把虚函数表形象地看成一个函数指针数组，这个数组的每个元素存放的就是虚函数的地址。在每个带有虚函数的类中，编译器秘密地置入一指针，称为 vptr，指向这个对象的虚函数表。 当构造该派生类对象时，其成员 vptr 被初始化指向该派生类的虚函数表。所以可以认为<strong>虚函数表是该类的所有对象共有的</strong>，在定义该类时被初始化；而 <strong>vptr 则是每个类对象都有独立一份的</strong>，且在该类对象被构造时被初始化。</p>
-<p>含有虚函数的时候，类的大小计算要注意以下几点：</p>
-<ul>
-<li>由于指针大小为 8 字节，因此含有虚函数的任何类的大小都是原本大小加上 8 字节</li>
-<li>当继承的基类含有虚函数时，在派生类中不对基类的虚函数进行覆盖，同时派生类中还拥有自己的虚函数。此时派生类的虚函数表中首先存放基类虚函数地址，再存放派生类虚函数地址，所有虚函数地址顺序与声明顺序一致。因此无论是基类还是派生类，其大小也还是原本大小加 8 字节</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507102541174.png" alt="image-20220507102541174"></p>
-<ul>
-<li>如果派生类中对基类的虚函数进行了覆盖，同时派生类中还拥有自己的虚函数。此时虚函数表中原本存放基类虚函数的位置会被覆盖为派生类重写的虚函数地址，其他顺序不变。因此无论是基类还是派生类，其大小也还是原本大小加 8 字节</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507102558864.png" alt="image-20220507102558864"></p>
-<ul>
-<li>当一个派生类继承自多个含有虚函数的基类，并对基类虚函数无重载，此时派生类虚函数被放在第一个积累虚函数表后面，派生类的大小就是原本大小加上基类数量 * 8 字节</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507102738036.png" alt="image-20220507102738036"></p>
-<ul>
-<li>当一个派生类继承自多个含有虚函数的基类，并对基类虚函数有重载，情况和上述一致，这时任意一个基类指针指向派生类对象都可以调用派生类重载的基类虚函数</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507102832628.png" alt="image-20220507102832628"></p>
-<p>上面文章中的一个例子，在 Visual C++ 中的运行结果和文章中不同：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">A</span>    </span><br><span class="line">&#123;    </span><br><span class="line">&#125;;   </span><br><span class="line"> </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">B</span>    </span><br><span class="line">&#123; </span><br><span class="line">    <span class="type">char</span> ch;    </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func0</span><span class="params">()</span>  </span>&#123;  &#125;  </span><br><span class="line">&#125;;  </span><br><span class="line"> </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">C</span>   </span><br><span class="line">&#123; </span><br><span class="line">    <span class="type">char</span> ch1; </span><br><span class="line">    <span class="type">char</span> ch2; </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func</span><span class="params">()</span>  </span>&#123;  &#125;   </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func1</span><span class="params">()</span>  </span>&#123;  &#125;  </span><br><span class="line">&#125;; </span><br><span class="line"> </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">D</span>: <span class="keyword">public</span> A, <span class="keyword">public</span> C </span><br><span class="line">&#123;    </span><br><span class="line">    <span class="type">int</span> d;    </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func</span><span class="params">()</span>  </span>&#123;  &#125;  </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func1</span><span class="params">()</span>  </span>&#123;  &#125; </span><br><span class="line">&#125;;    </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">E</span>: <span class="keyword">public</span> B, <span class="keyword">public</span> C </span><br><span class="line">&#123;    </span><br><span class="line">    <span class="type">int</span> e;    </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func0</span><span class="params">()</span>  </span>&#123;  &#125;  </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func1</span><span class="params">()</span>  </span>&#123;  &#125; </span><br><span class="line">&#125;; </span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">void</span>)</span> </span></span><br><span class="line"><span class="function"></span>&#123; </span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;A=&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(A)&lt;&lt;endl;    <span class="comment">//result=1 </span></span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;B=&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(B)&lt;&lt;endl;    <span class="comment">//result=16     </span></span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;C=&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(C)&lt;&lt;endl;    <span class="comment">//result=16 </span></span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;D=&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(D)&lt;&lt;endl;    <span class="comment">//result=24 </span></span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;E=&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(E)&lt;&lt;endl;    <span class="comment">//result=40 </span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>这里关于类 E 的大小，有必要再详细分析一下：类 E 包含一个类 B 子对象 16字节，一个类 C 子对象 16 字节，以及自身的 int 4 字节，现在一共是 36字节，但因为要跟成员中最大变量虚函数表指针 8 字节对齐，最终补齐到 40 字节。</p>
-<blockquote>
-<p>可以在 VS 中输出类的布局，打开 vs项目属性-&gt;配置属性-&gt; c&#x2F;c++ -&gt;命令行，在其它选项中添加如下命令：</p>
-<ul>
-<li><code>/d1 reportAllClassLayout</code> 是查看所有类的布局</li>
-<li><code>/d1 reportSingleClassLayoutXX</code> 是查看名为XX的类的布局</li>
-</ul>
-<p>配置之后重新编译项目，会在编译输出中打印类布局。</p>
-</blockquote>
-<p>上面例子中，类 E 的布局打印出来如下：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507113905627.png" alt="image-20220507113905627"></p>
-<p>和我们的分析一致，同时还可以看到类 E 的两个虚函数表的布局：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507113943452.png" alt="image-20220507113943452"></p>
-<p>其中 <code>E::$vftable@B@</code> 是基类 B 的虚函数表，存放的是被 E 重载后的函数 func0 的指针， <code>E::$vftable@C@</code> 是基类 C 的虚函数表，存放的是 C 的函数 func 和被 E 重载的函数 func1 的指针。</p>
-<h4 id="2-3-关于虚继承"><a href="#2-3-关于虚继承" class="headerlink" title="2.3 关于虚继承"></a>2.3 关于虚继承</h4><p>Visual C++ 中虚继承的情况比较简单，只是多了一个指向虚基类表的指针 vbptr，而真正的指向虚基类的指针存放在虚基类表中。</p>
-<h3 id="3-数据成员的布局"><a href="#3-数据成员的布局" class="headerlink" title="3 数据成员的布局"></a>3 数据成员的布局</h3><p>最后通过一个例子总结 C++ 数据成员布局，通过下面这个例子可以清晰的认识 C++ 类数据成员布局、虚函数表和虚基类表的布局：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">X</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="type">int</span> i;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Y</span> : <span class="keyword">public</span> <span class="keyword">virtual</span> X &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func0</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Z</span> : <span class="keyword">public</span> <span class="keyword">virtual</span> X &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="type">int</span> j;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func1</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">A</span> : <span class="keyword">public</span> Y, <span class="keyword">public</span> Z &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="type">char</span> x;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func1</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func2</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;size of class X is &quot;</span> &lt;&lt; <span class="built_in">sizeof</span>(X) &lt;&lt; std::endl;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;size of class Y is &quot;</span> &lt;&lt; <span class="built_in">sizeof</span>(Y) &lt;&lt; std::endl;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;size of class Z is &quot;</span> &lt;&lt; <span class="built_in">sizeof</span>(Z) &lt;&lt; std::endl;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;size of class A is &quot;</span> &lt;&lt; <span class="built_in">sizeof</span>(A) &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>上面的例子中包含了虚继承、多重继承、虚函数的情况，运行结果如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">size of class X is 4</span><br><span class="line">size of class Y is 24</span><br><span class="line">size of class Z is 32</span><br><span class="line">size of class A is 56</span><br></pre></td></tr></table></figure>
-
-<p>我们打印类 A 的布局：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507115635356.png" alt="image-20220507115635356"></p>
-<p>可以看到类 A 的布局：</p>
-<ul>
-<li>首先是基类 Y 的子对象，Y 包含一个虚函数，同时有一个虚基类，所以 Y 的内存中就是两个指针，一个是虚函数表指针 vfptr，一个是虚基类表指针 vbptr，共 16 字节；</li>
-<li>然后是基类 Z 的子对象，Z 同样包含 vfptr 和 vbptr，以及一个 int 成员，字节对齐后一共是 24 字节，此时类 A 总共偏移 40 字节</li>
-<li>然后是类 A 自己的数据成员，char 类型一个字节，类 A 总共偏移 41 字节，最终要和类中最长成员 8 字节对齐，因此对齐到 48 字节</li>
-<li>类 A 的全部成员都存放完后，最后存放虚基类成员，int 占 4 字节，此时类 A 总共 52 字节，但输出是 56 字节，实际又做了一次 8 字节对齐，因为打印出的内存布局把类 A 和虚基类子对象作为两个独立的部分，所以打印 48 + 4 &#x3D; 52 字节，但实际还要做一次 8 字节对齐，所以 sizeof 输出 56 字节</li>
-</ul>
-<p>然后是类 A 的虚函数表：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507120353989.png" alt="image-20220507120353989"></p>
-<p>虚函数表的第一项表示派生类对象指针相对于虚函数表指针的偏移，这里派生类 A 相对于基类 Y 的虚函数表指针的偏移是 0 字节，相对于基类 Z 的虚函数表指针的偏移是 -16 字节。</p>
-<p>最后是类 A 的虚基类表：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507120419152.png" alt="image-20220507120419152"></p>
-<p>虚基类表原理与虚函数表类似，表的第一项表示派生类对象指针相对于虚基类表指针的偏移，这里是 -8 字节，因为虚基类表指针前面还有一个虚函数表指针占用了 8 个字节，所以派生类 Y 对象的指针相对于其虚基类表指针的偏移量是 -8，派生类 Z 对象的指针相对于其虚基类表指针的偏移也是 -8，注意这里的派生类不再是指 A 了，而是指虚基类的派生类，所以就是 Y 和 Z；虚基类表从第二项开始，表示各个虚基类地址相对于虚基类表指针的偏移。这里虚基类 X 相对于 Y 的虚基类表指针偏移了 40 个字节，因此虚基类 X 相对于派生类 Y 的地址总共偏移了 48 字节，对于派生类 Z 也同样如此，总共偏移了 24 + 8 &#x3D; 32 个字节，从上面的内存布局可以清晰地看出这一点。</p>
-<p>可以看到，Y 和 Z 的虚基类表都指向同一个虚基类 X 的子对象，正如之前所说的，虚基类无论在继承链中被继承多少次，都只产生一个实体，即虚基类子对象，但是“不同的派生类中虚基类子对象的位置不同”这句话，一方面是指虚基类子对象相对于派生类的起始地址偏移量不同，并不是存在多个虚基类子对象；另一方面，随着类的派生，虚基类子对象的位置确实可能变化，但所有派生类的虚基类表中都指向那同一个虚基类子对象。</p>
-<p>最后总结一下，C++ 中数据成员布局与编译器有关，但总体原理一致，Visual C++ 中数据成员布局顺序为：</p>
-<ul>
-<li>基类子对象<ul>
-<li>虚函数表指针 vfptr</li>
-<li>虚基类表指针 vbptr</li>
-<li>基类成员</li>
-</ul>
-</li>
-<li>数据成员</li>
-<li>虚基类成员</li>
-</ul>
-<blockquote>
-<p>注：有的编译器不存在虚基类表指针 vbptr，而是把虚基类的偏移放在虚函数表中，这样只需要一个虚函数表指针</p>
-</blockquote>
-<p>最最后附上一个简单的问题：为什么不把派生类的成员填到基类子对象由于字节对齐而填充的空白内存中，而是要保留基类子对象的空白内存？</p>
-<p>直接借用书中的图解释：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507164044837.png" alt="image-20220507164044837"></p>
-]]></content>
-      <categories>
-        <category>深度探索C++对象模型</category>
-      </categories>
-      <tags>
-        <tag>C++</tag>
-        <tag>C++对象模型</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>【C++对象模型】（四）关于函数成员</title>
-    <url>/LycTechStack.github.io/2022/05/09/20220509-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E5%87%BD%E6%95%B0%E6%88%90%E5%91%98/</url>
-    <content><![CDATA[<p>《深度探索C++对象模型》第四章重点梳理。主要内容包括：</p>
-<ul>
-<li>调用不同成员函数的背后工作</li>
-<li>虚函数详解</li>
-<li>内联函数的背后工作</li>
-</ul>
-<p><em><span id="more"></span></em></p>
-<h3 id="1-调用不同成员函数的背后工作"><a href="#1-调用不同成员函数的背后工作" class="headerlink" title="1 调用不同成员函数的背后工作"></a>1 调用不同成员函数的背后工作</h3><p>C++ 类中包括三种成员函数：非静态成员函数、静态成员函数和虚函数。这三种成员函数被调用时，编译器会进行不同的背后工作。</p>
-<h4 id="1-1-非静态成员函数"><a href="#1-1-非静态成员函数" class="headerlink" title="1.1 非静态成员函数"></a>1.1 非静态成员函数</h4><p>C+＋的设计准则之一就是：非静态成员函数必须至少和一般的非成员函数有相同的效率。所以 C++ 的做法就是在非静态成员函数被调用时，编译器将其转化为一般的非成员函数，并传入一个对象的指针。</p>
-<p>假设有一个成员函数：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">float</span> <span class="title">Point3d::magnitude</span><span class="params">()</span> <span class="type">const</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">sqrt</span>(_x * _x + _y * _y +  _z * _z);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>下面是转化步骤：</p>
-<ol>
-<li>改写函数的 signature（函数原型）以安插一个额外的参数到成员函数中，作为对对象成员的存取管道，该额外参数即为 this 指针，如果成员函数是 const，则传入参数也为 const</li>
-<li>将对每一个成员变量的存取操作改为经由 this 指针的存取操作</li>
-<li>将成员函数重写为一个外部非成员函数，并对函数名进行编码，使其有一个独一无二的内部名称</li>
-</ol>
-<p>转化后的的函数如下：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">extern</span> <span class="type">float</span> <span class="title">magnitude_7Point3dFv</span><span class="params">(<span class="type">const</span> Point3d* <span class="keyword">this</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">sqrt</span>(</span><br><span class="line">        <span class="keyword">this</span>-&gt;_x * <span class="keyword">this</span>-&gt;_x + </span><br><span class="line">        <span class="keyword">this</span>-&gt;_y * <span class="keyword">this</span>-&gt;_y +  </span><br><span class="line">        <span class="keyword">this</span>-&gt;_z * <span class="keyword">this</span>-&gt;_z);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>对函数的调用：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">Point3d* ptr = <span class="keyword">new</span> <span class="built_in">Point3d</span>();</span><br><span class="line">ptr-&gt;<span class="built_in">magnitude</span>();</span><br></pre></td></tr></table></figure>
-
-<p>也被转化为：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">magnitude_7Point3dFv</span>(ptr);</span><br></pre></td></tr></table></figure>
-
-<h4 id="1-2-静态成员函数"><a href="#1-2-静态成员函数" class="headerlink" title="1.2 静态成员函数"></a>1.2 静态成员函数</h4><p>静态成员函数类似于非静态成员函数，编译器同样将其转化为一般的外部非成员函数，唯一的区别在于，传入的参数不是 this 指针，而是一个被强制转化后的指针，编译器将 0 强制转化为对象指针传入函数，所以一个静态成员函数转化后是这样：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">extern</span> <span class="type">float</span> <span class="title">magnitude_7Point3dFv</span><span class="params">((Point3d*) <span class="number">0</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>也正因为这样的转化，决定了我们所熟悉的静态成员函数的特性：</p>
-<ul>
-<li>无需经由类对象调用，通过类名即可调用，因为无需传入具体的对象指针，0 指针只作为一个执行静态成员函数的绑定对象指针，除此之外没有任何功能</li>
-<li>不能够直接存取类中的非静态成员，因为指针是 0，实际不指向任何对象实体</li>
-<li>不能声明为 const，virtual 等</li>
-</ul>
-<h4 id="1-3-虚拟成员函数"><a href="#1-3-虚拟成员函数" class="headerlink" title="1.3 虚拟成员函数"></a>1.3 虚拟成员函数</h4><p>虚成员函数在调用时被转化为经由 vptr 指向的虚函数表中的索引值调用：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">Point3d* ptr = <span class="keyword">new</span> <span class="built_in">Point3d</span>();</span><br><span class="line">(*ptr-&gt;vptr[<span class="number">1</span>]) (ptr);</span><br></pre></td></tr></table></figure>
-
-<p>其中传入的 ptr 也是 this 指针，1 是该函数在虚函数表中的索引。</p>
-<h3 id="2-虚函数详解"><a href="#2-虚函数详解" class="headerlink" title="2 虚函数详解"></a>2 虚函数详解</h3><p>之前我们已经了解了虚函数的一般模型：每一个类有一个虚函数表，其中存放该类中所有有作用的虚函数地址，然后每个对象内含一个成员变量 vptr，指向虚函数表。这一节中我们根据不同继承情况，深入了解该模型内部原理。</p>
-<h4 id="2-1-单一继承"><a href="#2-1-单一继承" class="headerlink" title="2.1 单一继承"></a>2.1 单一继承</h4><p>任何情况下，一个 class 只会有一个 virtual table 。每一个 table 内含其对应的 class object 中所有 active virtual functions 函数实体的地址。这些 active virtual functions 包括：</p>
-<ul>
-<li>这个 class 所定义的函数实体。它会改写 (overriding) 一个可能存在的 base class virtual function 实体</li>
-<li>继承自 base class 的函数实体。这是在 derived class 决定不改写 base class virtual function 时才会出现的情况</li>
-<li>一个纯虚函数调用（<code>pure_virtual_called()</code> ）实体，它既可以扮演纯虚函数的空间占用者，也可以当作执行期的异常处理函数，当调用一个基类中的纯虚函数（即未被定义）时，会抛出异常并终止程序</li>
-</ul>
-<p>单一继承情况下的虚函数表布局如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/09/20220509-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E5%87%BD%E6%95%B0%E6%88%90%E5%91%98/image-20220509102615749.png" alt="image-20220509102615749"></p>
-<p>可以看到 Point2d 继承自 Point 类，重写的函数会覆盖基类虚函数，比如析构函数，以及在 Point2d 中实现的纯虚函数等，而没有重写的函数则直接复制基类虚函数表中该函数的地址，比如 Point::z() 函数。</p>
-<p>回顾上一节提到的虚函数在编译时的转化，假设现在有如下调用：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">ptr-&gt;<span class="built_in">z</span>();</span><br></pre></td></tr></table></figure>
-
-<p>则会被编译器转化为：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">(*ptr-&gt;vptr[<span class="number">4</span>]) (ptr);</span><br></pre></td></tr></table></figure>
-
-<p>于是这样的形式就可以提供给程序足够的信息，使其在执行期知道调用哪一个函数实体，因为：</p>
-<ul>
-<li>虽然不知道 ptr 指向的具体对象类型，但是我们知道经由 ptr 可以访问到该对象的 vptr，从而访问到类的虚函数表</li>
-<li>虽然不知道哪一个函数实体 z() 会被调用，但是所有类的 z() 函数实体地址都放在虚函数表中下标为 4 的地方</li>
-</ul>
-<p>这正是指针和虚函数所支持的多态的内部原理之一。在一个单一继承体系中，这样的机制的行为十分良好，不但有效率而且很容易塑造出模型来。但是在多重继承和虚拟继承之中，就没有这么简单了。</p>
-<h4 id="2-2-多重继承"><a href="#2-2-多重继承" class="headerlink" title="2.2 多重继承"></a>2.2 多重继承</h4><p>在多重继承之下，一个 derived class 内含 n 个虚函数表，n 表示上一层基类数目，其中第一个基类子对象指向的表为主要表格，其他的为次要表格，第一个基类的虚函数和派生类自己的虚函数都放在主要表格中。针对每一个虚函数表，派生类对象中都有对应的 vptr，当我们将一个派生类对象指定给第一个基类或者派生类的指针时，处理的是主要表格，其他情况处理的是次要表格。</p>
-<p>多重继承情况下，虚函数表布局如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/09/20220509-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E5%87%BD%E6%95%B0%E6%88%90%E5%91%98/image-20220509105025788.png" alt="image-20220509105025788"></p>
-<p>上图中的 * 表示需要调整 this 指针，当我们将派生类对象指定给第二个或之后的基类指针时，会存在一些需要调整 this 指针以支持正确的虚函数的情况，一般来说有以下三种情况（对应上面三个星号）：</p>
-<ol>
-<li>第一种情况：通过指向第二个基类的指针调用派生类的虚函数：</li>
-</ol>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">Base2 *ptr = <span class="keyword">new</span> Derived;</span><br><span class="line"><span class="keyword">delete</span> ptr;</span><br></pre></td></tr></table></figure>
-
-<p>上面的代码中 ptr 首先会被编译器调整至指向基类对象中的第二个基类子对象，编译器的调整代码如下：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">Derived *temp = <span class="keyword">new</span> Derived;</span><br><span class="line">Base2 *ptr = temp ? temp + <span class="built_in">sizeof</span>(Base1) : <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
-
-<p>这样才能保证后续正确地访问或调用与第二个基类有关的成员和方法。但接下来的 <code>delete ptr</code> 需要调用析构函数，此时需要将 ptr 再向后调整至指向派生类对象起始地址，才能正确执行析构函数删除整个派生类对象。</p>
-<ol start="2">
-<li>第二种情况：通过一个指向派生类的指针，调用第二个基类中一个继承而来的虚函数，在这种情况派生类指针需要调整至指向第二个基类子对象</li>
-</ol>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">Derived *pder = <span class="keyword">new</span> Derived;</span><br><span class="line">pder-&gt;<span class="built_in">mumble</span>();</span><br><span class="line"><span class="comment">//pedr必须向前调整sizeof(Base1)个字节以指向第二个基类子对象</span></span><br></pre></td></tr></table></figure>
-
-<ol start="3">
-<li>第三种情况发生于一个语言扩充性质之下：允许一个 virtual function 的返回值类型有所变化，可能是 base type，也可能是 publicly derived type。这一点可以通过上图中的 clone() 函数说明，clone() 函数的派生版本返回一个派生类对象，默默地改写了两个基类函数实体，当我们通过第二个基类指针调用 clone() 函数时，需要调整 this 指针：</li>
-</ol>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">Base2 *pb1 = <span class="keyword">new</span> Derived;</span><br><span class="line"><span class="comment">// 返回值必须调整以指向第二个基类子对象</span></span><br><span class="line">Base2 *pb2 = pb1-&gt;<span class="built_in">clone</span>();</span><br></pre></td></tr></table></figure>
-
-<p>当进行 <code>pb1-&gt;clone()</code> 时，pb1 会被调整指向派生类对象的起始地址，于是会调用 clone() 函数的派生版本，它会传回一个新的派生类对象，当该对象被指定给第二个基类的指针时，需要调整以指向第二个基类子对象。</p>
-<h4 id="2-3-虚拟继承"><a href="#2-3-虚拟继承" class="headerlink" title="2.3 虚拟继承"></a>2.3 虚拟继承</h4><p>虚拟继承的情况非常复杂，即使只有唯一的一个虚基类，他们的关系也不会像单一继承情况那样简单，因为虚基类和派生类不再相符，两者之间同样需要进行 this 指针转化。</p>
-<p>当一个 virtual base class 从另一个 virtual base class 派生而来，并且两者都支持 virtual functions 和 nonstatic data members 时，编译器对于 virtual base class 的支持简直就像进了迷宫一样。总之一个建议是，<strong>不要在虚基类中声明非静态成员变量</strong>。</p>
-<h3 id="3-内联函数的背后工作"><a href="#3-内联函数的背后工作" class="headerlink" title="3 内联函数的背后工作"></a>3 内联函数的背后工作</h3><p>下表对比了不同类型成员函数的执行效率：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/09/20220509-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E5%87%BD%E6%95%B0%E6%88%90%E5%91%98/image-20220509112026194.png" alt="image-20220509112026194"></p>
-<p>可以看到内联函数的效率占据绝对优势。在以往的学习中我们被告知，inline 函数将会在被调用的时候在调用处产生函数实体，这个操作称为扩展，即把内联函数代码扩展到调用处替换函数调用代码。</p>
-<p>但实际上不是所有声明为 inline 的函数都能成为内联函数，inline 只是一种请求，只有这个请求被接受才会在函数调用处扩展 inline 代码。那么编译器如何决定是否接受这个请求呢？</p>
-<p>编译器有一套复杂的算法来决定是否将函数认定为 inline，通常是计算 assignments、function calls、virtual function calls 等操作的次数。每个操作（表达式）种类有一个权值，而 inline 函数的复杂度就以这些操作的总和来决定。当其执行成本比一般的函数调用及返回机制所带来的负荷低，就被认定为 inline。</p>
-<p>一般而言，处理一个 inline 函数包括以下两个阶段：</p>
-<ul>
-<li>分析函数定义，以决定是否认定为 inline，如果函数因其复杂度，或因其建构问题，被判断为不可成为 inline，则它会被转为一个 static 函数，并在被编译模块内产生对应的函数定义。</li>
-<li>真正的 inline 函数扩展操作是在调用的那个地方进行，这会带来参数的求值操作以及临时性对象的管理问题，接下来具体讨论。</li>
-</ul>
-<h4 id="3-1-有副作用的参数"><a href="#3-1-有副作用的参数" class="headerlink" title="3.1 有副作用的参数"></a>3.1 有副作用的参数</h4><p>inline 函数是如何被扩展的？下面一个例子可以说明问题，假设有如下内联函数：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">inline</span> <span class="type">int</span> <span class="title">min</span><span class="params">(<span class="type">int</span> i, <span class="type">int</span> j)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> i &lt; j ? i : j;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>下面是三个调用操作：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> minval;</span><br><span class="line"><span class="type">int</span> val1 = <span class="number">1024</span>;</span><br><span class="line"><span class="type">int</span> val2 = <span class="number">2048</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**（1）**/</span>minval = <span class="built_in">min</span>(val1, val2);</span><br><span class="line"><span class="comment">/**（2）**/</span>minval = <span class="built_in">min</span>(<span class="number">1024</span>, <span class="number">2048</span>);</span><br><span class="line"><span class="comment">/**（3）**/</span>minval = <span class="built_in">min</span>(<span class="built_in">foo</span>(), <span class="built_in">bar</span>() + <span class="number">1</span>);</span><br></pre></td></tr></table></figure>
-
-<p>以上三个调用会被扩展为：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**（1）**/</span>minval = val1 &lt; val2 ? val1 : val2;</span><br><span class="line"><span class="comment">/**（2）**/</span>minval = <span class="number">1024</span>;</span><br><span class="line"><span class="comment">/**（3）**/</span></span><br><span class="line"><span class="type">int</span> t1, t2;</span><br><span class="line">t1 = <span class="built_in">foo</span>();</span><br><span class="line">t2 = <span class="built_in">bar</span>() + <span class="number">1</span>;</span><br><span class="line">minval = t1 &lt; t2 ? t1 : t2;</span><br></pre></td></tr></table></figure>
-
-<p>第（3）个调用把函数调用作为参数传入 inline 函数，这可能导致实际参数的多次求值操作，因此被认为是有副作用的参数，所以在扩展时使用了临时变量。而传入常量则会直接执行表达式，并将内联函数扩展为赋值操作。</p>
-<h4 id="3-2-局部变量"><a href="#3-2-局部变量" class="headerlink" title="3.2 局部变量"></a>3.2 局部变量</h4><p>如果我们修改 inline 函数，引入局部变量：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">inline</span> <span class="type">int</span> <span class="title">min</span><span class="params">(<span class="type">int</span> i, <span class="type">int</span> j)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">int</span> minval = i &lt; j ? i : j</span><br><span class="line">    <span class="keyword">return</span> minval;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>然后调用：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> minval;</span><br><span class="line"><span class="type">int</span> val1 = <span class="number">1024</span>;</span><br><span class="line"><span class="type">int</span> val2 = <span class="number">2048</span>;</span><br><span class="line">minval = <span class="built_in">min</span>(val1, val2);</span><br></pre></td></tr></table></figure>
-
-<p>则会被扩展为：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> min_lv_minval = val1 &lt; val2 ? val1 : val2;</span><br><span class="line">minval = min_lv_minval</span><br></pre></td></tr></table></figure>
-
-<p>inline 函数中的局部变量会被保留，并产生一个拥有唯一编码名字的临时变量。如果 inline 函数在同一个 scope 中被调用多次，那么每次都会产生一组名字不同的临时变量。</p>
-<p>inline 函数中的局部变量，再加上有副作用的参数，可能会导致大量临时性对象的产生。特别是它被调用多次的时候，例如：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">minval = <span class="built_in">min</span>(val1, val2) + <span class="built_in">min</span>(<span class="built_in">foo</span>(), <span class="built_in">foo</span>() + <span class="number">1</span>);</span><br></pre></td></tr></table></figure>
-
-<p>会被扩展为：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 为局部变量产生的临时变量</span></span><br><span class="line"><span class="type">int</span> min_lv_minval_00;</span><br><span class="line"><span class="type">int</span> min_lv_minval_01;</span><br><span class="line"><span class="comment">// 为副作用参数产生的临时变量</span></span><br><span class="line"><span class="type">int</span> t1, t2;</span><br><span class="line">t1 = <span class="built_in">foo</span>();</span><br><span class="line">t2 = <span class="built_in">foo</span>() + <span class="number">1</span>;</span><br><span class="line">min_lv_minval_00 = val1 &lt; val2 ? val1 : val2;</span><br><span class="line">min_lv_minval_01 = t1 &lt; t2 ? t1 : t2;</span><br><span class="line">minval = min_lv_minval_00 + min_lv_minval_01;</span><br></pre></td></tr></table></figure>
-
-<p>内联函数对于封装提供了一种必要的支持，可以有效存取封装于 class 中的 nonpublic 数据。它同时也是 C 程序中大量使用的<code>#define</code> （前置处理宏）的一个安全代替品，特别是如果宏中的参数有副作用的话。然而一个 inline 函数如果被调用太多次的话，会产生大量的扩展码，使程序的大小暴涨，并且由于参数带有副作用或者 inline 函数中有局部变量，会产生大量临时对象，编译器无法将它们移除。此外，inline 中再有 inline，可能会使一个表面上看起来简单的 inline 因其连锁复杂度而没办法扩展开来。对于既要安全又要效率的程序， inline 函数提供了一个强而有力的工具。然而，与 non-inline 函数比起来，它们需要更加小心地处理。</p>
-]]></content>
-      <categories>
-        <category>深度探索C++对象模型</category>
-      </categories>
-      <tags>
-        <tag>C++</tag>
-        <tag>C++对象模型</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>【C++对象模型】（五）对象复制和析构</title>
     <url>/LycTechStack.github.io/2022/05/09/20220509-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%AF%B9%E8%B1%A1%E5%A4%8D%E5%88%B6%E5%92%8C%E6%9E%90%E6%9E%84/</url>
     <content><![CDATA[<p>《深度探索C++对象模型》第五章重点梳理。主要内容包括：</p>
@@ -3087,6 +2825,143 @@
 <li>对指针进行 <code>dynamic_cast</code> 失败会返回 NULL，而对引用的话，失败会抛出 <code>bad_cast exception</code>，这是由于指针可以被赋值为 0，以表示 no object，但是引用不行</li>
 <li><code>typeid</code> 可以返回 <code>const type_info&amp;</code>，用以获取类型信息。虽然第一点指出 RTTI 只支持多态类，但 <code>typeid</code> 和 <code>type_info</code> 同样可用于内建类型及所有非多态类。与多态类的差别在于，非多态类的 <code>type_info</code> 对象是静态取得（所以不能叫“执行期类型识别”），而多态类的是在执行期获得。</li>
 </ol>
+]]></content>
+      <categories>
+        <category>深度探索C++对象模型</category>
+      </categories>
+      <tags>
+        <tag>C++</tag>
+        <tag>C++对象模型</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>【C++对象模型】（四）关于函数成员</title>
+    <url>/LycTechStack.github.io/2022/05/09/20220509-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E5%87%BD%E6%95%B0%E6%88%90%E5%91%98/</url>
+    <content><![CDATA[<p>《深度探索C++对象模型》第四章重点梳理。主要内容包括：</p>
+<ul>
+<li>调用不同成员函数的背后工作</li>
+<li>虚函数详解</li>
+<li>内联函数的背后工作</li>
+</ul>
+<p><em><span id="more"></span></em></p>
+<h3 id="1-调用不同成员函数的背后工作"><a href="#1-调用不同成员函数的背后工作" class="headerlink" title="1 调用不同成员函数的背后工作"></a>1 调用不同成员函数的背后工作</h3><p>C++ 类中包括三种成员函数：非静态成员函数、静态成员函数和虚函数。这三种成员函数被调用时，编译器会进行不同的背后工作。</p>
+<h4 id="1-1-非静态成员函数"><a href="#1-1-非静态成员函数" class="headerlink" title="1.1 非静态成员函数"></a>1.1 非静态成员函数</h4><p>C+＋的设计准则之一就是：非静态成员函数必须至少和一般的非成员函数有相同的效率。所以 C++ 的做法就是在非静态成员函数被调用时，编译器将其转化为一般的非成员函数，并传入一个对象的指针。</p>
+<p>假设有一个成员函数：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">float</span> <span class="title">Point3d::magnitude</span><span class="params">()</span> <span class="type">const</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">sqrt</span>(_x * _x + _y * _y +  _z * _z);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>下面是转化步骤：</p>
+<ol>
+<li>改写函数的 signature（函数原型）以安插一个额外的参数到成员函数中，作为对对象成员的存取管道，该额外参数即为 this 指针，如果成员函数是 const，则传入参数也为 const</li>
+<li>将对每一个成员变量的存取操作改为经由 this 指针的存取操作</li>
+<li>将成员函数重写为一个外部非成员函数，并对函数名进行编码，使其有一个独一无二的内部名称</li>
+</ol>
+<p>转化后的的函数如下：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">extern</span> <span class="type">float</span> <span class="title">magnitude_7Point3dFv</span><span class="params">(<span class="type">const</span> Point3d* <span class="keyword">this</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">sqrt</span>(</span><br><span class="line">        <span class="keyword">this</span>-&gt;_x * <span class="keyword">this</span>-&gt;_x + </span><br><span class="line">        <span class="keyword">this</span>-&gt;_y * <span class="keyword">this</span>-&gt;_y +  </span><br><span class="line">        <span class="keyword">this</span>-&gt;_z * <span class="keyword">this</span>-&gt;_z);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对函数的调用：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">Point3d* ptr = <span class="keyword">new</span> <span class="built_in">Point3d</span>();</span><br><span class="line">ptr-&gt;<span class="built_in">magnitude</span>();</span><br></pre></td></tr></table></figure>
+
+<p>也被转化为：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">magnitude_7Point3dFv</span>(ptr);</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-2-静态成员函数"><a href="#1-2-静态成员函数" class="headerlink" title="1.2 静态成员函数"></a>1.2 静态成员函数</h4><p>静态成员函数类似于非静态成员函数，编译器同样将其转化为一般的外部非成员函数，唯一的区别在于，传入的参数不是 this 指针，而是一个被强制转化后的指针，编译器将 0 强制转化为对象指针传入函数，所以一个静态成员函数转化后是这样：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">extern</span> <span class="type">float</span> <span class="title">magnitude_7Point3dFv</span><span class="params">((Point3d*) <span class="number">0</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>也正因为这样的转化，决定了我们所熟悉的静态成员函数的特性：</p>
+<ul>
+<li>无需经由类对象调用，通过类名即可调用，因为无需传入具体的对象指针，0 指针只作为一个执行静态成员函数的绑定对象指针，除此之外没有任何功能</li>
+<li>不能够直接存取类中的非静态成员，因为指针是 0，实际不指向任何对象实体</li>
+<li>不能声明为 const，virtual 等</li>
+</ul>
+<h4 id="1-3-虚拟成员函数"><a href="#1-3-虚拟成员函数" class="headerlink" title="1.3 虚拟成员函数"></a>1.3 虚拟成员函数</h4><p>虚成员函数在调用时被转化为经由 vptr 指向的虚函数表中的索引值调用：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">Point3d* ptr = <span class="keyword">new</span> <span class="built_in">Point3d</span>();</span><br><span class="line">(*ptr-&gt;vptr[<span class="number">1</span>]) (ptr);</span><br></pre></td></tr></table></figure>
+
+<p>其中传入的 ptr 也是 this 指针，1 是该函数在虚函数表中的索引。</p>
+<h3 id="2-虚函数详解"><a href="#2-虚函数详解" class="headerlink" title="2 虚函数详解"></a>2 虚函数详解</h3><p>之前我们已经了解了虚函数的一般模型：每一个类有一个虚函数表，其中存放该类中所有有作用的虚函数地址，然后每个对象内含一个成员变量 vptr，指向虚函数表。这一节中我们根据不同继承情况，深入了解该模型内部原理。</p>
+<h4 id="2-1-单一继承"><a href="#2-1-单一继承" class="headerlink" title="2.1 单一继承"></a>2.1 单一继承</h4><p>任何情况下，一个 class 只会有一个 virtual table 。每一个 table 内含其对应的 class object 中所有 active virtual functions 函数实体的地址。这些 active virtual functions 包括：</p>
+<ul>
+<li>这个 class 所定义的函数实体。它会改写 (overriding) 一个可能存在的 base class virtual function 实体</li>
+<li>继承自 base class 的函数实体。这是在 derived class 决定不改写 base class virtual function 时才会出现的情况</li>
+<li>一个纯虚函数调用（<code>pure_virtual_called()</code> ）实体，它既可以扮演纯虚函数的空间占用者，也可以当作执行期的异常处理函数，当调用一个基类中的纯虚函数（即未被定义）时，会抛出异常并终止程序</li>
+</ul>
+<p>单一继承情况下的虚函数表布局如下图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/09/20220509-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E5%87%BD%E6%95%B0%E6%88%90%E5%91%98/image-20220509102615749.png" alt="image-20220509102615749"></p>
+<p>可以看到 Point2d 继承自 Point 类，重写的函数会覆盖基类虚函数，比如析构函数，以及在 Point2d 中实现的纯虚函数等，而没有重写的函数则直接复制基类虚函数表中该函数的地址，比如 Point::z() 函数。</p>
+<p>回顾上一节提到的虚函数在编译时的转化，假设现在有如下调用：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">ptr-&gt;<span class="built_in">z</span>();</span><br></pre></td></tr></table></figure>
+
+<p>则会被编译器转化为：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">(*ptr-&gt;vptr[<span class="number">4</span>]) (ptr);</span><br></pre></td></tr></table></figure>
+
+<p>于是这样的形式就可以提供给程序足够的信息，使其在执行期知道调用哪一个函数实体，因为：</p>
+<ul>
+<li>虽然不知道 ptr 指向的具体对象类型，但是我们知道经由 ptr 可以访问到该对象的 vptr，从而访问到类的虚函数表</li>
+<li>虽然不知道哪一个函数实体 z() 会被调用，但是所有类的 z() 函数实体地址都放在虚函数表中下标为 4 的地方</li>
+</ul>
+<p>这正是指针和虚函数所支持的多态的内部原理之一。在一个单一继承体系中，这样的机制的行为十分良好，不但有效率而且很容易塑造出模型来。但是在多重继承和虚拟继承之中，就没有这么简单了。</p>
+<h4 id="2-2-多重继承"><a href="#2-2-多重继承" class="headerlink" title="2.2 多重继承"></a>2.2 多重继承</h4><p>在多重继承之下，一个 derived class 内含 n 个虚函数表，n 表示上一层基类数目，其中第一个基类子对象指向的表为主要表格，其他的为次要表格，第一个基类的虚函数和派生类自己的虚函数都放在主要表格中。针对每一个虚函数表，派生类对象中都有对应的 vptr，当我们将一个派生类对象指定给第一个基类或者派生类的指针时，处理的是主要表格，其他情况处理的是次要表格。</p>
+<p>多重继承情况下，虚函数表布局如下图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/09/20220509-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E5%87%BD%E6%95%B0%E6%88%90%E5%91%98/image-20220509105025788.png" alt="image-20220509105025788"></p>
+<p>上图中的 * 表示需要调整 this 指针，当我们将派生类对象指定给第二个或之后的基类指针时，会存在一些需要调整 this 指针以支持正确的虚函数的情况，一般来说有以下三种情况（对应上面三个星号）：</p>
+<ol>
+<li>第一种情况：通过指向第二个基类的指针调用派生类的虚函数：</li>
+</ol>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">Base2 *ptr = <span class="keyword">new</span> Derived;</span><br><span class="line"><span class="keyword">delete</span> ptr;</span><br></pre></td></tr></table></figure>
+
+<p>上面的代码中 ptr 首先会被编译器调整至指向基类对象中的第二个基类子对象，编译器的调整代码如下：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">Derived *temp = <span class="keyword">new</span> Derived;</span><br><span class="line">Base2 *ptr = temp ? temp + <span class="built_in">sizeof</span>(Base1) : <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+
+<p>这样才能保证后续正确地访问或调用与第二个基类有关的成员和方法。但接下来的 <code>delete ptr</code> 需要调用析构函数，此时需要将 ptr 再向后调整至指向派生类对象起始地址，才能正确执行析构函数删除整个派生类对象。</p>
+<ol start="2">
+<li>第二种情况：通过一个指向派生类的指针，调用第二个基类中一个继承而来的虚函数，在这种情况派生类指针需要调整至指向第二个基类子对象</li>
+</ol>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">Derived *pder = <span class="keyword">new</span> Derived;</span><br><span class="line">pder-&gt;<span class="built_in">mumble</span>();</span><br><span class="line"><span class="comment">//pedr必须向前调整sizeof(Base1)个字节以指向第二个基类子对象</span></span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>第三种情况发生于一个语言扩充性质之下：允许一个 virtual function 的返回值类型有所变化，可能是 base type，也可能是 publicly derived type。这一点可以通过上图中的 clone() 函数说明，clone() 函数的派生版本返回一个派生类对象，默默地改写了两个基类函数实体，当我们通过第二个基类指针调用 clone() 函数时，需要调整 this 指针：</li>
+</ol>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">Base2 *pb1 = <span class="keyword">new</span> Derived;</span><br><span class="line"><span class="comment">// 返回值必须调整以指向第二个基类子对象</span></span><br><span class="line">Base2 *pb2 = pb1-&gt;<span class="built_in">clone</span>();</span><br></pre></td></tr></table></figure>
+
+<p>当进行 <code>pb1-&gt;clone()</code> 时，pb1 会被调整指向派生类对象的起始地址，于是会调用 clone() 函数的派生版本，它会传回一个新的派生类对象，当该对象被指定给第二个基类的指针时，需要调整以指向第二个基类子对象。</p>
+<h4 id="2-3-虚拟继承"><a href="#2-3-虚拟继承" class="headerlink" title="2.3 虚拟继承"></a>2.3 虚拟继承</h4><p>虚拟继承的情况非常复杂，即使只有唯一的一个虚基类，他们的关系也不会像单一继承情况那样简单，因为虚基类和派生类不再相符，两者之间同样需要进行 this 指针转化。</p>
+<p>当一个 virtual base class 从另一个 virtual base class 派生而来，并且两者都支持 virtual functions 和 nonstatic data members 时，编译器对于 virtual base class 的支持简直就像进了迷宫一样。总之一个建议是，<strong>不要在虚基类中声明非静态成员变量</strong>。</p>
+<h3 id="3-内联函数的背后工作"><a href="#3-内联函数的背后工作" class="headerlink" title="3 内联函数的背后工作"></a>3 内联函数的背后工作</h3><p>下表对比了不同类型成员函数的执行效率：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/09/20220509-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E5%87%BD%E6%95%B0%E6%88%90%E5%91%98/image-20220509112026194.png" alt="image-20220509112026194"></p>
+<p>可以看到内联函数的效率占据绝对优势。在以往的学习中我们被告知，inline 函数将会在被调用的时候在调用处产生函数实体，这个操作称为扩展，即把内联函数代码扩展到调用处替换函数调用代码。</p>
+<p>但实际上不是所有声明为 inline 的函数都能成为内联函数，inline 只是一种请求，只有这个请求被接受才会在函数调用处扩展 inline 代码。那么编译器如何决定是否接受这个请求呢？</p>
+<p>编译器有一套复杂的算法来决定是否将函数认定为 inline，通常是计算 assignments、function calls、virtual function calls 等操作的次数。每个操作（表达式）种类有一个权值，而 inline 函数的复杂度就以这些操作的总和来决定。当其执行成本比一般的函数调用及返回机制所带来的负荷低，就被认定为 inline。</p>
+<p>一般而言，处理一个 inline 函数包括以下两个阶段：</p>
+<ul>
+<li>分析函数定义，以决定是否认定为 inline，如果函数因其复杂度，或因其建构问题，被判断为不可成为 inline，则它会被转为一个 static 函数，并在被编译模块内产生对应的函数定义。</li>
+<li>真正的 inline 函数扩展操作是在调用的那个地方进行，这会带来参数的求值操作以及临时性对象的管理问题，接下来具体讨论。</li>
+</ul>
+<h4 id="3-1-有副作用的参数"><a href="#3-1-有副作用的参数" class="headerlink" title="3.1 有副作用的参数"></a>3.1 有副作用的参数</h4><p>inline 函数是如何被扩展的？下面一个例子可以说明问题，假设有如下内联函数：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">inline</span> <span class="type">int</span> <span class="title">min</span><span class="params">(<span class="type">int</span> i, <span class="type">int</span> j)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> i &lt; j ? i : j;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>下面是三个调用操作：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> minval;</span><br><span class="line"><span class="type">int</span> val1 = <span class="number">1024</span>;</span><br><span class="line"><span class="type">int</span> val2 = <span class="number">2048</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**（1）**/</span>minval = <span class="built_in">min</span>(val1, val2);</span><br><span class="line"><span class="comment">/**（2）**/</span>minval = <span class="built_in">min</span>(<span class="number">1024</span>, <span class="number">2048</span>);</span><br><span class="line"><span class="comment">/**（3）**/</span>minval = <span class="built_in">min</span>(<span class="built_in">foo</span>(), <span class="built_in">bar</span>() + <span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+<p>以上三个调用会被扩展为：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**（1）**/</span>minval = val1 &lt; val2 ? val1 : val2;</span><br><span class="line"><span class="comment">/**（2）**/</span>minval = <span class="number">1024</span>;</span><br><span class="line"><span class="comment">/**（3）**/</span></span><br><span class="line"><span class="type">int</span> t1, t2;</span><br><span class="line">t1 = <span class="built_in">foo</span>();</span><br><span class="line">t2 = <span class="built_in">bar</span>() + <span class="number">1</span>;</span><br><span class="line">minval = t1 &lt; t2 ? t1 : t2;</span><br></pre></td></tr></table></figure>
+
+<p>第（3）个调用把函数调用作为参数传入 inline 函数，这可能导致实际参数的多次求值操作，因此被认为是有副作用的参数，所以在扩展时使用了临时变量。而传入常量则会直接执行表达式，并将内联函数扩展为赋值操作。</p>
+<h4 id="3-2-局部变量"><a href="#3-2-局部变量" class="headerlink" title="3.2 局部变量"></a>3.2 局部变量</h4><p>如果我们修改 inline 函数，引入局部变量：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">inline</span> <span class="type">int</span> <span class="title">min</span><span class="params">(<span class="type">int</span> i, <span class="type">int</span> j)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">int</span> minval = i &lt; j ? i : j</span><br><span class="line">    <span class="keyword">return</span> minval;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后调用：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> minval;</span><br><span class="line"><span class="type">int</span> val1 = <span class="number">1024</span>;</span><br><span class="line"><span class="type">int</span> val2 = <span class="number">2048</span>;</span><br><span class="line">minval = <span class="built_in">min</span>(val1, val2);</span><br></pre></td></tr></table></figure>
+
+<p>则会被扩展为：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> min_lv_minval = val1 &lt; val2 ? val1 : val2;</span><br><span class="line">minval = min_lv_minval</span><br></pre></td></tr></table></figure>
+
+<p>inline 函数中的局部变量会被保留，并产生一个拥有唯一编码名字的临时变量。如果 inline 函数在同一个 scope 中被调用多次，那么每次都会产生一组名字不同的临时变量。</p>
+<p>inline 函数中的局部变量，再加上有副作用的参数，可能会导致大量临时性对象的产生。特别是它被调用多次的时候，例如：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">minval = <span class="built_in">min</span>(val1, val2) + <span class="built_in">min</span>(<span class="built_in">foo</span>(), <span class="built_in">foo</span>() + <span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+<p>会被扩展为：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 为局部变量产生的临时变量</span></span><br><span class="line"><span class="type">int</span> min_lv_minval_00;</span><br><span class="line"><span class="type">int</span> min_lv_minval_01;</span><br><span class="line"><span class="comment">// 为副作用参数产生的临时变量</span></span><br><span class="line"><span class="type">int</span> t1, t2;</span><br><span class="line">t1 = <span class="built_in">foo</span>();</span><br><span class="line">t2 = <span class="built_in">foo</span>() + <span class="number">1</span>;</span><br><span class="line">min_lv_minval_00 = val1 &lt; val2 ? val1 : val2;</span><br><span class="line">min_lv_minval_01 = t1 &lt; t2 ? t1 : t2;</span><br><span class="line">minval = min_lv_minval_00 + min_lv_minval_01;</span><br></pre></td></tr></table></figure>
+
+<p>内联函数对于封装提供了一种必要的支持，可以有效存取封装于 class 中的 nonpublic 数据。它同时也是 C 程序中大量使用的<code>#define</code> （前置处理宏）的一个安全代替品，特别是如果宏中的参数有副作用的话。然而一个 inline 函数如果被调用太多次的话，会产生大量的扩展码，使程序的大小暴涨，并且由于参数带有副作用或者 inline 函数中有局部变量，会产生大量临时对象，编译器无法将它们移除。此外，inline 中再有 inline，可能会使一个表面上看起来简单的 inline 因其连锁复杂度而没办法扩展开来。对于既要安全又要效率的程序， inline 函数提供了一个强而有力的工具。然而，与 non-inline 函数比起来，它们需要更加小心地处理。</p>
 ]]></content>
       <categories>
         <category>深度探索C++对象模型</category>
@@ -3297,6 +3172,131 @@
       <tags>
         <tag>计算机图形学</tag>
         <tag>实时渲染</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>【C++对象模型】（三）关于数据成员</title>
+    <url>/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/</url>
+    <content><![CDATA[<p>《深度探索C++对象模型》第三章重点梳理。主要内容包括：</p>
+<ul>
+<li>C++ 字节对齐和类大小计算</li>
+<li>数据成员的布局、虚函数表和虚基类表的布局</li>
+</ul>
+<p><em><span id="more"></span></em></p>
+<h3 id="1-C-字节对齐"><a href="#1-C-字节对齐" class="headerlink" title="1 C++ 字节对齐"></a>1 C++ 字节对齐</h3><p>关于 C++ 字节对齐这篇文章讲得非常细致：<a href="https://blog.csdn.net/sweetfather/article/details/78487563">C++ 字节对齐的总结(原因和作用)</a></p>
+<p>这里只做简要总结：</p>
+<ul>
+<li><p>字节对齐的原因：各个硬件平台对存储空间的处理上有很大的不同。一些平台对某些特定类型的数据只能从某些特定地址开始存取。比如有些架构的CPU在访问 一个没有进行对齐的变量的时候会发生错误，那么在这种架构下编程必须保证字节对齐。其他平台可能没有这种情况，但是最常见的是，如果不按照适合其平台要求对数据存放进行对齐，会在存取效率上带来损失。比如有些平台每次读都是从偶地址开始，如果一个 int 型数据存放在偶地址开始的地方，那么一个读周期就可以读出这 32 位数据，而如果存放在奇地址开始的地方，就需要 2 个读周期，并对两次读出的结果的高低字节进行拼凑才能得到该 32 位数据，显然在读取效率上下降很多</p>
+</li>
+<li><p>可以使用 <code>pragma pack(n)</code> 指定以 n 字节方式对齐，不指定则按默认方式对齐</p>
+</li>
+<li><p>字节对齐是要看变量所在偏移地址是否为变量字节数（或指定对齐字节数 n，取二者较小值）的整数倍</p>
+</li>
+<li><p>对于结构成员，要按照结构成员中对齐长度最大的一个对齐</p>
+</li>
+<li><p>对齐后还要看结构或类的总大小是否为其中最长变量（或指定对齐字节数 n，取二者较小值）的整数倍</p>
+</li>
+</ul>
+<p>按照以上规则可以保证对齐后整个结构或类对象所占空间最小，并保证读取效率。</p>
+<h3 id="2-C-类大小计算"><a href="#2-C-类大小计算" class="headerlink" title="2 C++ 类大小计算"></a>2 C++ 类大小计算</h3><p>关于 C++ 类的大小计算这篇文章讲的非常全面：<a href="https://www.cnblogs.com/fengyaoyao/p/10262312.html">C++类的大小计算汇总</a></p>
+<p>这里只做简要总结：</p>
+<p>C++ 中的类由于涉及虚函数、静态成员、虚拟继承、多继承、空类等情况，类对象的大小较为复杂，但总结起来遵循以下几个原则：</p>
+<ul>
+<li>类的大小是指类对象实体的大小，类大小的计算遵循字节对齐原则</li>
+<li>类的大小与普通数据成员有关，与成员函数和静态成员无关。即普通成员函数、静态成员函数、静态数据成员、静态常量数据成员，均对类的大小无影响；静态数据成员之所以不计算在类的对象大小内，是因为类的静态数据成员被该类所有的对象所共享，并不属于具体哪个对象，静态数据成员定义在内存的全局区</li>
+<li>虚函数对类的大小有影响，是因为虚函数表指针带来的影响</li>
+<li>虚继承对类的大小有影响，是因为虚基表指针带来的影响</li>
+<li>空类的大小为 1，因为 C++ 要为某一个实体分配内存就要求这个实体必须有大小，不能为大小为 0 的实体分配内存，所以 C++ 会为空类指定 1 个字节作为其大小，防止 sizeof 为 0，含有虚函数，虚继承，多继承是特殊情况</li>
+</ul>
+<h4 id="2-1-关于空类"><a href="#2-1-关于空类" class="headerlink" title="2.1 关于空类"></a>2.1 关于空类</h4><p>C++ 空类大小为 1，这之中有两种情况需要注意：</p>
+<ul>
+<li>如果一个派生类继承自空类，且派生类有自己的数据成员，则基类子对象的一个字节不会加入到派生类中，因为派生类有自己的数据成员意味着有大小，可以分配内存，所以不需要空类的 1 个字节</li>
+<li>一个类包含一个空类对象成员，这时空类的一个字节是要被计算进去的，因为空类对象必须有自己大小</li>
+</ul>
+<h4 id="2-2-关于虚函数"><a href="#2-2-关于虚函数" class="headerlink" title="2.2 关于虚函数"></a>2.2 关于虚函数</h4><p>虚函数是通过一张虚函数表来实现的。编译器必需要<strong>保证虚函数表的指针存在于对象实例中最前面的位置</strong>（这是为了保证正确取到虚函数的偏移量）。</p>
+<p>每当创建一个包含有虚函数的类或从包含有虚函数的类派生一个类时，编译器就会为这个类创建一个虚函数表保存该类所有虚函数的地址，其实这个虚函数表的作用就是保存自己类中所有虚函数的地址，可以把虚函数表形象地看成一个函数指针数组，这个数组的每个元素存放的就是虚函数的地址。在每个带有虚函数的类中，编译器秘密地置入一指针，称为 vptr，指向这个对象的虚函数表。 当构造该派生类对象时，其成员 vptr 被初始化指向该派生类的虚函数表。所以可以认为<strong>虚函数表是该类的所有对象共有的</strong>，在定义该类时被初始化；而 <strong>vptr 则是每个类对象都有独立一份的</strong>，且在该类对象被构造时被初始化。</p>
+<p>含有虚函数的时候，类的大小计算要注意以下几点：</p>
+<ul>
+<li>由于指针大小为 8 字节，因此含有虚函数的任何类的大小都是原本大小加上 8 字节</li>
+<li>当继承的基类含有虚函数时，在派生类中不对基类的虚函数进行覆盖，同时派生类中还拥有自己的虚函数。此时派生类的虚函数表中首先存放基类虚函数地址，再存放派生类虚函数地址，所有虚函数地址顺序与声明顺序一致。因此无论是基类还是派生类，其大小也还是原本大小加 8 字节</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507102541174.png" alt="image-20220507102541174"></p>
+<ul>
+<li>如果派生类中对基类的虚函数进行了覆盖，同时派生类中还拥有自己的虚函数。此时虚函数表中原本存放基类虚函数的位置会被覆盖为派生类重写的虚函数地址，其他顺序不变。因此无论是基类还是派生类，其大小也还是原本大小加 8 字节</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507102558864.png" alt="image-20220507102558864"></p>
+<ul>
+<li>当一个派生类继承自多个含有虚函数的基类，并对基类虚函数无重载，此时派生类虚函数被放在第一个积累虚函数表后面，派生类的大小就是原本大小加上基类数量 * 8 字节</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507102738036.png" alt="image-20220507102738036"></p>
+<ul>
+<li>当一个派生类继承自多个含有虚函数的基类，并对基类虚函数有重载，情况和上述一致，这时任意一个基类指针指向派生类对象都可以调用派生类重载的基类虚函数</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507102832628.png" alt="image-20220507102832628"></p>
+<p>上面文章中的一个例子，在 Visual C++ 中的运行结果和文章中不同：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">A</span>    </span><br><span class="line">&#123;    </span><br><span class="line">&#125;;   </span><br><span class="line"> </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">B</span>    </span><br><span class="line">&#123; </span><br><span class="line">    <span class="type">char</span> ch;    </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func0</span><span class="params">()</span>  </span>&#123;  &#125;  </span><br><span class="line">&#125;;  </span><br><span class="line"> </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">C</span>   </span><br><span class="line">&#123; </span><br><span class="line">    <span class="type">char</span> ch1; </span><br><span class="line">    <span class="type">char</span> ch2; </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func</span><span class="params">()</span>  </span>&#123;  &#125;   </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func1</span><span class="params">()</span>  </span>&#123;  &#125;  </span><br><span class="line">&#125;; </span><br><span class="line"> </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">D</span>: <span class="keyword">public</span> A, <span class="keyword">public</span> C </span><br><span class="line">&#123;    </span><br><span class="line">    <span class="type">int</span> d;    </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func</span><span class="params">()</span>  </span>&#123;  &#125;  </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func1</span><span class="params">()</span>  </span>&#123;  &#125; </span><br><span class="line">&#125;;    </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">E</span>: <span class="keyword">public</span> B, <span class="keyword">public</span> C </span><br><span class="line">&#123;    </span><br><span class="line">    <span class="type">int</span> e;    </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func0</span><span class="params">()</span>  </span>&#123;  &#125;  </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func1</span><span class="params">()</span>  </span>&#123;  &#125; </span><br><span class="line">&#125;; </span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">void</span>)</span> </span></span><br><span class="line"><span class="function"></span>&#123; </span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;A=&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(A)&lt;&lt;endl;    <span class="comment">//result=1 </span></span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;B=&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(B)&lt;&lt;endl;    <span class="comment">//result=16     </span></span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;C=&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(C)&lt;&lt;endl;    <span class="comment">//result=16 </span></span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;D=&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(D)&lt;&lt;endl;    <span class="comment">//result=24 </span></span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;E=&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(E)&lt;&lt;endl;    <span class="comment">//result=40 </span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里关于类 E 的大小，有必要再详细分析一下：类 E 包含一个类 B 子对象 16字节，一个类 C 子对象 16 字节，以及自身的 int 4 字节，现在一共是 36字节，但因为要跟成员中最大变量虚函数表指针 8 字节对齐，最终补齐到 40 字节。</p>
+<blockquote>
+<p>可以在 VS 中输出类的布局，打开 vs项目属性-&gt;配置属性-&gt; c&#x2F;c++ -&gt;命令行，在其它选项中添加如下命令：</p>
+<ul>
+<li><code>/d1 reportAllClassLayout</code> 是查看所有类的布局</li>
+<li><code>/d1 reportSingleClassLayoutXX</code> 是查看名为XX的类的布局</li>
+</ul>
+<p>配置之后重新编译项目，会在编译输出中打印类布局。</p>
+</blockquote>
+<p>上面例子中，类 E 的布局打印出来如下：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507113905627.png" alt="image-20220507113905627"></p>
+<p>和我们的分析一致，同时还可以看到类 E 的两个虚函数表的布局：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507113943452.png" alt="image-20220507113943452"></p>
+<p>其中 <code>E::$vftable@B@</code> 是基类 B 的虚函数表，存放的是被 E 重载后的函数 func0 的指针， <code>E::$vftable@C@</code> 是基类 C 的虚函数表，存放的是 C 的函数 func 和被 E 重载的函数 func1 的指针。</p>
+<h4 id="2-3-关于虚继承"><a href="#2-3-关于虚继承" class="headerlink" title="2.3 关于虚继承"></a>2.3 关于虚继承</h4><p>Visual C++ 中虚继承的情况比较简单，只是多了一个指向虚基类表的指针 vbptr，而真正的指向虚基类的指针存放在虚基类表中。</p>
+<h3 id="3-数据成员的布局"><a href="#3-数据成员的布局" class="headerlink" title="3 数据成员的布局"></a>3 数据成员的布局</h3><p>最后通过一个例子总结 C++ 数据成员布局，通过下面这个例子可以清晰的认识 C++ 类数据成员布局、虚函数表和虚基类表的布局：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">X</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="type">int</span> i;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Y</span> : <span class="keyword">public</span> <span class="keyword">virtual</span> X &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func0</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Z</span> : <span class="keyword">public</span> <span class="keyword">virtual</span> X &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="type">int</span> j;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func1</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">A</span> : <span class="keyword">public</span> Y, <span class="keyword">public</span> Z &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="type">char</span> x;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func1</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func2</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;size of class X is &quot;</span> &lt;&lt; <span class="built_in">sizeof</span>(X) &lt;&lt; std::endl;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;size of class Y is &quot;</span> &lt;&lt; <span class="built_in">sizeof</span>(Y) &lt;&lt; std::endl;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;size of class Z is &quot;</span> &lt;&lt; <span class="built_in">sizeof</span>(Z) &lt;&lt; std::endl;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;size of class A is &quot;</span> &lt;&lt; <span class="built_in">sizeof</span>(A) &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的例子中包含了虚继承、多重继承、虚函数的情况，运行结果如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">size of class X is 4</span><br><span class="line">size of class Y is 24</span><br><span class="line">size of class Z is 32</span><br><span class="line">size of class A is 56</span><br></pre></td></tr></table></figure>
+
+<p>我们打印类 A 的布局：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507115635356.png" alt="image-20220507115635356"></p>
+<p>可以看到类 A 的布局：</p>
+<ul>
+<li>首先是基类 Y 的子对象，Y 包含一个虚函数，同时有一个虚基类，所以 Y 的内存中就是两个指针，一个是虚函数表指针 vfptr，一个是虚基类表指针 vbptr，共 16 字节；</li>
+<li>然后是基类 Z 的子对象，Z 同样包含 vfptr 和 vbptr，以及一个 int 成员，字节对齐后一共是 24 字节，此时类 A 总共偏移 40 字节</li>
+<li>然后是类 A 自己的数据成员，char 类型一个字节，类 A 总共偏移 41 字节，最终要和类中最长成员 8 字节对齐，因此对齐到 48 字节</li>
+<li>类 A 的全部成员都存放完后，最后存放虚基类成员，int 占 4 字节，此时类 A 总共 52 字节，但输出是 56 字节，实际又做了一次 8 字节对齐，因为打印出的内存布局把类 A 和虚基类子对象作为两个独立的部分，所以打印 48 + 4 &#x3D; 52 字节，但实际还要做一次 8 字节对齐，所以 sizeof 输出 56 字节</li>
+</ul>
+<p>然后是类 A 的虚函数表：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507120353989.png" alt="image-20220507120353989"></p>
+<p>虚函数表的第一项表示派生类对象指针相对于虚函数表指针的偏移，这里派生类 A 相对于基类 Y 的虚函数表指针的偏移是 0 字节，相对于基类 Z 的虚函数表指针的偏移是 -16 字节。</p>
+<p>最后是类 A 的虚基类表：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507120419152.png" alt="image-20220507120419152"></p>
+<p>虚基类表原理与虚函数表类似，表的第一项表示派生类对象指针相对于虚基类表指针的偏移，这里是 -8 字节，因为虚基类表指针前面还有一个虚函数表指针占用了 8 个字节，所以派生类 Y 对象的指针相对于其虚基类表指针的偏移量是 -8，派生类 Z 对象的指针相对于其虚基类表指针的偏移也是 -8，注意这里的派生类不再是指 A 了，而是指虚基类的派生类，所以就是 Y 和 Z；虚基类表从第二项开始，表示各个虚基类地址相对于虚基类表指针的偏移。这里虚基类 X 相对于 Y 的虚基类表指针偏移了 40 个字节，因此虚基类 X 相对于派生类 Y 的地址总共偏移了 48 字节，对于派生类 Z 也同样如此，总共偏移了 24 + 8 &#x3D; 32 个字节，从上面的内存布局可以清晰地看出这一点。</p>
+<p>可以看到，Y 和 Z 的虚基类表都指向同一个虚基类 X 的子对象，正如之前所说的，虚基类无论在继承链中被继承多少次，都只产生一个实体，即虚基类子对象，但是“不同的派生类中虚基类子对象的位置不同”这句话，一方面是指虚基类子对象相对于派生类的起始地址偏移量不同，并不是存在多个虚基类子对象；另一方面，随着类的派生，虚基类子对象的位置确实可能变化，但所有派生类的虚基类表中都指向那同一个虚基类子对象。</p>
+<p>最后总结一下，C++ 中数据成员布局与编译器有关，但总体原理一致，Visual C++ 中数据成员布局顺序为：</p>
+<ul>
+<li>基类子对象<ul>
+<li>虚函数表指针 vfptr</li>
+<li>虚基类表指针 vbptr</li>
+<li>基类成员</li>
+</ul>
+</li>
+<li>数据成员</li>
+<li>虚基类成员</li>
+</ul>
+<blockquote>
+<p>注：有的编译器不存在虚基类表指针 vbptr，而是把虚基类的偏移放在虚函数表中，这样只需要一个虚函数表指针</p>
+</blockquote>
+<p>最最后附上一个简单的问题：为什么不把派生类的成员填到基类子对象由于字节对齐而填充的空白内存中，而是要保留基类子对象的空白内存？</p>
+<p>直接借用书中的图解释：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507164044837.png" alt="image-20220507164044837"></p>
+]]></content>
+      <categories>
+        <category>深度探索C++对象模型</category>
+      </categories>
+      <tags>
+        <tag>C++</tag>
+        <tag>C++对象模型</tag>
       </tags>
   </entry>
   <entry>
@@ -4218,115 +4218,6 @@
         <tag>计算机图形学</tag>
         <tag>实时渲染</tag>
         <tag>OpenGL</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>【游戏引擎】（三）游戏引擎中的动画系统</title>
-    <url>/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/</url>
-    <content><![CDATA[<p>游戏引擎中的动画系统是最重要的系统之一，直接决定了角色动作是否自然，酷炫的动画也是一个游戏最能吸引人的地方，这一节来简单了解游戏引擎中的动画系统，蒙皮动画的数学原理以及动画压缩技术。</p>
-<p><em><span id="more"></span></em></p>
-<h3 id="1-游戏引擎中的动画系统"><a href="#1-游戏引擎中的动画系统" class="headerlink" title="1 游戏引擎中的动画系统"></a>1 游戏引擎中的动画系统</h3><p>引擎中的动画技术来自于动画电影，但相比于动画电影，游戏中的动画还要和玩家进行交互，根据玩家的输入来执行不同的动作，并且游戏需要实时运行，动画的计算也要在极短的时间内完成，大量的游戏对象也会有大量的动画数据，动画数据的存储和使用也是一个极大的挑战。</p>
-<p>最早的动画利用人的视觉残留，通过快速播放关键帧来实现，这种方式也叫做精灵动画（Sprite Animation），现在的许多简单 2D 动画，比如 2D 角色的动作和一些特效等，也可以使用这种方式来实现：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703104804654.png" alt="image-20220703104804654"></p>
-<p>此外还有比较热门的 Live2D 动画，将 2D 人物的各个部分分别作为不同的组件，通过调整各组件的顶点或者利用动作捕捉生成关键帧，然后在这些帧之间插值来形成流畅的动画，因为 2D 动作捕捉控制点较少，可以快速实时计算，因此 Live2D 广泛用于现在的虚拟直播中：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703105116202.png" alt="image-20220703105116202"></p>
-<p>当然现在游戏引擎中使用最多的还是 3D 动画，3D 动画依赖于对模型添加骨骼，然后利用骨骼的运动（旋转、平移、缩放）来控制模型表面顶点的运动，从而使模型动起来，对于一些比较复杂的布料、流体运动，不方便添加骨骼来控制，于是会使用顶点动画，将物体表面顶点在每一帧的运动存入一张纹理中，渲染时直接通过纹理就可以改变顶点的位置从而形成动画：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703105453426.png" alt="image-20220703105453426"></p>
-<h3 id="2-蒙皮动画"><a href="#2-蒙皮动画" class="headerlink" title="2 蒙皮动画"></a>2 蒙皮动画</h3><p>蒙皮动画是目前最常用的动画技术，蒙皮动画的流程非常简单，大概分为以下几步：</p>
-<ul>
-<li>首先是创建一个模型的 binding pose 的 Mesh 网格，所谓 binding pose 就是指用于后续绑定骨骼的姿势，一般分为 T Pose 和 A Pose，由于 T Pose 在肩部会有一些顶点的重合，可能导致之后的动画表现不完整，因此目前大多使用 A Pose：</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703105729235.png" alt="image-20220703105729235"></p>
-<ul>
-<li>第二步是为 Mesh 创建绑定的骨骼，更精确地说是关节，所有的动画都是关节在动，骨骼是两个关节之间的部分：</li>
-</ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703110627378.png" alt="image-20220703110627378"></p>
-<p>每个顶点会和多个关节绑定，关节动的时候，顶点就随之移动，同一个顶点受到不同关节的影响自然也不同。此外，除了模型本身的关节，还会为角色的衣服、武器等 Game Play 的部分生成关节：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703110821902.png" alt="image-20220703110821902"></p>
-<ul>
-<li>第三步就是蒙皮，所谓蒙皮就是为每个顶点生成受到不同关节影响的权重</li>
-<li>第四步就是对关节进行动画设计生成动画矩阵</li>
-<li>第五步对每个顶点，根据不同权重应用相应的关节动画来计算得到顶点的位置</li>
-</ul>
-<p>整个蒙皮动画流程如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703110247889.png" alt="image-20220703110247889"></p>
-<h4 id="2-1-骨骼层次结构"><a href="#2-1-骨骼层次结构" class="headerlink" title="2.1 骨骼层次结构"></a>2.1 骨骼层次结构</h4><p>一般来说会为骨骼生成层次结构以便于关节间动画的传递，对于人类（双足）模型来说，一般用尾椎骨的关节作为中心关节（Pelvis Joint），因为尾椎骨关节向下就是腿部关节，向上就是上身和胳膊关节，对于动物（四足）模型，也是类似的：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703110553383.png" alt="image-20220703110553383"></p>
-<p>一般的层次结构中，在尾椎骨关节点之上还会有一个 root 节点，root 节点一般取人的两腿之间或者动物的四肢之间的中心和地地面接触的地方：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703111025886.png" alt="image-20220703111025886"></p>
-<p>因为这样的 root 节点在模型运动的时候高度不会发生改变，有了层次结构我们就可以知道每个关节的父关节和子关节，从而将运动传递下去。</p>
-<p>对于绑定的模型，比如人和载具，还会将他们的 Pelvis Joint 对接到一起，从而使他们的动画能够进行传递，对接不仅是指关节的位置重合，他们的局部坐标系也要变换到完全一致：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703111310429.png" alt="image-20220703111310429"></p>
-<h4 id="2-2-蒙皮动画矩阵"><a href="#2-2-蒙皮动画矩阵" class="headerlink" title="2.2 蒙皮动画矩阵"></a>2.2 蒙皮动画矩阵</h4><p>接下来推导动画矩阵，首先明确三个坐标系：局部空间、模型空间和世界空间。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703111423781.png" alt="image-20220703111423781"></p>
-<p>局部空间是指以关节为中心的空间，每个关节的局部空间自然是不同的，模型空间和世界空间不必多说，在渲染中已经非常熟悉了。</p>
-<p>对于关节的运动，只有三种：旋转、平移和缩放。旋转改变关节的朝向（Orientation）：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703111819051.png" alt="image-20220703111819051"></p>
-<p>平移改变关节的位置：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703111835096.png" alt="image-20220703111835096"></p>
-<p>缩放改变关节的尺寸：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703111900765.png" alt="image-20220703111900765"></p>
-<p>于是对于关节的变换通常就是三个矩阵的结合：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703111927064.png" alt="image-20220703111927064"></p>
-<p>于是一个关节当前的 pose 就可以表示为从根节点开始到该节点的所有运动的作用的叠加，也就是矩阵相乘：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703112129521.png" alt="image-20220703112129521"></p>
-<p>这里需要注意的是对于关节的两个 pose 中间状态的插值要在局部空间进行，而不能在模型空间将进行，因为对于关节来说模型空间是一个全局坐标系，直接对关节的位置插值会是不平滑的，而局部空间是相对坐标系，插值会是均匀的，下图左是在局部空间插值的效果，下图右是在模型空间插值的结果：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703112421587.png" alt="image-20220703112421587"></p>
-<p>有了关节的运动，接下来就是如何利用关节运动计算顶点运动，我们先假设每个顶点只和一个关节绑定。</p>
-<p>计算顶点运动的关键就在于顶点相对于关节的位置是永远不可能发生变化的，也就是说顶点在绑定的关节的局部空间的坐标是永远不变得，这样才能保证模型动画的正确：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703112652270.png" alt="image-20220703112652270"></p>
-<p>于是我们可以得出以下关系：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703112723067.png" alt="image-20220703112723067"></p>
-<p>也就是顶点在 Bind Pose 时相对于绑定的关节 J 的局部空间的坐标 $V_b^l$ 和顶点在任何时间 t 时相对于绑定的关节 J 的局部空间的坐标 $V^l(t)$ 恒相等。</p>
-<p>如果把顶点在 Bind Pose 时模型空间的坐标表示为 $V_b^m$，关节从局部空间到模型空间的变换矩阵（也就是关节在 Bind Pose 时模型空间下的 pose）表示为 $M^m_{b(j)}$，因为顶点和关节的相对位置不变，利用关节的变换矩阵的逆矩阵和顶点在关节局部空间下的坐标也可以将顶点变换到模型空间，于是顶点在任何时间 t 时相对于绑定的关节 J 的局部空间的坐标就等于 $V_b^m$ 乘上 $M^m_{b(j)}$ 的逆矩阵，即为上式所表示的含义。</p>
-<p>上面说过，任何一个关节在模型空间的 pose 可以表示为从根节点到当前关节的 pose 的叠加：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703113522897.png" alt="image-20220703113522897"></p>
-<p>而关节和顶点的相对位置不变，于是对顶点施加和关节相同的运动就可以完成顶点的运动：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703113632960.png" alt="image-20220703113632960"></p>
-<p>蒙皮动画矩阵就是关节在 t 时刻的 pose 矩阵和关节在 Bind Pose 时的 pose 矩阵的逆矩阵的乘积。有了这个矩阵，我们只要知道任何一个顶点在 Bind Pose 时的模型空间位置，就可以得到该顶点在任何时刻 t 的模型空间坐标，从而实现动画效果。</p>
-<p>对于关节在 Bind Pose 时的模型空间的 pose 矩阵，也就是关节在 Bind Pose 时从关节的局部空间到模型空间的变换矩阵，是很容易得到的，但因为我们要用的是该矩阵的逆矩阵，求逆操作代价较大，所以一般提前算好存在每个关节的结构体中：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703114728451.png" alt="image-20220703114728451"></p>
-<p>最后对于渲染，我们要知道的是顶点的世界空间坐标，还要在上面的矩阵上乘上一个物体从模型空间到世界空间的变换矩阵，这个矩阵自然还包含了模型在世界空间中的运动，这样一来就可以实现模型在世界空间的运动和模型本身的运动的动画了：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703114951451.png" alt="image-20220703114951451"></p>
-<p>上面的推导是对于一个顶点只绑定一个关节的情况，实际为了动画更加自然，一个顶点会绑定多个关节，然后将通过不同关节运动计算出的顶点模型空间坐标进行加权平均得到最终的顶点坐标：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703124251350.png" alt="image-20220703124251350"></p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703124316201.png" alt="image-20220703124316201"></p>
-<h4 id="2-3-pose-插值"><a href="#2-3-pose-插值" class="headerlink" title="2.3 pose 插值"></a>2.3 pose 插值</h4><p>通过上面的方法可以生成一个动作的多个关键帧 pose，这些关键帧 pose 组成序列叫做 Clip，对 Clip 中的 pose 进行插值就可以得到连续的动画。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703124737356.png" alt="image-20220703124737356"></p>
-<p>插值实际上是对不同 pose 的运动之间的插值，最难处理的就是旋转的插值。</p>
-<p>之前学习过四元数的球面线性插值，球面线性插值通过旋转角度的正弦进行插值，当角度很小的时候正弦值也很小，可能造成插值不稳定，因此游戏引擎一般使用球面线性插值对较大的旋转角度进行插值：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703125107407.png" alt="image-20220703125107407"></p>
-<p>而对于较小的角度，使用 NLERP 进行插值，也就是先进行线性插值，对插值结果再做归一化：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703125034152.png" alt="image-20220703125034152"></p>
-<p>NLERP 插值速度变换不均匀，但插值结果比较稳定，所以非常适合和 SLERP 搭配使用。</p>
-<p>无论使用哪种插值方法，都需要使用两个四元数的点乘来判断插值方向，以此保证每次都是向最近的方向插值，因为角度是以 $2\pi$ 为周期的，所以存在插值方向的问题，如果不进行方向判断，就可能出现某个骨骼角度突变的情况。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703124922689.png" alt="image-20220703124922689"></p>
-<h3 id="3-动画管线"><a href="#3-动画管线" class="headerlink" title="3 动画管线"></a>3 动画管线</h3><p>最后总结一下最简单的动画管线，如下图所示：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703125320376.png" alt="image-20220703125320376"></p>
-<p>首先就是生成模型、骨骼和蒙皮，然后设计动作的 Clip，然后对 Clip 中的 Key Pose 之间进行插值得到每一帧的 pose，然后利用 pose 的动画矩阵计算顶点在世界空间的位置，之后就可以进行渲染，从而使模型动起来了。</p>
-<p>上图中大部分计算都是在 CPU 中进行的，但实际上在现代引擎中这些计算几乎都由 GPU 完成。</p>
-<p>对于美术人员或者动画设计师来说，建模工具已经提供了模型网格、骨骼结构和蒙皮生成工具，只要在自动生成的蒙皮上稍微修改一些权重就可以得到想要的动画效果，然后再设计骨骼动画生成 Clip，之后将这些数据导出为我们的引擎能够处理的文件，再进行上面的动画管线流程即可。</p>
-<h3 id="4-动画压缩"><a href="#4-动画压缩" class="headerlink" title="4 动画压缩"></a>4 动画压缩</h3><p>动画压缩是为了减少 Clip 的数据存储，我们知道 Clip 包含一个动画的关键 pose 的所有 joint 的运动数据，这些运动数据又包含旋转、缩放、平移，对于一个模型来说，正常情况下有几十个到几百个 joint，而一个动画的 Clip 通常又包含几十帧关键 pose，整个游戏资源中的游戏对象又有成百上千个，于是光是动画数据可能就要达到数十 G，如果不进行压缩，存储空间的问题先不说，光是不停的读取这些资源就要消耗大量带宽从而影响游戏性能。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703125937121.png" alt="image-20220703125937121"></p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703130039721.png" alt="image-20220703130039721"></p>
-<p>但是通过观察，人们发现，实际上大量的动画 pose 中，许多数据是几乎不变的，比如人走路的动画，所有关节的位置和尺寸完全不会发生改变，只有关节的朝向在变，也就是人走路的过程中，所有关节只进行了旋转变换：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703130212666.png" alt="image-20220703130212666"></p>
-<p>如果还把每个关键 pose 的所有数据存下来，那很多数据都是重复的，于是对于大多数动画，可以舍弃位移和缩放的数据，除非有面部的骨骼变化，然后对于旋转可以对关键 pose 进行压缩，也就是合并一些可以通过插值得到的关键 pose，只要插值结果和关键 pose 结果的误差在一定范围内，我们就不需要这个关键 pose 了，这样一来可以减少很多数据的存储。</p>
-<p>此外，对于旋转的角度随时间的变化曲线，还可以通过 Catmull-Rom 样条等曲线进行拟合，这样只需要通过极少的控制点，就可以得到误差在可接受范围内的旋转角度曲线：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703130759588.png" alt="image-20220703130759588"></p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703130812422.png" alt="image-20220703130812422"></p>
-<p>对于四元数的存储，通常是四个浮点数，四个浮点数就需要 4 * 32 个 bit 来存储，但通过观察，人们发现如果不考虑四元数最大的一个分量，其他三个分量的范围都在 $[-\frac{1}{\sqrt 2},\frac{1}{\sqrt 2}]$ 范围内：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703131014403.png" alt="image-20220703131014403"></p>
-<p>并且因为表示旋转的都是单位四元数，因此当我们知道三个分量的时候就可以利用模为 1 来求得第四个分量。</p>
-<p>这样一来我们可以用 2 bit 来表示最大的维度是哪个，然后只存储其他三个维度，并且因为其他三个维度的范围我们是知道的，我们可以利用定点数的方式存储他们，将 $[-\frac{1}{\sqrt 2},\frac{1}{\sqrt 2}]$ 范围内的小数均匀的分成若干个，映射到整数范围内，比如用 15 位来存储 $[-\frac{1}{\sqrt 2},\frac{1}{\sqrt 2}]$ 范围内的小数，那么 0 就对应 $-\frac{1}{\sqrt 2}$，32767 就对应 $\frac{1}{\sqrt 2}$，数据精度就是 $\sqrt2 &#x2F; 32767 &#x3D; 0.000043$。</p>
-<p>于是需要用 128 bit 来存储的四元数，经过压缩就只需要 2 + 3 * 15 &#x3D; 47 bit，为了内存对齐，最终使用 48 bit 存储：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703131709781.png" alt="image-20220703131709781"></p>
-<p>当然这样存储会产生一定误差，在运动不断传递的过程中就会产生越来越大的累计误差：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703131842087.png" alt="image-20220703131842087"></p>
-<p>因此还需要进行误差的修正，这就相对来说比较的复杂了，这里不再讨论，不过一般矫正误差不会从运动参数方面进行矫正，而是从视觉误差方面校正，只要视觉上看起来动画是合理的，即便运动参数有误差，也不需要做额外的矫正操作。</p>
-]]></content>
-      <categories>
-        <category>游戏引擎</category>
-      </categories>
-      <tags>
-        <tag>游戏引擎</tag>
       </tags>
   </entry>
   <entry>
@@ -6440,6 +6331,219 @@
       </tags>
   </entry>
   <entry>
+    <title>【Real-Time Rendering】图形渲染管线</title>
+    <url>/LycTechStack.github.io/2022/05/12/20220512-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/</url>
+    <content><![CDATA[<p>本篇对《Real-Time Rendering》一书中图形渲染管线的相关知识进行概括总结。主要内容包括：</p>
+<ul>
+<li>图形渲染管线整体架构</li>
+<li>图形渲染管线各阶段工作</li>
+<li>思维导图</li>
+</ul>
+<p><em><span id="more"></span></em></p>
+<h2 id="1-知识总结"><a href="#1-知识总结" class="headerlink" title="1 知识总结"></a>1 知识总结</h2><h3 id="1-1-图形渲染管线架构"><a href="#1-1-图形渲染管线架构" class="headerlink" title="1.1 图形渲染管线架构"></a>1.1 图形渲染管线架构</h3><p>在概念上可以将图形渲染管线分为三个阶段：</p>
+<ul>
+<li>应用程序阶段（The Application Stage）</li>
+<li>几何阶段（The Geometry Stage）</li>
+<li>光栅化阶段（The Rasterizer Stage）</li>
+</ul>
+<p>如下图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/12/20220512-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/image-20220512152034788.png" alt="image-20220512152034788"></p>
+<p>图形渲染管线的每个阶段也可能是一条管线，比如上图中几何阶段所示。此外，还可以对有的阶段进行全部或者部分的并行化处理，如图中的光栅化阶段。应用程序阶段虽然是一个单独的过程，但是依然可以对之进行管线化或者并行化处理。</p>
+<h3 id="1-2-应用程序阶段"><a href="#1-2-应用程序阶段" class="headerlink" title="1.2 应用程序阶段"></a>1.2 应用程序阶段</h3><p>应用程序阶段一般是图形渲染管线概念上的第一个阶段。应用程序阶段是通过软件方式来实现的阶段，开发者能够对该阶段发生的情况进行完全控制，可以通过改变实现方法来改变实际性能。其他阶段，他们全部或者部分建立在硬件基础上，因此要改变实现过程会非常困难。</p>
+<p>正因应用程序阶段是软件方式实现，因此不能像几何和光栅化阶段那样继续分为若干个子阶段。但为了提高性能，该阶段还是可以在几个并行处理器上同时执行。在 CPU 设计上，称这种形式为超标量体系（superscalar）结构，因为它可以在同一阶段同一时间做不同的几件事情。</p>
+<p><strong>应用程序阶段通常实现的方法</strong>有碰撞检测、加速算法、输入检测，动画，力反馈以及纹理动画，变换仿真、几何变形，以及一些不在其他阶段执行的计算，如层次视锥裁剪等加速算法就可以在这里实现。</p>
+<p><strong>应用程序阶段的主要任务</strong>：在应用程序阶段的末端，将需要在屏幕上（具体形式取决于具体输入设备）显示出来绘制的几何体（也就是绘制图元，rendering primitives，如点、线、矩形等）输入到绘制管线的下一个阶段。</p>
+<p>对于被渲染的每一帧，应用程序阶段将摄像机位置，光照和模型的图元输出到管线的下一个主要阶段——几何阶段。</p>
+<h3 id="1-3-几何阶段"><a href="#1-3-几何阶段" class="headerlink" title="1.3 几何阶段"></a>1.3 几何阶段</h3><p>几何阶段主要负责大部分多边形操作和顶点操作。可以将这个阶段进一步划分成如下几个功能阶段：</p>
+<ul>
+<li>模型视点变换 Model &amp; View Transform</li>
+<li>顶点着色 Vertex Shading</li>
+<li>投影 Projection</li>
+<li>裁剪 Clipping</li>
+<li>屏幕映射 Screen Mapping</li>
+</ul>
+<p>如下图所示：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/12/20220512-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/image-20220512152716026.png" alt="image-20220512152716026"></p>
+<p>几个注意点：</p>
+<ul>
+<li>根据具体实现，这些阶段可以和管线阶段等同，也可以不等同。在一些情况下，一系列连续的功能阶段可以形成单个管线阶段（和其他管线阶段并行运行）。在另外情况下，一个功能阶段可以划分成其他更细小的管线阶段。</li>
+<li>几何阶段执行的是计算量非常高的任务，在只有一个光源的情况下，每个顶点大约需要 100 次左右的精确的浮点运算操作。</li>
+</ul>
+<h4 id="1-3-1-模型和视图变换"><a href="#1-3-1-模型和视图变换" class="headerlink" title="1.3.1 模型和视图变换"></a>1.3.1 模型和视图变换</h4><p>在屏幕上的显示过程中，模型通常需要变换到若干不同的空间或坐标系中。<strong>模型变换的变换对象一般是模型的顶点和法线</strong>。物体的坐标称为模型坐标。世界空间是唯一的，所有的模型经过变换后都位于同一个空间中。</p>
+<p>为了便于投影和裁剪，必须对相机和所有的模型进行视点变换。变换的目的就是要把相机放在原点，然后进行视点校准，使其朝向 Z 轴负方向，y 轴指向上方,x 轴指向右边。在视点变换后，实际位置和方向就依赖于当前的 API。我们称上述空间为相机空间或者观察空间。</p>
+<p>下图显示了模型和视图变换的过程：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/12/20220512-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/image-20220512153245093.png" alt="image-20220512153245093"></p>
+<p>在左图中，摄像机根据用户指定的位置进行放置和定位。在右图中，视点变换从 原点沿着 Z 轴负方向对相机重新定位，这样可以使裁剪和投影操作更简单、更快速。可视范围是一个平截椎体，因此可以认为它是透视模式。</p>
+<p><strong>【总结】</strong>模型和视图变换阶段分为模型变换和视图变换。模型变换的目的是将模型变换到适合渲染的空间当中，而视图变换的目的是将摄像机放置于坐标原点，方便后续步骤的操作。</p>
+<h4 id="1-3-2-顶点着色"><a href="#1-3-2-顶点着色" class="headerlink" title="1.3.2 顶点着色"></a>1.3.2 顶点着色</h4><p>为了产生逼真的场景，渲染形状和位置是远远不够的，我们需要对物体的外观进行建模。而物体经过建模，会得到对包括每个对象的材质，以及照射在对象上的任何光源的效果在内的一些描述。且光照和材质可以用任意数量的方式，从简单的颜色描述到复杂的物理描述来模拟。</p>
+<p>确定材质上的光照效果的这种操作被称为着色（shading），着色过程涉及在对象上的各个点处计算着色方程（shading equation）。通常，这些计算中的一部分在几何阶段期间在模型的顶点上执行（vertex shading），而其他计算可以在逐像素光栅化（per-pixel rasterization）期间执行。可以在每个顶点处存储各种属性数据，诸如顶点的位置，法线，颜色或计算着色方程所需的任何其它数字信息。<strong>顶点着色的结果（可以是颜色，向量，纹理坐标或任何其他种类的着色数据）计算完成后，会被发送到光栅化阶段以进行插值操作。</strong></p>
+<p>着色计算通常认为是在世界空间中进行的。在实践中，有时需要将相关实体（诸如相机和光源）转换到一些其它空间（诸如模型空间、观察空间、法线空间等）并在那里执行计算，也可以得到正确的结果。这是因为如果着色过程中所有的实体变换到了相同的空间，着色计算中需要的诸如光源，相机和模型之间的相对关系是不会变的。</p>
+<p><strong>【总结】</strong>顶点着色阶段的目的在于确定模型上顶点处材质的光照效果。</p>
+<h4 id="1-3-3-投影"><a href="#1-3-3-投影" class="headerlink" title="1.3.3 投影"></a>1.3.3 投影</h4><p>在光照处理之后，渲染系统就开始进行投影操作，即将视体变换到一个对角顶点分别是 (-1,- 1,-1) 和 (1,1,1) 的单位立方体（unit cube）内，这个单位立方体通常也被称为规范立方体（Canonical View Volume，CVV）。</p>
+<p>目前，主要有两种投影方法，即：</p>
+<ul>
+<li>正交投影（orthographic projection，或称  parallel projection）</li>
+<li>透视投影（perspective projection）</li>
+</ul>
+<p>如下图所示：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/12/20220512-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/image-20220512154019834.png" alt="image-20220512154019834"></p>
+<p>正交投影的可视体通常是一个矩形，正交投影可以把这个视体变换为单位立方体。正交投影的主要特性是平行线在变换之后彼此之间仍然保持平行，这种变换是平移与缩放的组合。而在透视投影中，越远离摄像机的物体，它在投影后看起来越小。更进一步来说，平行线将在地平线处会聚。透视投影的变换其实就是模拟人类感知物体的方式。</p>
+<p>正交投影和透视投影都可以通过 4 x 4 的矩阵来实现，在任何一种变换之后，都可以认为模型位于归一化处理之后的设备坐标系中。</p>
+<p><strong>【总结】</strong>投影的目的在于将模型顶点变换到归一化的设备坐标系中，便于后续处理。</p>
+<h4 id="1-3-4-裁剪"><a href="#1-3-4-裁剪" class="headerlink" title="1.3.4 裁剪"></a>1.3.4 裁剪</h4><p>只有当图元完全或部分存在于视体（也就是上文的规范立方体，CVV）内部的时候，才需要将其发送到光栅化阶段，这个阶段可以把这些图元在屏幕上绘制出来。</p>
+<p>不难理解，一个图元相对视体内部的位置，分为三种情况：完全位于内部、完全位于外部、部分位于内部。所以就要分情况进行处理：</p>
+<ul>
+<li>当图元完全位于视体内部，那么它可以直接进行下一个阶段</li>
+<li>当图元完全位于视体外部，不会进入下一个阶段，可直接丢弃，因为它们无需进行渲染</li>
+<li>当图元部分位于视体内部，则需要对那些部分位于视体内的图元进行裁剪处理</li>
+</ul>
+<p>裁剪的过程如下图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/12/20220512-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/image-20220512160053289.png" alt="image-20220512160053289"></p>
+<p>投影变换后，只对单位立方体内的图元（相应的是视锥内可见图元）继续进行处理，因此，将单位立方体之外的图元剔除掉，保留单位立方体内部的图元，同时沿着单位立方体将与单位立方体相交的图元裁剪掉，于是就会产生新的图元，同时舍弃旧的图元。</p>
+<p><strong>【总结】</strong>裁剪阶段的目的，就是对部分位于视体内部的图元进行裁剪操作以只保留在视体内的部分。</p>
+<h4 id="1-3-5-屏幕映射"><a href="#1-3-5-屏幕映射" class="headerlink" title="1.3.5 屏幕映射"></a>1.3.5 屏幕映射</h4><p>只有在视体内部经过裁剪的图元，以及之前完全位于视体内部的图元，才可以进入到屏幕映射阶段。进入到这个阶段时，坐标仍然是三维的（但显示状态在经过投影阶段后已经成了二维），每个图元的 x 和 y 坐标变换到了屏幕坐标系中，屏幕坐标系连同 z 坐标一起称为窗口<br>坐标系。<br>假定在一个窗口里对场景进行绘制，窗口的最小坐标为（x1，y1），最大坐标为（x2， y2），其中  x1 &lt; x2，y1 &lt; y2。屏幕映射首先进行平移，随后进行缩放，在映射过程中 z 坐标不受影响。新的 x 和 y 坐标称为屏幕坐标系，与 z 坐标一起（-1 ≦ z ≦ 1）进入光栅化阶段。<br>屏幕映射过程如下图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/12/20220512-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/image-20220512163021922.png" alt="image-20220512163021922"></p>
+<p><strong>【总结】</strong>屏幕映射阶段的主要目的，是将之前步骤得到的坐标映射到对应的屏幕坐标系上。</p>
+<h3 id="1-4-光栅化阶段"><a href="#1-4-光栅化阶段" class="headerlink" title="1.4 光栅化阶段"></a>1.4 光栅化阶段</h3><p>给定经过变换和投影之后的顶点，颜色以及纹理坐标（均来自于几何阶段），给每个像素（Pixel）正确配色，以便正确绘制整幅图像。这个过个过程叫光珊化（rasterization）或扫描变换（scan conversion），即从二维顶点所处的屏幕空间（所有顶点都包含 Z 值即深度值，及各种与相关的着色信息）到屏幕上的像素的转换。</p>
+<p>与几何阶段相似，该阶段细分为几个功能阶段：</p>
+<ul>
+<li>三角形设定（Triangle Setup）阶段</li>
+<li>三角形遍历（Triangle Traversal）阶段</li>
+<li>像素着色（Pixel Shading）阶段</li>
+<li>融合（Merging）阶段</li>
+</ul>
+<p>如下图所示：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/12/20220512-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/image-20220512163755234.png" alt="image-20220512163755234"></p>
+<h4 id="1-4-1-三角形设定"><a href="#1-4-1-三角形设定" class="headerlink" title="1.4.1 三角形设定"></a>1.4.1 三角形设定</h4><p>三角形设定阶段主要用来计算三角形表面的差异和三角形表面的其他相关数据。该数据主要用于扫描转换（scan conversion），以及由几何阶段处理的各种着色数据的插值操作所用。<strong>该过程在专门为其设计的硬件上执行</strong>。</p>
+<h4 id="1-4-2-三角形遍历"><a href="#1-4-2-三角形遍历" class="headerlink" title="1.4.2 三角形遍历"></a>1.4.2 三角形遍历</h4><p>在三角形遍历阶段将进行逐像素检查操作，检查该像素处的像素中心是否由三角形覆盖，而对于有三角形部分重合的像素，将在其重合部分生成<strong>片元（fragment）</strong>。找到哪些采样点或像素在三角形中的过程通常叫三角形遍历（TriangleTraversal）或扫描转换（scan conversion）。<strong>每个片元的属性均由三个三角形顶点的数据插值而生成，这些属性包括片元的深度，以及来自几何阶段的着色数据等。</strong><br><strong>【总结】</strong>找到哪些采样点或像素在三角形中的过程通常叫三角形遍历（TriangleTraversal）或扫描转换（scan conversion）。</p>
+<h4 id="1-4-3-像素着色"><a href="#1-4-3-像素着色" class="headerlink" title="1.4.3 像素着色"></a>1.4.3 像素着色</h4><p><strong>所有逐像素的着色计算都在像素着色阶段进行，使用插值得来的着色数据作为输入，输出结果为一种或多种将被传送到下一阶段的颜色信息。</strong>纹理贴图操作就是在这阶段进行的。像素着色阶段是在可编程 GPU 内执行的，在这一阶段有大量的技术可以使用，其中最常见，<br>最重要的技术之一就是纹理贴图（Texturing），将会在之后进行总结。</p>
+<p><strong>【总结】</strong>像素着色阶段的主要目的是计算所有需逐像素操作的过程。</p>
+<h4 id="1-4-4-融合"><a href="#1-4-4-融合" class="headerlink" title="1.4.4 融合"></a>1.4.4 融合</h4><p>每个像素的信息都储存在颜色缓冲器中，而颜色缓冲器是一个颜色的矩阵列（每种颜色包含红、绿、蓝三个分量）。<strong>融合阶段的主要任务是合成当前储存于缓冲器中的由之前的像素着色阶段产生的片段颜色。</strong>不像其它着色阶段，通常运行该阶段的 GPU 子单元并非完全可编程的，但其高度可配置，可支持多种特效。</p>
+<p>此外，这个阶段还负责可见性问题的处理。对于大多数图形硬件来说，这个过程是通过 <strong>Z 缓冲（Z-Buffer）</strong>算法来实现的。Z 缓冲算法非常简单，具有 O(n) 复杂度（n 是需要绘制的像素数量），只要对每个图元计算出相应的像素 z 值，就可以使用这种方法，大概内容是：Z 缓冲器和颜色缓冲器形状大小一样，每个像素都存储着一个 z 值，这个 z 值是从相机到最近图元之间的距离。每次将一个图元绘制为相应像素时，需要计算像素位置处图元的 z 值，并与同一像素处的 z 缓冲器内容进行比较。如果新计算出的 z 值，远远小于 z 缓冲器中的 z 值，那么说明即将绘制的图元与相机的距离比原来距离相机最近的图元还要近。这样，像素的 z 值和颜色就由当前图元对应的值和颜色进行更新。反之，若计算出的 z 值远远大于 z 缓冲器中的 z 值，那么 z 缓冲器和颜色缓冲器中的值就无需改变。</p>
+<p>除了颜色缓冲器用来存储颜色，z 缓冲器用来存储每个像素的  z 值，还有其他缓冲器可以用来过滤和捕获片段信息：</p>
+<ul>
+<li><strong>alpha 通道（alpha channel）</strong>和颜色缓冲器联系在一起可以存储一个与每个像素相关的不透明值。 可选的 alpha 测试可在深度测试执行前在传入片段上运行。片段的 alpha 值与参考值作某些特定的测试（如等于，大于等），如果片断未能通过测试，它将不再进行进一步的处理。alpha 测试经常用于不影响深度缓存的全透明片段的处理。</li>
+<li><strong>模板缓冲器（stencil buffer）</strong>是用于记录所呈现图元位置的离屏缓存。每个像素通常与占用 8 个位。图元可使用各种方法渲染到模板缓冲器中，而缓冲器中的内容可以控制颜色缓存和 Z 缓存的渲染。举个例子，假设在模板缓冲器中绘制出了一个实心圆形，那么可以使用一系列操作符来将后续的图元仅在圆形所出现的像素处绘制，类似一个 mask 的操作。模板缓冲器是制作特效的强大工具。而在管线末端的所有这些功能都叫做光栅操作（raster operations ，ROP）或混合操作（blend operations）。</li>
+<li><strong>帧缓冲器（frame buffer）</strong>通常包含一个系统所具有的所有缓冲器，但有时也可以认为是颜色缓冲器和 z 缓冲器的组合。</li>
+<li><strong>累计缓冲器（accumulation buffer）</strong>，是 1990 年，Haeberli 和 Akeley 提出的一种缓冲器，是对帧缓冲器的补充。这个缓冲器可以用一组操作符对图像进行累积。例如，为了产生运动模糊（motion blur），可以对一系列物体运动的图像进行累积和平均。此外，其他的一些可产生的效果包括景深（e depth of field），反走样（antialiasing）和软阴影（soft shadows）等。</li>
+</ul>
+<p>而当图元通过光栅化阶段之后，从相机视点处看到的东西就可以在荧幕上显示出来。为了避免观察者体验到对图元进行处理并发送到屏幕的过程，图形系统一般使用了<strong>双缓冲（double buffering）</strong>机制，这意味着屏幕绘制是在一个后置缓冲器（backbuffer）中以离屏的方式进行的。一旦屏幕已在后置缓冲器中绘制，后置缓冲器中的内容就不断与已经在屏幕上显示过的前置缓冲器中的内容进行交换。注意，只有当不影响显示的时候，才进行交换。</p>
+<p><strong>【总结】</strong>融合阶段的主要任务是合成当前储存于缓冲器中的由之前的像素着色阶段产生的片段颜色。此外，融合阶段还负责可见性问题（Z 缓冲相关）的处理。</p>
+<h3 id="1-5-总结"><a href="#1-5-总结" class="headerlink" title="1.5 总结"></a>1.5 总结</h3><p>图形渲染管线的主要功能就是决定在给定虚拟相机、三维物体、光源、照明模式，以及纹理等诸多条件的情况下，生成或绘制一幅二维图像的过程。在概念上可以将图形渲染管线分为三个阶段：应用程序阶段、几何阶段、光栅化阶段。</p>
+<p><strong>应用程序阶段</strong>的主要任务，是将需要绘制图元输入到绘制管线的下一个阶段，以及实现一些软件方式来实现的方法。主要方法有碰撞检测、加速算法、输入检测，动画，力反馈以及纹理动画，变换仿真、几何变形，以及一些不在其他阶段执行的计算，如层次视锥裁剪等加速算法。对于被渲染的每一帧，应用程序阶段将摄像机位置，光照和模型的图元输出到管线的下一个主要阶段，即几何阶段。</p>
+<p><strong>几何阶段</strong>首先对模型的顶点和法线进行矩阵变换，并将模型置于观察空间中（模型和视图变换），然后根据材质、纹理、以及光源属性进行顶点光照的计算（顶点着色阶段），接着将该模型投影变换到一个单位立方体内，并舍弃所有立方体之外的图元（投影阶段），而为了得到所有位于立方体内部的图元，接下来对与单位立方体相交的图元进行裁剪（裁剪阶段），然后将顶点映射到屏幕上的窗口中（屏幕映射阶段）。在对每个多边形执行完这些操作后，将最终数据传递到光栅，这样就来到了管线中的最后一个阶段，光栅化阶段。</p>
+<p><strong>光栅化阶段</strong>中，所有图元会被光栅化，进而转换为屏幕上的像素。首先，计算三角形表面的差异和三角形表面的其他相关数据（三角形设定阶段），然后，找到哪些采样点或像素在三角形中（三角形遍历阶段），接着计算所有需逐像素计算操作（像素着色阶段），然后，合成当前储存于缓冲器中的由之前的像素着色阶段产生的片段颜色，可见性问题可通过 Z 缓存算法解决，随同的还有可选的 alpha 测试和模版测试（融合阶段）。所有对象依次处理，而最后的图像显示在屏幕上。</p>
+<h2 id="2-思维导图"><a href="#2-思维导图" class="headerlink" title="2 思维导图"></a>2 思维导图</h2><p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/12/20220512-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF%E6%80%9D%E7%BB%B4%E5%AF%BC%E5%9B%BE.jpg" alt="图形渲染管线思维导图"></p>
+]]></content>
+      <categories>
+        <category>Real-Time Rendering</category>
+      </categories>
+      <tags>
+        <tag>计算机图形学</tag>
+        <tag>实时渲染</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>【Real-Time Rendering】纹理总结</title>
+    <url>/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[<p>本篇对《Real-Time Rendering》一书中纹理相关知识进行概括总结。主要内容包括：</p>
+<ul>
+<li><p>纹理管线（Texture Pipeline）</p>
+</li>
+<li><p>纹理缓存（Texture Caching）</p>
+</li>
+<li><p>纹理压缩（Texture Compression）</p>
+</li>
+<li><p>体纹理（Volume Texture）</p>
+</li>
+<li><p>立方体贴图（Cube Map）</p>
+</li>
+<li><p>程序纹理（Procedural Texturing）</p>
+</li>
+<li><p>凹凸贴图（Bump Mapping）及其改进</p>
+</li>
+</ul>
+<p><em><span id="more"></span></em></p>
+<h3 id="1-纹理管线"><a href="#1-纹理管线" class="headerlink" title="1 纹理管线"></a>1 纹理管线</h3><p>简单来说，纹理（Texturing）是一种针对物体表面属性进行“建模”的高效技术。图像纹理中的像素通常被称为纹素（Texels），以区别于屏幕上的像素。根据 Kershaw 的术语，通过将投影方程（projector function）运用于空间中的点 ，从而得到一组称为参数空间值（parameter-spacevalues）的关于纹理的数值。这个过程就称为贴图（Mapping，也称映射 ）,也就是纹理贴图（Texture Mapping，也称纹理映射 ）这个词的由来。纹理贴图可以用一个通用的纹理管线来进行描述。<strong>纹理贴图过程的初始点是空间中的一个位置。这个位置可以基于世界空间，但是更常见的是基于模型空间。因为若此位置是基于模型空间的，当模型移动时，其纹理才会随之移动。</strong></p>
+<p>下图展示了单个纹理的通用管线：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515094736104.png" alt="image-20220515094736104"></p>
+<ul>
+<li>第一步。通过将投影方程（projector function）运用于空间中的点   ，从而得到一组称为参数空间值（parameter-space values）的关于纹理的数值，即 uv 坐标，在（0, 1）范围内。</li>
+<li>第二步。在使用这些新值访问纹理之前，可以使用一个或者多个映射函数（corresponder function）将参数空间值（parameter-space values  ）转换到纹理空间，即对 uv坐标进行平移和缩放以映射到纹理空间中。</li>
+<li>第三步。使用这些纹理空间值（texture-space locations）从纹理中获取相应的值（obtain value）。例如，可以使用图像纹理的数组索引来检索像素值。</li>
+<li>第四步。再使用值变换函数（value transform function）对检索结果进行值变换，最后使用得到的新值来改变表面属性，如材质或者着色法线等等。</li>
+</ul>
+<p>下图通过一个例子描述了上述过程：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515095022930.png" alt="image-20220515095022930"></p>
+<h4 id="1-1-投影函数"><a href="#1-1-投影函数" class="headerlink" title="1.1 投影函数"></a>1.1 投影函数</h4><p>作为纹理管线的第一步，<strong>投影函数的功能就是将空间中的三维点转化为纹理坐标，也就是获取表面的位置并将其投影到参数空间中。</strong></p>
+<p>在常规情况下，投影函数通常在美术建模阶段使用，并将投影结果存储于顶点数据中。也就是说，在软件开发过程中，我们一般不会去用投影函数计算得到投影结果，而是直接使用在美术建模过程中，已经存储在模型顶点数据中的投影结果。</p>
+<h4 id="1-2-映射函数"><a href="#1-2-映射函数" class="headerlink" title="1.2 映射函数"></a>1.2 映射函数</h4><p><strong>映射函数（The Corresponder Function）的作用是将参数空间坐标（parameter-space coordinates）转换为纹理空间位置（texture space locations）。</strong>我们知道图像会出现在物体表面的 (u,v) 位置上，且  uv 值的正常范围在 [0, 1) 范围内。超出这个值域的纹理，其显示方式便可以由映射函数（The Corresponder Function）来决定。</p>
+<p>在  OpenGL 中，这类映射函数称为“封装模式（Warapping Mode）”，在 Direct3D 中，这类函数叫做“寻址模式（Texture Addressing Mode）”。最常见的映射函数有以下几种：</p>
+<ul>
+<li>重复寻址模式，wrap (DirectX)，repeat (OpenGL)。图像在表面上重复出现。</li>
+<li>镜像寻址模式，mirror。图像在物体表面上不断重复，但每次重复时对图像进行镜像或者反转。</li>
+<li>夹取寻址模式，clamp (DirectX)，clamp to edge (OpenGL)。夹取纹理寻址模式将纹理坐标夹取在 [0.0, 1.0] 之间，也就是说，在[0.0, 1.0] 之间就是把纹理复制一遍，然后对于 [0.0, 1.0] 之外的内容，将边缘的内容沿着 u 轴和 v 轴进行延伸。</li>
+<li>边框颜色寻址模式，border (DirectX)，clamp to border (OpenGL)。边框颜色寻址模式就是在 [0.0, 1.0] 之间绘制纹理，然后 [0.0, 1.0] 之外的内容就用边框颜色填充。</li>
+</ul>
+<p>下图展示了上述四种寻址模式：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515095836855.png" alt="image-20220515095836855"></p>
+<p>另外，每个纹理轴可以使用不同的映射函数。例如在 u 轴使用重复寻址模式，在 v 轴使用取寻址模式。</p>
+<h3 id="2-纹理缓存"><a href="#2-纹理缓存" class="headerlink" title="2 纹理缓存"></a>2 纹理缓存</h3><p>一个复杂的应用程序可能需要相当数量的纹理。快速纹理存储器的数量因系统而异，但你会发现它们永远不够用。于是有了各种各样的纹理缓存（texture caching）技术，但我们一直在上传纹理到内存的开销和纹理单次消耗的内存量之间寻求一个好的平衡点。比如，一个由纹理贴图的多边形对象，初始化在离相机很远的位置，程序也许会只加载 mipmap 中更小的子纹理，就可以很完美的完成这个对象的显示了。</p>
+<p>一些基本的建议是——<strong>保持纹理在不需要放大再用的前提下尽可能小，并尝试基于多边形将纹理分组。</strong>即便所有纹理都一直存储在内存中，这种预防措施也可能会提高处理器的缓存性能。</p>
+<p>常见的缓存策略有以下几种，许多都和操作系统中的缓存策略一致：</p>
+<ul>
+<li><strong>最近最少使用策略（Least Recently Used ,LRU）</strong>。LRU 是纹理缓存方案中常用的一种策略，其原理为：加载到图形加速器的内存中的每个纹理都被给出一个时间戳，记录最后一次访问以渲染图像的时间。当需要空间来加载新的纹理时，首先卸载最旧时间戳的纹理。一些 API 还允许为每个纹理设置一个优先级：如果两个纹理的时间戳相同，则优先级较低的纹理首先被卸载。 设置优先级可以帮助避免不必要的纹理交换。</li>
+<li><strong>最近最常使用策略（Most Recently Used，MRU）</strong>。MRU 如其名称一样，总是替换掉使用的最少的纹理缓存。鉴于如果在当前帧中载入纹理，会发生抖动（Thrashing）的情况。所谓抖动就是纹理数据集远大于缓存空间，这样就会出现频繁替换纹理缓存的现象，就称为抖动。这时，LRU 策略是一种非常不好的策略，因为在每帧画面中会对每张纹理图像进行交换。在这种情况下，可以采用 MRU 策略，直到在画面中没有纹理交换时为止，再然后切换回 LRU。</li>
+<li><strong>预取策略（Prefetching）</strong>。加载纹理花费显着的时间，特别是在需将纹理转换为硬件原生格式时。 纹理加载在每个框架可以有很大的不同。在单个帧中加载大量纹理使得难以保持恒定的帧速率。一种解决方案是使用预取（prefetching），在将来需要预期的情况下，预计未来的需求然后加载纹理，将加载过程分摊在多帧中。</li>
+<li><strong>裁剪图策略（Clipmap）</strong>。对于飞行模拟和地型模拟系统，图像数据集可能会非常巨大。传统的方法是将这些图像分解成更小的硬件可以处理的瓦片地图（tiles）。Tanner 等人提出了一种一种称为裁剪图（clipmap）的改进数据结构。其思想是，将整个数据集视为一个 mipmap，但是对于任何特定视图，只需要 mipmap 的较低级别的一小部分即可。支持  DirectX 10 的  GPU 就能够实现 clipmap 技术。</li>
+</ul>
+<h3 id="3-纹理压缩"><a href="#3-纹理压缩" class="headerlink" title="3 纹理压缩"></a>3 纹理压缩</h3><p>直接解决内存和带宽问题和缓存问题的一个解决方案是固定速率纹理压缩（Fixed-rate Texture Compression）。通过硬件解码压缩纹理，纹理可以需要更少的纹理内存，从而增加有效的高速缓存大小。至少这样的纹理使用起来更高效，因为他们在访问时消耗更少的内存带宽。</p>
+<p>纹理压缩算法种类繁多，但基本的共同点是：把纹理按 4x4 个单元（纹素）大小划分为块。每个块对应一张四色查找表，表中存有两个标准 RGB565 格式表示的 16 位颜色，另外使用标准插入算法在插入两个新的颜色值，由此构成四色查找表。4x4 大小的纹理块中每个单元（像素点）用两个 bit 表示，每一个都代表四色查找表中的一种颜色。<strong>可以看出，实质上是利用每个单元（像素点）中的两个 bit 来索引四色查找表中的颜色值。</strong></p>
+<p>这些压缩技术可以应用于立方体或体积图，以及二维纹理。<strong>而其主要缺点是它们是有损的压缩。</strong> 也就是说，原始图像通常不能从压缩版本检索。 仅使用四个或八个内插值来表示 16 个像素。 如果一个瓦片贴图有更大的数值，相较压缩前就会有一些损失。 在实践中，如果正常使用这些压缩方案，一般需给出可接受的图像保真度。</p>
+<h3 id="4-体纹理"><a href="#4-体纹理" class="headerlink" title="4 体纹理"></a>4 体纹理</h3><p>体纹理（volume texture），也称为三维纹理（3D texture），是传统二维纹理（2D texture）在逻辑上的扩展。二维纹理是一张简单的位图图片，用于为三维模型提供表面点的颜色值；而<strong>一个三维纹理，可以被认为由很多张 2D 纹理组成，用于描述三维空间数据的图片。</strong>三维纹理通过三维纹理坐标进行访问。</p>
+<p>虽然体纹理具有更高的储存要求，并且滤波成本更高，但它们具有一些独特的优势：</p>
+<ul>
+<li>使用体纹理，可以跳过为三维网格确定良好二维参数的复杂过程，因为三维位置可以直接用作纹理坐标，从而避免了二维参数化中通常会发生的变形和接缝问题。</li>
+<li>体纹理也可用于表示诸如木材或大理石的材料的体积结构。使用三维纹理实现出的这些模型，看起来会很逼真，浑然天成。</li>
+</ul>
+<p>体纹理的缺点也很明显：</p>
+<ul>
+<li>使用体纹理作为表面纹理会非常低效，因为三维纹理中的绝大多数样本都没起到作用。</li>
+</ul>
+<h3 id="5-立方体贴图"><a href="#5-立方体贴图" class="headerlink" title="5 立方体贴图"></a>5 立方体贴图</h3><p>立方体贴图（cube map）也称立方体纹理（cube texture），是一种特殊的纹理技术，它用 6 幅二维纹理图像构成一个以原点为中心的纹理立方体，这每个 2D 纹理是一个立方体（cube）的一个面。对于每个片段，<strong>纹理坐标 (s, t, r) 被当作方向向量看待，每个纹素(texel)都表示从原点所看到的纹理立方体上的图像。</strong></p>
+<p>下图以两种方式展示了立方体贴图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515100701571.png" alt="image-20220515100701571"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515100722640.png" alt="image-20220515100722640"></p>
+<p><strong>可以使用三分量纹理坐标向量来访问立方体贴图中的数据，该矢量指定了从立方体中心向外指向的光线的方向。</strong>选择具有最大绝对值的纹理坐标对应的相应的面。例如给定矢量（-3.2, 5.1, -8.4），选择绝对值最大的 -8.4 所在的 -Z 面，然后将其他两维除以最大的绝对值，就映射到了（-1, 1），然后再映射到（0, 1）范围就可以在 -Z 面上得到一个纹理坐标了。</p>
+<h3 id="6-程序纹理"><a href="#6-程序纹理" class="headerlink" title="6 程序纹理"></a>6 程序纹理</h3><p>给定纹理空间位置，进行图像查找是生成纹理值的一种方法。另一种方法是对函数进行求值，从而得到一个程序贴图纹理（procedural texture）。</p>
+<p>程序贴图纹理也称为过程纹理，是用计算机算法生成的，旨在创建用于纹理映射的自然元素（例如木材，大理石，花岗岩，金属，石头等）的真实表面或三维物体而创建的纹理图像。通常，会使用分形噪声（fractal noise）和湍流扰动函数（turbulence functions）这类“随机性”的函数来生成程序贴图纹理。</p>
+<p>程序纹理通常用于离线渲染应用程序，而图像纹理在实时渲染中更为常见。这是由于在现代 GPU 中的图像纹理硬件有着极高效率，其可以在一秒钟内执行数十亿个纹理访问。然而，GPU 架构正在朝着更便宜的计算能力和（相对）更昂贵的存储器访问而发展。这将使程序纹理在实时应用程序中更常见，尽管它们不可能完全替代图像纹理。</p>
+<p>关于程序纹理中常见的噪声，之后有专门的文章总结。</p>
+<h3 id="7-凹凸贴图及其改进"><a href="#7-凹凸贴图及其改进" class="headerlink" title="7 凹凸贴图及其改进"></a>7 凹凸贴图及其改进</h3><p>与凹凸贴图相关的改进技术包括：位移贴图、法线贴图、视差贴图、浮雕贴图等，除了位移贴图方法以外，其他的几种改进一般都是通过修改每像素着色方程来实现，关键思想是访问纹理来修改表面的法线，而不是改变光照方程中的颜色分量。物体表面的几何法线保持不变，我们修改的只是着色方程中使用的法线值。他们比单独的纹理有更好的三维感官，但是显然还是比不上实际的三维几何体。下面将分别说明这几种方法。</p>
+<h4 id="7-1-凹凸贴图"><a href="#7-1-凹凸贴图" class="headerlink" title="7.1 凹凸贴图"></a>7.1 凹凸贴图</h4><p><strong>凹凸贴图是通过改变表面光照方程的法线，而不是表面的几何法线，或对每个待渲染的像素在计算照明之前都要加上一个从高度图中找到的扰动，来模拟凹凸不平的视觉特征</strong>，如褶皱、波浪等等。<br>Blinn 于 1978 年提出了凹凸贴图方法。使用凹凸贴图，是为了给光滑的平面，在不增加顶点的情况下，增加一些凹凸的变化。他的原理是通过法向量的变化，来产生光影的变化，从而产生凹凸感。<strong>实际上并没有几何顶点上的变化。</strong>所以下图中球体边缘还是光滑的：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515104558734.png" alt="image-20220515104558734"></p>
+<h4 id="7-2-位移贴图"><a href="#7-2-位移贴图" class="headerlink" title="7.2 位移贴图"></a>7.2 位移贴图</h4><p>移位贴图（Displacement Mapping）也有人称为置换贴图，或称高度纹理贴图（Heightfield Texturing）。这种方法类似于法线贴图，<strong>移位贴图的每一个纹素中存储了一个向量，这个向量代表了对应顶点的位移。</strong>注意，此处的纹素并不是与像素一一对应，而是与顶点一一对应，因此，纹理的纹素个数与网格的顶点个数是相等的。在 Vertex Shader 阶段，获取每个顶点对应的纹素中的位移向量，施加到局部坐标系下的顶点上，然后进行世界视点投影变换即可。<strong>位移贴图真正改变了顶点位置。</strong></p>
+<h4 id="7-3-法线贴图"><a href="#7-3-法线贴图" class="headerlink" title="7.3 法线贴图"></a>7.3 法线贴图</h4><p>法线贴图（Normal mapping）是凸凹贴图（Bump mapping）技术的一种应用。简单来说，<strong>Normal Map 直接将正确的 Normal 值保存到一张纹理中去，那么在使用的时候直接从贴图中取即可。</strong>为了使法线贴图能应用于不同的物体，所以法线贴图中存储的法线值一般是表面顶点切线空间下的法线值，所谓切线空间是指以顶点切线为 x 轴，副切线为 y 轴，顶点法线为 z 轴的空间，相比于存储模型空间下的法线值，切线空间下的法线值是一个相对值，可以应用到不同的模型上而不至于出错。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515105351266.png" alt="image-20220515105351266"></p>
+<p>上图展示了基于法线贴图的凹凸映射，左侧为法线贴图，每个颜色通道实际上是表面法线坐标。红色通道是 x 偏差; 红色越多，正常点越多。 绿色是 y 偏差，蓝色是 z。 右边是使用法线贴图生成的图像。 请注意立方体顶部的扁平外观，<strong>法线贴图显然没有改变几何形状。</strong></p>
+<h4 id="7-4-视差贴图"><a href="#7-4-视差贴图" class="headerlink" title="7.4 视差贴图"></a>7.4 视差贴图</h4><p>视差贴图（Parallax Mapping），又称为 Offset Mapping，或 virtual displacement mapping，视差贴图是一种改进的 Bump Mappin 技术，相较于普通的凹凸贴图，视差贴图技术得到凹凸效果得会更具真实感（如石墙的纹理将有更明显的深度）。<strong>视差贴图是通过替换渲染多边形上的顶点处的纹理坐标来实现的</strong>，而这个替换依赖于一个关于切线空间中的视角（相对于表面法线的角度）和在该点上的高度图的方程。简单来说，Parallax Mapping 利用  Height Map 进行了近似的  Texture Offset。如下图所示：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515105943878.png" alt="image-20220515105943878"></p>
+<h4 id="7-5-浮雕贴图"><a href="#7-5-浮雕贴图" class="headerlink" title="7.5 浮雕贴图"></a>7.5 浮雕贴图</h4><p>浮雕贴图（Relief Mapping），有人把它誉为凹凸贴图的极致。我们知道，Parallax Mapping 是针对  Normal Mapping 的改进，利用  HeightMap 进行了近似的 Texture Offset。而 Relief Mapping 是精确的 Texture Offset，所以在表现力上比较完美。</p>
+<p>Parallax Mapping 能够提供比 Bump Mapping 更多的深度，尤其相比于小视角下，但是如果想提供更深的深度，Parallax Mapping 就无能为力了，Relief Mapping 则可以很好的胜任。相较于 Parallax Mapping，浮雕贴图可以实现更深的凹凸深度，并且还可以做出自阴影和闭塞效果。当然算法也稍稍有点复杂，具体细节可以参考这篇中文文献：<a href="https://www.ixueshu.com/document/3dc4369a761ca0d6318947a18e7f9386.html">Relief mapping：凹凸贴图的极致</a>，而如果要用一句话概括  Relief Mapping，将会是：“在 Shader 里做光线追踪”。</p>
+<p>下图是法线贴图和浮雕贴图的对比，浮雕贴图可以实现自阴影：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515110338598.png" alt="image-20220515110338598"></p>
+<p>下图是视差贴图和浮雕贴图的对比，浮雕贴图可以实现更深的凹凸深度：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515110121700.png" alt="image-20220515110121700"></p>
+]]></content>
+      <categories>
+        <category>Real-Time Rendering</category>
+      </categories>
+      <tags>
+        <tag>计算机图形学</tag>
+        <tag>实时渲染</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>【C++对象模型】（二）关于构造函数</title>
     <url>/LycTechStack.github.io/2022/05/06/20220506-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0/</url>
     <content><![CDATA[<p>《深度探索C++对象模型》第二章重点梳理。主要内容包括：</p>
@@ -6660,219 +6764,6 @@
       <tags>
         <tag>C++</tag>
         <tag>C++对象模型</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>【Real-Time Rendering】图形渲染管线</title>
-    <url>/LycTechStack.github.io/2022/05/12/20220512-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/</url>
-    <content><![CDATA[<p>本篇对《Real-Time Rendering》一书中图形渲染管线的相关知识进行概括总结。主要内容包括：</p>
-<ul>
-<li>图形渲染管线整体架构</li>
-<li>图形渲染管线各阶段工作</li>
-<li>思维导图</li>
-</ul>
-<p><em><span id="more"></span></em></p>
-<h2 id="1-知识总结"><a href="#1-知识总结" class="headerlink" title="1 知识总结"></a>1 知识总结</h2><h3 id="1-1-图形渲染管线架构"><a href="#1-1-图形渲染管线架构" class="headerlink" title="1.1 图形渲染管线架构"></a>1.1 图形渲染管线架构</h3><p>在概念上可以将图形渲染管线分为三个阶段：</p>
-<ul>
-<li>应用程序阶段（The Application Stage）</li>
-<li>几何阶段（The Geometry Stage）</li>
-<li>光栅化阶段（The Rasterizer Stage）</li>
-</ul>
-<p>如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/12/20220512-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/image-20220512152034788.png" alt="image-20220512152034788"></p>
-<p>图形渲染管线的每个阶段也可能是一条管线，比如上图中几何阶段所示。此外，还可以对有的阶段进行全部或者部分的并行化处理，如图中的光栅化阶段。应用程序阶段虽然是一个单独的过程，但是依然可以对之进行管线化或者并行化处理。</p>
-<h3 id="1-2-应用程序阶段"><a href="#1-2-应用程序阶段" class="headerlink" title="1.2 应用程序阶段"></a>1.2 应用程序阶段</h3><p>应用程序阶段一般是图形渲染管线概念上的第一个阶段。应用程序阶段是通过软件方式来实现的阶段，开发者能够对该阶段发生的情况进行完全控制，可以通过改变实现方法来改变实际性能。其他阶段，他们全部或者部分建立在硬件基础上，因此要改变实现过程会非常困难。</p>
-<p>正因应用程序阶段是软件方式实现，因此不能像几何和光栅化阶段那样继续分为若干个子阶段。但为了提高性能，该阶段还是可以在几个并行处理器上同时执行。在 CPU 设计上，称这种形式为超标量体系（superscalar）结构，因为它可以在同一阶段同一时间做不同的几件事情。</p>
-<p><strong>应用程序阶段通常实现的方法</strong>有碰撞检测、加速算法、输入检测，动画，力反馈以及纹理动画，变换仿真、几何变形，以及一些不在其他阶段执行的计算，如层次视锥裁剪等加速算法就可以在这里实现。</p>
-<p><strong>应用程序阶段的主要任务</strong>：在应用程序阶段的末端，将需要在屏幕上（具体形式取决于具体输入设备）显示出来绘制的几何体（也就是绘制图元，rendering primitives，如点、线、矩形等）输入到绘制管线的下一个阶段。</p>
-<p>对于被渲染的每一帧，应用程序阶段将摄像机位置，光照和模型的图元输出到管线的下一个主要阶段——几何阶段。</p>
-<h3 id="1-3-几何阶段"><a href="#1-3-几何阶段" class="headerlink" title="1.3 几何阶段"></a>1.3 几何阶段</h3><p>几何阶段主要负责大部分多边形操作和顶点操作。可以将这个阶段进一步划分成如下几个功能阶段：</p>
-<ul>
-<li>模型视点变换 Model &amp; View Transform</li>
-<li>顶点着色 Vertex Shading</li>
-<li>投影 Projection</li>
-<li>裁剪 Clipping</li>
-<li>屏幕映射 Screen Mapping</li>
-</ul>
-<p>如下图所示：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/12/20220512-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/image-20220512152716026.png" alt="image-20220512152716026"></p>
-<p>几个注意点：</p>
-<ul>
-<li>根据具体实现，这些阶段可以和管线阶段等同，也可以不等同。在一些情况下，一系列连续的功能阶段可以形成单个管线阶段（和其他管线阶段并行运行）。在另外情况下，一个功能阶段可以划分成其他更细小的管线阶段。</li>
-<li>几何阶段执行的是计算量非常高的任务，在只有一个光源的情况下，每个顶点大约需要 100 次左右的精确的浮点运算操作。</li>
-</ul>
-<h4 id="1-3-1-模型和视图变换"><a href="#1-3-1-模型和视图变换" class="headerlink" title="1.3.1 模型和视图变换"></a>1.3.1 模型和视图变换</h4><p>在屏幕上的显示过程中，模型通常需要变换到若干不同的空间或坐标系中。<strong>模型变换的变换对象一般是模型的顶点和法线</strong>。物体的坐标称为模型坐标。世界空间是唯一的，所有的模型经过变换后都位于同一个空间中。</p>
-<p>为了便于投影和裁剪，必须对相机和所有的模型进行视点变换。变换的目的就是要把相机放在原点，然后进行视点校准，使其朝向 Z 轴负方向，y 轴指向上方,x 轴指向右边。在视点变换后，实际位置和方向就依赖于当前的 API。我们称上述空间为相机空间或者观察空间。</p>
-<p>下图显示了模型和视图变换的过程：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/12/20220512-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/image-20220512153245093.png" alt="image-20220512153245093"></p>
-<p>在左图中，摄像机根据用户指定的位置进行放置和定位。在右图中，视点变换从 原点沿着 Z 轴负方向对相机重新定位，这样可以使裁剪和投影操作更简单、更快速。可视范围是一个平截椎体，因此可以认为它是透视模式。</p>
-<p><strong>【总结】</strong>模型和视图变换阶段分为模型变换和视图变换。模型变换的目的是将模型变换到适合渲染的空间当中，而视图变换的目的是将摄像机放置于坐标原点，方便后续步骤的操作。</p>
-<h4 id="1-3-2-顶点着色"><a href="#1-3-2-顶点着色" class="headerlink" title="1.3.2 顶点着色"></a>1.3.2 顶点着色</h4><p>为了产生逼真的场景，渲染形状和位置是远远不够的，我们需要对物体的外观进行建模。而物体经过建模，会得到对包括每个对象的材质，以及照射在对象上的任何光源的效果在内的一些描述。且光照和材质可以用任意数量的方式，从简单的颜色描述到复杂的物理描述来模拟。</p>
-<p>确定材质上的光照效果的这种操作被称为着色（shading），着色过程涉及在对象上的各个点处计算着色方程（shading equation）。通常，这些计算中的一部分在几何阶段期间在模型的顶点上执行（vertex shading），而其他计算可以在逐像素光栅化（per-pixel rasterization）期间执行。可以在每个顶点处存储各种属性数据，诸如顶点的位置，法线，颜色或计算着色方程所需的任何其它数字信息。<strong>顶点着色的结果（可以是颜色，向量，纹理坐标或任何其他种类的着色数据）计算完成后，会被发送到光栅化阶段以进行插值操作。</strong></p>
-<p>着色计算通常认为是在世界空间中进行的。在实践中，有时需要将相关实体（诸如相机和光源）转换到一些其它空间（诸如模型空间、观察空间、法线空间等）并在那里执行计算，也可以得到正确的结果。这是因为如果着色过程中所有的实体变换到了相同的空间，着色计算中需要的诸如光源，相机和模型之间的相对关系是不会变的。</p>
-<p><strong>【总结】</strong>顶点着色阶段的目的在于确定模型上顶点处材质的光照效果。</p>
-<h4 id="1-3-3-投影"><a href="#1-3-3-投影" class="headerlink" title="1.3.3 投影"></a>1.3.3 投影</h4><p>在光照处理之后，渲染系统就开始进行投影操作，即将视体变换到一个对角顶点分别是 (-1,- 1,-1) 和 (1,1,1) 的单位立方体（unit cube）内，这个单位立方体通常也被称为规范立方体（Canonical View Volume，CVV）。</p>
-<p>目前，主要有两种投影方法，即：</p>
-<ul>
-<li>正交投影（orthographic projection，或称  parallel projection）</li>
-<li>透视投影（perspective projection）</li>
-</ul>
-<p>如下图所示：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/12/20220512-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/image-20220512154019834.png" alt="image-20220512154019834"></p>
-<p>正交投影的可视体通常是一个矩形，正交投影可以把这个视体变换为单位立方体。正交投影的主要特性是平行线在变换之后彼此之间仍然保持平行，这种变换是平移与缩放的组合。而在透视投影中，越远离摄像机的物体，它在投影后看起来越小。更进一步来说，平行线将在地平线处会聚。透视投影的变换其实就是模拟人类感知物体的方式。</p>
-<p>正交投影和透视投影都可以通过 4 x 4 的矩阵来实现，在任何一种变换之后，都可以认为模型位于归一化处理之后的设备坐标系中。</p>
-<p><strong>【总结】</strong>投影的目的在于将模型顶点变换到归一化的设备坐标系中，便于后续处理。</p>
-<h4 id="1-3-4-裁剪"><a href="#1-3-4-裁剪" class="headerlink" title="1.3.4 裁剪"></a>1.3.4 裁剪</h4><p>只有当图元完全或部分存在于视体（也就是上文的规范立方体，CVV）内部的时候，才需要将其发送到光栅化阶段，这个阶段可以把这些图元在屏幕上绘制出来。</p>
-<p>不难理解，一个图元相对视体内部的位置，分为三种情况：完全位于内部、完全位于外部、部分位于内部。所以就要分情况进行处理：</p>
-<ul>
-<li>当图元完全位于视体内部，那么它可以直接进行下一个阶段</li>
-<li>当图元完全位于视体外部，不会进入下一个阶段，可直接丢弃，因为它们无需进行渲染</li>
-<li>当图元部分位于视体内部，则需要对那些部分位于视体内的图元进行裁剪处理</li>
-</ul>
-<p>裁剪的过程如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/12/20220512-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/image-20220512160053289.png" alt="image-20220512160053289"></p>
-<p>投影变换后，只对单位立方体内的图元（相应的是视锥内可见图元）继续进行处理，因此，将单位立方体之外的图元剔除掉，保留单位立方体内部的图元，同时沿着单位立方体将与单位立方体相交的图元裁剪掉，于是就会产生新的图元，同时舍弃旧的图元。</p>
-<p><strong>【总结】</strong>裁剪阶段的目的，就是对部分位于视体内部的图元进行裁剪操作以只保留在视体内的部分。</p>
-<h4 id="1-3-5-屏幕映射"><a href="#1-3-5-屏幕映射" class="headerlink" title="1.3.5 屏幕映射"></a>1.3.5 屏幕映射</h4><p>只有在视体内部经过裁剪的图元，以及之前完全位于视体内部的图元，才可以进入到屏幕映射阶段。进入到这个阶段时，坐标仍然是三维的（但显示状态在经过投影阶段后已经成了二维），每个图元的 x 和 y 坐标变换到了屏幕坐标系中，屏幕坐标系连同 z 坐标一起称为窗口<br>坐标系。<br>假定在一个窗口里对场景进行绘制，窗口的最小坐标为（x1，y1），最大坐标为（x2， y2），其中  x1 &lt; x2，y1 &lt; y2。屏幕映射首先进行平移，随后进行缩放，在映射过程中 z 坐标不受影响。新的 x 和 y 坐标称为屏幕坐标系，与 z 坐标一起（-1 ≦ z ≦ 1）进入光栅化阶段。<br>屏幕映射过程如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/12/20220512-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/image-20220512163021922.png" alt="image-20220512163021922"></p>
-<p><strong>【总结】</strong>屏幕映射阶段的主要目的，是将之前步骤得到的坐标映射到对应的屏幕坐标系上。</p>
-<h3 id="1-4-光栅化阶段"><a href="#1-4-光栅化阶段" class="headerlink" title="1.4 光栅化阶段"></a>1.4 光栅化阶段</h3><p>给定经过变换和投影之后的顶点，颜色以及纹理坐标（均来自于几何阶段），给每个像素（Pixel）正确配色，以便正确绘制整幅图像。这个过个过程叫光珊化（rasterization）或扫描变换（scan conversion），即从二维顶点所处的屏幕空间（所有顶点都包含 Z 值即深度值，及各种与相关的着色信息）到屏幕上的像素的转换。</p>
-<p>与几何阶段相似，该阶段细分为几个功能阶段：</p>
-<ul>
-<li>三角形设定（Triangle Setup）阶段</li>
-<li>三角形遍历（Triangle Traversal）阶段</li>
-<li>像素着色（Pixel Shading）阶段</li>
-<li>融合（Merging）阶段</li>
-</ul>
-<p>如下图所示：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/12/20220512-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/image-20220512163755234.png" alt="image-20220512163755234"></p>
-<h4 id="1-4-1-三角形设定"><a href="#1-4-1-三角形设定" class="headerlink" title="1.4.1 三角形设定"></a>1.4.1 三角形设定</h4><p>三角形设定阶段主要用来计算三角形表面的差异和三角形表面的其他相关数据。该数据主要用于扫描转换（scan conversion），以及由几何阶段处理的各种着色数据的插值操作所用。<strong>该过程在专门为其设计的硬件上执行</strong>。</p>
-<h4 id="1-4-2-三角形遍历"><a href="#1-4-2-三角形遍历" class="headerlink" title="1.4.2 三角形遍历"></a>1.4.2 三角形遍历</h4><p>在三角形遍历阶段将进行逐像素检查操作，检查该像素处的像素中心是否由三角形覆盖，而对于有三角形部分重合的像素，将在其重合部分生成<strong>片元（fragment）</strong>。找到哪些采样点或像素在三角形中的过程通常叫三角形遍历（TriangleTraversal）或扫描转换（scan conversion）。<strong>每个片元的属性均由三个三角形顶点的数据插值而生成，这些属性包括片元的深度，以及来自几何阶段的着色数据等。</strong><br><strong>【总结】</strong>找到哪些采样点或像素在三角形中的过程通常叫三角形遍历（TriangleTraversal）或扫描转换（scan conversion）。</p>
-<h4 id="1-4-3-像素着色"><a href="#1-4-3-像素着色" class="headerlink" title="1.4.3 像素着色"></a>1.4.3 像素着色</h4><p><strong>所有逐像素的着色计算都在像素着色阶段进行，使用插值得来的着色数据作为输入，输出结果为一种或多种将被传送到下一阶段的颜色信息。</strong>纹理贴图操作就是在这阶段进行的。像素着色阶段是在可编程 GPU 内执行的，在这一阶段有大量的技术可以使用，其中最常见，<br>最重要的技术之一就是纹理贴图（Texturing），将会在之后进行总结。</p>
-<p><strong>【总结】</strong>像素着色阶段的主要目的是计算所有需逐像素操作的过程。</p>
-<h4 id="1-4-4-融合"><a href="#1-4-4-融合" class="headerlink" title="1.4.4 融合"></a>1.4.4 融合</h4><p>每个像素的信息都储存在颜色缓冲器中，而颜色缓冲器是一个颜色的矩阵列（每种颜色包含红、绿、蓝三个分量）。<strong>融合阶段的主要任务是合成当前储存于缓冲器中的由之前的像素着色阶段产生的片段颜色。</strong>不像其它着色阶段，通常运行该阶段的 GPU 子单元并非完全可编程的，但其高度可配置，可支持多种特效。</p>
-<p>此外，这个阶段还负责可见性问题的处理。对于大多数图形硬件来说，这个过程是通过 <strong>Z 缓冲（Z-Buffer）</strong>算法来实现的。Z 缓冲算法非常简单，具有 O(n) 复杂度（n 是需要绘制的像素数量），只要对每个图元计算出相应的像素 z 值，就可以使用这种方法，大概内容是：Z 缓冲器和颜色缓冲器形状大小一样，每个像素都存储着一个 z 值，这个 z 值是从相机到最近图元之间的距离。每次将一个图元绘制为相应像素时，需要计算像素位置处图元的 z 值，并与同一像素处的 z 缓冲器内容进行比较。如果新计算出的 z 值，远远小于 z 缓冲器中的 z 值，那么说明即将绘制的图元与相机的距离比原来距离相机最近的图元还要近。这样，像素的 z 值和颜色就由当前图元对应的值和颜色进行更新。反之，若计算出的 z 值远远大于 z 缓冲器中的 z 值，那么 z 缓冲器和颜色缓冲器中的值就无需改变。</p>
-<p>除了颜色缓冲器用来存储颜色，z 缓冲器用来存储每个像素的  z 值，还有其他缓冲器可以用来过滤和捕获片段信息：</p>
-<ul>
-<li><strong>alpha 通道（alpha channel）</strong>和颜色缓冲器联系在一起可以存储一个与每个像素相关的不透明值。 可选的 alpha 测试可在深度测试执行前在传入片段上运行。片段的 alpha 值与参考值作某些特定的测试（如等于，大于等），如果片断未能通过测试，它将不再进行进一步的处理。alpha 测试经常用于不影响深度缓存的全透明片段的处理。</li>
-<li><strong>模板缓冲器（stencil buffer）</strong>是用于记录所呈现图元位置的离屏缓存。每个像素通常与占用 8 个位。图元可使用各种方法渲染到模板缓冲器中，而缓冲器中的内容可以控制颜色缓存和 Z 缓存的渲染。举个例子，假设在模板缓冲器中绘制出了一个实心圆形，那么可以使用一系列操作符来将后续的图元仅在圆形所出现的像素处绘制，类似一个 mask 的操作。模板缓冲器是制作特效的强大工具。而在管线末端的所有这些功能都叫做光栅操作（raster operations ，ROP）或混合操作（blend operations）。</li>
-<li><strong>帧缓冲器（frame buffer）</strong>通常包含一个系统所具有的所有缓冲器，但有时也可以认为是颜色缓冲器和 z 缓冲器的组合。</li>
-<li><strong>累计缓冲器（accumulation buffer）</strong>，是 1990 年，Haeberli 和 Akeley 提出的一种缓冲器，是对帧缓冲器的补充。这个缓冲器可以用一组操作符对图像进行累积。例如，为了产生运动模糊（motion blur），可以对一系列物体运动的图像进行累积和平均。此外，其他的一些可产生的效果包括景深（e depth of field），反走样（antialiasing）和软阴影（soft shadows）等。</li>
-</ul>
-<p>而当图元通过光栅化阶段之后，从相机视点处看到的东西就可以在荧幕上显示出来。为了避免观察者体验到对图元进行处理并发送到屏幕的过程，图形系统一般使用了<strong>双缓冲（double buffering）</strong>机制，这意味着屏幕绘制是在一个后置缓冲器（backbuffer）中以离屏的方式进行的。一旦屏幕已在后置缓冲器中绘制，后置缓冲器中的内容就不断与已经在屏幕上显示过的前置缓冲器中的内容进行交换。注意，只有当不影响显示的时候，才进行交换。</p>
-<p><strong>【总结】</strong>融合阶段的主要任务是合成当前储存于缓冲器中的由之前的像素着色阶段产生的片段颜色。此外，融合阶段还负责可见性问题（Z 缓冲相关）的处理。</p>
-<h3 id="1-5-总结"><a href="#1-5-总结" class="headerlink" title="1.5 总结"></a>1.5 总结</h3><p>图形渲染管线的主要功能就是决定在给定虚拟相机、三维物体、光源、照明模式，以及纹理等诸多条件的情况下，生成或绘制一幅二维图像的过程。在概念上可以将图形渲染管线分为三个阶段：应用程序阶段、几何阶段、光栅化阶段。</p>
-<p><strong>应用程序阶段</strong>的主要任务，是将需要绘制图元输入到绘制管线的下一个阶段，以及实现一些软件方式来实现的方法。主要方法有碰撞检测、加速算法、输入检测，动画，力反馈以及纹理动画，变换仿真、几何变形，以及一些不在其他阶段执行的计算，如层次视锥裁剪等加速算法。对于被渲染的每一帧，应用程序阶段将摄像机位置，光照和模型的图元输出到管线的下一个主要阶段，即几何阶段。</p>
-<p><strong>几何阶段</strong>首先对模型的顶点和法线进行矩阵变换，并将模型置于观察空间中（模型和视图变换），然后根据材质、纹理、以及光源属性进行顶点光照的计算（顶点着色阶段），接着将该模型投影变换到一个单位立方体内，并舍弃所有立方体之外的图元（投影阶段），而为了得到所有位于立方体内部的图元，接下来对与单位立方体相交的图元进行裁剪（裁剪阶段），然后将顶点映射到屏幕上的窗口中（屏幕映射阶段）。在对每个多边形执行完这些操作后，将最终数据传递到光栅，这样就来到了管线中的最后一个阶段，光栅化阶段。</p>
-<p><strong>光栅化阶段</strong>中，所有图元会被光栅化，进而转换为屏幕上的像素。首先，计算三角形表面的差异和三角形表面的其他相关数据（三角形设定阶段），然后，找到哪些采样点或像素在三角形中（三角形遍历阶段），接着计算所有需逐像素计算操作（像素着色阶段），然后，合成当前储存于缓冲器中的由之前的像素着色阶段产生的片段颜色，可见性问题可通过 Z 缓存算法解决，随同的还有可选的 alpha 测试和模版测试（融合阶段）。所有对象依次处理，而最后的图像显示在屏幕上。</p>
-<h2 id="2-思维导图"><a href="#2-思维导图" class="headerlink" title="2 思维导图"></a>2 思维导图</h2><p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/12/20220512-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF%E6%80%9D%E7%BB%B4%E5%AF%BC%E5%9B%BE.jpg" alt="图形渲染管线思维导图"></p>
-]]></content>
-      <categories>
-        <category>Real-Time Rendering</category>
-      </categories>
-      <tags>
-        <tag>计算机图形学</tag>
-        <tag>实时渲染</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>【Real-Time Rendering】纹理总结</title>
-    <url>/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/</url>
-    <content><![CDATA[<p>本篇对《Real-Time Rendering》一书中纹理相关知识进行概括总结。主要内容包括：</p>
-<ul>
-<li><p>纹理管线（Texture Pipeline）</p>
-</li>
-<li><p>纹理缓存（Texture Caching）</p>
-</li>
-<li><p>纹理压缩（Texture Compression）</p>
-</li>
-<li><p>体纹理（Volume Texture）</p>
-</li>
-<li><p>立方体贴图（Cube Map）</p>
-</li>
-<li><p>程序纹理（Procedural Texturing）</p>
-</li>
-<li><p>凹凸贴图（Bump Mapping）及其改进</p>
-</li>
-</ul>
-<p><em><span id="more"></span></em></p>
-<h3 id="1-纹理管线"><a href="#1-纹理管线" class="headerlink" title="1 纹理管线"></a>1 纹理管线</h3><p>简单来说，纹理（Texturing）是一种针对物体表面属性进行“建模”的高效技术。图像纹理中的像素通常被称为纹素（Texels），以区别于屏幕上的像素。根据 Kershaw 的术语，通过将投影方程（projector function）运用于空间中的点 ，从而得到一组称为参数空间值（parameter-spacevalues）的关于纹理的数值。这个过程就称为贴图（Mapping，也称映射 ）,也就是纹理贴图（Texture Mapping，也称纹理映射 ）这个词的由来。纹理贴图可以用一个通用的纹理管线来进行描述。<strong>纹理贴图过程的初始点是空间中的一个位置。这个位置可以基于世界空间，但是更常见的是基于模型空间。因为若此位置是基于模型空间的，当模型移动时，其纹理才会随之移动。</strong></p>
-<p>下图展示了单个纹理的通用管线：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515094736104.png" alt="image-20220515094736104"></p>
-<ul>
-<li>第一步。通过将投影方程（projector function）运用于空间中的点   ，从而得到一组称为参数空间值（parameter-space values）的关于纹理的数值，即 uv 坐标，在（0, 1）范围内。</li>
-<li>第二步。在使用这些新值访问纹理之前，可以使用一个或者多个映射函数（corresponder function）将参数空间值（parameter-space values  ）转换到纹理空间，即对 uv坐标进行平移和缩放以映射到纹理空间中。</li>
-<li>第三步。使用这些纹理空间值（texture-space locations）从纹理中获取相应的值（obtain value）。例如，可以使用图像纹理的数组索引来检索像素值。</li>
-<li>第四步。再使用值变换函数（value transform function）对检索结果进行值变换，最后使用得到的新值来改变表面属性，如材质或者着色法线等等。</li>
-</ul>
-<p>下图通过一个例子描述了上述过程：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515095022930.png" alt="image-20220515095022930"></p>
-<h4 id="1-1-投影函数"><a href="#1-1-投影函数" class="headerlink" title="1.1 投影函数"></a>1.1 投影函数</h4><p>作为纹理管线的第一步，<strong>投影函数的功能就是将空间中的三维点转化为纹理坐标，也就是获取表面的位置并将其投影到参数空间中。</strong></p>
-<p>在常规情况下，投影函数通常在美术建模阶段使用，并将投影结果存储于顶点数据中。也就是说，在软件开发过程中，我们一般不会去用投影函数计算得到投影结果，而是直接使用在美术建模过程中，已经存储在模型顶点数据中的投影结果。</p>
-<h4 id="1-2-映射函数"><a href="#1-2-映射函数" class="headerlink" title="1.2 映射函数"></a>1.2 映射函数</h4><p><strong>映射函数（The Corresponder Function）的作用是将参数空间坐标（parameter-space coordinates）转换为纹理空间位置（texture space locations）。</strong>我们知道图像会出现在物体表面的 (u,v) 位置上，且  uv 值的正常范围在 [0, 1) 范围内。超出这个值域的纹理，其显示方式便可以由映射函数（The Corresponder Function）来决定。</p>
-<p>在  OpenGL 中，这类映射函数称为“封装模式（Warapping Mode）”，在 Direct3D 中，这类函数叫做“寻址模式（Texture Addressing Mode）”。最常见的映射函数有以下几种：</p>
-<ul>
-<li>重复寻址模式，wrap (DirectX)，repeat (OpenGL)。图像在表面上重复出现。</li>
-<li>镜像寻址模式，mirror。图像在物体表面上不断重复，但每次重复时对图像进行镜像或者反转。</li>
-<li>夹取寻址模式，clamp (DirectX)，clamp to edge (OpenGL)。夹取纹理寻址模式将纹理坐标夹取在 [0.0, 1.0] 之间，也就是说，在[0.0, 1.0] 之间就是把纹理复制一遍，然后对于 [0.0, 1.0] 之外的内容，将边缘的内容沿着 u 轴和 v 轴进行延伸。</li>
-<li>边框颜色寻址模式，border (DirectX)，clamp to border (OpenGL)。边框颜色寻址模式就是在 [0.0, 1.0] 之间绘制纹理，然后 [0.0, 1.0] 之外的内容就用边框颜色填充。</li>
-</ul>
-<p>下图展示了上述四种寻址模式：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515095836855.png" alt="image-20220515095836855"></p>
-<p>另外，每个纹理轴可以使用不同的映射函数。例如在 u 轴使用重复寻址模式，在 v 轴使用取寻址模式。</p>
-<h3 id="2-纹理缓存"><a href="#2-纹理缓存" class="headerlink" title="2 纹理缓存"></a>2 纹理缓存</h3><p>一个复杂的应用程序可能需要相当数量的纹理。快速纹理存储器的数量因系统而异，但你会发现它们永远不够用。于是有了各种各样的纹理缓存（texture caching）技术，但我们一直在上传纹理到内存的开销和纹理单次消耗的内存量之间寻求一个好的平衡点。比如，一个由纹理贴图的多边形对象，初始化在离相机很远的位置，程序也许会只加载 mipmap 中更小的子纹理，就可以很完美的完成这个对象的显示了。</p>
-<p>一些基本的建议是——<strong>保持纹理在不需要放大再用的前提下尽可能小，并尝试基于多边形将纹理分组。</strong>即便所有纹理都一直存储在内存中，这种预防措施也可能会提高处理器的缓存性能。</p>
-<p>常见的缓存策略有以下几种，许多都和操作系统中的缓存策略一致：</p>
-<ul>
-<li><strong>最近最少使用策略（Least Recently Used ,LRU）</strong>。LRU 是纹理缓存方案中常用的一种策略，其原理为：加载到图形加速器的内存中的每个纹理都被给出一个时间戳，记录最后一次访问以渲染图像的时间。当需要空间来加载新的纹理时，首先卸载最旧时间戳的纹理。一些 API 还允许为每个纹理设置一个优先级：如果两个纹理的时间戳相同，则优先级较低的纹理首先被卸载。 设置优先级可以帮助避免不必要的纹理交换。</li>
-<li><strong>最近最常使用策略（Most Recently Used，MRU）</strong>。MRU 如其名称一样，总是替换掉使用的最少的纹理缓存。鉴于如果在当前帧中载入纹理，会发生抖动（Thrashing）的情况。所谓抖动就是纹理数据集远大于缓存空间，这样就会出现频繁替换纹理缓存的现象，就称为抖动。这时，LRU 策略是一种非常不好的策略，因为在每帧画面中会对每张纹理图像进行交换。在这种情况下，可以采用 MRU 策略，直到在画面中没有纹理交换时为止，再然后切换回 LRU。</li>
-<li><strong>预取策略（Prefetching）</strong>。加载纹理花费显着的时间，特别是在需将纹理转换为硬件原生格式时。 纹理加载在每个框架可以有很大的不同。在单个帧中加载大量纹理使得难以保持恒定的帧速率。一种解决方案是使用预取（prefetching），在将来需要预期的情况下，预计未来的需求然后加载纹理，将加载过程分摊在多帧中。</li>
-<li><strong>裁剪图策略（Clipmap）</strong>。对于飞行模拟和地型模拟系统，图像数据集可能会非常巨大。传统的方法是将这些图像分解成更小的硬件可以处理的瓦片地图（tiles）。Tanner 等人提出了一种一种称为裁剪图（clipmap）的改进数据结构。其思想是，将整个数据集视为一个 mipmap，但是对于任何特定视图，只需要 mipmap 的较低级别的一小部分即可。支持  DirectX 10 的  GPU 就能够实现 clipmap 技术。</li>
-</ul>
-<h3 id="3-纹理压缩"><a href="#3-纹理压缩" class="headerlink" title="3 纹理压缩"></a>3 纹理压缩</h3><p>直接解决内存和带宽问题和缓存问题的一个解决方案是固定速率纹理压缩（Fixed-rate Texture Compression）。通过硬件解码压缩纹理，纹理可以需要更少的纹理内存，从而增加有效的高速缓存大小。至少这样的纹理使用起来更高效，因为他们在访问时消耗更少的内存带宽。</p>
-<p>纹理压缩算法种类繁多，但基本的共同点是：把纹理按 4x4 个单元（纹素）大小划分为块。每个块对应一张四色查找表，表中存有两个标准 RGB565 格式表示的 16 位颜色，另外使用标准插入算法在插入两个新的颜色值，由此构成四色查找表。4x4 大小的纹理块中每个单元（像素点）用两个 bit 表示，每一个都代表四色查找表中的一种颜色。<strong>可以看出，实质上是利用每个单元（像素点）中的两个 bit 来索引四色查找表中的颜色值。</strong></p>
-<p>这些压缩技术可以应用于立方体或体积图，以及二维纹理。<strong>而其主要缺点是它们是有损的压缩。</strong> 也就是说，原始图像通常不能从压缩版本检索。 仅使用四个或八个内插值来表示 16 个像素。 如果一个瓦片贴图有更大的数值，相较压缩前就会有一些损失。 在实践中，如果正常使用这些压缩方案，一般需给出可接受的图像保真度。</p>
-<h3 id="4-体纹理"><a href="#4-体纹理" class="headerlink" title="4 体纹理"></a>4 体纹理</h3><p>体纹理（volume texture），也称为三维纹理（3D texture），是传统二维纹理（2D texture）在逻辑上的扩展。二维纹理是一张简单的位图图片，用于为三维模型提供表面点的颜色值；而<strong>一个三维纹理，可以被认为由很多张 2D 纹理组成，用于描述三维空间数据的图片。</strong>三维纹理通过三维纹理坐标进行访问。</p>
-<p>虽然体纹理具有更高的储存要求，并且滤波成本更高，但它们具有一些独特的优势：</p>
-<ul>
-<li>使用体纹理，可以跳过为三维网格确定良好二维参数的复杂过程，因为三维位置可以直接用作纹理坐标，从而避免了二维参数化中通常会发生的变形和接缝问题。</li>
-<li>体纹理也可用于表示诸如木材或大理石的材料的体积结构。使用三维纹理实现出的这些模型，看起来会很逼真，浑然天成。</li>
-</ul>
-<p>体纹理的缺点也很明显：</p>
-<ul>
-<li>使用体纹理作为表面纹理会非常低效，因为三维纹理中的绝大多数样本都没起到作用。</li>
-</ul>
-<h3 id="5-立方体贴图"><a href="#5-立方体贴图" class="headerlink" title="5 立方体贴图"></a>5 立方体贴图</h3><p>立方体贴图（cube map）也称立方体纹理（cube texture），是一种特殊的纹理技术，它用 6 幅二维纹理图像构成一个以原点为中心的纹理立方体，这每个 2D 纹理是一个立方体（cube）的一个面。对于每个片段，<strong>纹理坐标 (s, t, r) 被当作方向向量看待，每个纹素(texel)都表示从原点所看到的纹理立方体上的图像。</strong></p>
-<p>下图以两种方式展示了立方体贴图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515100701571.png" alt="image-20220515100701571"></p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515100722640.png" alt="image-20220515100722640"></p>
-<p><strong>可以使用三分量纹理坐标向量来访问立方体贴图中的数据，该矢量指定了从立方体中心向外指向的光线的方向。</strong>选择具有最大绝对值的纹理坐标对应的相应的面。例如给定矢量（-3.2, 5.1, -8.4），选择绝对值最大的 -8.4 所在的 -Z 面，然后将其他两维除以最大的绝对值，就映射到了（-1, 1），然后再映射到（0, 1）范围就可以在 -Z 面上得到一个纹理坐标了。</p>
-<h3 id="6-程序纹理"><a href="#6-程序纹理" class="headerlink" title="6 程序纹理"></a>6 程序纹理</h3><p>给定纹理空间位置，进行图像查找是生成纹理值的一种方法。另一种方法是对函数进行求值，从而得到一个程序贴图纹理（procedural texture）。</p>
-<p>程序贴图纹理也称为过程纹理，是用计算机算法生成的，旨在创建用于纹理映射的自然元素（例如木材，大理石，花岗岩，金属，石头等）的真实表面或三维物体而创建的纹理图像。通常，会使用分形噪声（fractal noise）和湍流扰动函数（turbulence functions）这类“随机性”的函数来生成程序贴图纹理。</p>
-<p>程序纹理通常用于离线渲染应用程序，而图像纹理在实时渲染中更为常见。这是由于在现代 GPU 中的图像纹理硬件有着极高效率，其可以在一秒钟内执行数十亿个纹理访问。然而，GPU 架构正在朝着更便宜的计算能力和（相对）更昂贵的存储器访问而发展。这将使程序纹理在实时应用程序中更常见，尽管它们不可能完全替代图像纹理。</p>
-<p>关于程序纹理中常见的噪声，之后有专门的文章总结。</p>
-<h3 id="7-凹凸贴图及其改进"><a href="#7-凹凸贴图及其改进" class="headerlink" title="7 凹凸贴图及其改进"></a>7 凹凸贴图及其改进</h3><p>与凹凸贴图相关的改进技术包括：位移贴图、法线贴图、视差贴图、浮雕贴图等，除了位移贴图方法以外，其他的几种改进一般都是通过修改每像素着色方程来实现，关键思想是访问纹理来修改表面的法线，而不是改变光照方程中的颜色分量。物体表面的几何法线保持不变，我们修改的只是着色方程中使用的法线值。他们比单独的纹理有更好的三维感官，但是显然还是比不上实际的三维几何体。下面将分别说明这几种方法。</p>
-<h4 id="7-1-凹凸贴图"><a href="#7-1-凹凸贴图" class="headerlink" title="7.1 凹凸贴图"></a>7.1 凹凸贴图</h4><p><strong>凹凸贴图是通过改变表面光照方程的法线，而不是表面的几何法线，或对每个待渲染的像素在计算照明之前都要加上一个从高度图中找到的扰动，来模拟凹凸不平的视觉特征</strong>，如褶皱、波浪等等。<br>Blinn 于 1978 年提出了凹凸贴图方法。使用凹凸贴图，是为了给光滑的平面，在不增加顶点的情况下，增加一些凹凸的变化。他的原理是通过法向量的变化，来产生光影的变化，从而产生凹凸感。<strong>实际上并没有几何顶点上的变化。</strong>所以下图中球体边缘还是光滑的：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515104558734.png" alt="image-20220515104558734"></p>
-<h4 id="7-2-位移贴图"><a href="#7-2-位移贴图" class="headerlink" title="7.2 位移贴图"></a>7.2 位移贴图</h4><p>移位贴图（Displacement Mapping）也有人称为置换贴图，或称高度纹理贴图（Heightfield Texturing）。这种方法类似于法线贴图，<strong>移位贴图的每一个纹素中存储了一个向量，这个向量代表了对应顶点的位移。</strong>注意，此处的纹素并不是与像素一一对应，而是与顶点一一对应，因此，纹理的纹素个数与网格的顶点个数是相等的。在 Vertex Shader 阶段，获取每个顶点对应的纹素中的位移向量，施加到局部坐标系下的顶点上，然后进行世界视点投影变换即可。<strong>位移贴图真正改变了顶点位置。</strong></p>
-<h4 id="7-3-法线贴图"><a href="#7-3-法线贴图" class="headerlink" title="7.3 法线贴图"></a>7.3 法线贴图</h4><p>法线贴图（Normal mapping）是凸凹贴图（Bump mapping）技术的一种应用。简单来说，<strong>Normal Map 直接将正确的 Normal 值保存到一张纹理中去，那么在使用的时候直接从贴图中取即可。</strong>为了使法线贴图能应用于不同的物体，所以法线贴图中存储的法线值一般是表面顶点切线空间下的法线值，所谓切线空间是指以顶点切线为 x 轴，副切线为 y 轴，顶点法线为 z 轴的空间，相比于存储模型空间下的法线值，切线空间下的法线值是一个相对值，可以应用到不同的模型上而不至于出错。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515105351266.png" alt="image-20220515105351266"></p>
-<p>上图展示了基于法线贴图的凹凸映射，左侧为法线贴图，每个颜色通道实际上是表面法线坐标。红色通道是 x 偏差; 红色越多，正常点越多。 绿色是 y 偏差，蓝色是 z。 右边是使用法线贴图生成的图像。 请注意立方体顶部的扁平外观，<strong>法线贴图显然没有改变几何形状。</strong></p>
-<h4 id="7-4-视差贴图"><a href="#7-4-视差贴图" class="headerlink" title="7.4 视差贴图"></a>7.4 视差贴图</h4><p>视差贴图（Parallax Mapping），又称为 Offset Mapping，或 virtual displacement mapping，视差贴图是一种改进的 Bump Mappin 技术，相较于普通的凹凸贴图，视差贴图技术得到凹凸效果得会更具真实感（如石墙的纹理将有更明显的深度）。<strong>视差贴图是通过替换渲染多边形上的顶点处的纹理坐标来实现的</strong>，而这个替换依赖于一个关于切线空间中的视角（相对于表面法线的角度）和在该点上的高度图的方程。简单来说，Parallax Mapping 利用  Height Map 进行了近似的  Texture Offset。如下图所示：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515105943878.png" alt="image-20220515105943878"></p>
-<h4 id="7-5-浮雕贴图"><a href="#7-5-浮雕贴图" class="headerlink" title="7.5 浮雕贴图"></a>7.5 浮雕贴图</h4><p>浮雕贴图（Relief Mapping），有人把它誉为凹凸贴图的极致。我们知道，Parallax Mapping 是针对  Normal Mapping 的改进，利用  HeightMap 进行了近似的 Texture Offset。而 Relief Mapping 是精确的 Texture Offset，所以在表现力上比较完美。</p>
-<p>Parallax Mapping 能够提供比 Bump Mapping 更多的深度，尤其相比于小视角下，但是如果想提供更深的深度，Parallax Mapping 就无能为力了，Relief Mapping 则可以很好的胜任。相较于 Parallax Mapping，浮雕贴图可以实现更深的凹凸深度，并且还可以做出自阴影和闭塞效果。当然算法也稍稍有点复杂，具体细节可以参考这篇中文文献：<a href="https://www.ixueshu.com/document/3dc4369a761ca0d6318947a18e7f9386.html">Relief mapping：凹凸贴图的极致</a>，而如果要用一句话概括  Relief Mapping，将会是：“在 Shader 里做光线追踪”。</p>
-<p>下图是法线贴图和浮雕贴图的对比，浮雕贴图可以实现自阴影：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515110338598.png" alt="image-20220515110338598"></p>
-<p>下图是视差贴图和浮雕贴图的对比，浮雕贴图可以实现更深的凹凸深度：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515110121700.png" alt="image-20220515110121700"></p>
-]]></content>
-      <categories>
-        <category>Real-Time Rendering</category>
-      </categories>
-      <tags>
-        <tag>计算机图形学</tag>
-        <tag>实时渲染</tag>
       </tags>
   </entry>
   <entry>
@@ -8196,6 +8087,144 @@
       </categories>
       <tags>
         <tag>C++</tag>
+        <tag>游戏引擎</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>【游戏引擎】（三）游戏引擎中的动画系统</title>
+    <url>/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/</url>
+    <content><![CDATA[<p>游戏引擎中的动画系统是最重要的系统之一，直接决定了角色动作是否自然，酷炫的动画也是一个游戏最能吸引人的地方，这一节来简单了解游戏引擎中的动画系统，蒙皮动画的数学原理以及动画压缩技术。</p>
+<p><em><span id="more"></span></em></p>
+<h3 id="1-游戏引擎中的动画系统"><a href="#1-游戏引擎中的动画系统" class="headerlink" title="1 游戏引擎中的动画系统"></a>1 游戏引擎中的动画系统</h3><p>引擎中的动画技术来自于动画电影，但相比于动画电影，游戏中的动画还要和玩家进行交互，根据玩家的输入来执行不同的动作，并且游戏需要实时运行，动画的计算也要在极短的时间内完成，大量的游戏对象也会有大量的动画数据，动画数据的存储和使用也是一个极大的挑战。</p>
+<p>最早的动画利用人的视觉残留，通过快速播放关键帧来实现，这种方式也叫做精灵动画（Sprite Animation），现在的许多简单 2D 动画，比如 2D 角色的动作和一些特效等，也可以使用这种方式来实现：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703104804654.png" alt="image-20220703104804654"></p>
+<p>此外还有比较热门的 Live2D 动画，将 2D 人物的各个部分分别作为不同的组件，通过调整各组件的顶点或者利用动作捕捉生成关键帧，然后在这些帧之间插值来形成流畅的动画，因为 2D 动作捕捉控制点较少，可以快速实时计算，因此 Live2D 广泛用于现在的虚拟直播中：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703105116202.png" alt="image-20220703105116202"></p>
+<p>当然现在游戏引擎中使用最多的还是 3D 动画，3D 动画依赖于对模型添加骨骼，然后利用骨骼的运动（旋转、平移、缩放）来控制模型表面顶点的运动，从而使模型动起来，对于一些比较复杂的布料、流体运动，不方便添加骨骼来控制，于是会使用顶点动画，将物体表面顶点在每一帧的运动存入一张纹理中，渲染时直接通过纹理就可以改变顶点的位置从而形成动画：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703105453426.png" alt="image-20220703105453426"></p>
+<h3 id="2-蒙皮动画"><a href="#2-蒙皮动画" class="headerlink" title="2 蒙皮动画"></a>2 蒙皮动画</h3><p>蒙皮动画是目前最常用的动画技术，蒙皮动画的流程非常简单，大概分为以下几步：</p>
+<ul>
+<li>首先是创建一个模型的 binding pose 的 Mesh 网格，所谓 binding pose 就是指用于后续绑定骨骼的姿势，一般分为 T Pose 和 A Pose，由于 T Pose 在肩部会有一些顶点的重合，可能导致之后的动画表现不完整，因此目前大多使用 A Pose：</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703105729235.png" alt="image-20220703105729235"></p>
+<ul>
+<li>第二步是为 Mesh 创建绑定的骨骼，更精确地说是关节，所有的动画都是关节在动，骨骼是两个关节之间的部分：</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703110627378.png" alt="image-20220703110627378"></p>
+<p>每个顶点会和多个关节绑定，关节动的时候，顶点就随之移动，同一个顶点受到不同关节的影响自然也不同。此外，除了模型本身的关节，还会为角色的衣服、武器等 Game Play 的部分生成关节：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703110821902.png" alt="image-20220703110821902"></p>
+<ul>
+<li>第三步就是蒙皮，所谓蒙皮就是为每个顶点生成受到不同关节影响的权重</li>
+<li>第四步就是对关节进行动画设计生成动画矩阵</li>
+<li>第五步对每个顶点，根据不同权重应用相应的关节动画来计算得到顶点的位置</li>
+</ul>
+<p>整个蒙皮动画流程如下图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703110247889.png" alt="image-20220703110247889"></p>
+<h4 id="2-1-骨骼层次结构"><a href="#2-1-骨骼层次结构" class="headerlink" title="2.1 骨骼层次结构"></a>2.1 骨骼层次结构</h4><p>一般来说会为骨骼生成层次结构以便于关节间动画的传递，对于人类（双足）模型来说，一般用尾椎骨的关节作为中心关节（Pelvis Joint），因为尾椎骨关节向下就是腿部关节，向上就是上身和胳膊关节，对于动物（四足）模型，也是类似的：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703110553383.png" alt="image-20220703110553383"></p>
+<p>一般的层次结构中，在尾椎骨关节点之上还会有一个 root 节点，root 节点一般取人的两腿之间或者动物的四肢之间的中心和地地面接触的地方：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703111025886.png" alt="image-20220703111025886"></p>
+<p>因为这样的 root 节点在模型运动的时候高度不会发生改变，有了层次结构我们就可以知道每个关节的父关节和子关节，从而将运动传递下去。</p>
+<p>对于绑定的模型，比如人和载具，还会将他们的 Pelvis Joint 对接到一起，从而使他们的动画能够进行传递，对接不仅是指关节的位置重合，他们的局部坐标系也要变换到完全一致：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703111310429.png" alt="image-20220703111310429"></p>
+<h4 id="2-2-蒙皮动画矩阵"><a href="#2-2-蒙皮动画矩阵" class="headerlink" title="2.2 蒙皮动画矩阵"></a>2.2 蒙皮动画矩阵</h4><p>接下来推导动画矩阵，首先明确三个坐标系：局部空间、模型空间和世界空间。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703111423781.png" alt="image-20220703111423781"></p>
+<p>局部空间是指以关节为中心的空间，每个关节的局部空间自然是不同的，模型空间和世界空间不必多说，在渲染中已经非常熟悉了。</p>
+<p>对于关节的运动，只有三种：旋转、平移和缩放。旋转改变关节的朝向（Orientation）：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703111819051.png" alt="image-20220703111819051"></p>
+<p>平移改变关节的位置：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703111835096.png" alt="image-20220703111835096"></p>
+<p>缩放改变关节的尺寸：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703111900765.png" alt="image-20220703111900765"></p>
+<p>于是对于关节的变换通常就是三个矩阵的结合：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703111927064.png" alt="image-20220703111927064"></p>
+<p>于是一个关节当前的 pose 就可以表示为从根节点开始到该节点的所有运动的作用的叠加，也就是矩阵相乘：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703112129521.png" alt="image-20220703112129521"></p>
+<p>这里需要注意的是对于关节的两个 pose 中间状态的插值要在局部空间进行，而不能在模型空间将进行，因为对于关节来说模型空间是一个全局坐标系，直接对关节的位置插值会是不平滑的，而局部空间是相对坐标系，插值会是均匀的，下图左是在局部空间插值的效果，下图右是在模型空间插值的结果：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703112421587.png" alt="image-20220703112421587"></p>
+<p>有了关节的运动，接下来就是如何利用关节运动计算顶点运动，我们先假设每个顶点只和一个关节绑定。</p>
+<p>计算顶点运动的关键就在于顶点相对于关节的位置是永远不可能发生变化的，也就是说顶点在绑定的关节的局部空间的坐标是永远不变得，这样才能保证模型动画的正确：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703112652270.png" alt="image-20220703112652270"></p>
+<p>于是我们可以得出以下关系：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703112723067.png" alt="image-20220703112723067"></p>
+<p>也就是顶点在 Bind Pose 时相对于绑定的关节 J 的局部空间的坐标 $V_b^l$ 和顶点在任何时间 t 时相对于绑定的关节 J 的局部空间的坐标 $V^l(t)$ 恒相等。</p>
+<p>如果把顶点在 Bind Pose 时模型空间的坐标表示为 $V_b^m$，关节从局部空间到模型空间的变换矩阵（也就是关节在 Bind Pose 时模型空间下的 pose）表示为 $M^m_{b(j)}$，因为顶点和关节的相对位置不变，利用关节的变换矩阵的逆矩阵和顶点在关节局部空间下的坐标也可以将顶点变换到模型空间，于是顶点在任何时间 t 时相对于绑定的关节 J 的局部空间的坐标就等于 $V_b^m$ 乘上 $M^m_{b(j)}$ 的逆矩阵，即为上式所表示的含义。</p>
+<p>上面说过，任何一个关节在模型空间的 pose 可以表示为从根节点到当前关节的 pose 的叠加：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703113522897.png" alt="image-20220703113522897"></p>
+<p>而关节和顶点的相对位置不变，于是对顶点施加和关节相同的运动就可以完成顶点的运动：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703113632960.png" alt="image-20220703113632960"></p>
+<p>蒙皮动画矩阵就是关节在 t 时刻的 pose 矩阵和关节在 Bind Pose 时的 pose 矩阵的逆矩阵的乘积。有了这个矩阵，我们只要知道任何一个顶点在 Bind Pose 时的模型空间位置，就可以得到该顶点在任何时刻 t 的模型空间坐标，从而实现动画效果。</p>
+<p>对于关节在 Bind Pose 时的模型空间的 pose 矩阵，也就是关节在 Bind Pose 时从关节的局部空间到模型空间的变换矩阵，是很容易得到的，但因为我们要用的是该矩阵的逆矩阵，求逆操作代价较大，所以一般提前算好存在每个关节的结构体中：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703114728451.png" alt="image-20220703114728451"></p>
+<p>最后对于渲染，我们要知道的是顶点的世界空间坐标，还要在上面的矩阵上乘上一个物体从模型空间到世界空间的变换矩阵，这个矩阵自然还包含了模型在世界空间中的运动，这样一来就可以实现模型在世界空间的运动和模型本身的运动的动画了：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703114951451.png" alt="image-20220703114951451"></p>
+<p>上面的推导是对于一个顶点只绑定一个关节的情况，实际为了动画更加自然，一个顶点会绑定多个关节，然后将通过不同关节运动计算出的顶点模型空间坐标进行加权平均得到最终的顶点坐标：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703124251350.png" alt="image-20220703124251350"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703124316201.png" alt="image-20220703124316201"></p>
+<h4 id="2-3-pose-插值"><a href="#2-3-pose-插值" class="headerlink" title="2.3 pose 插值"></a>2.3 pose 插值</h4><p>通过上面的方法可以生成一个动作的多个关键帧 pose，这些关键帧 pose 组成序列叫做 Clip，对 Clip 中的 pose 进行插值就可以得到连续的动画。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703124737356.png" alt="image-20220703124737356"></p>
+<p>插值实际上是对不同 pose 的运动之间的插值，最难处理的就是旋转的插值。</p>
+<p>之前学习过四元数的球面线性插值，球面线性插值通过旋转角度的正弦进行插值，当角度很小的时候正弦值也很小，可能造成插值不稳定，因此游戏引擎一般使用球面线性插值对较大的旋转角度进行插值：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703125107407.png" alt="image-20220703125107407"></p>
+<p>而对于较小的角度，使用 NLERP 进行插值，也就是先进行线性插值，对插值结果再做归一化：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703125034152.png" alt="image-20220703125034152"></p>
+<p>NLERP 插值速度变换不均匀，但插值结果比较稳定，所以非常适合和 SLERP 搭配使用。</p>
+<p>无论使用哪种插值方法，都需要使用两个四元数的点乘来判断插值方向，以此保证每次都是向最近的方向插值，因为角度是以 $2\pi$ 为周期的，所以存在插值方向的问题，如果不进行方向判断，就可能出现某个骨骼角度突变的情况。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703124922689.png" alt="image-20220703124922689"></p>
+<h3 id="3-动画管线"><a href="#3-动画管线" class="headerlink" title="3 动画管线"></a>3 动画管线</h3><p>最后总结一下最简单的动画管线，如下图所示：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703125320376.png" alt="image-20220703125320376"></p>
+<p>首先就是生成模型、骨骼和蒙皮，然后设计动作的 Clip，然后对 Clip 中的 Key Pose 之间进行插值得到每一帧的 pose，然后利用 pose 的动画矩阵计算顶点在世界空间的位置，之后就可以进行渲染，从而使模型动起来了。</p>
+<p>上图中大部分计算都是在 CPU 中进行的，但实际上在现代引擎中这些计算几乎都由 GPU 完成。</p>
+<p>对于美术人员或者动画设计师来说，建模工具已经提供了模型网格、骨骼结构和蒙皮生成工具，只要在自动生成的蒙皮上稍微修改一些权重就可以得到想要的动画效果，然后再设计骨骼动画生成 Clip，之后将这些数据导出为我们的引擎能够处理的文件，再进行上面的动画管线流程即可。</p>
+<h3 id="4-动画压缩"><a href="#4-动画压缩" class="headerlink" title="4 动画压缩"></a>4 动画压缩</h3><p>动画压缩是为了减少 Clip 的数据存储，我们知道 Clip 包含一个动画的关键 pose 的所有 joint 的运动数据，这些运动数据又包含旋转、缩放、平移，对于一个模型来说，正常情况下有几十个到几百个 joint，而一个动画的 Clip 通常又包含几十帧关键 pose，整个游戏资源中的游戏对象又有成百上千个，于是光是动画数据可能就要达到数十 G，如果不进行压缩，存储空间的问题先不说，光是不停的读取这些资源就要消耗大量带宽从而影响游戏性能。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703125937121.png" alt="image-20220703125937121"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703130039721.png" alt="image-20220703130039721"></p>
+<p>但是通过观察，人们发现，实际上大量的动画 pose 中，许多数据是几乎不变的，比如人走路的动画，所有关节的位置和尺寸完全不会发生改变，只有关节的朝向在变，也就是人走路的过程中，所有关节只进行了旋转变换：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703130212666.png" alt="image-20220703130212666"></p>
+<p>如果还把每个关键 pose 的所有数据存下来，那很多数据都是重复的，于是对于大多数动画，可以舍弃位移和缩放的数据，除非有面部的骨骼变化，然后对于旋转可以对关键 pose 进行压缩，也就是合并一些可以通过插值得到的关键 pose，只要插值结果和关键 pose 结果的误差在一定范围内，我们就不需要这个关键 pose 了，这样一来可以减少很多数据的存储。</p>
+<p>此外，对于旋转的角度随时间的变化曲线，还可以通过 Catmull-Rom 样条等曲线进行拟合，这样只需要通过极少的控制点，就可以得到误差在可接受范围内的旋转角度曲线：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703130759588.png" alt="image-20220703130759588"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703130812422.png" alt="image-20220703130812422"></p>
+<p>对于四元数的存储，通常是四个浮点数，四个浮点数就需要 4 * 32 个 bit 来存储，但通过观察，人们发现如果不考虑四元数最大的一个分量，其他三个分量的范围都在 $[-\frac{1}{\sqrt 2},\frac{1}{\sqrt 2}]$ 范围内：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703131014403.png" alt="image-20220703131014403"></p>
+<p>并且因为表示旋转的都是单位四元数，因此当我们知道三个分量的时候就可以利用模为 1 来求得第四个分量。</p>
+<p>这样一来我们可以用 2 bit 来表示最大的维度是哪个，然后只存储其他三个维度，并且因为其他三个维度的范围我们是知道的，我们可以利用定点数的方式存储他们，将 $[-\frac{1}{\sqrt 2},\frac{1}{\sqrt 2}]$ 范围内的小数均匀的分成若干个，映射到整数范围内，比如用 15 位来存储 $[-\frac{1}{\sqrt 2},\frac{1}{\sqrt 2}]$ 范围内的小数，那么 0 就对应 $-\frac{1}{\sqrt 2}$，32767 就对应 $\frac{1}{\sqrt 2}$，数据精度就是 $\sqrt2 &#x2F; 32767 &#x3D; 0.000043$。</p>
+<p>于是需要用 128 bit 来存储的四元数，经过压缩就只需要 2 + 3 * 15 &#x3D; 47 bit，为了内存对齐，最终使用 48 bit 存储：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703131709781.png" alt="image-20220703131709781"></p>
+<p>当然这样存储会产生一定误差，在运动不断传递的过程中就会产生越来越大的累计误差：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703131842087.png" alt="image-20220703131842087"></p>
+<p>因此还需要进行误差的修正，这就相对来说比较的复杂了，这里不再讨论，不过一般矫正误差不会从运动参数方面进行矫正，而是从视觉误差方面校正，只要视觉上看起来动画是合理的，即便运动参数有误差，也不需要做额外的矫正操作。</p>
+<h3 id="5-动画融合"><a href="#5-动画融合" class="headerlink" title="5 动画融合"></a>5 动画融合</h3><p>动画融合是指在不同动画的 Clip 之间进行插值融合，而之前我们讨论的都是在 Clip 内部的关键 pose 之间的插值。不同动画之间的融合就涉及到更多复杂的问题，比如两个动画需要在时间和骨骼位置上有对应关系，这样融合起来的过渡动画才更加自然，而且对于角色在三维空间的运动，通常会有前后左右各个方向的运动，需要融合的动画可能不是两个动画，而是更多的动画，这时就需要构造融合空间，当角色在空间中移动的时候，选用离的最近的三个动画进行插值融合：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703151402089.png" alt="image-20220703151402089"></p>
+<p>除了全身动画融合之外，有时还需要将动画只应用到上半身或者下半身，比如：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703151517898.png" alt="image-20220703151517898"></p>
+<p>这时可以对骨骼动画进行一个 Mask 操作：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703151503298.png" alt="image-20220703151503298"></p>
+<p>还有的情况需要让同一个动画在不同的朝向执行，比如朝不同方向点头：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703151624831.png" alt="image-20220703151624831"></p>
+<p>这时可以只存储骨骼的相对运动，再进行融合。</p>
+<h3 id="6-动画状态机和动画树"><a href="#6-动画状态机和动画树" class="headerlink" title="6 动画状态机和动画树"></a>6 动画状态机和动画树</h3><p>在游戏过程中设计许多动画的切换，即便是一个动画，也需要分为很多部分进行循环切换，比如一个跳跃的动作，分为起跳，空中循环和落地三个动作，这三个动作需要在不同的时间进行切换，这样的切换可以用状态机来描述：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703151854905.png" alt="image-20220703151854905"></p>
+<p>而目前游戏引擎中使用最多的动画切换和融合模型是动画树，动画树类似于运算树：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703151951269.png" alt="image-20220703151951269"></p>
+<p>动画树将各个动画 pose 视为节点，在融合节点进行融合，融合的条件和权重可以依据游戏进行的过程进行调节，比如角色当前的状态，游戏中发生的事件等等：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703152052410.png" alt="image-20220703152052410"></p>
+<p>动画状态机和动画树还可以结合起来表达更加复杂的动画切换。</p>
+<h3 id="7-反向动力学"><a href="#7-反向动力学" class="headerlink" title="7 反向动力学"></a>7 反向动力学</h3><p>反向动力学（Inverse Kinematics, IK）是指，有时候角色动画还依赖于和场景的互动，比如攀岩的时候我们的某只手或者脚要固定在山体上，走路的时候一只脚要固定在地面上，这时我们就要求解在某个 joint 固定的情况下，要达到某个目标点，其他 joint 要如何变化，这就是反向动力学。</p>
+<p>IK 是动画中比较难的部分，首先要判断能否到达目标点，一般可以用骨骼拉直判断到目标点的距离或者将其他骨骼折叠起来和最长的骨骼对比长度等方法：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703152516324.png" alt="image-20220703152516324"></p>
+<p>当能够到达目标点的时候，就需要求解各个 joint 的变化，比较常用的算法有 CCD (Cyclic Coordinate Decent)、FABRIK (Forward And Backward Reaching Inverse Kinematics) 和雅可比矩阵（Jacobian Matrix）等，基本都是靠多次迭代不断逼近目标点，同时调整路径上的各个 joint，具体的算法比较复杂，这里不再展开了。</p>
+<p>此外计算 IK 的时候还得考虑整个身体的平衡，要符合物理事实，因此 IK 是一个非常困难的领域。也因为有动画融合和 IK 的存在，整个动画管线就变得更加复杂：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703152759121.png" alt="image-20220703152759121"></p>
+<p>还需要考虑不同动画的融合以及动画和世界场景的交互。</p>
+<h3 id="8-动画重定向"><a href="#8-动画重定向" class="headerlink" title="8 动画重定向"></a>8 动画重定向</h3><p>动画重定向是为了将一个模型的骨骼动画应用到另一个模型上：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703152943879.png" alt="image-20220703152943879"></p>
+<p>这只中还要考虑模型骨骼关系、骨骼数量的差异甚至模型骨骼结构的差异：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703153118965.png" alt="image-20220703153118965"></p>
+<p>因为体型不同，还要考虑身体自身的碰撞，比如通过样的走路动画，一个较小的角色动画应用到体型比较大的角色身上就会穿模，鼓掌的时候可能原本首长可以碰到，但换到另一个模型上就碰不到了：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703153301117.png" alt="image-20220703153301117"></p>
+<p>所以如何能够将一个动画应用到体型不同的其他角色上还不出现错误也是一个比较复杂的工作。</p>
+]]></content>
+      <categories>
+        <category>游戏引擎</category>
+      </categories>
+      <tags>
         <tag>游戏引擎</tag>
       </tags>
   </entry>
