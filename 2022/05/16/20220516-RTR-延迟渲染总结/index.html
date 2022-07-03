@@ -38,10 +38,11 @@
 <meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-%E5%BB%B6%E8%BF%9F%E6%B8%B2%E6%9F%93%E6%80%BB%E7%BB%93/image-20220516161128767.png">
 <meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-%E5%BB%B6%E8%BF%9F%E6%B8%B2%E6%9F%93%E6%80%BB%E7%BB%93/image-20220516162715482.png">
 <meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-%E5%BB%B6%E8%BF%9F%E6%B8%B2%E6%9F%93%E6%80%BB%E7%BB%93/image-20220516164106531.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-%E5%BB%B6%E8%BF%9F%E6%B8%B2%E6%9F%93%E6%80%BB%E7%BB%93/1617944-20190906002505353-1795972401.png">
 <meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-%E5%BB%B6%E8%BF%9F%E6%B8%B2%E6%9F%93%E6%80%BB%E7%BB%93/image-20220516165141752.png">
 <meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-%E5%BB%B6%E8%BF%9F%E6%B8%B2%E6%9F%93%E6%80%BB%E7%BB%93/image-20220516165158816.png">
 <meta property="article:published_time" content="2022-05-16T08:56:09.000Z">
-<meta property="article:modified_time" content="2022-05-16T09:18:24.669Z">
+<meta property="article:modified_time" content="2022-07-03T10:23:33.114Z">
 <meta property="article:author" content="Lyc">
 <meta property="article:tag" content="计算机图形学">
 <meta property="article:tag" content="实时渲染">
@@ -234,10 +235,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2022-05-16 16:56:09 / 修改时间：17:18:24" itemprop="dateCreated datePublished" datetime="2022-05-16T16:56:09+08:00">2022-05-16</time>
+              <time title="创建时间：2022-05-16 16:56:09" itemprop="dateCreated datePublished" datetime="2022-05-16T16:56:09+08:00">2022-05-16</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-07-03 18:23:33" itemprop="dateModified" datetime="2022-07-03T18:23:33+08:00">2022-07-03</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -400,8 +407,9 @@
 <p>我们知道，延迟渲染的瓶颈在于读写 G-buffer，在大量光源下，具体的瓶颈将会在于每个光源对 G-buffer 的读取及与颜色缓冲区混合。这里的问题是，每个光源，即使它们的影响范围在屏幕空间上有重叠，因为每个光源是在不同的绘制中进行，所以会重复读取 G-buffer 中相同位置的数据，计算后以相加混合方式写入颜色缓冲。光源越多，内存带宽用量越大。</p>
 <p>而分块延迟渲染的主要思想则是把屏幕分拆成细小的栅格，例如每 32 × 32 像素作为一个分块（tile），然后计算每个分块会受到哪些光源影响，把那些光源的索引储存在分块的光源列表里。最后，逐个分块进行着色，对每个像素读取 G-buffer 和光源列表及相关的光源信息。因此，G-buffer 的数据只会被读取 1 次且仅 1 次，写入 color buffer 也是 1 次且仅 1 次，大幅降低内存带宽用量。不过，这种方法需要计算光源会影响哪些分块，这个计算又称为光源剔除（light culling），可以在 CPU 或 GPU（通常以 compute shader 实现）中进行。用 GPU 计算的好处是，GPU 计算这类工作比 CPU 更快，也可以减少 CPU 和 GPU 之间的数据传输。此外，还可以计算每个分块的深度范围（depth range），作更有效的剔除。</p>
 <p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-%E5%BB%B6%E8%BF%9F%E6%B8%B2%E6%9F%93%E6%80%BB%E7%BB%93/image-20220516164106531.png" alt="image-20220516164106531"></p>
-<p>总结来说，分块延迟渲染将屏幕分成一个个小块 tile 并计算每个分块的深度范围。然后根据深度范围和分块大小，可以求得每个 tile 的 bounding volume。对每个 tile 的 bounding volume 和光源进行求交点，这样就得到了对该 tile 有作用的光源的序列。最后根据得到的序列计算所在 tile 的光照效果。</p>
-<p>对比传统 Deferred Rendering，之前是对每个光源求其作用区域 light volume，然后决定其作用的 pixel，也就是说每个光源要求取一次。而使用 TBDR，只要遍历每个 pixel，让其所属 tile 与光线求交，来计算作用其上的光源，并利用 G-Buffer 进行着色。这样做一方面减少了所需考虑的光源个数，另一方面与传统的 Deferred Rendering 相比减少了存取的带宽。</p>
+<p>总结来说，分块延迟渲染将屏幕分成一个个小块 tile 并计算每个分块的深度范围。然后根据深度范围和分块大小，可以求得每个 tile 的 bounding volume。对每个 tile 的 bounding volume 和光源进行求交点，这样就得到了对该 tile 有作用的光源的序列。最后根据得到的序列计算所在 tile 的光照效果。整个过程如下图所示：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-%E5%BB%B6%E8%BF%9F%E6%B8%B2%E6%9F%93%E6%80%BB%E7%BB%93/1617944-20190906002505353-1795972401.png" alt="1617944-20190906002505353-1795972401"></p>
+<p>对比传统 Deferred Rendering，之前是对每个光源求其作用区域 light volume，然后决定其作用的 pixel，也就是说每个光源要求取一次。而使用 TBDR，只要遍历每个 pixel，让其所属 tile 与光线求交，来计算作用其上的光源，并利用 G-Buffer 进行着色。这样做一方面减少了所需考虑的光源个数，另一方面与传统的 Deferred Rendering 相比减少了存取的带宽。因此分块渲染现在广泛应用于移动设备渲染中。</p>
 <h3 id="9-延迟渲染-vs-延迟光照"><a href="#9-延迟渲染-vs-延迟光照" class="headerlink" title="9 延迟渲染 vs 延迟光照"></a>9 延迟渲染 vs 延迟光照</h3><p>关于延迟着色和延迟光照，经常会被弄混，这里简单区分一下。</p>
 <ul>
 <li>延迟渲染需要更大的 G-Buffer 来完成对 Deferred 阶段的前期准备，而且一般需要硬件有 MRT 的支持，可以说是硬件要求更高。</li>
@@ -466,16 +474,16 @@
       <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\13\20220513-RTR-GPU管线\" rel="bookmark">【Real-Time Rendering】GPU管线</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\13\20220513-RTR-图形渲染和视觉外观\" rel="bookmark">【Real-Time Rendering】图形渲染和视觉处理</a></div>
-    </li>
-    <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\14\20220514-RTR-模板测试和深度测试\" rel="bookmark">【Real-Time Rendering】模板测试和深度测试</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\16\20220516-RTR-BRDF总结\" rel="bookmark">【Real-Time Rendering】BRDF总结</a></div>
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\15\20220515-RTR-程序噪声总结\" rel="bookmark">【Real-Time Rendering】程序噪声总结</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\15\20220515-RTR-程序噪声总结\" rel="bookmark">【Real-Time Rendering】程序噪声总结</a></div>
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\13\20220513-RTR-图形渲染和视觉外观\" rel="bookmark">【Real-Time Rendering】图形渲染和视觉处理</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\16\20220516-RTR-BRDF总结\" rel="bookmark">【Real-Time Rendering】BRDF总结</a></div>
     </li>
   </ul>
 
@@ -574,7 +582,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/LycTechStack.github.io/archives/">
         
-          <span class="site-state-item-count">105</span>
+          <span class="site-state-item-count">106</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -632,13 +640,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">836k</span>
+    <span title="站点总字数">846k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">12:40</span>
+    <span title="站点阅读时长">12:49</span>
 </div>
 
         

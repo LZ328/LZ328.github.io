@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/LycTechStack.github.io/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/LycTechStack.github.io/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/LycTechStack.github.io/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/LycTechStack.github.io/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/LycTechStack.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="/LycTechStack.github.io/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/LycTechStack.github.io/lib/pace/pace-theme-minimal.min.css">
+  <script src="/LycTechStack.github.io/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lz328.github.io","root":"/LycTechStack.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":5,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="本篇以 NVIDIA 为代表详细解析现代 GPU 架构，深入理解 GPU 运行机制，有助于理解大型引擎的渲染系统构建和渲染优化思路。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GPU架构深度解析">
+<meta property="og:url" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/index.html">
+<meta property="og:site_name" content="LycTechStack">
+<meta property="og:description" content="本篇以 NVIDIA 为代表详细解析现代 GPU 架构，深入理解 GPU 运行机制，有助于理解大型引擎的渲染系统构建和渲染优化思路。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001056361-789565826.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001113377-1820574161.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001212393-1848942244.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001228274-379363267.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906000842367-1857714844.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001241355-608845528.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001250059-1971914812.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001300961-1313843419.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001330348-1982690439.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001403077-1969715914.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001418746-831705203.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001427705-915501113.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001457351-743980317.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001537033-642734220.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001545523-562795391.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001651573-804337756.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001659282-1154417522.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001709237-945454718.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/image-20220703174542534.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001735780-1606282901.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001744570-1497753939.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001752475-1100477295.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001800006-1870518462.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001850363-356121869.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001903861-1080252910.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001916357-1658595620.webp">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001947961-1190125231.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001957832-296063271.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906002006570-2008054292.jpg">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906002027360-504150984.png">
+<meta property="article:published_time" content="2022-07-03T10:36:37.000Z">
+<meta property="article:modified_time" content="2022-07-03T10:41:35.253Z">
+<meta property="article:author" content="Lyc">
+<meta property="article:tag" content="游戏引擎">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001056361-789565826.png">
+
+<link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>GPU架构深度解析 | LycTechStack</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/LycTechStack.github.io/atom.xml" title="LycTechStack" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/LycTechStack.github.io/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LycTechStack</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Lyc的个人成长技术栈</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/LycTechStack.github.io/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/LycTechStack.github.io/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/LycTechStack.github.io/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/LycTechStack.github.io/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/LycTechStack.github.io/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/LycTechStack.github.io/images/avatar.png">
+      <meta itemprop="name" content="Lyc">
+      <meta itemprop="description" content="个人学习总结和技术经验分享，主要内容包括C++、数据结构、算法、计算机图形学、3D数学、实时渲染、游戏引擎等等，希望未来能真正踏入图形/引擎开发的大门！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LycTechStack">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          GPU架构深度解析
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-07-03 18:36:37 / 修改时间：18:41:35" itemprop="dateCreated datePublished" datetime="2022-07-03T18:36:37+08:00">2022-07-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/LycTechStack.github.io/categories/%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB/" itemprop="url" rel="index"><span itemprop="name">知识汇总</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>9.8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>9 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本篇以 NVIDIA 为代表详细解析现代 GPU 架构，深入理解 GPU 运行机制，有助于理解大型引擎的渲染系统构建和渲染优化思路。</p>
+<p><em><span id="more"></span></em></p>
+<h3 id="1-GPU-架构发展"><a href="#1-GPU-架构发展" class="headerlink" title="1 GPU 架构发展"></a>1 GPU 架构发展</h3><p>NVIDIA GPU 架构历经多次变革，从起初的 Tesla 发展到最新的 Turing 架构，发展史可分为以下时间节点：</p>
+<ul>
+<li><p><strong>2008 - Tesla</strong></p>
+<p>Tesla最初是给计算处理单元使用的，应用于早期的CUDA系列显卡芯片中，并不是真正意义上的普通图形处理芯片。</p>
+</li>
+<li><p><strong>2010 - Fermi</strong></p>
+<p>Fermi是第一个完整的GPU计算架构。首款可支持与共享存储结合纯cache层次的GPU架构，支持ECC的GPU架构。</p>
+</li>
+<li><p><strong>2012 - Kepler</strong></p>
+<p>Kepler相较于Fermi更快，效率更高，性能更好。</p>
+</li>
+<li><p><strong>2014 - Maxwell</strong></p>
+<p>其全新的立体像素全局光照 (VXGI) 技术首次让游戏 GPU 能够提供实时的动态全局光照效果。基于 Maxwell 架构的 GTX 980 和 970 GPU 采用了包括多帧采样抗锯齿 (MFAA)、动态超级分辨率 (DSR)、VR Direct 以及超节能设计在内的一系列新技术。</p>
+</li>
+<li><p><strong>2016 - Pascal</strong></p>
+<p>Pascal 架构将处理器和数据集成在同一个程序包内，以实现更高的计算效率。1080系列、1060系列基于Pascal架构</p>
+</li>
+<li><p><strong>2017 - Volta</strong></p>
+<p>Volta 配备640 个Tensor 核心，每秒可提供超过100 兆次浮点运算(TFLOPS) 的深度学习效能，比前一代的Pascal 架构快5 倍以上。</p>
+</li>
+<li><p><strong>2018 - Turing</strong></p>
+<p>Turing 架构配备了名为 RT Core 的专用光线追踪处理器，能够以高达每秒 10 Giga Rays 的速度对光线和声音在 3D 环境中的传播进行加速计算。Turing 架构将实时光线追踪运算加速至上一代 NVIDIA Pascal™ 架构的 25 倍，并能以高出 CPU 30 多倍的速度进行电影效果的最终帧渲染。2060系列、2080系列显卡也是跳过了Volta直接选择了Turing架构。</p>
+</li>
+</ul>
+<p>各架构的微观物理结构可以查看<a target="_blank" rel="noopener" href="https://www.cnblogs.com/timlly/p/11471507.html#32-gpu%E5%BE%AE%E8%A7%82%E7%89%A9%E7%90%86%E7%BB%93%E6%9E%84">深入GPU硬件架构及运行机制-gpu微观物理结构</a>。</p>
+<h3 id="2-GPU-的功能"><a href="#2-GPU-的功能" class="headerlink" title="2 GPU 的功能"></a>2 GPU 的功能</h3><p>现代GPU除了绘制图形外，还担当了很多额外的功能，综合起来如下几方面：</p>
+<ul>
+<li><p><strong>图形绘制。</strong></p>
+<p>这是GPU最传统的拿手好戏，也是最基础、最核心的功能。为大多数PC桌面、移动设备、图形工作站提供图形处理和绘制功能。</p>
+</li>
+<li><p><strong>物理模拟。</strong></p>
+<p>GPU硬件集成的物理引擎（PhysX、Havok），为游戏、电影、教育、科学模拟等领域提供了成百上千倍性能的物理模拟，使得以前需要长时间计算的物理模拟得以实时呈现。</p>
+</li>
+<li><p><strong>海量计算。</strong></p>
+<p>计算着色器及流输出的出现，为各种可以并行计算的海量需求得以实现，CUDA就是最好的例证。</p>
+</li>
+<li><p><strong>AI运算。</strong></p>
+<p>近年来，人工智能的崛起推动了GPU集成了AI Core运算单元，反哺AI运算能力的提升，给各行各业带来了计算能力的提升。</p>
+</li>
+<li><p><strong>其它计算。</strong></p>
+<p>音视频编解码、加解密、科学计算、离线渲染等等都离不开现代GPU的并行计算能力和海量吞吐能力。</p>
+</li>
+</ul>
+<h3 id="3-GPU-逻辑架构"><a href="#3-GPU-逻辑架构" class="headerlink" title="3 GPU 逻辑架构"></a>3 GPU 逻辑架构</h3><p>下图是图形架构的微观结构：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001056361-789565826.png" alt="1617944-20190906001056361-789565826"></p>
+<p>从 Fermi 开始 NVIDIA 都使用类似的原理架构，使用一个 Giga Thread Engine 来管理所有正在进行的工作，GPU 被划分成多个 GPCs(Graphics Processing Cluster)，每个 GPC 拥有多个 SM（或者SMX、SMM）和一个光栅化引擎（Raster Engine）。</p>
+<p>程序员编写的 shader 是在 SM 上完成的。每个 SM 包含许多为线程执行数学运算的 Core，一个线程可以是顶点或像素着色器调用。这些 Core 包括整数运算的 ALU，浮点运算的 FPU，特殊函数运算的 SFU，用于深度学习的 Tensor Core 和用于光线追踪的 RT Core 等等。这些 Core 和其它单元由 Warp Scheduler  驱动，Warp Scheduler 管理一组 32 个线程作为 Warp（线程束）并将要执行的指令移交给 Dispatch Units。</p>
+<p>例如下图是图灵架构单个 SM 的结构：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001113377-1820574161.png" alt="1617944-20190906001113377-1820574161"></p>
+<p>其中包含：</p>
+<ul>
+<li>4 个 Warp Schedulers：这个模块负责 warp 调度，一个 warp 由 32 个线程组成，warp 调度器的指令通过 Dispatch Units 送到 Core 执行</li>
+<li>64 CUDA 核，每个 CUDA 核包含一个整数运算单元（上图中 INT32）和一个浮点数运算单元（上图中 FP32）</li>
+<li>16 个 LD&#x2F;ST（load&#x2F;store）模块来加载和存储数据</li>
+<li>4 个 SFU（Special function units）执行特殊数学运算（sin、cos、log 等）</li>
+<li>256KB 寄存器（4 个 16384 * 32 bit 的 Register File）</li>
+<li>96KB L1缓存（共享内存）</li>
+<li>4 个纹理读取单元及纹理缓存（上图中 TEX）</li>
+<li>若干光线追踪核心（RT Core）</li>
+</ul>
+<p>其他上图中没有标出的还包括：</p>
+<ul>
+<li>PolyMorph Engine：多边形引擎负责属性装配（attribute Setup）、顶点拉取(VertexFetch)、曲面细分、栅格化（这个模块可以理解专门处理顶点相关的东西）</li>
+<li>指令缓存（Instruction Cache）</li>
+<li>内部链接网络（Interconnect Network）</li>
+</ul>
+<p>Fermi 架构的单个 SM 更清晰的包含了上述的大部分结构：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001212393-1848942244.png" alt="1617944-20190906001212393-1848942244"></p>
+<h3 id="4-GPU-逻辑管线"><a href="#4-GPU-逻辑管线" class="headerlink" title="4 GPU 逻辑管线"></a>4 GPU 逻辑管线</h3><p>接下来以 Fermi 架构的 SM 为例，进行逻辑管线的详细说明。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001228274-379363267.png" alt="1617944-20190906001228274-379363267"></p>
+<p>1、首先程序通过图形 API（DX、GL等）发出 Drawcall 指令，指令会被推送到驱动程序，驱动会检查指令的合法性，然后会把指令放到 GPU 可以读取的 Pushbuffer 中。</p>
+<p>2、经过一段时间或者显式调用 flush 指令后，驱动程序把 Pushbuffer 的内容发送给 GPU，GPU 通过主机接口（Host Interface）接受这些命令，并通过前端（Front End）处理这些命令。</p>
+<p>3、在图元分配器（Primitive Distributor）中开始工作分配，处理 indexbuffer 中的顶点产生三角形分成批次（batches），然后发送给多个 GPCs。这一步的理解就是提交上来 n 个三角形，分配给这几个 GPC 同时处理。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906000842367-1857714844.png" alt="1617944-20190906000842367-1857714844"></p>
+<p>4、在 GPC 中，每个 SM 中的 Poly Morph Engine 负责通过三角形索引(triangle indices)取出三角形的数据(vertex data)，即上图中的Vertex Fetch模块。</p>
+<p>5、在获取数据之后，在 SM 中以 32 个线程为一组的线程束(Warp)来调度，来开始处理顶点数据。Warp 是典型的单指令多线程（SIMT，SIMD单指令多数据的升级）的实现，也就是 32 个线程同时执行的指令是一模一样的，只是线程数据不一样，这样的好处就是一个 warp 只需要一个套逻辑对指令进行解码和执行就可以了，芯片可以做的更小更快，之所以可以这么做是由于 GPU 需要处理的任务是天然并行的。</p>
+<p>6、SM 的 warp 调度器会按照顺序分发指令给整个 warp，单个 warp 中的线程会锁步(lock-step)执行各自的指令，如果线程碰到不激活执行的情况也会被遮掩(be masked out)。被遮掩的原因有很多，例如当前的指令是if(true)的分支，但是当前线程的数据的条件是false，或者循环的次数不一样（比如for循环次数n不是常量，或被break提前终止了但是别的还在走），<strong>因此在shader中的分支会显著增加时间消耗</strong>，在一个 warp 中的分支除非 32 个线程都走到同一个分支里面，否则相当于所有的分支都走了一遍，任何一个线程都不能独立执行指令，而是以 warp 为单位，这些 warp 之间才是独立的。</p>
+<p>7、warp 中的指令可以被一次完成，也可能经过多次调度，例如通常 SM 中的 LD&#x2F;ST(加载存取) 单元数量明显少于基础数学操作单元。</p>
+<p>8、由于某些指令比其他指令需要更长的时间才能完成，特别是内存加载，warp 调度器可能会简单地切换到另一个没有内存等待的 warp，这是 GPU 如何克服内存读取延迟的关键，只是简单地切换活动线程组。为了使这种切换非常快，调度器管理的所有 warp 在寄存器文件中都有自己的寄存器。这里就会有个矛盾产生，shader 需要越多的寄存器，就会给 warp 留下越少的空间，就会产生越少的 warp，这时候在碰到内存延迟的时候就会只是等待，而没有可以运行的 warp 可以切换。    </p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001241355-608845528.png" alt="1617944-20190906001241355-608845528"></p>
+<p>9、一旦 warp 完成了 vertex-shader 的所有指令，运算结果就会被 Viewport Transform 模块处理，三角形会被裁剪然后准备光栅化，GPU 会使用 L1 和 L2 缓存来进行 vertex-shader 和 pixel-shader 的数据通信。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001250059-1971914812.png" alt="1617944-20190906001250059-1971914812"></p>
+<p>10、接下来这些三角形将被分割，再分配给多个 GPC，三角形的范围决定着它将被分配到哪个光栅引擎(raster engines)，每个 raster engines 覆盖了多个屏幕上的 tile，这等于把三角形的渲染分配到多个 tile 上面。也就是一个三角形并不是完全由一个 GPC 处理，而是根据覆盖的屏幕区域会被分配给不同的 GPC 计算。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001300961-1313843419.png" alt="1617944-20190906001300961-1313843419"></p>
+<p>11、然后 SM 中的 Attribute Setup 对从 vertex-shader 来的数据进行插值并保证插值后对 pixel-shader 是可读的。</p>
+<p>12、GPC 上的光栅引擎(raster engines)在它接收到的三角形上工作，来负责这些三角形的片元信息的生成，同时还会处理裁剪Clipping、背面剔除和 Early-Z 等。</p>
+<p>13、接下来 32 个像素线程将被分成一组，或者说 8 个 2x2 的像素块，这是在像素着色器上面的最小工作单元，在这个像素线程内，如果没有被三角形覆盖就会被遮掩，SM 中的 warp 调度器会管理像素着色器的任务。</p>
+<p>14、接下来的阶段就和vertex-shader中的逻辑步骤完全一样，但是变成了在像素着色器线程中执行。 由于不耗费任何性能可以获取一个像素内的值，导致锁步执行非常便利，所有的线程可以保证所有的指令可以在同一点。</p>
+<p>15、最后一步，现在像素着色器已经完成了颜色的计算还有深度值的计算，在这个点上，我们必须考虑三角形的原始 api 顺序，然后才将数据移交给 ROP(render output unit，渲染输出单元)，一个 ROP 内部有很多 ROP 单元，在 ROP 单元中处理深度测试，和 framebuffer 的混合，深度和颜色的设置必须是原子操作，否则两个不同的三角形在同一个像素点就会有冲突和错误。</p>
+<h3 id="5-技术要点"><a href="#5-技术要点" class="headerlink" title="5 技术要点"></a>5 技术要点</h3><p>上面的流程中有很多细节没有展开阐述，这里分别补充。</p>
+<h4 id="5-1-SIMD和SIMT"><a href="#5-1-SIMD和SIMT" class="headerlink" title="5.1 SIMD和SIMT"></a>5.1 SIMD和SIMT</h4><p><strong>SIMD</strong>（Single Instruction Multiple Data）是单指令多数据，在GPU的ALU单元内，一条指令可以处理多维向量（一般是4D）的数据。比如，有以下shader指令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">float4 c = a + b; // a, b都是float4类型</span><br></pre></td></tr></table></figure>
+
+<p>对于没有SIMD的处理单元，需要4条指令将4个float数值相加，汇编伪代码如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ADD c.x, a.x, b.x</span><br><span class="line">ADD c.y, a.y, b.y</span><br><span class="line">ADD c.z, a.z, b.z</span><br><span class="line">ADD c.w, a.w, b.w</span><br></pre></td></tr></table></figure>
+
+<p>但有了 SIMD 技术，只需一条指令即可处理完：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SIMD_ADD c, a, b</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001330348-1982690439.png" alt="1617944-20190906001330348-1982690439"></p>
+<p><strong>SIMT</strong>（Single Instruction Multiple Threads，单指令多线程）是SIMD的升级版，可对 GPU 中单个 SM 中的多个 Core 同时处理同一指令，并且每个 Core 存取的数据可以是不同的。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001403077-1969715914.png" alt="1617944-20190906001403077-1969715914"></p>
+<h4 id="5-2-co-issue"><a href="#5-2-co-issue" class="headerlink" title="5.2 co-issue"></a>5.2 co-issue</h4><p><strong>co-issue</strong>是为了解决SIMD运算单元无法充分利用的问题。例如下图，由于float数量的不同，ALU利用率从100%依次下降为75%、50%、25%。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001418746-831705203.png" alt="1617944-20190906001418746-831705203"></p>
+<p>为了解决着色器在低维向量的利用率低的问题，可以通过合并 1D 与 3D 或 2D 与 2D 的指令。例如下图，<code>DP3</code>指令用了 3D 数据，<code>ADD</code>指令只有 1D 数据，co-issue会自动将它们合并，在同一个 ALU 只需一个指令周期即可执行完。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001427705-915501113.png" alt="1617944-20190906001427705-915501113"></p>
+<h4 id="5-3-if-else-语句"><a href="#5-3-if-else-语句" class="headerlink" title="5.3 if-else 语句"></a>5.3 if-else 语句</h4><p>如下图，SM中有 8 个ALU（Core），由于 SIMD 的特性，每个 ALU 的数据不一样，导致<code>if-else</code>语句在某些ALU中执行的是<code>true</code>分支（黄色），有些ALU执行的是<code>false</code>分支（灰蓝色），这样导致很多 ALU 的执行周期被浪费掉了（即masked out），拉长了整个执行周期。最坏的情况，同一个SM中只有1&#x2F;8（8 是同一个 SM 的线程数，不同架构的 GPU 有所不同）的利用率。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001457351-743980317.png" alt="1617944-20190906001457351-743980317"></p>
+<p>同样，<code>for</code>循环也会导致类似的情形，例如以下shader代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">void func(int count, int breakNum)</span><br><span class="line">&#123;</span><br><span class="line">	for(int i=0; i&lt;count; ++i)</span><br><span class="line">	&#123;</span><br><span class="line">		if (i == breakNum)</span><br><span class="line">			break;</span><br><span class="line">		else</span><br><span class="line">			// do something</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>由于每个ALU的<code>count</code>不一样，加上有<code>break</code>分支，导致最快执行完shader的ALU可能是最慢的N分之一的时间，但由于SIMD的特性，最快的那个ALU依然要等待最慢的ALU执行完毕，才能接下一组指令的活！也就白白浪费了很多时间周期。<strong>因此在shader中的分支会显著增加时间消耗</strong></p>
+<h4 id="5-4-Early-Z"><a href="#5-4-Early-Z" class="headerlink" title="5.4 Early-Z"></a>5.4 Early-Z</h4><p>关于 Early-Z 可以查看之前的笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/14/20220514-RTR-%E6%A8%A1%E6%9D%BF%E6%B5%8B%E8%AF%95%E5%92%8C%E6%B7%B1%E5%BA%A6%E6%B5%8B%E8%AF%95/">【Real-Time Rendering】模板测试和深度测试</a>，这里要强调的是 Early-Z 剔除的最小单位不是 1 像素，而是像素块（pixel quad，2x2个像素）。</p>
+<p>此外，从硬件角度讲 Early-Z 还存在<strong>深度数据冲突</strong>（depth data hazard）问题，如下图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001537033-642734220.png" alt="1617944-20190906001537033-642734220"></p>
+<p>假设数值深度值 5 已经经过 Early-Z 即将写入 Frame Buffer，而深度值 10 刚好处于 Early-Z 阶段，读取并对比当前缓存的深度值 15，结果就是 10 通过了 Early-Z 测试，会覆盖掉比自己小的深度值 5，最终 frame buffer 的深度值是错误的结果。</p>
+<p>避免深度数据冲突的方法之一是在写入深度值之前，再次与frame buffer的值进行对比：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001545523-562795391.png" alt="1617944-20190906001545523-562795391"></p>
+<h4 id="5-5-统一着色器架构（Unified-shader-Architecture）"><a href="#5-5-统一着色器架构（Unified-shader-Architecture）" class="headerlink" title="5.5 统一着色器架构（Unified shader Architecture）"></a>5.5 统一着色器架构（Unified shader Architecture）</h4><p>在早期的 GPU，顶点着色器和像素着色器的硬件结构是独立的，它们各有各的寄存器、运算单元等部件。这样很多时候，会造成顶点着色器与像素着色器之间任务的不平衡。对于顶点数量多的任务，像素着色器空闲状态多；对于像素多的任务，顶点着色器的空闲状态多。</p>
+<p>于是，为了解决 VS 和 PS 之间的不平衡，引入了统一着色器架构（Unified shader Architecture）。用了此架构的 GPU，VS 和 PS 用的都是相同的 Core。也就是，同一个 Core 既可以是 VS 又可以是 PS。这样就解决了不同类型着色器之间的不平衡问题，还可以减少 GPU 的硬件单元，压缩物理尺寸和耗电量。此外，VS、PS 可还可以和其它着色器（几何、曲面、计算）统一为一体。</p>
+<h4 id="5-6-像素块（Pixel-Quad）"><a href="#5-6-像素块（Pixel-Quad）" class="headerlink" title="5.6 像素块（Pixel Quad）"></a>5.6 像素块（Pixel Quad）</h4><p>前文说到，在像素着色器中，会将相邻的四个像素作为不可分割的一组，送入同一个 SM 内 4 个不同的 Core 中。为什么这样做呢？可能有以下几点原因：</p>
+<p>1、简化和加速像素分派的工作。</p>
+<p>2、精简 SM 的架构，减少硬件单元数量和尺寸。</p>
+<p>3、降低功耗，提高效能比。</p>
+<p>4、无效像素虽然不会被存储结果，但可辅助有效像素求导函数。</p>
+<p>这种设计虽然有其优势，但同时，也会激化过绘制（Over Draw）的情况，损耗额外的性能。比如下图中，白色的三角形只占用了 3 个像素（绿色），按我们普通的思维，只需要 3 个 Core 绘制 3 次就可以了。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001651573-804337756.png" alt="1617944-20190906001651573-804337756"></p>
+<p>但是，由于上面的 3 个像素分别占据了不同的像素块（橙色分隔），实际上需要占用 12 个 Core 绘制 12 次（下图）。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001659282-1154417522.png" alt="1617944-20190906001659282-1154417522"></p>
+<p>这就会额外消耗 300% 的硬件性能，导致了更加严重的过绘制情况。</p>
+<h3 id="6-GPU-资源管理"><a href="#6-GPU-资源管理" class="headerlink" title="6 GPU 资源管理"></a>6 GPU 资源管理</h3><h4 id="6-1-GPU-内存架构"><a href="#6-1-GPU-内存架构" class="headerlink" title="6.1 GPU 内存架构"></a>6.1 GPU 内存架构</h4><p>有些 GPU 的内存架构和 CPU 类似，分为寄存器，L1 缓存，L2 缓存，GPU 显存和系统显存：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001709237-945454718.png" alt="1617944-20190906001709237-945454718"></p>
+<p>它们的存取速度从寄存器到系统内存依次变慢：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/image-20220703174542534.png" alt="image-20220703174542534"></p>
+<p>由此可见，shader直接访问寄存器、L1、L2缓存还是比较快的，但访问纹理、常量缓存和全局内存非常慢，会造成很高的延迟。</p>
+<p>由于 SIMT 技术的引入，导致很多同一个 SM 内的很多 Core 并不是独立的，当它们当中有部分 Core 需要访问到纹理、常量缓存和全局内存时，就会导致非常大的卡顿（Stall）。</p>
+<p>如下图，有 4 组上下文（Context），它们共用同一组运算单元ALU：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001735780-1606282901.png" alt="1617944-20190906001735780-1606282901"></p>
+<p>假设第一组 Context 需要访问缓存或内存，会导致 2~3 个周期的延迟，此时调度器会激活第二组 Context 以利用ALU：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001744570-1497753939.png" alt="1617944-20190906001744570-1497753939"></p>
+<p>当第二组Context访问缓存或内存又卡住，会依次激活第三、第四组Context，直到第一组Context恢复运行或所有都被激活：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001752475-1100477295.png" alt="1617944-20190906001752475-1100477295"></p>
+<p>延迟的后果是每组Context的总体执行时间被拉长了：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001800006-1870518462.png" alt="1617944-20190906001800006-1870518462"></p>
+<p>但是，越多Context可用就越可以提升运算单元的吞吐量。</p>
+<h4 id="6-2-CPU-GPU-异构系统"><a href="#6-2-CPU-GPU-异构系统" class="headerlink" title="6.2 CPU-GPU 异构系统"></a>6.2 CPU-GPU 异构系统</h4><p>根据CPU和GPU是否共享内存，可分为两种类型的CPU-GPU架构：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001850363-356121869.png" alt="1617944-20190906001850363-356121869"></p>
+<p>上图左是<strong>分离式架构</strong>，CPU和GPU各自有独立的缓存和内存，它们通过PCI-e等总线通讯。这种结构的缺点在于 PCI-e 相对于两者具有低带宽和高延迟，数据的传输成了其中的性能瓶颈。目前使用非常广泛，如PC、智能手机等。</p>
+<p>上图右是<strong>耦合式架构</strong>，CPU 和 GPU 共享内存和缓存。AMD 的 APU 采用的就是这种结构，目前主要使用在游戏主机中，如 PS4。</p>
+<p>在存储管理方面，分离式结构中 CPU 和 GPU 各自拥有独立的内存，两者共享一套虚拟地址空间，必要时会进行内存拷贝。对于耦合式结构，GPU 没有独立的内存，与 CPU 共享系统内存，由 MMU 进行存储管理。</p>
+<h4 id="6-3-GPU-资源管理模型"><a href="#6-3-GPU-资源管理模型" class="headerlink" title="6.3 GPU 资源管理模型"></a>6.3 GPU 资源管理模型</h4><p>下图是分离式架构的资源管理模型：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001903861-1080252910.png" alt="1617944-20190906001903861-1080252910"></p>
+<ul>
+<li><strong>MMIO（Memory Mapped IO）</strong><ul>
+<li>CPU与GPU的交流就是通过MMIO进行的。CPU 通过 MMIO 访问 GPU 的寄存器状态。</li>
+<li>DMA传输大量的数据就是通过MMIO进行命令控制的。</li>
+<li>I&#x2F;O端口可用于间接访问MMIO区域，像Nouveau等开源软件从来不访问它。</li>
+</ul>
+</li>
+<li><strong>GPU Context</strong><ul>
+<li>GPU Context代表了GPU计算的状态。</li>
+<li>在GPU中拥有自己的虚拟地址。</li>
+<li>GPU 中可以并存多个活跃态下的Context。</li>
+</ul>
+</li>
+<li><strong>GPU Channel</strong><ul>
+<li>任何命令都是由CPU发出。</li>
+<li>命令流（command stream）被提交到硬件单元，也就是GPU Channel。</li>
+<li>每个GPU Channel关联一个context，而一个GPU Context可以有多个GPU channel。</li>
+<li>每个GPU Context 包含相关channel的 GPU Channel Descriptors ， 每个 Descriptor 都是 GPU 内存中的一个对象。</li>
+<li>每个 GPU Channel Descriptor 存储了 Channel 的设置，其中就包括 Page Table 。</li>
+<li>每个 GPU Channel 在GPU内存中分配了唯一的命令缓存，这通过MMIO对CPU可见。</li>
+<li>GPU Context Switching 和命令执行都在GPU硬件内部调度。</li>
+</ul>
+</li>
+<li><strong>GPU Page Table</strong><ul>
+<li>GPU Context在虚拟基地空间由Page Table隔离其它的Context 。</li>
+<li>GPU Page Table隔离CPU Page Table，位于GPU内存中。</li>
+<li>GPU Page Table的物理地址位于 GPU Channel Descriptor中。</li>
+<li>GPU Page Table不仅仅将 GPU虚拟地址转换成GPU内存的物理地址，也可以转换成CPU的物理地址。因此，GPU Page Table可以将GPU虚拟地址和CPU内存地址统一到GPU统一虚拟地址空间来。</li>
+</ul>
+</li>
+<li><strong>PCI-e BAR</strong><ul>
+<li>GPU 设备通过PCI-e总线接入到主机上。 Base Address Registers(BARs) 是 MMIO的窗口，在GPU启动时候配置。</li>
+<li>GPU的控制寄存器和内存都映射到了BARs中。</li>
+<li>GPU设备内存通过映射的MMIO窗口去配置GPU和访问GPU内存。</li>
+</ul>
+</li>
+<li><strong>PFIFO Engine</strong><ul>
+<li>PFIFO是GPU命令提交通过的一个特殊的部件。</li>
+<li>PFIFO维护了一些独立命令队列，也就是Channel。</li>
+<li>此命令队列是Ring Buffer，有PUT和GET的指针。</li>
+<li>所有访问Channel控制区域的执行指令都被PFIFO 拦截下来。</li>
+<li>GPU驱动使用Channel Descriptor来存储相关的Channel设定。</li>
+<li>PFIFO将读取的命令转交给PGRAPH Engine。</li>
+</ul>
+</li>
+<li><strong>BO</strong><ul>
+<li>Buffer Object (BO)，内存的一块(Block)，能够用于存储纹理（Texture）、渲染目标（Render Target）、着色代码（shader code）等等。</li>
+</ul>
+</li>
+</ul>
+<h4 id="6-4-CPU-GPU-数据流"><a href="#6-4-CPU-GPU-数据流" class="headerlink" title="6.4 CPU-GPU 数据流"></a>6.4 CPU-GPU 数据流</h4><p>下图是分离式架构的 CPU-GPU 的数据流程图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001916357-1658595620.webp" alt="1617944-20190906001916357-1658595620"></p>
+<p>1、将主存的处理数据复制到显存中。</p>
+<p>2、CPU指令驱动GPU。</p>
+<p>3、GPU中的每个运算单元并行处理。此步会从显存存取数据。</p>
+<p>4、GPU将显存结果传回主存。</p>
+<p>更加详细的 GPU 数据流程可以查看最后的参考文章。</p>
+<h4 id="6-5-显像机制"><a href="#6-5-显像机制" class="headerlink" title="6.5 显像机制"></a>6.5 显像机制</h4><p>计算机显示图像的过程如下图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001947961-1190125231.png" alt="1617944-20190906001947961-1190125231"></p>
+<p>显示器通常以固定频率进行刷新，CPU 将计算好显示内容提交至 GPU，GPU 渲染完成后将渲染结果存入帧缓冲区，视频控制器会按照屏幕刷新信号逐帧读取帧缓冲区的数据，经过数据转换后最终由显示器进行显示。</p>
+<h4 id="6-6-双重缓冲"><a href="#6-6-双重缓冲" class="headerlink" title="6.6 双重缓冲"></a>6.6 双重缓冲</h4><p>在单缓冲下，帧缓冲区的读取和刷新都都会有比较大的效率问题，经常会出现相互等待的情况，导致帧率下降。</p>
+<p>为了解决效率问题，GPU 通常会引入两个缓冲区，即 <strong>双缓冲机制</strong>。在这种情况下，GPU 会预先渲染一帧放入一个缓冲区中，用于视频控制器的读取。当下一帧渲染完毕后，GPU 会交换缓冲区内容。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906001957832-296063271.png" alt="1617944-20190906001957832-296063271"></p>
+<h4 id="6-7-垂直同步"><a href="#6-7-垂直同步" class="headerlink" title="6.7 垂直同步"></a>6.7 垂直同步</h4><p>双缓冲虽然能解决效率问题，但会引入一个新的问题。当 GPU 渲染速度大于屏幕刷新速度时，视频控制器还未读取完成，即屏幕内容刚显示一半时，GPU 就将新的一帧内容提交到帧缓冲区并把两个缓冲区进行交换，此时视频控制器就会把新的一帧数据的下半段显示到屏幕上，造成画面撕裂现象：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906002006570-2008054292.jpg" alt="1617944-20190906002006570-2008054292"></p>
+<p>为了解决这个问题，GPU 通常有一个机制叫做<strong>垂直同步</strong>（V-Sync），当开启垂直同步后，GPU 会等待显示器的刷新信号发出后，才进行新的一帧渲染和缓冲区更新。这样能解决画面撕裂现象，也增加了画面流畅度，但需要消费更多的计算资源，也会带来部分延迟。</p>
+<h3 id="7-Shader-运行机制"><a href="#7-Shader-运行机制" class="headerlink" title="7 Shader 运行机制"></a>7 Shader 运行机制</h3><p>Shader 代码也跟传统的 C++ 等语言类似，需要将面向人类的高级语言（GLSL、HLSL、CGSL）通过编译器转成面向机器的二进制指令，二进制指令可转译成汇编代码，以便技术人员查阅和调试。</p>
+<p>由高级语言编译成汇编指令的过程通常是在离线阶段执行，以减轻运行时的消耗。</p>
+<p>在执行阶段，CPU端将shader二进制指令经由PCI-e推送到GPU端，GPU在执行代码时，会用Context将指令分成若干Channel推送到各个Core的存储空间。</p>
+<p>对现代GPU而言，可编程的阶段越来越多，包含但不限于：顶点着色器（Vertex Shader）、曲面细分控制着色器（Tessellation Control Shader）、几何着色器（Geometry Shader）、像素&#x2F;片元着色器（Fragment Shader）、计算着色器（Compute Shader）等等。总体流程如下图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GPU%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/1617944-20190906002027360-504150984.png" alt="1617944-20190906002027360-504150984"></p>
+<h3 id="8-渲染优化建议"><a href="#8-渲染优化建议" class="headerlink" title="8 渲染优化建议"></a>8 渲染优化建议</h3><p>由以上分析，可以得出以下渲染优化建议：</p>
+<ul>
+<li><strong>减少CPU和GPU的数据交换：</strong><ul>
+<li>批处理（Batch）</li>
+<li>减少顶点数、三角形数</li>
+<li>视锥裁剪<ul>
+<li>BVH</li>
+<li>Portal</li>
+<li>BSP</li>
+<li>OSP</li>
+</ul>
+</li>
+<li>避免每帧提交Buffer数据<ul>
+<li>CPU版的粒子、动画会每帧修改、提交数据，可移至GPU端。</li>
+</ul>
+</li>
+<li>减少渲染状态设置和查询<ul>
+<li>例如：<code>glGetUniformLocation</code>会从GPU内存查询状态，耗费很多时间周期。</li>
+<li>避免每帧设置、查询渲染状态，可在初始化时缓存状态。</li>
+</ul>
+</li>
+<li>启用GPU Instance</li>
+<li>开启LOD</li>
+<li>避免从显存读数据</li>
+</ul>
+</li>
+<li><strong>减少过绘制：</strong><ul>
+<li>避免Tex Kill操作</li>
+<li>避免Alpha Test</li>
+<li>避免Alpha Blend</li>
+<li>开启深度测试<ul>
+<li>Early-Z</li>
+<li>层次Z缓冲（Hierarchical Z-Buffering，HZB）</li>
+</ul>
+</li>
+<li>开启裁剪：<ul>
+<li>背面裁剪</li>
+<li>遮挡裁剪</li>
+<li>视口裁剪</li>
+<li>剪切矩形（scissor rectangle）</li>
+</ul>
+</li>
+<li>控制物体数量<ul>
+<li>粒子数量多且面积小，由于像素块机制，会加剧过绘制情况</li>
+<li>植物、沙石、毛发等也如此</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>Shader优化：</strong><ul>
+<li>避免if、switch分支语句</li>
+<li>避免<code>for</code>循环语句，特别是循环次数可变的</li>
+<li>减少纹理采样次数</li>
+<li>禁用<code>clip</code>或<code>discard</code>操作</li>
+<li>减少复杂数学函数调用</li>
+</ul>
+</li>
+</ul>
+<h3 id="9-参考"><a href="#9-参考" class="headerlink" title="9 参考"></a>9 参考</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/timlly/p/11471507.html">深入GPU硬件架构及运行机制 - 0向往0 - 博客园 (cnblogs.com)</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/61358167">GPU并行架构及渲染优化 - 知乎 (zhihu.com)</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <div>
+    
+      <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">---- 本文结束 <i class="fa fa-trophy"></i> 知识又增加了亿点点！----</div>
+    
+</div>
+<br />
+<div>
+  <div>
+    <fieldset
+        style="
+            border: 1px dashed #C0C0C0;
+            padding: 10px;
+            border-radius: 5px;
+            line-height: 2em;
+            color: #6d6d6d;
+        ">
+        <legend
+            align="center"
+            style="
+                width: 30%;
+                text-align: center;
+                color: #6d6d6d;
+                border: 1px dashed #C0C0C0;
+                border-radius: 5px;
+            ">
+            文章版权声明
+        </legend>
+        1、博客名称：<font color="#37c6c0">LycTechStack</font><br />
+        2、博客网址：<font color="#37c6c0">https://lz328.github.io/LycTechStack.github.io/</font><br />
+        3、本博客的文章部分内容可能来源于网络，仅供大家学习与参考，如有侵权，请联系博主进行删除处理。<br />
+        4、本博客所有文章版权归博主所有，如需转载请标明出处。<br />
+    </fieldset>
+  </div>
+</div>
+
+    
+    </div>
+      
+  <div class="popular-posts-header">相关文章</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\04\28\20220428-GameEngine-游戏引擎架构\" rel="bookmark">【游戏引擎】（一）游戏引擎架构</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\26\20220526-GameEngine-游戏引擎中的渲染系统\" rel="bookmark">【游戏引擎】（二）游戏引擎中的渲染系统</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\06\09\20220609-GAMES202-实时光线追踪\" rel="bookmark">【高质量实时渲染】实时光线追踪</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\06\18\20220618-Pilot-渲染系统（一）渲染流程\" rel="bookmark">【Piccolo代码解读】渲染系统（一）渲染流程</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\30\20220530-GAMES202-实时阴影\" rel="bookmark">【高质量实时渲染】实时阴影</a></div>
+    </li>
+  </ul>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/LycTechStack.github.io/tags/%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E/" rel="tag"># 游戏引擎</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/" rel="prev" title="【游戏引擎】（三）游戏引擎中的动画系统">
+      <i class="fa fa-chevron-left"></i> 【游戏引擎】（三）游戏引擎中的动画系统
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-GPU-%E6%9E%B6%E6%9E%84%E5%8F%91%E5%B1%95"><span class="nav-text">1 GPU 架构发展</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-GPU-%E7%9A%84%E5%8A%9F%E8%83%BD"><span class="nav-text">2 GPU 的功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-GPU-%E9%80%BB%E8%BE%91%E6%9E%B6%E6%9E%84"><span class="nav-text">3 GPU 逻辑架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-GPU-%E9%80%BB%E8%BE%91%E7%AE%A1%E7%BA%BF"><span class="nav-text">4 GPU 逻辑管线</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E6%8A%80%E6%9C%AF%E8%A6%81%E7%82%B9"><span class="nav-text">5 技术要点</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#5-1-SIMD%E5%92%8CSIMT"><span class="nav-text">5.1 SIMD和SIMT</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-2-co-issue"><span class="nav-text">5.2 co-issue</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-3-if-else-%E8%AF%AD%E5%8F%A5"><span class="nav-text">5.3 if-else 语句</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-4-Early-Z"><span class="nav-text">5.4 Early-Z</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-5-%E7%BB%9F%E4%B8%80%E7%9D%80%E8%89%B2%E5%99%A8%E6%9E%B6%E6%9E%84%EF%BC%88Unified-shader-Architecture%EF%BC%89"><span class="nav-text">5.5 统一着色器架构（Unified shader Architecture）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-6-%E5%83%8F%E7%B4%A0%E5%9D%97%EF%BC%88Pixel-Quad%EF%BC%89"><span class="nav-text">5.6 像素块（Pixel Quad）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-GPU-%E8%B5%84%E6%BA%90%E7%AE%A1%E7%90%86"><span class="nav-text">6 GPU 资源管理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#6-1-GPU-%E5%86%85%E5%AD%98%E6%9E%B6%E6%9E%84"><span class="nav-text">6.1 GPU 内存架构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-2-CPU-GPU-%E5%BC%82%E6%9E%84%E7%B3%BB%E7%BB%9F"><span class="nav-text">6.2 CPU-GPU 异构系统</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-3-GPU-%E8%B5%84%E6%BA%90%E7%AE%A1%E7%90%86%E6%A8%A1%E5%9E%8B"><span class="nav-text">6.3 GPU 资源管理模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-4-CPU-GPU-%E6%95%B0%E6%8D%AE%E6%B5%81"><span class="nav-text">6.4 CPU-GPU 数据流</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-5-%E6%98%BE%E5%83%8F%E6%9C%BA%E5%88%B6"><span class="nav-text">6.5 显像机制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-6-%E5%8F%8C%E9%87%8D%E7%BC%93%E5%86%B2"><span class="nav-text">6.6 双重缓冲</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-7-%E5%9E%82%E7%9B%B4%E5%90%8C%E6%AD%A5"><span class="nav-text">6.7 垂直同步</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-Shader-%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6"><span class="nav-text">7 Shader 运行机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-%E6%B8%B2%E6%9F%93%E4%BC%98%E5%8C%96%E5%BB%BA%E8%AE%AE"><span class="nav-text">8 渲染优化建议</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-%E5%8F%82%E8%80%83"><span class="nav-text">9 参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Lyc"
+      src="/LycTechStack.github.io/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Lyc</p>
+  <div class="site-description" itemprop="description">个人学习总结和技术经验分享，主要内容包括C++、数据结构、算法、计算机图形学、3D数学、实时渲染、游戏引擎等等，希望未来能真正踏入图形/引擎开发的大门！</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/LycTechStack.github.io/archives/">
+        
+          <span class="site-state-item-count">106</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/LycTechStack.github.io/categories/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/LycTechStack.github.io/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/LZ328/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;LZ328&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:27487358@qq.com" title="E-Mail → mailto:27487358@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2021 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heartbeat"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lyc</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">846k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">12:49</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="/LycTechStack.github.io/lib/canvas-ribbon/canvas-ribbon.js"></script>
+  <script src="/LycTechStack.github.io/lib/anime.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/pjax/pjax.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4/dist/browser/pangu.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/velocity/velocity.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/LycTechStack.github.io/js/utils.js"></script>
+
+<script src="/LycTechStack.github.io/js/motion.js"></script>
+
+
+<script src="/LycTechStack.github.io/js/schemes/pisces.js"></script>
+
+
+<script src="/LycTechStack.github.io/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/LycTechStack.github.io/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '09aa5d8a5587f012a8af',
+      clientSecret: '7f7ec08f02d74e1865e57b5f03a982047700b547',
+      repo        : 'LycTechStack.github.io',
+      owner       : 'LZ328',
+      admin       : ['LZ328'],
+      id          : 'da141d84a3e567ca8b385554a26e5d7e',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+    </div>
+  
+</body>
+</html>
