@@ -249,7 +249,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>2.3k</span>
+              <span>2.2k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -270,13 +270,22 @@
       
         <p>现在我们的渲染管线已经基本具备了所有的要素，但是作为光栅化渲染器，我们目前的光栅化算法太过老旧，扫描线算法简单高效，但难以并行化（毕竟操作的单位是一条线），并且在实现时还存在由于多次插值的精度损失导致的多个三角形间存在接缝等问题。因此现在已经不被使用，之前在图形学中我们学习过另一种光栅化方法，这节我们来讨论该方法的一些具体实现细节。</p>
 <p><em><span id="more"></span></em></p>
-<h3 id="1-边界函数算法"><a href="#1-边界函数算法" class="headerlink" title="1 边界函数算法"></a>1 边界函数算法</h3><p>关于边界函数算法，原理同样非常简单，就是用点和三角形三个顶点连线的向量叉乘来判断点是否在三角形内部，具体可以查看之前的笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%85%89%E6%A0%85%E5%8C%96/">【计算机图形学】（三）光栅化</a>，其中还包含了 C++ 代码实现。我们先照搬过来：</p>
+<h3 id="1-边界函数算法"><a href="#1-边界函数算法" class="headerlink" title="1 边界函数算法"></a>1 边界函数算法</h3><p>关于边界函数算法，原理同样非常简单，就是用点和三角形三个顶点连线的向量叉乘来判断点是否在三角形内部，具体可以查看之前的笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-光栅化/">【计算机图形学】（三）光栅化</a>，其中还包含了 C++ 代码实现。我们先照搬过来：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">  Vector3f* _v存储三角形的三个顶点坐标，顶点顺序为逆时针</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="type">static</span> <span class="type">bool</span> <span class="title">insideTriangle</span><span class="params">(<span class="type">int</span> x, <span class="type">int</span> y, <span class="type">const</span> Vector3f* _v)</span></span></span><br><span class="line"><span class="function"></span>&#123;   </span><br><span class="line">    <span class="comment">//用像素中心坐标判断</span></span><br><span class="line">    <span class="function">Vector3f <span class="title">p</span><span class="params">(<span class="type">float</span>(x) + <span class="number">0.5</span>, <span class="type">float</span>(y) + <span class="number">0.5</span>, <span class="number">1</span>)</span></span>;</span><br><span class="line">    <span class="comment">//向量AB和AC叉乘的纵坐标</span></span><br><span class="line">    <span class="type">float</span> signofTrig = (_v[<span class="number">1</span>].<span class="built_in">x</span>() - _v[<span class="number">0</span>].<span class="built_in">x</span>()) * (_v[<span class="number">2</span>].<span class="built_in">y</span>() - _v[<span class="number">0</span>].<span class="built_in">y</span>()) - (_v[<span class="number">1</span>].<span class="built_in">y</span>() - _v[<span class="number">0</span>].<span class="built_in">y</span>()) * (_v[<span class="number">2</span>].<span class="built_in">x</span>() - _v[<span class="number">0</span>].<span class="built_in">x</span>());</span><br><span class="line">    <span class="comment">//向量AB和AP叉乘的纵坐标</span></span><br><span class="line">    <span class="type">float</span> signOfAB = (_v[<span class="number">1</span>].<span class="built_in">x</span>() - _v[<span class="number">0</span>].<span class="built_in">x</span>()) * (p.<span class="built_in">y</span>() - _v[<span class="number">0</span>].<span class="built_in">y</span>()) - (_v[<span class="number">1</span>].<span class="built_in">y</span>() - _v[<span class="number">0</span>].<span class="built_in">y</span>()) * (p.<span class="built_in">x</span>() - _v[<span class="number">0</span>].<span class="built_in">x</span>());</span><br><span class="line">    <span class="comment">//向量CA和CP叉乘的纵坐标</span></span><br><span class="line">    <span class="type">float</span> signOfCA = (_v[<span class="number">0</span>].<span class="built_in">x</span>() - _v[<span class="number">2</span>].<span class="built_in">x</span>()) * (p.<span class="built_in">y</span>() - _v[<span class="number">2</span>].<span class="built_in">y</span>()) - (_v[<span class="number">0</span>].<span class="built_in">y</span>() - _v[<span class="number">2</span>].<span class="built_in">y</span>()) * (p.<span class="built_in">x</span>() - _v[<span class="number">2</span>].<span class="built_in">x</span>());</span><br><span class="line">    <span class="comment">//向量BC和BP叉乘的纵坐标</span></span><br><span class="line">    <span class="type">float</span> signOfBC = (_v[<span class="number">2</span>].<span class="built_in">x</span>() - _v[<span class="number">1</span>].<span class="built_in">x</span>()) * (p.<span class="built_in">y</span>() - _v[<span class="number">2</span>].<span class="built_in">y</span>()) - (_v[<span class="number">2</span>].<span class="built_in">y</span>() - _v[<span class="number">1</span>].<span class="built_in">y</span>()) * (p.<span class="built_in">x</span>() - _v[<span class="number">2</span>].<span class="built_in">x</span>());</span><br><span class="line">    <span class="type">bool</span> d1 = (signOfAB * signofTrig &gt; <span class="number">0</span>);</span><br><span class="line">    <span class="type">bool</span> d2 = (signOfCA * signofTrig &gt; <span class="number">0</span>);</span><br><span class="line">    <span class="type">bool</span> d3 = (signOfBC * signofTrig &gt; <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">return</span> d1 &amp;&amp; d2 &amp;&amp; d3;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>所谓边界函数实际上就是上述代码中的 <code>(signOfAB * signofTrig &gt; 0)</code> 等这三个判断条件，因为这个条件判断了点和三角形的一条边界的位置关系，因此被称为边界函数。根据边界函数经过推导可以看出每次移动一个像素得到的边界函数和之前的边界函数的差值是固定的，具体推导过程可以查看<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/140926917">图形学底层探秘 - 更现代的三角形光栅化与插值算法的实现与优化</a>，因此我们不需要每次都计算叉乘，只需要在前一次的结果上加上差值即可。</p>
 <p>另一个问题是，我们对每个三角形的 Bounding Box 内的像素进行遍历来判断其是否在三角形内部，那么至少会有一半的像素不在三角形内而造成计算浪费，因此出现了分块优化算法，即将 Bounding Box 进行分块，然后只判断每块四个角上的像素是否在三角形内，如果每块的四个像素都在三角形内部或者外部，其他像素就不需要再进行判断了，如果四个像素部分在内部部分在外部就执行正常的算法在块内逐像素判断。这个方法对于占屏幕面积较大的三角形优化效果明显，但如果是小三角形或是斜长的细三角形，反而不如不分块来得快。而且，太大的分块会进一步降低小三角形的绘制效率，而太小的分块又变回了逐像素算法，因此分块的大小需要仔细的权衡。</p>
-<h3 id="2-重心插值"><a href="#2-重心插值" class="headerlink" title="2 重心插值"></a>2 重心插值</h3><p>扫描线算法中使用线性插值就可以确定片元的各种属性值，而在边界函数算法中需要使用重心插值，关于重心坐标我们之前的笔记中也有具体的推导：<a href="https://lz328.github.io/LycTechStack.github.io/2022/03/09/20220309-%E7%9D%80%E8%89%B2/">【计算机图形学】（六）着色</a>中的第4部分。</p>
-<p>在实现中我们如何计算重心坐标呢？首先整个三角形的面积可以通过：<br>$$<br>S_{\Delta} &#x3D; \frac{1} {2}a·b·sin\theta<br>$$<br>来计算，也就是三角形两条边叉乘得到的向量模的一半，以 AB 和 BC 边为例，三角形的面积为：<br>$$<br>S_{\Delta} &#x3D; \frac{1} {2}(A_xB_y - A_yBx + B_xC_y - B_yCx + C_xA_y - C_yAx)<br>$$<br>而我们的三个边界函数相加：<br>$$<br>F_{AB}(P) + F_{BC}(P) + F_{CA}(P) &#x3D; A_xB_y - A_yBx + B_xC_y - B_yCx + C_xA_y - C_yAx<br>$$<br>刚好是三角形面积的二倍，即：<br>$$<br>\frac{F_{AB}(P) + F_{BC}(P) + F_{CA}(P)} {2S_{\Delta} } &#x3D; 1<br>$$<br>而重心坐标就是小三角形面积和整个三角形面积的比值，因此我们可以直接通过边界函数得到点 P 的重心坐标：<br>$$<br>\alpha &#x3D; \frac{F_{AB}(P)} { {2S_{\Delta} } },\beta &#x3D; \frac{F_{BC}(P)} { {2S_{\Delta} } },\gamma &#x3D; \frac{F_{CA}(P)} { {2S_{\Delta} } }<br>$$<br>这样整个光栅化算法就完成了。需要注意的是重心插值和之前的线性插值一样，都需要进行透视插值校正，即在透视除法中将所有属性都除以 w 值，最后在片元着色器之前再乘以 w 值恢复。关于透视插值校正我们将在下一节详细讨论。</p>
+<h3 id="2-重心插值"><a href="#2-重心插值" class="headerlink" title="2 重心插值"></a>2 重心插值</h3><p>扫描线算法中使用线性插值就可以确定片元的各种属性值，而在边界函数算法中需要使用重心插值，关于重心坐标我们之前的笔记中也有具体的推导：<a href="https://lz328.github.io/LycTechStack.github.io/2022/03/09/20220309-着色/">【计算机图形学】（六）着色</a>中的第4部分。</p>
+<p>在实现中我们如何计算重心坐标呢？首先整个三角形的面积可以通过：</p>
+<script type="math/tex; mode=display">
+S_{\Delta} = \frac{1} {2}a·b·sin\theta</script><p>来计算，也就是三角形两条边叉乘得到的向量模的一半，以 AB 和 BC 边为例，三角形的面积为：</p>
+<script type="math/tex; mode=display">
+S_{\Delta} = \frac{1} {2}(A_xB_y - A_yBx + B_xC_y - B_yCx + C_xA_y - C_yAx)</script><p>而我们的三个边界函数相加：</p>
+<script type="math/tex; mode=display">
+F_{AB}(P) + F_{BC}(P) + F_{CA}(P) = A_xB_y - A_yBx + B_xC_y - B_yCx + C_xA_y - C_yAx</script><p>刚好是三角形面积的二倍，即：</p>
+<script type="math/tex; mode=display">
+\frac{F_{AB}(P) + F_{BC}(P) + F_{CA}(P)} {2S_{\Delta} } = 1</script><p>而重心坐标就是小三角形面积和整个三角形面积的比值，因此我们可以直接通过边界函数得到点 P 的重心坐标：</p>
+<script type="math/tex; mode=display">
+\alpha = \frac{F_{AB}(P)} { {2S_{\Delta} } },\beta = \frac{F_{BC}(P)} { {2S_{\Delta} } },\gamma = \frac{F_{CA}(P)} { {2S_{\Delta} } }</script><p>这样整个光栅化算法就完成了。需要注意的是重心插值和之前的线性插值一样，都需要进行透视插值校正，即在透视除法中将所有属性都除以 w 值，最后在片元着色器之前再乘以 w 值恢复。关于透视插值校正我们将在下一节详细讨论。</p>
 
     </div>
 
@@ -330,10 +339,10 @@
       <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\19\20220519-渲染器-环境配置\" rel="bookmark">【光栅化渲染器】（一）环境配置</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\23\20220523-渲染器-相机\" rel="bookmark">【光栅化渲染器】（五）相机</a></div>
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\22\20220522-渲染器-纹理\" rel="bookmark">【光栅化渲染器】（四）纹理</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\22\20220522-渲染器-纹理\" rel="bookmark">【光栅化渲染器】（四）纹理</a></div>
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\23\20220523-渲染器-相机\" rel="bookmark">【光栅化渲染器】（五）相机</a></div>
     </li>
     <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\24\20220524-渲染器-加载模型\" rel="bookmark">【光栅化渲染器】（七）加载模型</a></div>
@@ -496,13 +505,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">860k</span>
+    <span title="站点总字数">854k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">13:02</span>
+    <span title="站点阅读时长">12:56</span>
 </div>
 
         
