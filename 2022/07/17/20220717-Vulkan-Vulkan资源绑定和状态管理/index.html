@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/LycTechStack.github.io/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/LycTechStack.github.io/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/LycTechStack.github.io/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/LycTechStack.github.io/images/safari-pinned-tab.svg" color="#222">
+
+<link rel="stylesheet" href="/LycTechStack.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="/LycTechStack.github.io/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/LycTechStack.github.io/lib/pace/pace-theme-minimal.min.css">
+  <script src="/LycTechStack.github.io/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lz328.github.io","root":"/LycTechStack.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":5,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="这一节讨论 Vulkan 的资源绑定和状态管理机制，过程中可以加深对 Pipeline、Pipeline layout、Descriptor、Descriptor Set、Descriptor set layout、Descriptor binding 等概念的理解。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【Vulkan】资源绑定和状态管理">
+<meta property="og:url" content="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/index.html">
+<meta property="og:site_name" content="LycTechStack">
+<meta property="og:description" content="这一节讨论 Vulkan 的资源绑定和状态管理机制，过程中可以加深对 Pipeline、Pipeline layout、Descriptor、Descriptor Set、Descriptor set layout、Descriptor binding 等概念的理解。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/image-20220717150433528.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/image-20220717144401753.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/image-20220717144735429.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/image-20220717145643661.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/image-20220717145816221.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/image-20220717145943704.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/image-20220717150351889.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/image-20220717150433528.png">
+<meta property="article:published_time" content="2022-07-17T07:11:59.000Z">
+<meta property="article:modified_time" content="2022-07-17T07:12:48.169Z">
+<meta property="article:author" content="Lyc">
+<meta property="article:tag" content="Vulkan">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/image-20220717150433528.png">
+
+<link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>【Vulkan】资源绑定和状态管理 | LycTechStack</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/LycTechStack.github.io/atom.xml" title="LycTechStack" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/LycTechStack.github.io/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LycTechStack</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Lyc的个人成长技术栈</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/LycTechStack.github.io/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/LycTechStack.github.io/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/LycTechStack.github.io/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/LycTechStack.github.io/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/LycTechStack.github.io/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/LycTechStack.github.io/images/avatar.png">
+      <meta itemprop="name" content="Lyc">
+      <meta itemprop="description" content="个人学习总结和技术经验分享，主要内容包括C++、数据结构、算法、计算机图形学、3D数学、实时渲染、游戏引擎等等，希望未来能真正踏入图形/引擎开发的大门！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LycTechStack">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【Vulkan】资源绑定和状态管理
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-07-17 15:11:59 / 修改时间：15:12:48" itemprop="dateCreated datePublished" datetime="2022-07-17T15:11:59+08:00">2022-07-17</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/LycTechStack.github.io/categories/Vulkan/" itemprop="url" rel="index"><span itemprop="name">Vulkan</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>6.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>6 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>这一节讨论 Vulkan 的资源绑定和状态管理机制，过程中可以加深对 Pipeline、Pipeline layout、Descriptor、Descriptor Set、Descriptor set layout、Descriptor binding 等概念的理解。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/image-20220717150433528.png" alt="image-20220717150433528"></p>
+<p><em><span id="more"></span></em></p>
+<h3 id="1-Pipeline-状态管理"><a href="#1-Pipeline-状态管理" class="headerlink" title="1 Pipeline 状态管理"></a>1 Pipeline 状态管理</h3><p>Vulkan中的管线分为两种：Compute Pipeline 和 Graphics Pipeline。这两种Pipeline的作用跟其他CG API并没有太大的差别。</p>
+<ul>
+<li>Compute Pipeline 用于异构并行计算，Vulkan 的 Compute Pipleline 比较简单，API 也比较少，基本上我们只需要关注 compute shader 本身就好。</li>
+<li>Graphics Pipeline 用于绘制渲染，相比于 Compute Pipleline，Vulkan 的 Graphics Pipeline 更加复杂，包含了 Rasterzation(光栅化)、Shading(着色)、Geometry (几何着色)、Tessellation （细分）等可编程管线的重要环节。</li>
+</ul>
+<p>回忆一下 OpenGL 的设计，每一次的 API 调用你都需要知道将要设置的 OpenGL 状态，所有的状态都由 OpenGL 的 VM 进行管理，因此在使用 OpenGL 时需要时刻将 VM 的状态熟记于心，而 Vulkan 则完全相反，你需要将所有的渲染状态显示的设置到一个原始的 VkPipeline 对象上，该对象打包了所有可编程 (programable) 渲染状态以及所有的固定功能 (fixed-function) 状态。</p>
+<p>VkPipeline 对象的创建在加载阶段，可以在运行游戏时动态创建，也可以直接从文件中读取预编译的对象，预先创建 Pipeline 对象可以减少游戏过程中的卡顿(hitch)现象，下面的代码片段是创建一个 Pipeline 对象所必须设置的状态：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">VkGraphicsPipelineCreateInfo</span> &#123;</span><br><span class="line">    VkStructureType                                  sType;</span><br><span class="line">    <span class="type">const</span> <span class="type">void</span>*                                      pNext;</span><br><span class="line">    VkPipelineCreateFlags                            flags;</span><br><span class="line">    <span class="type">uint32_t</span>                                         stageCount;</span><br><span class="line">    <span class="type">const</span> VkPipelineShaderStageCreateInfo*           pStages;</span><br><span class="line">    <span class="type">const</span> VkPipelineVertexInputStateCreateInfo*      pVertexInputState;</span><br><span class="line">    <span class="type">const</span> VkPipelineInputAssemblyStateCreateInfo*    pInputAssemblyState;</span><br><span class="line">    <span class="type">const</span> VkPipelineTessellationStateCreateInfo*     pTessellationState;</span><br><span class="line">    <span class="type">const</span> VkPipelineViewportStateCreateInfo*         pViewportState;</span><br><span class="line">    <span class="type">const</span> VkPipelineRasterizationStateCreateInfo*    pRasterizationState;</span><br><span class="line">    <span class="type">const</span> VkPipelineMultisampleStateCreateInfo*      pMultisampleState;</span><br><span class="line">    <span class="type">const</span> VkPipelineDepthStencilStateCreateInfo*     pDepthStencilState;</span><br><span class="line">    <span class="type">const</span> VkPipelineColorBlendStateCreateInfo*       pColorBlendState;</span><br><span class="line">    <span class="type">const</span> VkPipelineDynamicStateCreateInfo*          pDynamicState;</span><br><span class="line">    VkPipelineLayout                                 layout;</span><br><span class="line">    VkRenderPass                                     renderPass;</span><br><span class="line">    <span class="type">uint32_t</span>                                         subpass;</span><br><span class="line">    VkPipeline                                       basePipelineHandle;</span><br><span class="line">    <span class="type">int32_t</span>                                          basePipelineIndex;</span><br><span class="line">&#125; VkGraphicsPipelineCreateInfo;</span><br></pre></td></tr></table></figure>
+
+<p>其中每一个 CreateInfo 又包含一大堆参数，可以说相当繁琐，我们需要设置 GPU 在当前管线下工作时的每个状态。</p>
+<p>从早期开始，OpenGL 状态机就提供了更细颗粒度的状态控制，比如：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">glEnable</span>(GL_BLEND);</span><br><span class="line"><span class="built_in">glBlendFunc</span>(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);</span><br></pre></td></tr></table></figure>
+
+<p>但精细颗粒度的控制对驱动程序带来了负担，驱动程序不得不对状态进行缓存和运行时编译，但是现在新的 API，几乎把整个 GPU state vector 封装到一个 object 中。比如，如果我们想切换状态，是通过切换 pipeline A 和 pipeline B。而不是像 OpenGL 中那样更改标志位。</p>
+<p>这样粗颗粒度的状态对象的优势是方便驱动程序的编译和验证，有助于避免在状态改变时造成的暂停现象。Vulkan 的 Pipeline状态管理参考的是 Mantel，提供了 Pipeline State Object（PSO）进行状态管理：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/image-20220717144401753.png" alt="image-20220717144401753"></p>
+<p>这些状态包括：</p>
+<ul>
+<li><p>Vertex input state：Vertex input state 用来管理 Vertex 数据的位置、索引、布局等信息</p>
+</li>
+<li><p>Input assembly state：Input assembly state 管理顶点数据的组装方式（点、线、三角形等）</p>
+</li>
+<li><p>Tessellation State：Tessellation State 管理 Tessellation control shader 和 Tessellation evaluation shader 的状态</p>
+</li>
+<li><p>Viewport state：Viewport state 用来管理 Viewport，Viewport 会将设备坐标（device coordinate）转换为窗口坐标（window coordinate），是进行光栅化之前最后一次坐标变换</p>
+</li>
+<li><p>Rasterization state：Rasterization state 用来管理光栅化的一些状态，包括多边形的填充模式（PolygonMode）、剔除模式（正面剔除、背面剔除）、深度信息的处理等</p>
+</li>
+<li><p>Color Blend state：Color Blend 是 Vulkan Graphics Pipeline 的最后阶段，这个阶段负责将片段写入 color attachments。在许多情况下，这是一个简单的操作，仅用 Fragment Shader 输出的值覆盖 attachments 中的值。除此之外，color blend 还可以将这些值与 FrameBuffer 中的值混合，并进行简单的逻辑运算。</p>
+</li>
+<li><p>Depth&#x2F;Stencil state：Depth&#x2F;Stencil state 控制着 Depth 和 Stencil 测试的方式</p>
+</li>
+<li><p>Multi-Sampling State：多重采样的目的是为了抗锯齿，Multi-Sampling State 管理多重采样</p>
+</li>
+</ul>
+<p>Vulkan 还允许动态状态管理，因为 Graphics Pipeline 很复杂，包含很多状态，一些图形应用希望能以更高的频率更改某些状态。如果每种状态更改都要创建一个新的 Pipeline 对象，非常不利于管理。Dynamic state 可以管理 viewport、stencil、line widths（线宽）、blending constants、stencil comparison masks 等状态。应用无需重建 Pipeline 对象，只需要通过 Command Buffer 就可以实现状态更新。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/image-20220717144735429.png" alt="image-20220717144735429"></p>
+<p>接下来对一些状态进行进一步说明。。</p>
+<h4 id="1-1-ShaderMoudle"><a href="#1-1-ShaderMoudle" class="headerlink" title="1.1 ShaderMoudle"></a>1.1 ShaderMoudle</h4><p>Shader 是 Pipeline 状态中最为核心的一个，Vulkan 完全摒弃了固定渲染管线。Vulkan 中 shader 对象被称为 VkShaderMoudle，在图形渲染管线(VkGraphicPipeline)中必不可少的 Shader 有 Vertex shader 和 Fragment shader，当然在一些特殊应用中也可以有细分 shader 以及几何 shader。</p>
+<p>Vulkan 并没有特定的 Shader语法，而是使用了一种编译后的中间格式——SPIRV，通常情况下一般使用第三方库将 GLSL 或 HLSL 离线或实时编译成 SPIRV 格式，例如对于 GLSL 可以使用 LunaG 中提供的工具离线将其编译成 SPIRV 格式，也可以使用第三方库 Glslang 将其实时编译成 SPIRV 格式(但这样会有一定的运行时开销，可以将编译后的 SPIRV 格式保存存文件，下次直接加载)。</p>
+<h4 id="1-2-Input-Assembly-State"><a href="#1-2-Input-Assembly-State" class="headerlink" title="1.2 Input Assembly State"></a>1.2 Input Assembly State</h4><p>该状态一般也缩写为 IA，用来指定图元的拓扑方式(topology)，如 Point, Line, TriangleList 等，作用等同于 OpenGL 中 glDrawElements 中的 Mode 参数：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">enum</span> <span class="title class_">VkPrimitiveTopology</span> &#123;</span><br><span class="line">    VK_PRIMITIVE_TOPOLOGY_POINT_LIST = <span class="number">0</span>,</span><br><span class="line">    VK_PRIMITIVE_TOPOLOGY_LINE_LIST = <span class="number">1</span>,</span><br><span class="line">    VK_PRIMITIVE_TOPOLOGY_LINE_STRIP = <span class="number">2</span>,</span><br><span class="line">    VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST = <span class="number">3</span>,</span><br><span class="line">    VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP = <span class="number">4</span>,</span><br><span class="line">    VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN = <span class="number">5</span>,</span><br><span class="line">    VK_PRIMITIVE_TOPOLOGY_LINE_LIST_WITH_ADJACENCY = <span class="number">6</span>,</span><br><span class="line">    VK_PRIMITIVE_TOPOLOGY_LINE_STRIP_WITH_ADJACENCY = <span class="number">7</span>,</span><br><span class="line">    VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST_WITH_ADJACENCY = <span class="number">8</span>,</span><br><span class="line">    VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP_WITH_ADJACENCY = <span class="number">9</span>,</span><br><span class="line">    VK_PRIMITIVE_TOPOLOGY_PATCH_LIST = <span class="number">10</span>,</span><br><span class="line">    VK_PRIMITIVE_TOPOLOGY_MAX_ENUM = <span class="number">0x7FFFFFFF</span></span><br><span class="line">&#125; VkPrimitiveTopology;</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-3-Rasterization"><a href="#1-3-Rasterization" class="headerlink" title="1.3 Rasterization"></a>1.3 Rasterization</h4><p>Pipeline 对象中需要显式指定光栅化操作中需要的状态，Vulkan 不支持光栅化的可编程操作，但支持光栅化模块的参数配置，如 CullMode，FrontFace 的缠绕(winding)方式，depth 偏移(bias)，线宽等：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">VkPipelineRasterizationStateCreateInfo</span> &#123;</span><br><span class="line">    VkStructureType                            sType;</span><br><span class="line">    <span class="type">const</span> <span class="type">void</span>*                                pNext;</span><br><span class="line">    VkPipelineRasterizationStateCreateFlags    flags;</span><br><span class="line">    VkBool32                                   depthClampEnable;</span><br><span class="line">    VkBool32                                   rasterizerDiscardEnable;</span><br><span class="line">    VkPolygonMode                              polygonMode;</span><br><span class="line">    VkCullModeFlags                            cullMode;</span><br><span class="line">    VkFrontFace                                frontFace;</span><br><span class="line">    VkBool32                                   depthBiasEnable;</span><br><span class="line">    <span class="type">float</span>                                      depthBiasConstantFactor;</span><br><span class="line">    <span class="type">float</span>                                      depthBiasClamp;</span><br><span class="line">    <span class="type">float</span>                                      depthBiasSlopeFactor;</span><br><span class="line">    <span class="type">float</span>                                      lineWidth;</span><br><span class="line">&#125; VkPipelineRasterizationStateCreateInfo;</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-4-Multisampling"><a href="#1-4-Multisampling" class="headerlink" title="1.4 Multisampling"></a>1.4 Multisampling</h4><p>Vulkan支持多重采样(Multisampling)，由于多重采样在是渲染管线之中，因此也也需要在 Pipeline 对象中指定多重采样状态，一般支持 1、4、8、16 个采样点，这依赖于硬件的支持情况，Vulkan 最多支持 64 个多重采样点。如果采样点数量不为 1 时，attchment 必须支持相应的多重采样，即创建 VkImage 时的 samples 参数必须与之相同。</p>
+<h4 id="1-5-Blend"><a href="#1-5-Blend" class="headerlink" title="1.5 Blend"></a>1.5 Blend</h4><p>Blend 同样也是 fixed-function 阶段，可以使用不同的参数进行配置，混合只发生于 color attchment，因此需要为不同的颜色 attchement 指定相应的混合参数，典型的混合参数有 <code>VK_BLEND_FACTOR_ZERO</code>, <code>VK_BLEND_FACTOR_ONE</code> 等，典型的混合操作有如 <code>VK_BLEND_OP_ADD</code>， <code>VK_BLEND_OP_SUBTRACT</code> 等。</p>
+<p>混合参数也可以指定常量 <code>VK_BLEND_FACTOR_CONSTANT_COLOR</code>，这时会使用创建 Pipeline 对象时指定的 <code>VkPipelineColorBlendStateCreateInfo</code> 中的 <code>blendConstants</code> 参数，也可以使用命令 <code>vkCmdSetBlendConstants</code> 设置的常量。</p>
+<h4 id="1-6-RenderPass"><a href="#1-6-RenderPass" class="headerlink" title="1.6 RenderPass"></a>1.6 RenderPass</h4><p>RenderPass 是指一组 attachment，Subpass 以及 Subpass 之间的依赖，Pipeline 对象引用了一个 VkRenderPass 对象。对于 RenderPass 而言，最为核心的是 Attachment 上的操作，RenderPass 可以指定 Pass 开始时对 attachment 的操作，如是否需要 Clean，在某种情况下，RenderPass 中参数的合理选择可以显著提高游戏的渲染效率。</p>
+<h4 id="1-7-总结"><a href="#1-7-总结" class="headerlink" title="1.7 总结"></a>1.7 总结</h4><p>总之，在 Vulkan 中，配置 Graphics Pipeline 需要三个步骤：</p>
+<ul>
+<li>提供 shader</li>
+<li>绑定资源</li>
+<li>管理状态</li>
+</ul>
+<p>接下来讨论资源的绑定。</p>
+<h3 id="2-Vulkan-资源绑定"><a href="#2-Vulkan-资源绑定" class="headerlink" title="2 Vulkan 资源绑定"></a>2 Vulkan 资源绑定</h3><p>Vulkan 的资源绑定涉及到以下几个概念：</p>
+<ul>
+<li>Descriptor</li>
+<li>Descriptor Set</li>
+<li>Descriptor set layout</li>
+<li>Descriptor binding</li>
+<li>Pipeline layout</li>
+<li>Push constant</li>
+</ul>
+<h4 id="2-1-Descriptor"><a href="#2-1-Descriptor" class="headerlink" title="2.1 Descriptor"></a>2.1 Descriptor</h4><p>Descriptor 是一个 GPU 特定编码格式的数据块。Descriptor 所指的内容不同，就可以表示不同的数据类型。比如指向纹理的 texture descriptor 可能包括指向纹理数据的指针，以及宽度&#x2F;高度，格式等信息。</p>
+<p>Descriptor 的内存不可以分配和释放，只能 write，copy 和 move。</p>
+<h4 id="2-2-Descriptor-Set"><a href="#2-2-Descriptor-Set" class="headerlink" title="2.2 Descriptor Set"></a>2.2 Descriptor Set</h4><p>Descriptor Set 是一个绑定在 Pipeline 上资源集合。多个 Descriptor Set 可以同时绑定到一个 Pipeline 上。</p>
+<p>每个 Descriptor Set 都有一个 layout，Descriptor set Layout 会控制当前资源集当中的资源排布方式，给 shader 提供了读取资源的接口。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/image-20220717145643661.png" alt="image-20220717145643661"></p>
+<h4 id="2-3-Descriptor-set-layout"><a href="#2-3-Descriptor-set-layout" class="headerlink" title="2.3 Descriptor set layout"></a>2.3 Descriptor set layout</h4><p>Descriptor set layout 本质上是 Descriptor bindings 的集合。Descriptor binding 可以是一个 texture descriptor、buffer descriptor 或者 sampler descriptor 等。</p>
+<p>正是通过 Descriptor binding，Descriptor Set 才实现了 shader 和资源的绑定，方便了 shader 对资源的读写操作。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/image-20220717145816221.png" alt="image-20220717145816221"></p>
+<h4 id="2-4-Pipeline-layout"><a href="#2-4-Pipeline-layout" class="headerlink" title="2.4 Pipeline layout"></a>2.4 Pipeline layout</h4><p>Pipeline layout 是由 Pipeline 可以访问的 descriptor set layouts 和 push constant ranges 组成，它表示 Pipeline 可以访问的完整资源集。其中，<strong>Push constant</strong> 提供了一个快速更新 shader 中常量的方法。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/image-20220717145943704.png" alt="image-20220717145943704"></p>
+<h4 id="2-5-Binding-model"><a href="#2-5-Binding-model" class="headerlink" title="2.5 Binding model"></a>2.5 Binding model</h4><p>我们把上述元素组织在一起，就是 Vulkan 的资源绑定模型。</p>
+<p>Descriptor Set 包含一组 Descriptor 和 Descriptor Set layout：</p>
+<ul>
+<li>每个 Descriptor 都可以表示不同的数据类型</li>
+<li>Descriptor Set Layout 由 Descriptor binding 组成，会控制每个 Descriptor 的排列方式</li>
+<li>Descriptor binding 将 Descriptor 和 shader 进行绑定，给 shader 提供了对资源操作的接口。</li>
+</ul>
+<p>Constants register array（Root Table） 把多个Descriptor Set 和 push constant 组织在一起。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/image-20220717150351889.png" alt="image-20220717150351889"></p>
+<p>Pipeline layout 表示整个渲染管线的资源布局。最后看一下资源和状态管理的整体架构：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/image-20220717150433528.png" alt="image-20220717150433528"></p>
+
+    </div>
+
+    
+    
+    
+
+    <div>
+    
+      <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">---- 本文结束 <i class="fa fa-trophy"></i> 知识又增加了亿点点！----</div>
+    
+</div>
+<br />
+<div>
+  <div>
+    <fieldset
+        style="
+            border: 1px dashed #C0C0C0;
+            padding: 10px;
+            border-radius: 5px;
+            line-height: 2em;
+            color: #6d6d6d;
+        ">
+        <legend
+            align="center"
+            style="
+                width: 30%;
+                text-align: center;
+                color: #6d6d6d;
+                border: 1px dashed #C0C0C0;
+                border-radius: 5px;
+            ">
+            文章版权声明
+        </legend>
+        1、博客名称：<font color="#37c6c0">LycTechStack</font><br />
+        2、博客网址：<font color="#37c6c0">https://lz328.github.io/LycTechStack.github.io/</font><br />
+        3、本博客的文章部分内容可能来源于网络，仅供大家学习与参考，如有侵权，请联系博主进行删除处理。<br />
+        4、本博客所有文章版权归博主所有，如需转载请标明出处。<br />
+    </fieldset>
+  </div>
+</div>
+
+    
+    </div>
+      
+  <div class="popular-posts-header">相关文章</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\07\16\20220716-Vulkan-Vulkan对象总结\" rel="bookmark">【Vulkan】常用组件总结</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\07\17\20220717-Vulkan-Vulkan内存管理\" rel="bookmark">【Vulkan】内存管理</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\07\17\20220717-Vulkan-Vulkan显示与绘制\" rel="bookmark">【Vulkan】显示与绘制</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\07\17\20220717-Vulkan-Vulkan多线程渲染\" rel="bookmark">【Vulkan】多线程渲染</a></div>
+    </li>
+  </ul>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/LycTechStack.github.io/tags/Vulkan/" rel="tag"># Vulkan</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E6%98%BE%E7%A4%BA%E4%B8%8E%E7%BB%98%E5%88%B6/" rel="prev" title="【Vulkan】显示与绘制">
+      <i class="fa fa-chevron-left"></i> 【Vulkan】显示与绘制
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Pipeline-%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86"><span class="nav-text">1 Pipeline 状态管理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-ShaderMoudle"><span class="nav-text">1.1 ShaderMoudle</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-Input-Assembly-State"><span class="nav-text">1.2 Input Assembly State</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-Rasterization"><span class="nav-text">1.3 Rasterization</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-4-Multisampling"><span class="nav-text">1.4 Multisampling</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-5-Blend"><span class="nav-text">1.5 Blend</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-6-RenderPass"><span class="nav-text">1.6 RenderPass</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-7-%E6%80%BB%E7%BB%93"><span class="nav-text">1.7 总结</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Vulkan-%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A"><span class="nav-text">2 Vulkan 资源绑定</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-Descriptor"><span class="nav-text">2.1 Descriptor</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-Descriptor-Set"><span class="nav-text">2.2 Descriptor Set</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-Descriptor-set-layout"><span class="nav-text">2.3 Descriptor set layout</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-4-Pipeline-layout"><span class="nav-text">2.4 Pipeline layout</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-5-Binding-model"><span class="nav-text">2.5 Binding model</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Lyc"
+      src="/LycTechStack.github.io/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Lyc</p>
+  <div class="site-description" itemprop="description">个人学习总结和技术经验分享，主要内容包括C++、数据结构、算法、计算机图形学、3D数学、实时渲染、游戏引擎等等，希望未来能真正踏入图形/引擎开发的大门！</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/LycTechStack.github.io/archives/">
+        
+          <span class="site-state-item-count">113</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/LycTechStack.github.io/categories/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/LycTechStack.github.io/tags/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/LZ328/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;LZ328&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:27487358@qq.com" title="E-Mail → mailto:27487358@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2021 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heartbeat"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lyc</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">906k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">13:44</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="/LycTechStack.github.io/lib/canvas-ribbon/canvas-ribbon.js"></script>
+  <script src="/LycTechStack.github.io/lib/anime.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/pjax/pjax.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4/dist/browser/pangu.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/velocity/velocity.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/LycTechStack.github.io/js/utils.js"></script>
+
+<script src="/LycTechStack.github.io/js/motion.js"></script>
+
+
+<script src="/LycTechStack.github.io/js/schemes/pisces.js"></script>
+
+
+<script src="/LycTechStack.github.io/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/LycTechStack.github.io/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '09aa5d8a5587f012a8af',
+      clientSecret: '7f7ec08f02d74e1865e57b5f03a982047700b547',
+      repo        : 'LycTechStack.github.io',
+      owner       : 'LZ328',
+      admin       : ['LZ328'],
+      id          : 'e84c58ff03516764df1e48161853872c',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+    </div>
+  
+</body>
+</html>
