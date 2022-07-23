@@ -29,19 +29,19 @@
 <meta property="og:site_name" content="LycTechStack">
 <meta property="og:description" content="本篇对《Real-Time Rendering》一书中的非真实感渲染技术进行概括总结和扩展。主要内容包括：  非真实感渲染（NPR）的基本思想 卡通渲染 轮廓描边方法总结 其他风格的 NPR 渲染技术">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220518150810699.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220518151628850.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220518152106468.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220518152605870.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220518152848606.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220518152954390.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/18/20220518-RTR-%E9%9D%9E%E7%9C%9F%E5%AE%9E%E6%84%9F%E6%B8%B2%E6%9F%93%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/image-20220518150810699.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/18/20220518-RTR-%E9%9D%9E%E7%9C%9F%E5%AE%9E%E6%84%9F%E6%B8%B2%E6%9F%93%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/image-20220518151628850.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/18/20220518-RTR-%E9%9D%9E%E7%9C%9F%E5%AE%9E%E6%84%9F%E6%B8%B2%E6%9F%93%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/image-20220518152106468.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/18/20220518-RTR-%E9%9D%9E%E7%9C%9F%E5%AE%9E%E6%84%9F%E6%B8%B2%E6%9F%93%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/image-20220518152605870.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/18/20220518-RTR-%E9%9D%9E%E7%9C%9F%E5%AE%9E%E6%84%9F%E6%B8%B2%E6%9F%93%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/image-20220518152848606.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/18/20220518-RTR-%E9%9D%9E%E7%9C%9F%E5%AE%9E%E6%84%9F%E6%B8%B2%E6%9F%93%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/image-20220518152954390.png">
 <meta property="article:published_time" content="2022-05-18T07:32:47.000Z">
 <meta property="article:modified_time" content="2022-05-18T07:34:00.662Z">
 <meta property="article:author" content="Lyc">
 <meta property="article:tag" content="计算机图形学">
 <meta property="article:tag" content="实时渲染">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220518150810699.png">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/18/20220518-RTR-%E9%9D%9E%E7%9C%9F%E5%AE%9E%E6%84%9F%E6%B8%B2%E6%9F%93%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/image-20220518150810699.png">
 
 <link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/05/18/20220518-RTR-%E9%9D%9E%E7%9C%9F%E5%AE%9E%E6%84%9F%E6%B8%B2%E6%9F%93%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/">
 
@@ -298,8 +298,8 @@
 <li>对于明暗处理，有两种最为常见的方法，一种是用实心颜色填充多边形区域。但这种方式实用价值不大。另一种是使用 2-tone 方法来表示光照效果和阴影区域。也称为硬着色方法（Hard Shading），可以通过将传统光照方程元素重新映射到不同的调色板上来实现。此外，一般用黑色来绘制图形的轮廓，可以达到增强卡通视觉效果的目的。</li>
 </ul>
 <p>具体的着色方法，可以理解为在 Fragment shader 中测试每个像素漫反射 diffuse 中的 NdotL 值，让漫反射形成一个阶梯函数，不同的 NdotL 区域对应不同的颜色。下图显示了不同的漫反射强度值的着色部分阶梯指定了不同的像素颜色。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220518150810699.png" alt="image-20220518150810699"></p>
-<p>在<a href="https://lz328.github.io/LycTechStack.github.io/2022/04/09/20220409-Shader-非真实感渲染/">【Unity Shader】（九）非真实感渲染</a>中实现了一个简单的 NPR 渲染。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/18/20220518-RTR-%E9%9D%9E%E7%9C%9F%E5%AE%9E%E6%84%9F%E6%B8%B2%E6%9F%93%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/image-20220518150810699.png" alt="image-20220518150810699"></p>
+<p>在<a href="https://lz328.github.io/LycTechStack.github.io/2022/04/09/20220409-Shader-%E9%9D%9E%E7%9C%9F%E5%AE%9E%E6%84%9F%E6%B8%B2%E6%9F%93/">【Unity Shader】（九）非真实感渲染</a>中实现了一个简单的 NPR 渲染。</p>
 <h3 id="3-轮廓描边方法总结"><a href="#3-轮廓描边方法总结" class="headerlink" title="3 轮廓描边方法总结"></a>3 轮廓描边方法总结</h3><p>轮廓描边的渲染方法可以分为以下五种：</p>
 <ul>
 <li>基于视点方向的描边</li>
@@ -313,11 +313,11 @@
 <p>有多种方法用来渲染背向表面，且各有优缺点。但它们都是先渲染正向表面，然后打开正向表面裁剪（culling）开关，同时关闭背向裁剪开关。这样这个 pass 中的渲染结果便只会显示出背向表面。</p>
 <p>一种基于过程几何方法生成的描边的方法是仅仅渲染出背向表面的边界线（而不是面），使用偏置（Biasing）或者其他技术来确保这些线条恰好位于正向表面之前。这样就可以将除轮廓边缘之外的其他所有线条全部隐藏起来。这种方法非常适合单像素宽的线条，但如果线条的宽度超过这个值，那么通常会出现无法连接独立线段的情况，从而造成明显的缝隙。</p>
 <p>另一种渲染较宽描边线条的方法是直接将背面表面本身渲染成黑色。但没有任何偏置操作，背向表面就会保持不可见，所以需要做的就是通过偏置将这些背向表面沿屏幕 Z 方向向前移动，这样，便只有背向表面的三角形边缘是可见的，如下图所示：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220518151628850.png" alt="image-20220518151628850"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/18/20220518-RTR-%E9%9D%9E%E7%9C%9F%E5%AE%9E%E6%84%9F%E6%B8%B2%E6%9F%93%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/image-20220518151628850.png" alt="image-20220518151628850"></p>
 <h4 id="3-3-基于图像处理的描边"><a href="#3-3-基于图像处理的描边" class="headerlink" title="3.3 基于图像处理的描边"></a>3.3 基于图像处理的描边</h4><p>基于图像处理生成轮廓描边（Silhouetting by Image Processing），即通过在各种缓冲区上执行图像处理技术，来实现非真实渲染的方法。可以将其理解为一种后处理操作。通过寻找相邻 Z 缓冲数值的不连续性，就可以确定大多数轮廓线的位置。同样，借助邻接表面法线向量的不连续性，可以确定出分界线（往往也是轮廓线）边缘的位置。此外，利用环境色对场景进行绘制，也可以用来检测前两种方法可能会漏掉的边缘。</p>
-<h4 id="3-4-基于轮廓边缘检测的描边"><a href="#3-4-基于轮廓边缘检测的描边" class="headerlink" title="3.4 基于轮廓边缘检测的描边"></a>3.4 基于轮廓边缘检测的描边</h4><p>可以查看之前的笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/04/09/20220409-Shader-非真实感渲染/">【Unity Shader】（九）非真实感渲染</a>中的具体介绍。</p>
+<h4 id="3-4-基于轮廓边缘检测的描边"><a href="#3-4-基于轮廓边缘检测的描边" class="headerlink" title="3.4 基于轮廓边缘检测的描边"></a>3.4 基于轮廓边缘检测的描边</h4><p>可以查看之前的笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/04/09/20220409-Shader-%E9%9D%9E%E7%9C%9F%E5%AE%9E%E6%84%9F%E6%B8%B2%E6%9F%93/">【Unity Shader】（九）非真实感渲染</a>中的具体介绍。</p>
 <h4 id="3-5-混合轮廓描边"><a href="#3-5-混合轮廓描边" class="headerlink" title="3.5 混合轮廓描边"></a>3.5 混合轮廓描边</h4><p>混和轮廓描边（Hybrid Silhouetting），即结合了图像处理方法和几何要素方法，来渲染轮廓的方法。<br>这种方法的具体思想是：首先，找到一系列轮廓边缘的列表。其次，渲染出所有物体的三角形和轮廓边缘，同时为他们指定一个不同的 ID 值（也就是说，赋予不同的颜色）。接着读取该 ID 缓冲器并从中判断出可见的轮廓边缘，随之对这些可见线段进行重叠检测，并将它们连接起来形成平滑的笔划路径。最后就可以对这些重建起来的路径进行风格化笔划渲染，其中，这些笔划本身可以用很多方法来进行风格化处理，包括变细、火焰、摆动、淡化等效果，同时还有深度和距离信息。如下图是使用混合轮廓描边方法生成的图像，其中可以将找到的轮廓边缘连接起来作为笔划进行渲染：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220518152106468.png" alt="image-20220518152106468"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/18/20220518-RTR-%E9%9D%9E%E7%9C%9F%E5%AE%9E%E6%84%9F%E6%B8%B2%E6%9F%93%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/image-20220518152106468.png" alt="image-20220518152106468"></p>
 <h3 id="4-其他风格的-NPR-技术"><a href="#4-其他风格的-NPR-技术" class="headerlink" title="4 其他风格的 NPR 技术"></a>4 其他风格的 NPR 技术</h3><p>除了卡通渲染这种比较受欢迎的模拟风格之外，还存在其他各式各样的风格。NPR 效果涵盖的范围非常广泛，RTR3 中主要谈了 3 种不同的其他风格的 NPR 渲染技术：</p>
 <ul>
 <li>纹理调色板（Palette of Textures）</li>
@@ -326,12 +326,12 @@
 </ul>
 <h4 id="4-1-纹理调色板（Palette-of-Textures）"><a href="#4-1-纹理调色板（Palette-of-Textures）" class="headerlink" title="4.1 纹理调色板（Palette of Textures）"></a>4.1 纹理调色板（Palette of Textures）</h4><p>纹理调色板（palette of textures）由 Lake 等人讨论提出，基本思想是通过漫反射着色项（diffuse shading term）的不同，来选择应用于物体表面上的不同纹理。随着漫反射项逐渐变暗，可以选用相应更暗的纹理，而为了能够产生手绘的效果，可以使用屏幕空间坐标来采样纹理。同时，为了增强绘制效果，可以在屏幕空间上的所有表面上运用纸纹理。随着物体的运动，他们就可以在纹理之间进行穿梭。原因在于这个纹理是在屏幕空间中实现的。此外，也可以在世界空间中运用这个纹理，这样就能够得到一个与屏幕空间完全不同的效果。</p>
 <p>下图是使用纹理调色板、纸纹理，以及轮廓边缘绘制生成的一幅图像：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220518152605870.png" alt="image-20220518152605870"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/18/20220518-RTR-%E9%9D%9E%E7%9C%9F%E5%AE%9E%E6%84%9F%E6%B8%B2%E6%9F%93%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/image-20220518152605870.png" alt="image-20220518152605870"></p>
 <h4 id="4-2-色调艺术图（Tonal-Art-Maps）"><a href="#4-2-色调艺术图（Tonal-Art-Maps）" class="headerlink" title="4.2 色调艺术图（Tonal Art Maps）"></a>4.2 色调艺术图（Tonal Art Maps）</h4><p>通过在纹理之间进行切换形成的硬着色效果和卡通着色效果之间的一种混合，Praun 等人提出了一种可以实时生成笔划纹理分级细化图的方法，并可以将其以平滑的方式运用到物体表面上。第一步是生成即时使用的纹理，称为色调艺术图（Tonal Art Maps，TAM）,主要思想是将笔划绘制为分级细分图层次。下图是使用 TAM 渲染的过程：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220518152848606.png" alt="image-20220518152848606"></p>
-<p>在<a href="https://lz328.github.io/LycTechStack.github.io/2022/04/09/20220409-Shader-非真实感渲染/">【Unity Shader】（九）非真实感渲染</a>中的素描风格就使用了简化的 TAM 算法。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/18/20220518-RTR-%E9%9D%9E%E7%9C%9F%E5%AE%9E%E6%84%9F%E6%B8%B2%E6%9F%93%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/image-20220518152848606.png" alt="image-20220518152848606"></p>
+<p>在<a href="https://lz328.github.io/LycTechStack.github.io/2022/04/09/20220409-Shader-%E9%9D%9E%E7%9C%9F%E5%AE%9E%E6%84%9F%E6%B8%B2%E6%9F%93/">【Unity Shader】（九）非真实感渲染</a>中的素描风格就使用了简化的 TAM 算法。</p>
 <h4 id="4-3-嫁接（Graftals）"><a href="#4-3-嫁接（Graftals）" class="headerlink" title="4.3  嫁接（Graftals）"></a>4.3  嫁接（Graftals）</h4><p>嫁接（Graftals）的基本思想，是将几何或者贴花纹理应用到物体表面，从而产生某种特殊效果。可以通过所需要的细节层次，物体表面相对视点的方位或者其他因素，对纹理进行控制。这种方法可以用来模拟钢笔或者画刷的笔刷，如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220518152954390.png" alt="image-20220518152954390"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/18/20220518-RTR-%E9%9D%9E%E7%9C%9F%E5%AE%9E%E6%84%9F%E6%B8%B2%E6%9F%93%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/image-20220518152954390.png" alt="image-20220518152954390"></p>
 
     </div>
 
@@ -493,7 +493,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/LycTechStack.github.io/archives/">
         
-          <span class="site-state-item-count">113</span>
+          <span class="site-state-item-count">114</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -551,13 +551,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">899k</span>
+    <span title="站点总字数">913k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">13:38</span>
+    <span title="站点阅读时长">13:50</span>
 </div>
 
         

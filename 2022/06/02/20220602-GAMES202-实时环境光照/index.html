@@ -29,53 +29,53 @@
 <meta property="og:site_name" content="LycTechStack">
 <meta property="og:description" content="环境光照是实时渲染中需要重点解决的问题之一，游戏中的大型场景光照情况非常复杂，如果按照离线渲染中逐光源的去计算环境光照是完全不可能的，因此在实时渲染中基本都是使用环境贴图 + 一些重要光源渲染的方法来渲染整个场景，于是高效的计算环境光照就是一个重要的问题，需要一些比较复杂的算法来实现，这一节对 Split Sum 和 PRT 进行简单的推导，重点是熟悉实时渲染中对环境光照计算的优化思路，同时为下一">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602111629808-16541623890081.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602112507731-16541623890092.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602112750875-16541623890103.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602112855298-16541623890104.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602113010978-16541623890105.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602122921399-16541623890106.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602123014213-16541623890107.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602124125503-16541623890108.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602123621399-16541623890109.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602124242578-165416238901010.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602124444075-165416238901011.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602124925813-165416238901113.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602125413871-165416238901012.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602130652276-165416238901114.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602130931415-165416238901115.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602122921399-16541623890106.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602130652276-165416238901114.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602131814205-165416238901116.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602131855491-165416238901117.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602135006568-165416238901118.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602141239497-165416238901119.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602135645988-165416238901120.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602135934958-165416238901121.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602140619749-165416238901122.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602140700382-165416238901123.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602142643059-165416238901124.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602143333455-165416238901125.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602143819188-165416238901126.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602143830579-165416238901227.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602143841772-165416238901228.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602144122954-165416238901229.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602144003377-165416238901230.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602145517079-165416238901231.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602150253420-165416238901232.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/img2022-06-02150537-165416238901233.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602150658443-165416238901234.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602152232311.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/img2022-06-02150745-165416238901235.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602151932922-165416238901236.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022-06-02151611-165416238901837.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602162810390.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602162847615.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022-06-02151611-165416238901837.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022-06-0265720.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602165910171.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602152155042-165416238901838.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602172803653.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602111629808-16541623890081.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602112507731-16541623890092.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602112750875-16541623890103.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602112855298-16541623890104.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602113010978-16541623890105.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602122921399-16541623890106.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602123014213-16541623890107.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602124125503-16541623890108.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602123621399-16541623890109.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602124242578-165416238901010.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602124444075-165416238901011.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602124925813-165416238901113.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602125413871-165416238901012.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602130652276-165416238901114.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602130931415-165416238901115.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602122921399-16541623890106.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602130652276-165416238901114.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602131814205-165416238901116.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602131855491-165416238901117.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602135006568-165416238901118.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602141239497-165416238901119.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602135645988-165416238901120.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602135934958-165416238901121.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602140619749-165416238901122.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602140700382-165416238901123.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602142643059-165416238901124.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602143333455-165416238901125.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602143819188-165416238901126.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602143830579-165416238901227.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602143841772-165416238901228.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602144122954-165416238901229.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602144003377-165416238901230.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602145517079-165416238901231.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602150253420-165416238901232.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/img2022-06-02150537-165416238901233.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602150658443-165416238901234.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602152232311.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/img2022-06-02150745-165416238901235.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602151932922-165416238901236.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/2022-06-02151611-165416238901837.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602162810390.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602162847615.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/2022-06-02151611-165416238901837.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/2022-06-0265720.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602165910171.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602152155042-165416238901838.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602172803653.png">
 <meta property="article:published_time" content="2022-06-02T07:34:32.000Z">
 <meta property="article:modified_time" content="2022-06-13T03:32:11.647Z">
 <meta property="article:author" content="Lyc">
@@ -83,7 +83,7 @@
 <meta property="article:tag" content="游戏引擎">
 <meta property="article:tag" content="实时渲染">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220602111629808-16541623890081.png">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602111629808-16541623890081.png">
 
 <link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/">
 
@@ -326,136 +326,136 @@
         <p>环境光照是实时渲染中需要重点解决的问题之一，游戏中的大型场景光照情况非常复杂，如果按照离线渲染中逐光源的去计算环境光照是完全不可能的，因此在实时渲染中基本都是使用环境贴图 + 一些重要光源渲染的方法来渲染整个场景，于是高效的计算环境光照就是一个重要的问题，需要一些比较复杂的算法来实现，这一节对 Split Sum 和 PRT 进行简单的推导，重点是熟悉实时渲染中对环境光照计算的优化思路，同时为下一节的实时全局光照做一个铺垫。</p>
 <p><em><span id="more"></span></em></p>
 <h3 id="1-回顾环境贴图"><a href="#1-回顾环境贴图" class="headerlink" title="1 回顾环境贴图"></a>1 回顾环境贴图</h3><p>环境贴图我们在之前的 Shader 部分中学习过也使用过，就是将整个场景存在一个立方体或者球体贴图中，渲染时根据光线反射方向去采样环境贴图得到环境光照。这样的环境光照渲染被称为基于图像的光照，Image-Based Lighting（IBL）。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602111629808-16541623890081.png" alt="image-20220602111629808"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602111629808-16541623890081.png" alt="image-20220602111629808"></p>
 <p>环境光照既然是光照，那自然也是解渲染方程的过程，解渲染方程最简单的方法就是使用数值方法，比如蒙特卡洛方法，但这需要根据光线反射方向采样大量的样本去计算，比如对于漫反射材质，需要在着色点为中心的半球面上均匀采样，而对于金属物体，需要向镜面反射方向一定范围内（Glossy 扰动）随机采样许多光线，这么多采样的计算是非常慢的，因此在实时渲染中需要使用一些方法来代替采样得到正确的环境光照结果。</p>
 <h3 id="2-Split-Sum"><a href="#2-Split-Sum" class="headerlink" title="2 Split Sum"></a>2 Split Sum</h3><p>Split Sum 是解决实时环境光照的一个著名算法，也被使用在虚幻引擎中。上面说过，计算环境光照也是解渲染方程的过程，首先再次回顾渲染方程，并且我们现在计算环境光照的时候先不考虑环境光的阴影项：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602112507731-16541623890092.png" alt="image-20220602112507731"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602112507731-16541623890092.png" alt="image-20220602112507731"></p>
 <p>于是渲方程就只由两项组成，环境光照项 $L_i$ 和 BRDF 项（一般来说实时渲染中把 BRDF 和 cos 项合称为 BRDF 项），而 Split Sum 基于一个重要的观察：</p>
 <ul>
 <li>如果是 Glossy 的 BRDF，那么我们的积分区间是很小的，如下图：</li>
 </ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602112750875-16541623890103.png" alt="image-20220602112750875"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602112750875-16541623890103.png" alt="image-20220602112750875"></p>
 <ul>
 <li>如果是漫反射的 BRDF，虽然积分区间很大，是整个半球面，但是函数值在整个积分区间上的变化是平滑的：</li>
 </ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602112855298-16541623890104.png" alt="image-20220602112855298"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602112855298-16541623890104.png" alt="image-20220602112855298"></p>
 <p>回顾之前我们说到的，实时渲染中非常重要的约等式：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602113010978-16541623890105.png" alt="image-20220602113010978"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602113010978-16541623890105.png" alt="image-20220602113010978"></p>
 <p>这个估计要准确，函数 $g(x)$ 必须满足两个条件之一：</p>
 <ul>
 <li>$g(x)$ 在积分区间上波动尽可能小，也就是积分区间尽可能小</li>
 <li>$g(x)$ 在积分区间上平滑</li>
 </ul>
 <p>渲染方程中的 BRDF 刚好符合这两个条件！于是我们可以把渲染方程写成：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602122921399-16541623890106.png" alt="image-20220602122921399"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602122921399-16541623890106.png" alt="image-20220602122921399"></p>
 <p>需要注意，在上一节中我们用同样的方法把阴影项拆分了出来：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602123014213-16541623890107.png" alt="image-20220602123014213"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602123014213-16541623890107.png" alt="image-20220602123014213"></p>
 <p>这是对于正常的光源渲染的，和我们这里讨论的是两个问题，我们这里的渲染方程是计算环境光照的，不过这两个对渲染方程的改写，用到的思路和方法都是一样的，都是基于上面的重要约等式。</p>
 <p>渲染方程改写成这个形式意味着我们把环境光照项和 BRDF 项分开了，而光照项是环境光的积分除以积分区间的面积，这不就相当于把积分区间范围内，也就是 Glossy 的扰动范围或者漫反射的半球范围内的所有环境光取了一个平均值吗，那么我们如果能够提前计算好这个平均值，在渲染时就不需要大量采样了，只需要直接取到这个平均值就当作对应的环境光项的积分结果的近似值就可以了。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602124125503-16541623890108.png" alt="image-20220602124125503"></p>
-<p>于是计算环境光照项的时候，我们可以把环境贴图按照一定的滤波核大小平均一下，生成多张平均后的环境贴图，如下图：<br><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602123621399-16541623890109.png" alt="image-20220602123621399"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602124125503-16541623890108.png" alt="image-20220602124125503"></p>
+<p>于是计算环境光照项的时候，我们可以把环境贴图按照一定的滤波核大小平均一下，生成多张平均后的环境贴图，如下图：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602123621399-16541623890109.png" alt="image-20220602123621399"></p>
 <p>当我们计算环境光的时候，根据 Glossy 的扰动大小，决定到多大滤波核平均后的环境贴图中去获取环境光，也可以在不同 level 之间进行插值，和 Mipmap 非常相似。这一步就是 split sum 的第一阶段，解决了环境光项的计算，接下来该解决后面的 BRDF 的积分了：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602124242578-165416238901010.png" alt="image-20220602124242578"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602124242578-165416238901010.png" alt="image-20220602124242578"></p>
 <p>BRDF 的积分如何避免采样呢？BRDF 是一个比较复杂的函数，涉及到很多变量，如果我们要避免采样，就只能进行预计算。首先来回顾一下最常用的微表面 BRDF 模型：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602124444075-165416238901011.png" alt="image-20220602124444075"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602124444075-165416238901011.png" alt="image-20220602124444075"></p>
 <p>我们来逐个分析一下每项都是关于什么变量的函数。</p>
 <p>首先是菲涅尔项，菲涅尔项非常复杂，但是渲染中常用的是 Schlick’s 近似：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602124925813-165416238901113.png" alt="image-20220602124925813"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602124925813-165416238901113.png" alt="image-20220602124925813"></p>
 <p>这个近似只需要一个基础反射率 $R_0$ 和一个角度 $\theta$，这个角度实际上应该是观察方向和法线的夹角，但是也可以是光线和法线的夹角，也可以是观察方向和切线的夹角，还可以是半程向量和法线的夹角，这是无所谓的，因为这些角度可以很方便的进行转换，总之就是一个角度，于是菲涅尔项需要两个参数 $R_0$ 和 $\theta$。</p>
 <p>然后是法线分布函数 NDF，NDF 描述了微表面的法线分布，一个常用的 Beckmann 分布的公式如下：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602125413871-165416238901012.png" alt="image-20220602125413871"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602125413871-165416238901012.png" alt="image-20220602125413871"></p>
 <p>可以看到 NDF 同样是关于两个变量的函数，一个是粗糙程度 $\alpha$，另一个同样是角度 $\theta$。</p>
 <p>最后是遮挡项 G，与入射方向和出射方向有关，而我们的观察方向是固定的，于是遮挡项 G 也只与入射角 $\theta$ 有关。</p>
 <p>综上， BRDF 与基础反射率 $R_0$ ，表面粗糙程度 $\alpha$，和入射角 $\theta$ 有关，因此我们如果要预计算，那么至少要计算这三个维度，虽然表面上是三个维度，实际上基础反射率 $R_0$ 还有 RGB 三个通道，如果预先计算出这三个变量所有可能的组合情况的 BRDF 积分结果，这无论是计算量还是存储量都是极大的，因此我们要让预计算的变量尽可能少，每少一个变量，就可以少一个维度的存储和计算，那对于预计算效率来说将会是质的提升。</p>
-<p>我们将菲涅尔项的 Schlick’s 近似带入到上面渲染方程中的 BRDF 积分中并做简单的变形可以得到：<br><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602130652276-165416238901114.png" alt="image-20220602130652276"></p>
+<p>我们将菲涅尔项的 Schlick’s 近似带入到上面渲染方程中的 BRDF 积分中并做简单的变形可以得到：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602130652276-165416238901114.png" alt="image-20220602130652276"></p>
 <p>这看起来让式子变得更复杂了，但实际上我们把最麻烦的基础反射率 $R_0$ 提取出来了，而剩下的两个积分只与表面粗糙程度 $\alpha$，和入射角 $\theta$ 有关，因此我们只需要预计算表面粗糙程度 $\alpha$，和入射角 $\theta$ 的所有组合情况就可以了，而这两个值 $\alpha$ 和 $cos\theta$ 都是 0 到 1 的标量，因此预计算的结果就可以存在一张二维纹理中：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602130931415-165416238901115.png" alt="image-20220602130931415"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602130931415-165416238901115.png" alt="image-20220602130931415"></p>
 <p>在渲染时直接查找纹理中的积分结果就可以了。这就是对渲染方程 BRDF 项的计算优化。</p>
 <p>至此我们可以总结一下 split sum 算法是如何计算环境光的：</p>
 <ul>
 <li>首先使用约等式将渲染方程中对光照项和 BRDF 项的乘积的积分转化为了积分的乘积：</li>
 </ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602122921399-16541623890106.png" alt="image-20220602122921399"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602122921399-16541623890106.png" alt="image-20220602122921399"></p>
 <ul>
 <li>然后对于第一项环境光，使用 pre-filtering 生成不同平均程度的环境贴图，使用类似 Mipmap 的方法直接取环境光的平均值近似作为积分结果</li>
 <li>对于第二项 BRDF，预先计算与粗糙程度 $\alpha$ 和入射角 $cos\theta$ 有关的积分的结果，存在一张二维纹理中，计算时只需要查找纹理再乘以基础颜色 $R_0$ 按照以下公式就可以得到 BRDF 积分的近似结果了</li>
 </ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602130652276-165416238901114.png" alt="image-20220602130652276"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602130652276-165416238901114.png" alt="image-20220602130652276"></p>
 <ul>
 <li>最后将两个积分结果相乘再除以归一化系数（积分区间的面积）就是最终的渲染方程结果</li>
 </ul>
-<p>这样一来整个渲染方程的计算过程就避免了采样，虽然使用了各种近似，但最终的效果却非常好：<br><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602131814205-165416238901116.png" alt="image-20220602131814205"></p>
-<p>在工程中，公式一般不会写成积分形式，而是写成离散的求和形式，但本质是一样的：<br><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602131855491-165416238901117.png" alt="image-20220602131855491"></p>
+<p>这样一来整个渲染方程的计算过程就避免了采样，虽然使用了各种近似，但最终的效果却非常好：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602131814205-165416238901116.png" alt="image-20220602131814205"></p>
+<p>在工程中，公式一般不会写成积分形式，而是写成离散的求和形式，但本质是一样的：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602131855491-165416238901117.png" alt="image-20220602131855491"></p>
 <p>而 split sum 方法就是将求和拆分开来进行预计算，这也是 split sum 名称的由来。</p>
 <h3 id="3-环境光照的阴影"><a href="#3-环境光照的阴影" class="headerlink" title="3 环境光照的阴影"></a>3 环境光照的阴影</h3><p>上面的讨论中，我们完全忽略掉了阴影，也就是 Visibility 项，实际上在实时渲染中做环境光照的阴影是几乎不可能的，因为环境贴图相当于把复杂的环境光照存在了一张贴图上，整个环境中实际上有非常多的光源，如果要做阴影，就要对每个光源生成一张 Shadow Map，这是不可能的，因此现在工业上的解决方案就是只生成最主要光源的阴影，这种方法虽然简单粗暴，但在大多数情况下也就足够了。</p>
 <p>当然，有方法能够完全准确的计算出环境光的阴影，比如实时光线追踪，我们将在以后讨论，这里我们将讨论另一种非常强大的方法—— Precomputed radiance transfer（PRT），PRT 不仅可以计算环境光阴影，还可以用于实时全局光照。</p>
 <h3 id="4-球面谐波函数"><a href="#4-球面谐波函数" class="headerlink" title="4 球面谐波函数"></a>4 球面谐波函数</h3><h4 id="4-1-球谐函数的定义和性质"><a href="#4-1-球谐函数的定义和性质" class="headerlink" title="4.1 球谐函数的定义和性质"></a>4.1 球谐函数的定义和性质</h4><p>球面谐波函数（Spherical Harmonics，SH）是一组二维基函数，类似于一维中的傅里叶基函数。空间中的任何球面函数（比如我们的环境贴图、BRDF 等都是球面函数）都可以表示为 SH 的线性组合。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602135006568-165416238901118.png" alt="image-20220602135006568"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602135006568-165416238901118.png" alt="image-20220602135006568"></p>
 <p>上图表示了前四阶 SH 的可视化结果，不难看出，n 阶 SH 有 2n + 1 个基函数，前 n 阶 SH 有 n * n 个基函数。图中蓝色代表正值，黄色代表负值，颜色深浅代表了值的大小，可以看到同一阶的基函数实际上就是函数值在不同维度的变化，阶数越高函数值变化的频率越高，因此他们的线性组合就可以表示函数中越高频的信息，使用不同阶的球谐函数的组合就可以将一个函数中的不同频率的信息表示出来，再将它们组合在一起就可以基本还原出原本函数的样子，使用的球谐函数越多，自然对原函数的还原也就越好：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602141239497-165416238901119.png" alt="image-20220602141239497"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602141239497-165416238901119.png" alt="image-20220602141239497"></p>
 <p>这和一维中的傅里叶变换是完全一样的：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602135645988-165416238901120.png" alt="image-20220602135645988"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602135645988-165416238901120.png" alt="image-20220602135645988"></p>
 <p>此外，一个函数 $f(w)$ 和一个基函数 $B_i(w)$ 乘积的积分叫做<strong>投影</strong>，投影结果就是这个函数被表示为基函数的线性组合时，对应的基函数的线性组合系数：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602135934958-165416238901121.png" alt="image-20220602135934958"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602135934958-165416238901121.png" alt="image-20220602135934958"></p>
 <p>这可以类比于基向量，任意一个向量 $v$ 可以表示为一组基向量的线性组合，而每个基向量的系数就是向量 $v$ 和该基向量的点乘，而我们知道，向量点乘实际上就是投影，所以函数投影的概念和向量投影是完全一样的，上面的函数 $f(w)$ 和一个基函数 $B_i(w)$ 乘积的积分实际上就是对应的函数值相乘再累加起来，这和点乘的计算方式完全一样。</p>
 <p>因此基函数自然也有和基向量完全一样的性质：</p>
 <ul>
 <li>基函数投影到自身结果为 1，相当于基向量是单位向量：</li>
 </ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602140619749-165416238901122.png" alt="image-20220602140619749"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602140619749-165416238901122.png" alt="image-20220602140619749"></p>
 <ul>
 <li>基函数互相正交，即投影结果为 0，相当于基向量互相正交：</li>
 </ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602140700382-165416238901123.png" alt="image-20220602140700382"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602140700382-165416238901123.png" alt="image-20220602140700382"></p>
 <h4 id="4-2-用球谐函数表示环境光"><a href="#4-2-用球谐函数表示环境光" class="headerlink" title="4.2 用球谐函数表示环境光"></a>4.2 用球谐函数表示环境光</h4><p>首先我们回顾上面 split sum 中用到的 pre-filtering 方法，也就是对环境贴图提前进行了一个均值滤波，然后在渲染时只进行一次查询得到平均值作为多次采样的积分近似值，因此可以说：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602142643059-165416238901124.png" alt="image-20220602142643059"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602142643059-165416238901124.png" alt="image-20220602142643059"></p>
 <p>而我们知道均值滤波是低通滤波，只保留了低频信号，如上图，虽然滤波后不能完全还原出原本的环境光照，但是光源之间的明暗关系是完全保留了下来的，对于漫反射或者 Glossy 来说，这是完全够用的，这也是 split sum 可以 work 的原因。</p>
 <p>在这个理解的基础上，又可以得出一个新的理解，那就是<strong>漫反射的 BRDF 对光照的作用，其实就相当于一个低通滤波器的作用</strong>。这其实很好理解，不管环境光照如何复杂，变化如何剧烈，漫反射物体显示出来的都是模糊的变化，不会显示出原本的环境光照那样高频的变化。而这样的特性是由 BRDF 决定的，因此漫反射的 BRDF 相当于对光照做了一个低通滤波。</p>
 <p>于是有人就把 BRDF 投影到了球谐基函数上，并且发现投影只在前三阶有值，之后的投影结果几乎都为 0，如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602143333455-165416238901125.png" alt="image-20220602143333455"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602143333455-165416238901125.png" alt="image-20220602143333455"></p>
 <p>这说明漫反射的 BRDF 中就只包含前三阶 SH 对应的频率的信息，根本就不包含更高频的信息。于是我们也完全可以把环境光照表示为球谐函数，而且只用前三阶就可以近似得到漫反射物体的环境光照结果，事实也确实如此：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602143819188-165416238901126.png" alt="image-20220602143819188"></p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602143830579-165416238901227.png" alt="image-20220602143830579"></p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602143841772-165416238901228.png" alt="image-20220602143841772"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602143819188-165416238901126.png" alt="image-20220602143819188"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602143830579-165416238901227.png" alt="image-20220602143830579"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602143841772-165416238901228.png" alt="image-20220602143841772"></p>
 <h3 id="5-Precomputed-radiance-transfer（PRT）"><a href="#5-Precomputed-radiance-transfer（PRT）" class="headerlink" title="5 Precomputed radiance transfer（PRT）"></a>5 Precomputed radiance transfer（PRT）</h3><h4 id="5-1-PRT-原理"><a href="#5-1-PRT-原理" class="headerlink" title="5.1 PRT 原理"></a>5.1 PRT 原理</h4><p>对于一个场景中的一个着色点：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602144122954-165416238901229.png" alt="image-20220602144122954"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602144122954-165416238901229.png" alt="image-20220602144122954"></p>
 <p>它的渲染方程可以表示为：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602144003377-165416238901230.png" alt="image-20220602144003377"></p>
-<p>环境贴图自然表示整个空间的环境光，visibility 是从这一点看向整个场景得到的遮挡关系，下半部分全黑是因为只在着色点上半球有值，最后是 BRDF 可视化，同样只在上半球有值。渲染方程相当于这些值的乘积的和，如果环境贴图每一面分辨率是 64 <em> 64，那么计算这一个着色点就要进行 6 </em> 64 * 64 次三个数的乘法运算再求和，当分辨率变大的时候这个数字是指数增长的，因此 PRT 将渲染方程分为两部分处理：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602145517079-165416238901231.png" alt="image-20220602145517079"></p>
-<p>一部分是光照项，另一部分是 visibility 和 BRDF 结合起来称为光照传播（light transport）项，对于光照项，用球谐函数近似表示，然后将光照传播项投影到球谐基函数空间进行预计算，这样在渲染时对于漫反射只需要一个点乘，对于 Glossy 只需要一个矩阵向量乘法即可完成渲染方程的计算：<br><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602150253420-165416238901232.png" alt="image-20220602150253420"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602144003377-165416238901230.png" alt="image-20220602144003377"></p>
+<p>环境贴图自然表示整个空间的环境光，visibility 是从这一点看向整个场景得到的遮挡关系，下半部分全黑是因为只在着色点上半球有值，最后是 BRDF 可视化，同样只在上半球有值。渲染方程相当于这些值的乘积的和，如果环境贴图每一面分辨率是 64 * 64，那么计算这一个着色点就要进行 6 * 64 * 64 次三个数的乘法运算再求和，当分辨率变大的时候这个数字是指数增长的，因此 PRT 将渲染方程分为两部分处理：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602145517079-165416238901231.png" alt="image-20220602145517079"></p>
+<p>一部分是光照项，另一部分是 visibility 和 BRDF 结合起来称为光照传播（light transport）项，对于光照项，用球谐函数近似表示，然后将光照传播项投影到球谐基函数空间进行预计算，这样在渲染时对于漫反射只需要一个点乘，对于 Glossy 只需要一个矩阵向量乘法即可完成渲染方程的计算：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602150253420-165416238901232.png" alt="image-20220602150253420"></p>
 <h4 id="5-2-漫反射情况"><a href="#5-2-漫反射情况" class="headerlink" title="5.2 漫反射情况"></a>5.2 漫反射情况</h4><p>我们接下来先从简单的漫反射情况来详细理解上述过程。对于漫反射， BRDF 是一个常数，我们之前推导过，这里不再赘述，于是渲染方程可以写为：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/img2022-06-02150537-165416238901233.png" alt="2022-06-02 150537"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/img2022-06-02150537-165416238901233.png" alt="2022-06-02 150537"></p>
 <p>其中光照项表示为球谐函数：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602150658443-165416238901234.png" alt="image-20220602150658443"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602150658443-165416238901234.png" alt="image-20220602150658443"></p>
 <p>这样一来对于一个环境光（二维函数），我们只需要记录一个 SH 系数的向量（一维向量）就可以表示了：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602152232311.png" alt="image-20220602152232311"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602152232311.png" alt="image-20220602152232311"></p>
 <p>将 SH 表示的环境光带入渲染方程中可以得到：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/img2022-06-02150745-165416238901235.png" alt="2022-06-02 150745"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/img2022-06-02150745-165416238901235.png" alt="2022-06-02 150745"></p>
 <p>其中的积分相当于把 light transport 项投影到基函数上，实际上这个投影方程也可以看作是一个渲染方程，因此投影结果可以认为是在某一个基函数的光照条件下的渲染结果：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602151932922-165416238901236.png" alt="image-20220602151932922"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602151932922-165416238901236.png" alt="image-20220602151932922"></p>
 <p>这也是为什么 PRT 能够得到环境光阴影，因为在计算投影结果的时候，计算的是 light transport 的投影结果，而 light transport 就包含了 visibility 项，因此 PRT 能够得到准确的环境光阴影。这个投影结果是可以通过预计算得到的，因此渲染方程最终就是：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022-06-02151611-165416238901837.png" alt="2022-06-02151611"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/2022-06-02151611-165416238901837.png" alt="2022-06-02151611"></p>
 <p>这样在渲染时只需要计算一次点乘就可以得到环境光照了，为什么是点乘呢？我们接下来从另一个角度来理解上面的过程。</p>
 <p>上面的推导中我们只把光照项表示为了 SH，然后将光照传播项投影到了这些 SH 上去预计算投影结果。我们当然也可以把光照项和光照传播项完全分开计算，分别把他们表示成 SH：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602162810390.png" alt="image-20220602162810390"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602162810390.png" alt="image-20220602162810390"></p>
 <p>于是渲染方程就变成了：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602162847615.png" alt="image-20220602162847615"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602162847615.png" alt="image-20220602162847615"></p>
 <p>渲染方程变成了一个二次的求和公式，这看起来和之前推导的结果不一样，因为这里二次求和显然是一个 $O(n^2)$ 的复杂度，要遍历 p 和 q 的结果全部累加起来，但是我们知道 SH 是基函数，基函数有正交性，也就是说只有两个基函数相同的时候，上面的积分值才为 1，其他情况下都是 0，因此上面的求和式实际上只是把光照项和光照传播项表示为 SH 后，相同的基函数对应的系数乘积累加了起来，之前说过，用 SH 表示一个二维函数相当于把二维函数压缩成了一个一维的系数向量，所以上面的求和式表示的就是光照项和光照传播项的系数向量的点乘。这和之前推导的公式：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022-06-02151611-165416238901837.png" alt="2022-06-02151611"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/2022-06-02151611-165416238901837.png" alt="2022-06-02151611"></p>
 <p>表示的意义是完全一样的，这里面 $l_i$ 是光照项的每一个 SH 基函数的系数，$T_i$ 是光照传播项投影到每一个基函数的结果，也就是光照传播项的 SH 系数，二者相乘再求和不正是向量点乘吗。 </p>
 <h4 id="5-3-Glossy-情况"><a href="#5-3-Glossy-情况" class="headerlink" title="5.3 Glossy 情况"></a>5.3 Glossy 情况</h4><p>在此基础上，我们就可以理解 Glossy 情况下 PRT 的计算了。漫反射时， BRDF 是一个常数，无论观察方向如何变化，观察到的光照结果都是一样的，因此光照传播项就是一个二维函数（因为 visibility 是二维的，只与 $w_i$ 有关），表示为 SH 可以得到一个系数向量，再点乘光照项的系数向量就得到了渲染方程的结果。</p>
 <p>但是 Glossy 的 BRDF 不再是一个常数了，而是一个真正的四维函数，当我们在任意一个观察方向 $w_o$ 的时候，BRDF 都是一个与 $w_i$ 有关的二维函数，可以表示为 SH 得到一个系数向量，对于不同的观察方向 $w_o$，自然会得到不同的 SH 表示，也就会得到不同的系数向量。也就是说将 Glossy 的 BRDF 投影到 SH 之后，我们得到的不再是一个系数向量了，而是一个系数矩阵，每一行是一个观察方向 $w_o$ 对应的系数向量，每一列是每一个入射方向 $w_i$ 对应的系数向量，因此上面的公式就变成了：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022-06-0265720.png" alt="2022-06-0265720"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/2022-06-0265720.png" alt="2022-06-0265720"></p>
 <p>于是我们在计算时就不再是向量点乘了，而是向量和矩阵相乘了：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602165910171.png" alt="image-20220602165910171"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602165910171.png" alt="image-20220602165910171"></p>
 <p>也就是用光照项的系数向量乘以光照传播项的系数矩阵，最终得到的还是一个系数向量，表示的是不同观察方向所看到的光照结果，是一个关于观察方向 $w_o$ 的二维函数，因为对于 Glossy 材质，不同观察方向看到的光照结果是不同的，而漫反射与观察方向无关，所以向量点乘得到的是一个值。</p>
 <h4 id="5-4-总结"><a href="#5-4-总结" class="headerlink" title="5.4 总结"></a>5.4 总结</h4><p>总结一下，PRT 将渲染方程分为两部分，一部分是光照项，另一部分是 visibility 和 BRDF 结合起来称为光照传播（light transport）项，对于光照项，用球谐函数近似表示，然后将光照传播项投影到球谐基函数空间进行预计算，漫反射需要预计算一个向量，Glossy 反射需要预计算一个矩阵，这样在渲染时对于漫反射只需要一个点乘，对于 Glossy 只需要一个矩阵向量乘法即可完成渲染方程的计算。</p>
 <p>PRT 效果好速度快，而且可以准确计算环境光阴影，并且如果预计算的时候考虑了光线的多次弹射还可以实现全局光照，而且得益于 SH 的快速旋转性质，PRT 可以在环境光旋转的时候迅速得到渲染结果，无需重新计算，因为当环境光旋转的时候相当于表示它的所有基函数进行了旋转，而旋转后的基函数可以表示为其他同阶基函数的线性组合，因此可以快速得到旋转后的环境光的 SH 表示。</p>
 <p>但 PRT 也存在很多问题，比如只适用于静态场景，因为预计算了光照传播项，而光照传播项又包含了 visibility 和 BRDF，因此预计算完成后，场景的遮挡关系和物体的材质就不能改变了，否则就要重新计算；并且使用 SH 作为基函数只适用于低频环境光照，因为 SH 在表示高频信号的时候会非常吃力，如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602152155042-165416238901838.png" alt="image-20220602152155042"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602152155042-165416238901838.png" alt="image-20220602152155042"></p>
 <p>这是因为 SH 是从低到高的频段表示，我们使用前 n 阶的 SH，就只能表示信号中对应的这么多频段的信息，更高频的信息就会丢失掉，对于一些高频环境光照的场景，可以使用其他基函数，比如二维小波函数（Wavelet），任意一个二维函数都可以表示为所有小波基函数的线性组合，而我们可以只保留线性组合系数最高的那些项来表示原函数，因此小波表示是全频率的，比 SH 更适合表示高频环境光，但小波函数不具有快速旋转性质，当环境光变化时处理非常不灵活，下图是 SH 和 小波函数的渲染结果对比：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220602172803653.png" alt="image-20220602172803653"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602172803653.png" alt="image-20220602172803653"></p>
 <p>显然小波保留了更多的高频信息，得到了更好的阴影和反射效果。</p>
 
     </div>
@@ -619,7 +619,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/LycTechStack.github.io/archives/">
         
-          <span class="site-state-item-count">113</span>
+          <span class="site-state-item-count">114</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -677,13 +677,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">899k</span>
+    <span title="站点总字数">913k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">13:38</span>
+    <span title="站点阅读时长">13:50</span>
 </div>
 
         

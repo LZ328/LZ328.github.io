@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/LycTechStack.github.io/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/LycTechStack.github.io/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/LycTechStack.github.io/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/LycTechStack.github.io/images/safari-pinned-tab.svg" color="#222">
+
+<link rel="stylesheet" href="/LycTechStack.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="/LycTechStack.github.io/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/LycTechStack.github.io/lib/pace/pace-theme-minimal.min.css">
+  <script src="/LycTechStack.github.io/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lz328.github.io","root":"/LycTechStack.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":5,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="软光栅化渲染器说明文档1 环境及依赖开发环境：VS 2022 + QT 5.12.3 第三方库：glm 数学库 编译说明：需要在 VS 中安装 Qt Visual Studio Tools 插件并配置 QT 路径，之后正常编译即可">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【光栅化渲染器】最终版说明文档">
+<meta property="og:url" content="https://lz328.github.io/LycTechStack.github.io/2022/07/23/20220723-%E6%B8%B2%E6%9F%93%E5%99%A8-%E6%9C%80%E7%BB%88%E7%89%88%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3/index.html">
+<meta property="og:site_name" content="LycTechStack">
+<meta property="og:description" content="软光栅化渲染器说明文档1 环境及依赖开发环境：VS 2022 + QT 5.12.3 第三方库：glm 数学库 编译说明：需要在 VS 中安装 Qt Visual Studio Tools 插件并配置 QT 路径，之后正常编译即可">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/23/20220723-%E6%B8%B2%E6%9F%93%E5%99%A8-%E6%9C%80%E7%BB%88%E7%89%88%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3/image-20220720101828805.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/23/20220723-%E6%B8%B2%E6%9F%93%E5%99%A8-%E6%9C%80%E7%BB%88%E7%89%88%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3/image-20220723102429237.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/23/20220723-%E6%B8%B2%E6%9F%93%E5%99%A8-%E6%9C%80%E7%BB%88%E7%89%88%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3/image-20220723084335117.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/23/20220723-%E6%B8%B2%E6%9F%93%E5%99%A8-%E6%9C%80%E7%BB%88%E7%89%88%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3/image-20220723084359800.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/23/20220723-%E6%B8%B2%E6%9F%93%E5%99%A8-%E6%9C%80%E7%BB%88%E7%89%88%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3/%E6%B5%81%E7%A8%8B1.jpg">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/23/20220723-%E6%B8%B2%E6%9F%93%E5%99%A8-%E6%9C%80%E7%BB%88%E7%89%88%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3/%E6%B5%81%E7%A8%8B2.jpg">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/23/20220723-%E6%B8%B2%E6%9F%93%E5%99%A8-%E6%9C%80%E7%BB%88%E7%89%88%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3/image-20220723102429578.png">
+<meta property="article:published_time" content="2022-07-23T02:39:40.000Z">
+<meta property="article:modified_time" content="2022-07-23T02:54:00.569Z">
+<meta property="article:author" content="Lyc">
+<meta property="article:tag" content="实时渲染">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/23/20220723-%E6%B8%B2%E6%9F%93%E5%99%A8-%E6%9C%80%E7%BB%88%E7%89%88%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3/image-20220720101828805.png">
+
+<link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/07/23/20220723-%E6%B8%B2%E6%9F%93%E5%99%A8-%E6%9C%80%E7%BB%88%E7%89%88%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>【光栅化渲染器】最终版说明文档 | LycTechStack</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/LycTechStack.github.io/atom.xml" title="LycTechStack" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/LycTechStack.github.io/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LycTechStack</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Lyc的个人成长技术栈</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/LycTechStack.github.io/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/LycTechStack.github.io/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/LycTechStack.github.io/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/LycTechStack.github.io/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/LycTechStack.github.io/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://lz328.github.io/LycTechStack.github.io/2022/07/23/20220723-%E6%B8%B2%E6%9F%93%E5%99%A8-%E6%9C%80%E7%BB%88%E7%89%88%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/LycTechStack.github.io/images/avatar.png">
+      <meta itemprop="name" content="Lyc">
+      <meta itemprop="description" content="个人学习总结和技术经验分享，主要内容包括C++、数据结构、算法、计算机图形学、3D数学、实时渲染、游戏引擎等等，希望未来能真正踏入图形/引擎开发的大门！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LycTechStack">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【光栅化渲染器】最终版说明文档
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-07-23 10:39:40 / 修改时间：10:54:00" itemprop="dateCreated datePublished" datetime="2022-07-23T10:39:40+08:00">2022-07-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/LycTechStack.github.io/categories/%E5%85%89%E6%A0%85%E5%8C%96%E6%B8%B2%E6%9F%93%E5%99%A8/" itemprop="url" rel="index"><span itemprop="name">光栅化渲染器</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>6.8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>6 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="软光栅化渲染器说明文档"><a href="#软光栅化渲染器说明文档" class="headerlink" title="软光栅化渲染器说明文档"></a>软光栅化渲染器说明文档</h2><h3 id="1-环境及依赖"><a href="#1-环境及依赖" class="headerlink" title="1 环境及依赖"></a>1 环境及依赖</h3><p>开发环境：VS 2022 + QT 5.12.3</p>
+<p>第三方库：glm 数学库</p>
+<p>编译说明：需要在 VS 中安装 Qt Visual Studio Tools 插件并配置 QT 路径，之后正常编译即可</p>
+<p><em><span id="more"></span></em></p>
+<h3 id="2-特性"><a href="#2-特性" class="headerlink" title="2 特性"></a>2 特性</h3><ul>
+<li>基于 QT 的可交互界面</li>
+<li>支持加载 .obj 模型和主纹理，支持模型、材质、环境等参数设置</li>
+<li>完整模拟渲染管线基本流程</li>
+<li>实现了基础的材质、纹理、光照、阴影、天空盒以及图元裁剪、光栅化等算法</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/23/20220723-%E6%B8%B2%E6%9F%93%E5%99%A8-%E6%9C%80%E7%BB%88%E7%89%88%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3/image-20220720101828805.png" alt="image-20220720101828805"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/23/20220723-%E6%B8%B2%E6%9F%93%E5%99%A8-%E6%9C%80%E7%BB%88%E7%89%88%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3/image-20220723102429237.png" alt="image-20220723102429237"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/23/20220723-%E6%B8%B2%E6%9F%93%E5%99%A8-%E6%9C%80%E7%BB%88%E7%89%88%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3/image-20220723084335117.png" alt="image-20220723084335117"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/23/20220723-%E6%B8%B2%E6%9F%93%E5%99%A8-%E6%9C%80%E7%BB%88%E7%89%88%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3/image-20220723084359800.png" alt="image-20220723084359800"></p>
+<h3 id="3-实现思路"><a href="#3-实现思路" class="headerlink" title="3 实现思路"></a>3 实现思路</h3><h4 id="3-1-UI-框架及操作说明"><a href="#3-1-UI-框架及操作说明" class="headerlink" title="3.1 UI 框架及操作说明"></a>3.1 UI 框架及操作说明</h4><p>程序的入口为 <code>main.cpp</code> 中的主函数，其中调用了程序的主窗口，程序主窗口在 <code>RenderWidget</code> 类中实现，该类会开始渲染循环 <code>RenderLoop</code> 并处理鼠标、键盘和绘制等事件，其中：</p>
+<ul>
+<li><strong>鼠标点击</strong>事件处理定义在 <code>RenderWidget.cpp</code> 中的 <code>RenderWidget::mouseMoveEvent</code> 函数中，通过鼠标拖动可以改变相机的俯仰角和方向角，目前不支持滚转角变化；</li>
+<li><strong>鼠标滚轮</strong>事件处理定义在 <code>RenderWidget.cpp</code> 中的 <code>RenderWidget::wheelEvent</code> 函数中，鼠标滚轮可以拉近或拉远视角，通过改变模型的缩放系数实现；</li>
+<li><strong>键盘输入</strong>事件处理定义在 <code>RenderWidget.cpp</code> 中的 <code>RenderWidget::keyPressEvent</code>、<code>RenderWidget::keyReleaseEvent</code> 和 <code>RenderWidget::DealInput()</code> 三个函数中，每隔 100 ms 接收一次键盘输入，通过 W、A、S、D 可以改变相机水平位置，通过 Q、E 可以改变相机所在位置的垂直高度；</li>
+<li><strong>绘制事件</strong>处理定义在 <code>RenderWidget.cpp</code> 中的 <code>RenderWidget::Vsync</code> 和 <code>RenderWidget::paintEvent</code> 函数中，每一帧绘制完成后，交换前后缓冲并向主窗口发出刷新信号，此时主窗口接收当前 FrameBuffer 中的颜色缓冲数据，并将其转化为 <code>QImage</code> 对象以绘制在界面的画布上。</li>
+</ul>
+<p>主窗口还包含模型设置和环境设置两个标签页，分别实现在 <code>ModelTab.cpp</code> 和 <code>EnvTab.cpp</code> 中，功能都是接收输入并改变渲染时的一些参数和状态。选中模型还可以打开材质编辑面板，实现在 <code>MaterialDialog.cpp</code> 中，具体可参见代码及注释。</p>
+<h4 id="3-2-渲染流程"><a href="#3-2-渲染流程" class="headerlink" title="3.2 渲染流程"></a>3.2 渲染流程</h4><p>在主窗口 <code>RenderWidget</code> 类的构造函数中除了初始化 UI 外，还初始化了起始的渲染状态并调用了渲染主循环：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">RenderWidget::<span class="built_in">RenderWidget</span>(QWidget* parent)</span><br><span class="line">    : <span class="built_in">QWidget</span>(parent), <span class="built_in">fps</span>(<span class="number">0</span>), <span class="built_in">firstMouseMove</span>(<span class="literal">true</span>), <span class="built_in">mdTab</span>(<span class="literal">nullptr</span>)</span><br><span class="line">&#123;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始化状态机</span></span><br><span class="line">    sys = StateMachine::<span class="built_in">GetInstance</span>();</span><br><span class="line">    sys-&gt;<span class="built_in">Init</span>(<span class="number">800</span>, <span class="number">600</span>, <span class="number">60</span>);</span><br><span class="line"></span><br><span class="line">    renderLoop = <span class="keyword">new</span> <span class="built_in">RenderLoop</span>(<span class="literal">nullptr</span>);</span><br><span class="line">    renderThread = <span class="keyword">new</span> <span class="built_in">QThread</span>(<span class="keyword">this</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 渲染线程和函数绑定</span></span><br><span class="line">    renderLoop-&gt;<span class="built_in">moveToThread</span>(renderThread);</span><br><span class="line">    <span class="built_in">connect</span>(renderThread, &amp;QThread::finished, renderLoop, &amp;RenderLoop::deleteLater);</span><br><span class="line">    <span class="built_in">connect</span>(renderThread, &amp;QThread::started, renderLoop, &amp;RenderLoop::MainLoop);</span><br><span class="line">    <span class="built_in">connect</span>(renderLoop, &amp;RenderLoop::Vsync, <span class="keyword">this</span>, &amp;RenderWidget::Vsync);</span><br><span class="line"></span><br><span class="line">    renderThread-&gt;<span class="built_in">start</span>();</span><br><span class="line">    </span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中 <code>StateMachine</code> 是一个全局对象，类似于 OpenGL 中的上下文（context），负责记录整个渲染系统的状态，这些状态包括帧缓冲、相机状态、灯光参数、场景及模型数据、渲染模式、剔除模式、深度写入开关、颜色写入开关等等，以及改变这些状态的相关方法，初始化状态机时会对视口大小、帧缓冲、相机、光源等以及负责绘制的类 <code>Graphics</code> 的对象进行初始化，并且会构造默认的地板平面。具体实现在 <code>StateMachine.cpp</code> 中。</p>
+<p><code>RenderLoop</code> 类实现了渲染主循环，类似于 Vulkan 中的 Pipeline，负责设定每一个 Pass 渲染时的各种状态参数和渲染目标（Render Target），并按顺序调用不同的 Pass 对场景进行渲染，渲染主循环实现在 <code>RenderLoop.cpp</code> 中的 <code>RenderLoop::MainLoop()</code> 函数中：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">RenderLoop::MainLoop</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// 初始模型</span></span><br><span class="line">    Model* wBox = <span class="keyword">new</span> <span class="built_in">Model</span>(Mesh::<span class="built_in">CreateBox</span>(glm::<span class="built_in">vec3</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>), <span class="number">0.5</span>));</span><br><span class="line">    Texture2D* mt = <span class="keyword">new</span> <span class="built_in">Texture2D</span>(<span class="string">&quot;../assets/Textures/container.jpg&quot;</span>);</span><br><span class="line">    wBox-&gt;meshes[<span class="number">0</span>]-&gt;material-&gt;<span class="built_in">SetTexture</span>(mt);</span><br><span class="line">    wBox-&gt;yaw = <span class="number">60</span>;</span><br><span class="line">    wBox-&gt;name = <span class="string">&quot;Box&quot;</span>;</span><br><span class="line">    wBox-&gt;meshes[<span class="number">0</span>]-&gt;name = <span class="string">&quot;Box&quot;</span>;</span><br><span class="line">    sys-&gt;<span class="built_in">AddModel</span>(wBox);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 渲染循环</span></span><br><span class="line">    <span class="keyword">while</span> (!shouldClosed) &#123;</span><br><span class="line">        <span class="comment">/***** Shadow Pass *****/</span></span><br><span class="line">        <span class="keyword">if</span> (sys-&gt;drawShadow) &#123;</span><br><span class="line">            <span class="comment">// 参数设置，2048 ShadowMap 分辨率</span></span><br><span class="line">            sys-&gt;<span class="built_in">SetViewPortMatrix</span>(<span class="number">2048</span>, <span class="number">2048</span>);</span><br><span class="line">            sys-&gt;writeColor = <span class="literal">false</span>;</span><br><span class="line">            sys-&gt;writeDepth = <span class="literal">true</span>;</span><br><span class="line">            sys-&gt;faceCullMode = Front;</span><br><span class="line">            <span class="comment">// 逐光源生成 ShadowMap</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; sys-&gt;dirLights.<span class="built_in">size</span>(); i++) &#123;</span><br><span class="line">                sys-&gt;dirLights[i]-&gt;<span class="built_in">SetShadowMap</span>(<span class="literal">nullptr</span>);</span><br><span class="line">                <span class="comment">// 设定 RT</span></span><br><span class="line">                FrameBuffer* SBO = <span class="keyword">new</span> <span class="built_in">FrameBuffer</span>(<span class="number">2048</span>, <span class="number">2048</span>);</span><br><span class="line">                sys-&gt;graphics-&gt;<span class="built_in">SetRenderTarget</span>(SBO);</span><br><span class="line">                SBO-&gt;<span class="built_in">ClearDepth</span>(<span class="number">1.0f</span>);</span><br><span class="line">                <span class="comment">// 绘制 ShadowMap</span></span><br><span class="line">                sys-&gt;<span class="built_in">DrawShadow</span>(sys-&gt;dirLights[i]);</span><br><span class="line">                <span class="comment">// 存储 ShadowMap</span></span><br><span class="line">                sys-&gt;dirLights[i]-&gt;<span class="built_in">SetShadowMap</span>(<span class="keyword">new</span> <span class="built_in">Texture2D</span>(SBO-&gt;depthBuffer));</span><br><span class="line">                <span class="keyword">delete</span> SBO;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; sys-&gt;dirLights.<span class="built_in">size</span>(); i++) &#123;</span><br><span class="line">                sys-&gt;dirLights[i]-&gt;<span class="built_in">SetShadowMap</span>(<span class="literal">nullptr</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">/***** Forward Render Pass *****/</span></span><br><span class="line">        <span class="comment">// 参数设置</span></span><br><span class="line">        sys-&gt;<span class="built_in">SetViewPortMatrix</span>(sys-&gt;width, sys-&gt;height);</span><br><span class="line">        sys-&gt;writeColor = <span class="literal">true</span>;</span><br><span class="line">        sys-&gt;writeDepth = <span class="literal">true</span>;</span><br><span class="line">        sys-&gt;faceCullMode = Back;</span><br><span class="line">        <span class="comment">// 设定 RT</span></span><br><span class="line">        sys-&gt;graphics-&gt;<span class="built_in">SetRenderTarget</span>(sys-&gt;backBuffer);</span><br><span class="line">        sys-&gt;<span class="built_in">ClearColor</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">        sys-&gt;<span class="built_in">ClearDepth</span>(<span class="number">1.0f</span>);</span><br><span class="line">        <span class="comment">// 绘制场景</span></span><br><span class="line">        sys-&gt;<span class="built_in">DrawScene</span>();</span><br><span class="line">        <span class="comment">// 双重缓冲交换</span></span><br><span class="line">        sys-&gt;<span class="built_in">SwapBuffer</span>();</span><br><span class="line">        <span class="comment">// 发送屏幕刷新信号，在画布上显示当前帧</span></span><br><span class="line">        <span class="function">emit <span class="title">Vsync</span><span class="params">(sys-&gt;GetFrame(), <span class="number">0</span>, <span class="number">0</span>)</span></span>;</span><br><span class="line">        sys-&gt;fps++;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面说到 <code>StateMachine</code> 中会初始化负责绘制的类 <code>Graphics</code> 的对象，该类中实现了全部渲染算法，负责执行状态机发送的 “Drawcall”，这里的 Drawcall 即为上面代码中一系列以 Draw 开头的函数，这些函数内部都会调用 <code>Graphics</code> 中的方法进行绘制。</p>
+<p>以 <code>sys-&gt;DrawScene()</code> 为例：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 绘制场景</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">StateMachine::DrawScene</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    mutex.<span class="built_in">lock</span>();</span><br><span class="line">    <span class="comment">// 缩放系数矩阵</span></span><br><span class="line">    glm::mat4 globelScale = glm::<span class="built_in">scale</span>(glm::<span class="built_in">mat4</span>(<span class="number">1.0f</span>), glm::<span class="built_in">vec3</span>(modelScale, modelScale, modelScale));</span><br><span class="line">    <span class="comment">// View矩阵</span></span><br><span class="line">    glm::mat4 viewMatrix = camera-&gt;<span class="built_in">GetViewMatrix</span>();</span><br><span class="line">    <span class="comment">// 投影矩阵</span></span><br><span class="line">    glm::mat4 projectionMatrix = camera-&gt;<span class="built_in">GetProjectionMatrix</span>();</span><br><span class="line">    <span class="comment">// 三角形数量，调试用</span></span><br><span class="line">    triangle = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 每个模型逐光源绘制</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; models.<span class="built_in">size</span>(); i++) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">0</span>; j &lt; dirLights.<span class="built_in">size</span>(); j++) &#123;</span><br><span class="line">            <span class="function">Uniform <span class="title">u</span><span class="params">(globelScale * models[i]-&gt;GetModelMatrix(), viewMatrix, projectionMatrix)</span></span>;</span><br><span class="line">            u.cameraPos = glm::<span class="built_in">vec4</span>(camera-&gt;position, <span class="number">1.0f</span>);</span><br><span class="line">            u.ambient = ambient;</span><br><span class="line">            u.dirLight = dirLights[j];</span><br><span class="line">            graphics-&gt;<span class="built_in">DrawModel</span>(*models[i], u, <span class="number">2</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 绘制 sky box</span></span><br><span class="line">    <span class="keyword">if</span> (drawSkyBox) &#123;</span><br><span class="line">        faceCullMode = Front;</span><br><span class="line">        writeDepth = <span class="literal">false</span>;</span><br><span class="line">        <span class="function">Uniform <span class="title">u</span><span class="params">(glm::mat4(<span class="number">1.0f</span>), viewMatrix, projectionMatrix)</span></span>;</span><br><span class="line">        u.cubemap = skyboxMap[currentSkybox];</span><br><span class="line">        graphics-&gt;<span class="built_in">DrawModel</span>(*skyBox, u, <span class="number">2</span>);</span><br><span class="line">        faceCullMode = Back;</span><br><span class="line">    &#125;</span><br><span class="line">    mutex.<span class="built_in">unlock</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>该函数中的工作就是获取 MVP 矩阵，并初始化一个 <code>Uniform</code> 对象，然后发送 Drawcall，<code>Uniform</code> 对象的功能类似于 Vulkan 中的 Pipeline Layout，其中存放了 Shader 中可以用到的所有资源及参数，包括各种全局变量和纹理等，<code>Uniform</code> 定义在 <code>ShaderBase.h</code> 中。</p>
+<p><code>Graphics</code> 对象会从模型开始渲染，即 <code>Graphics::DrawModel</code> 函数，该函数接收三个参数：模型 <code>Model</code> 对象、<code>Uniform</code> 对象和 pass 索引，该函数会绘制给定的 Model，Model 由 Mesh 组成，因此会逐 Mesh 绘制，并将 Mesh 对应的材质参数填充到 <code>Uniform</code> 对象中，以便 Shader 访问，材质 <code>Material</code> 还绑定了 Shader，该函数会根据给定的 pass 索引找到对应的 Shader 进行此次绘制。</p>
+<p>对于 Mesh，由顶点缓冲 VBO 和索引缓冲 EBO 组成，逐 Mesh 绘制即为从 Mesh 的顶点缓冲和索引缓冲中组装三角形图元，然后调用 <code>Graphics::DrawTriangle</code> 逐图元进行绘制。</p>
+<p><code>Graphics::DrawTriangle</code> 函数接收三个顶点，首先对顶点执行 Vertex Shader，之后进行剔除以丢弃不需要渲染的图元，然后对部分在裁剪空间立方体内的图元进行裁剪生成新的顶点和图元，最后对所有顶点组成的图元调用 <code>Graphics::RasterizeTriangle</code> 函数进行光栅化，在光栅化函数中会进行 Early-Z 深度测试，并为通过测试的片段执行 Fragment Shader，最后根据是否开启颜色写入和深度写入来更新 FrameBuffer。</p>
+<p>整个渲染流程中各对象的关系如下图所示：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/23/20220723-%E6%B8%B2%E6%9F%93%E5%99%A8-%E6%9C%80%E7%BB%88%E7%89%88%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3/%E6%B5%81%E7%A8%8B1.jpg" alt="流程1"></p>
+<p>其中 <code>Graphics::DrawModel</code> 是渲染管线流程的入口，渲染管线流程如下图所示：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/23/20220723-%E6%B8%B2%E6%9F%93%E5%99%A8-%E6%9C%80%E7%BB%88%E7%89%88%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3/%E6%B5%81%E7%A8%8B2.jpg" alt="流程2"></p>
+<h4 id="3-3-其他实现细节"><a href="#3-3-其他实现细节" class="headerlink" title="3.3 其他实现细节"></a>3.3 其他实现细节</h4><p>按照管线流程顺序，本节介绍其中一些关键算法的实现思路。</p>
+<h5 id="3-3-1-图元裁剪算法"><a href="#3-3-1-图元裁剪算法" class="headerlink" title="3.3.1 图元裁剪算法"></a>3.3.1 图元裁剪算法</h5><p>图元裁剪算法在顶点变换到裁剪空间之后，透视除法之前执行，基本流程是：</p>
+<ul>
+<li>判断图元是否完全在裁剪立方体外部，对于完全在外部的图元直接丢弃</li>
+<li>判断图元是否完全在裁剪立方体内部，对于完全在内部的图元无需裁剪</li>
+<li>对部分在内部的图元执行裁剪算法，遍历六个裁剪平面，对两两顶点组成的直线进行裁剪</li>
+<li>如果两顶点在裁剪平面两侧，则求直线和平面的交点（通过点到平面的距离插值得到）作为新的顶点加入结果顶点集</li>
+<li>每一个平面的裁剪结果（顶点集）作为下一次裁剪的输入，直到遍历完六个裁剪平面</li>
+</ul>
+<p>具体实现在 <code>Clip.cpp</code> 的 <code>Clip::SutherlandHodgeman</code> 方法中。</p>
+<h5 id="3-3-2-光栅化算法"><a href="#3-3-2-光栅化算法" class="headerlink" title="3.3.2 光栅化算法"></a>3.3.2 光栅化算法</h5><p>使用了边界函数光栅化算法，边界函数即根据向量叉乘判断点是否在三角形内部，如下图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/23/20220723-%E6%B8%B2%E6%9F%93%E5%99%A8-%E6%9C%80%E7%BB%88%E7%89%88%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3/image-20220723102429578.png" alt="v2-09c42968924c38ea0732073d31d81912_r"></p>
+<p>则点 P 相对于边 AB 的边界函数可以表示为：<br>$$<br>F_{AB}(P) &#x3D; AB \times AP &#x3D; (B_x - A_x)(P_y - A_y) - (B_y - A_y)(P_x - A_x)<br>$$<br>其他两边同理，对于逆时针顶点顺序的三角形，三个边界函数都大于 0 即为点在三角形内部。上面的边界函数展开并整理可以改写为：<br>$$<br>F_{AB}(P) &#x3D; (A_y - B_y)P_x + (B_x  -A_x)P_y + (A_xB_y - A_yB_x)<br>$$<br>即边界函数对于 Px 和 Py 是完全线性的，也就是两个像素之间的边界函数差值是固定的：<br>$$<br>F_{AB}(P_{x + 1}, P_y) - F_{AB}(P_{x}, P_y) &#x3D; A_y - B_y<br>$$</p>
+<p>$$<br>F_{AB}(P_x, P_{y+1}) - F_{AB}(P_{x}, P_y) &#x3D; B_x - A_x<br>$$</p>
+<p>于是只需要计算出边界函数初值，之后遍历每个像素只需要加上固定的增量即可快速得到该点的边界函数，无需重新计算叉乘。</p>
+<p>如果当前点在三角形内部，则使用重心坐标插值得到该点的属性，重心坐标就是面积比值，也可以通过叉乘得到，因此还可以通过边界函数快速得到该点的重心坐标。</p>
+<p>综上，边界函数光栅化算法基本流程为：</p>
+<ul>
+<li>求三角形 Bounding Box</li>
+<li>求三条边的边界函数初值</li>
+<li>遍历 Bounding Box 中的每个像素，使用边界函数判断是否在三角形内部</li>
+<li>对在内部的点，通过边界函数得到重心坐标，插值得到片段属性并执行 Fragment Shader，更新 Frame Buffer</li>
+<li>使用增量更新边界函数继续遍历</li>
+</ul>
+<p>具体实现在 <code>Graphics.cpp</code> 的 <code>Graphics::RasterizeTriangle</code> 方法中。</p>
+<h5 id="3-3-3-透视插值校正"><a href="#3-3-3-透视插值校正" class="headerlink" title="3.3.3 透视插值校正"></a>3.3.3 透视插值校正</h5><p>由于光栅化过程中的插值在屏幕空间进行，而屏幕空间的顶点位置和世界空间的顶点位置不具备线性对应关系，因此直接使用线性插值会导致顶点属性错误，比如纹理坐标错误会使纹理贴图显示异常，因此要在光栅化之前，透视除法的时候对顶点的所有属性进行插值校正（除以 Z 值），在光栅化算法插值后进行透视恢复（乘以原本的 Z 值）。</p>
+<p>这部分具体实现在 <code>Graphics.cpp</code> 的 <code>Graphics::PerspectiveDivision</code> 和 <code>Graphics::PerspectiveRestore</code> 中。</p>
+<h3 id="4-参考及资源"><a href="#4-参考及资源" class="headerlink" title="4 参考及资源"></a>4 参考及资源</h3><ul>
+<li>UI 框架参考：<a target="_blank" rel="noopener" href="https://www.zhihu.com/people/carcat/posts">Clawko - zhihu.com</a></li>
+<li>Box 纹理：<a target="_blank" rel="noopener" href="https://learnopengl-cn.github.io/img/01/06/container.jpg">https://learnopengl-cn.github.io/img/01/06/container.jpg</a></li>
+<li>Floor 纹理：<a target="_blank" rel="noopener" href="https://www.textureking.com/dsc_3521/">DSC_3521 Textures from TextureKing</a></li>
+<li>Wolf 模型及纹理：<a target="_blank" rel="noopener" href="https://free3d.com/3d-model/wolf-rigged-and-game-ready-42808.html">Wolf Rigged and Game Ready - Free3D</a></li>
+<li>Sky Box HDRI：<a target="_blank" rel="noopener" href="https://polyhaven.com/hdris">HDRIs • Poly Haven</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <div>
+    
+      <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">---- 本文结束 <i class="fa fa-trophy"></i> 知识又增加了亿点点！----</div>
+    
+</div>
+<br />
+<div>
+  <div>
+    <fieldset
+        style="
+            border: 1px dashed #C0C0C0;
+            padding: 10px;
+            border-radius: 5px;
+            line-height: 2em;
+            color: #6d6d6d;
+        ">
+        <legend
+            align="center"
+            style="
+                width: 30%;
+                text-align: center;
+                color: #6d6d6d;
+                border: 1px dashed #C0C0C0;
+                border-radius: 5px;
+            ">
+            文章版权声明
+        </legend>
+        1、博客名称：<font color="#37c6c0">LycTechStack</font><br />
+        2、博客网址：<font color="#37c6c0">https://lz328.github.io/LycTechStack.github.io/</font><br />
+        3、本博客的文章部分内容可能来源于网络，仅供大家学习与参考，如有侵权，请联系博主进行删除处理。<br />
+        4、本博客所有文章版权归博主所有，如需转载请标明出处。<br />
+    </fieldset>
+  </div>
+</div>
+
+    
+    </div>
+      
+  <div class="popular-posts-header">相关文章</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\13\20220513-RTR-GPU管线\" rel="bookmark">【Real-Time Rendering】GPU管线</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\13\20220513-RTR-图形渲染和视觉外观\" rel="bookmark">【Real-Time Rendering】图形渲染和视觉处理</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\14\20220514-RTR-模板测试和深度测试\" rel="bookmark">【Real-Time Rendering】模板测试和深度测试</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\15\20220515-RTR-程序噪声总结\" rel="bookmark">【Real-Time Rendering】程序噪声总结</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\16\20220516-RTR-BRDF总结\" rel="bookmark">【Real-Time Rendering】BRDF总结</a></div>
+    </li>
+  </ul>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/LycTechStack.github.io/tags/%E5%AE%9E%E6%97%B6%E6%B8%B2%E6%9F%93/" rel="tag"># 实时渲染</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/" rel="prev" title="【Vulkan】资源绑定和状态管理">
+      <i class="fa fa-chevron-left"></i> 【Vulkan】资源绑定和状态管理
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BD%AF%E5%85%89%E6%A0%85%E5%8C%96%E6%B8%B2%E6%9F%93%E5%99%A8%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3"><span class="nav-text">软光栅化渲染器说明文档</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%8E%AF%E5%A2%83%E5%8F%8A%E4%BE%9D%E8%B5%96"><span class="nav-text">1 环境及依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%89%B9%E6%80%A7"><span class="nav-text">2 特性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%AE%9E%E7%8E%B0%E6%80%9D%E8%B7%AF"><span class="nav-text">3 实现思路</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-UI-%E6%A1%86%E6%9E%B6%E5%8F%8A%E6%93%8D%E4%BD%9C%E8%AF%B4%E6%98%8E"><span class="nav-text">3.1 UI 框架及操作说明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E6%B8%B2%E6%9F%93%E6%B5%81%E7%A8%8B"><span class="nav-text">3.2 渲染流程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-%E5%85%B6%E4%BB%96%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82"><span class="nav-text">3.3 其他实现细节</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#3-3-1-%E5%9B%BE%E5%85%83%E8%A3%81%E5%89%AA%E7%AE%97%E6%B3%95"><span class="nav-text">3.3.1 图元裁剪算法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-3-2-%E5%85%89%E6%A0%85%E5%8C%96%E7%AE%97%E6%B3%95"><span class="nav-text">3.3.2 光栅化算法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-3-3-%E9%80%8F%E8%A7%86%E6%8F%92%E5%80%BC%E6%A0%A1%E6%AD%A3"><span class="nav-text">3.3.3 透视插值校正</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%8F%82%E8%80%83%E5%8F%8A%E8%B5%84%E6%BA%90"><span class="nav-text">4 参考及资源</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Lyc"
+      src="/LycTechStack.github.io/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Lyc</p>
+  <div class="site-description" itemprop="description">个人学习总结和技术经验分享，主要内容包括C++、数据结构、算法、计算机图形学、3D数学、实时渲染、游戏引擎等等，希望未来能真正踏入图形/引擎开发的大门！</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/LycTechStack.github.io/archives/">
+        
+          <span class="site-state-item-count">114</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/LycTechStack.github.io/categories/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/LycTechStack.github.io/tags/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/LZ328/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;LZ328&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:27487358@qq.com" title="E-Mail → mailto:27487358@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2021 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heartbeat"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lyc</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">913k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">13:50</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="/LycTechStack.github.io/lib/canvas-ribbon/canvas-ribbon.js"></script>
+  <script src="/LycTechStack.github.io/lib/anime.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/pjax/pjax.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4/dist/browser/pangu.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/velocity/velocity.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/LycTechStack.github.io/js/utils.js"></script>
+
+<script src="/LycTechStack.github.io/js/motion.js"></script>
+
+
+<script src="/LycTechStack.github.io/js/schemes/pisces.js"></script>
+
+
+<script src="/LycTechStack.github.io/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/LycTechStack.github.io/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '09aa5d8a5587f012a8af',
+      clientSecret: '7f7ec08f02d74e1865e57b5f03a982047700b547',
+      repo        : 'LycTechStack.github.io',
+      owner       : 'LZ328',
+      admin       : ['LZ328'],
+      id          : '517f3904fe0906d041584f2692d9c418',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+    </div>
+  
+</body>
+</html>
