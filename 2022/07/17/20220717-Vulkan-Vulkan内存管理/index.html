@@ -29,16 +29,16 @@
 <meta property="og:site_name" content="LycTechStack">
 <meta property="og:description" content="本节主要讨论 Vulkan 中内存管理的相关内容，在这个过程中可以加深对 Heap， Memory，Buffer 和 Image 等概念的理解。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Image-20220717130808509.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Image-20220717130155090.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/image-20220717133127448.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/image-20220717134630792.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/Image-20220717130808509.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/Image-20220717130155090.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220717133127448.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220717134630792.png">
 <meta property="article:published_time" content="2022-07-17T06:11:55.000Z">
 <meta property="article:modified_time" content="2022-07-20T02:58:30.704Z">
 <meta property="article:author" content="Lyc">
 <meta property="article:tag" content="Vulkan">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Image-20220717130808509.png">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/Image-20220717130808509.png">
 
 <link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">
 
@@ -279,7 +279,7 @@
 
       
         <p>本节主要讨论 Vulkan 中内存管理的相关内容，在这个过程中可以加深对 Heap， Memory，Buffer 和 Image 等概念的理解。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Image-20220717130808509.png" alt="Image-20220717130808509"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/Image-20220717130808509.png" alt="Image-20220717130808509"></p>
 <p><em><span id="more"></span></em></p>
 <h3 id="1-Vulkan-内存管理"><a href="#1-Vulkan-内存管理" class="headerlink" title="1 Vulkan 内存管理"></a>1 Vulkan 内存管理</h3><p>Vulkan 将内存划分为两大类：<strong>Host  Memory</strong> 和 <strong>Device  Memory</strong>。</p>
 <p>Host 是运行应用程序的处理器，在 PC 机上就是指 CPU。Device 是执行 Vulkan 命令的处理器，在 PC 机上就是指 GPU。</p>
@@ -292,7 +292,7 @@
 <li>Device Local Host  Memory，由 Device 管理的，对 Host 可见的内存</li>
 </ul>
 <p>但并不是所有设备都支持这四种类型。一些嵌入式系统、移动设备甚至是笔记本电脑的 GPU，可能与 CPU 共享内存控制器和内存子系统。这种情况它的内存只有一种类型，我们通常称之为 unified  Memory architecture（统一内存架构）。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/Image-20220717130155090.png" alt="Image-20220717130155090"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/Image-20220717130155090.png" alt="Image-20220717130155090"></p>
 <h4 id="1-1-Host-Memory"><a href="#1-1-Host-Memory" class="headerlink" title="1.1 Host  Memory"></a>1.1 Host  Memory</h4><p>Host  Memory 是 CPU 可以访问的常规内存，一般是通过调用 malloc 或 new 分配。</p>
 <p>Vulkan API 创建的对象通常需要一定数量的 Host  Memory，用来储存对象和数据结构。Vulkan 对 Host  Memory 的要求就是内存地址是对齐的，这是因为某些高性能 CPU 指令在对齐的内存地址上效果最佳。通过假定存储 CPU 端数据结构的分配是对齐的，Vulkan 可以无条件使用这些高性能指令，从而提供显著的性能优势。</p>
 <h4 id="1-2-Device-Memory"><a href="#1-2-Device-Memory" class="headerlink" title="1.2 Device  Memory"></a>1.2 Device  Memory</h4><p>任何可以由 Device 访问的内存，都被称为 Device  Memory（设备内存）。Device  Memory 距离 Device 更近，比 Host  Memory 更有性能优势。Image object、Buffer object、UBO（uniform Buffer objec）都由 Device  Memory 分配。Vulkan 中的所有资源都由 Device  Memory 支持。</p>
@@ -302,21 +302,19 @@
 <li>Descriptor Pool</li>
 <li>Query Pool</li>
 </ul>
-<h3 id="2-Heap-和-Memory"><a href="#2-Heap-和-Memory" class="headerlink" title="2 Heap 和  Memory"></a>2 Heap 和  Memory</h3><h4 id="2-1-Heap"><a href="#2-1-Heap" class="headerlink" title="2.1 Heap"></a>2.1 Heap</h4><p>在 Vulkan 中，首先有一个叫做 Heap 的概念，可以认为就是一个有着不同属性的  Memory pool，app 显然可以根据它自己对资源的理解，将不同用途的资源申请分配到不同属性的 Heap 中去。但在之前的 API，如 OpenGL，D3D 11 等，资源的属性更多的时候是作为一个 hint，在资源创建的时候传递给 driver，由 driver 来最终决定将资源分配到何处。例如，在 D3D 11 中，创建资源的时候可以指定用途，从 default&#x2F;dynamic&#x2F;immutable&#x2F;staging 中选择一项，然后 driver 负责根据用途来挑选不同的  Memory 类型。</p>
+<h3 id="2-Heap-和-Memory"><a href="#2-Heap-和-Memory" class="headerlink" title="2 Heap 和  Memory"></a>2 Heap 和  Memory</h3><h4 id="2-1-Heap"><a href="#2-1-Heap" class="headerlink" title="2.1 Heap"></a>2.1 Heap</h4><p>在 Vulkan 中，首先有一个叫做 Heap 的概念，可以认为就是一个有着不同属性的  Memory pool，app 显然可以根据它自己对资源的理解，将不同用途的资源申请分配到不同属性的 Heap 中去。但在之前的 API，如 OpenGL，D3D 11 等，资源的属性更多的时候是作为一个 hint，在资源创建的时候传递给 driver，由 driver 来最终决定将资源分配到何处。例如，在 D3D 11 中，创建资源的时候可以指定用途，从 default/dynamic/immutable/staging 中选择一项，然后 driver 负责根据用途来挑选不同的  Memory 类型。</p>
 <p>然而，在 Vulkan中，资源对象，例如 Buffer 和 Image，以及资源对象实际使用的  Memory，这两个概念已经剥离开来了。也就是说，在 Vulkan 中创建一个对象，并不会同时为这个对象分配相应的  Memory。 Memory 需要从 Heap 中分配出来，然后和对象来一次 association，对象才真正地有了  Memory 来存放其中的内容。</p>
 <p>Heap 本身作为一个硬件支撑的对象，属于 Physical Device 的范畴，所以，可以用 <code>vkGetPhysicalDevice MemoryProperties</code> 来获取硬件可用的 Heap 资源的信息。这个 api 返回的数据结构是一个 <code>VkPhysicalDevice MemoryProperties</code> 的对象，其摘要如下：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">VkPhysicalDevice</span> MemoryProperties &#123;</span><br><span class="line">    <span class="type">uint32_t</span>         MemoryTypeCount;</span><br><span class="line">    Vk MemoryType     MemoryTypes[VK_MAX_ Memory_TYPES];</span><br><span class="line">    <span class="type">uint32_t</span>         MemoryHeapCount;</span><br><span class="line">    Vk MemoryHeap     MemoryHeaps[VK_MAX_ Memory_HEAPS];</span><br><span class="line">&#125; VkPhysicalDevice MemoryProperties;</span><br></pre></td></tr></table></figure>
-
-<p>Heap 的信息以一种非常不直观的形式，由这种数据结构展示出来。其中，真正的 Heap 存放在 <code> MemoryHeaps</code> 数组中，这个数组本身的大小是固定的，但是其中有效的 Heap 个数由 <code> MemoryHeapCount</code> 指定。一个 <code>Vk MemoryHeap</code> 只包含两个信息，第一个是 Heap 的大小，第二个则是一个掩码数，目前只有一个选项可选：是否是 Device-Local 的。Vulkan 规定所有的 Heap中，至少有一个必须设置为 Device-Local。</p>
-<h4 id="2-2-Memory"><a href="#2-2-Memory" class="headerlink" title="2.2  Memory"></a>2.2  Memory</h4><p>我们一般时候说的 Memory，都是指存储空间（不一定是 CPU 的内存，也可能是 GPU 的显存），而在 Vulkan 中， Memory 也特指  Memory 对象，即从一个 Heap 中分配出来的、可以为 Image&#x2F;Buffer 做容器的对象。当我们谈到 Memory 对象的时候，我们指的是 Vulkan 中的 Memory 概念，其他时候，我们谈 Memory，指的就是存储空间。</p>
+<p>Heap 的信息以一种非常不直观的形式，由这种数据结构展示出来。其中，真正的 Heap 存放在 <code>MemoryHeaps</code> 数组中，这个数组本身的大小是固定的，但是其中有效的 Heap 个数由 <code>MemoryHeapCount</code> 指定。一个 <code>Vk MemoryHeap</code> 只包含两个信息，第一个是 Heap 的大小，第二个则是一个掩码数，目前只有一个选项可选：是否是 Device-Local 的。Vulkan 规定所有的 Heap中，至少有一个必须设置为 Device-Local。</p>
+<h4 id="2-2-Memory"><a href="#2-2-Memory" class="headerlink" title="2.2  Memory"></a>2.2  Memory</h4><p>我们一般时候说的 Memory，都是指存储空间（不一定是 CPU 的内存，也可能是 GPU 的显存），而在 Vulkan 中， Memory 也特指  Memory 对象，即从一个 Heap 中分配出来的、可以为 Image/Buffer 做容器的对象。当我们谈到 Memory 对象的时候，我们指的是 Vulkan 中的 Memory 概念，其他时候，我们谈 Memory，指的就是存储空间。</p>
 <p>有了 Heap 之后，我们就可以从中分配 Memory 对象了，分配的方法很简单，使用 <code>vkAllocateMemory</code> 即可。分配主要需要的信息都在 <code>VkMemoryAllocateInfo</code> 数据结构中体现，其摘要如下：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">VkMemoryAllocateInfo</span> &#123;</span><br><span class="line">    VkStructureType    sType;</span><br><span class="line">    <span class="type">const</span> <span class="type">void</span>*        pNext;</span><br><span class="line">    VkDeviceSize       allocationSize;</span><br><span class="line">    <span class="type">uint32_t</span>           MemoryTypeIndex;</span><br><span class="line">&#125; VkMemoryAllocateInfo;</span><br></pre></td></tr></table></figure>
-
-<p>一个 Memory 对象在生命周期的尽头，由 <code>vkFreeMemory</code> 释放。当释放一个 Memory 对象的时候，app 应当保证此时 Device 不再引用此 Memory 对象上所关联的 Image&#x2F;Buffer。</p>
+<p>一个 Memory 对象在生命周期的尽头，由 <code>vkFreeMemory</code> 释放。当释放一个 Memory 对象的时候，app 应当保证此时 Device 不再引用此 Memory 对象上所关联的 Image/Buffer。</p>
 <h3 id="3-Buffer-和-Image"><a href="#3-Buffer-和-Image" class="headerlink" title="3 Buffer 和 Image"></a>3 Buffer 和 Image</h3><p>内存的作用是给资源做底层支持，不同的资源对内存的要求并不一样。Vulkan 有两种基本资源类型：Buffer 和 Image。</p>
 <p><strong>Buffer</strong> 是最简单的资源类型，可以用来储存线性的结构化的数据，也可以储存内存中原始字节。</p>
 <p><strong>Image</strong> 则相对比较复杂，具有特殊的布局（layout）和格式（format），可用来做 flitering，blending，depth 和 stencil testing 等。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/image-20220717133127448.png" alt="image-20220717133127448"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220717133127448.png" alt="image-20220717133127448"></p>
 <h4 id="3-1-Buffer"><a href="#3-1-Buffer" class="headerlink" title="3.1 Buffer"></a>3.1 Buffer</h4><p>从上图中我们可以看到，Vulkan 中使用的 Buffer 类型主要有：</p>
 <ul>
 <li>Indirect Buffer</li>
@@ -330,14 +328,12 @@
 <p>当使用 <code>vkCreateBuffer</code> 创建一个 Buffer 对象的时候，在创建信息 <code>VkBufferCreateInfo</code> 中，我们就要指定这个 Buffer 对象可能的使用场景。除了上述七种有着一一对应的使用掩码位之外，还有额外的两个，分别表示 Buffer 是否可以作为 Transfer 的 Src 或者 Dst。此外还可以设置是否创建 Sparse 的资源，以及其在 Queue Family 之间共享或者独享等信息。</p>
 <p>当我们创建好了一个 Buffer 对象后，我们需要将它和一个 Memory 对象关联起来，这样才可以真正让这个 Buffer 对象拥有 Memory。关联是通过 <code>vkBindBufferMemory</code> 来完成的，然而，直接 binding 可能会失败，因为创建的 Buffer 可能会有一些额外的要求，例如对齐等，所以在此之前，我们需要使用 <code>vkGetBufferMemoryRequirements</code> 来获取这个 Buffer 对象对于 Memory 等要求。要求被填入一个 <code>VkMemoryRequirements</code> 的对象中，这个对象的摘要如下：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">VkMemoryRequirements</span> &#123;</span><br><span class="line">    VkDeviceSize    size;</span><br><span class="line">    VkDeviceSize    alignment;</span><br><span class="line">    <span class="type">uint32_t</span>        memoryTypeBits;</span><br><span class="line">&#125; VkMemoryRequirements;</span><br></pre></td></tr></table></figure>
-
 <p>对于一个 Texel 的 Buffer，如 Uniform Texel Buffer 或者 Storage Texel Buffer，shader 如果需要使用的话，还需要用 <code>vkCreateBufferView</code> 为其创建一个 Buffer View，才可以绑定到 Descriptor Set 上，创建信息保存在 <code>VkBufferViewCreateInfo</code> 中，主要制定了 View 的 Format，以及 View 在 Buffer 中的 offset 和 range。</p>
 <p>Buffer 和 Buffer View 分别使用 <code>vkDestroyBuffer</code> 以及 <code>vkDestroyBufferView</code> 进行销毁。</p>
-<h4 id="3-2-Image"><a href="#3-2-Image" class="headerlink" title="3.2 Image"></a>3.2 Image</h4><p>从上图中可以看出，image 主要是作为 shader resource 的 sampled image（即传统意义上的 texture），storage image，以及 frame buffer 中的 input attachment, color attachment 和 depth&#x2F;stencil attachment。大概相当于 D3D 中的 texture, render target 等，表示的是具有 pixel array 和 mipmap 结构的数据。</p>
+<h4 id="3-2-Image"><a href="#3-2-Image" class="headerlink" title="3.2 Image"></a>3.2 Image</h4><p>从上图中可以看出，image 主要是作为 shader resource 的 sampled image（即传统意义上的 texture），storage image，以及 frame buffer 中的 input attachment, color attachment 和 depth/stencil attachment。大概相当于 D3D 中的 texture, render target 等，表示的是具有 pixel array 和 mipmap 结构的数据。</p>
 <p>创建一个 image，需要使用 <code>vkCreateImage</code>，主要核心在于数据结构 <code>VkImageCreateInfo</code>，其摘要如下：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">VkImageCreateInfo</span> &#123;</span><br><span class="line">    VkStructureType          sType;</span><br><span class="line">    <span class="type">const</span> <span class="type">void</span>*              pNext;</span><br><span class="line">    VkImageCreateFlags       flags;</span><br><span class="line">    VkImageType              imageType;</span><br><span class="line">    VkFormat                 format;</span><br><span class="line">    VkExtent3D               extent;</span><br><span class="line">    <span class="type">uint32_t</span>                 mipLevels;</span><br><span class="line">    <span class="type">uint32_t</span>                 arrayLayers;</span><br><span class="line">    VkSampleCountFlagBits    samples;</span><br><span class="line">    VkImageTiling            tiling;</span><br><span class="line">    VkImageUsageFlags        usage;</span><br><span class="line">    VkSharingMode            sharingMode;</span><br><span class="line">    <span class="type">uint32_t</span>                 queueFamilyIndexCount;</span><br><span class="line">    <span class="type">const</span> <span class="type">uint32_t</span>*          pQueueFamilyIndices;</span><br><span class="line">    VkImageLayout            initialLayout;</span><br><span class="line">&#125; VkImageCreateInfo;</span><br></pre></td></tr></table></figure>
-
-<p>首先解释几个比较简单的部分，例如，imageType 决定 image 是 1d&#x2F;2d&#x2F;3d，format 决定 image 的格式，extent 决定其大小，mipLevels 和 arrayLayers 则是其 mip 层数和数组维度，samples 给出了采样个数。如同 buffer 创建的时候一样，创建 image 的时候也需要指定共享模式，以及可用的 queue 的 family 索引。</p>
+<p>首先解释几个比较简单的部分，例如，imageType 决定 image 是 1d/2d/3d，format 决定 image 的格式，extent 决定其大小，mipLevels 和 arrayLayers 则是其 mip 层数和数组维度，samples 给出了采样个数。如同 buffer 创建的时候一样，创建 image 的时候也需要指定共享模式，以及可用的 queue 的 family 索引。</p>
 <p>tiling 则决定了 image 本身的 tile 方法，包括 linear 和 optimal 两个选项：</p>
 <ul>
 <li>linear - 其中的图像（Image）数据线性的排列在内存中。</li>
@@ -345,7 +341,7 @@
 </ul>
 <p>线性布局（linear layout）适合连续的单行的读写，但是大多数图形操作都涉及到跨行读写纹理元素，如果图像的宽度非常宽，相邻行的访问在线性布局中会有非常大的跳转。这可能会导致性能问题。</p>
 <p>优化布局（optimal layout）的好处是内存数据根据不同内存子系统进行优化，比如将所有的纹理像素都优化到一块连续的内存区域中，加快内存处理速度。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/image-20220717134630792.png" alt="image-20220717134630792"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220717134630792.png" alt="image-20220717134630792"></p>
 <p>如果需要在 shader 中使用 image，必须通过 frame buffer 或者 descriptor set，通过 image view 的方式才可以。创建 image view 是通过 <code>vkCreateImageView</code> 来完成的，如同 buffer 和 memory 的 binding 一样，一个 image 首先需要使用 <code>vkGetImageMemoryRequirements</code> 来获取其对 memory 的要求，然后才可以用 <code>vkBindImageMemory</code> 来将 memory 和 image bind 起来。</p>
 
     </div>
@@ -397,13 +393,13 @@
   <div class="popular-posts-header">相关文章</div>
   <ul class="popular-posts">
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\07\16\20220716-Vulkan-Vulkan对象总结\" rel="bookmark">【Vulkan】常用组件总结</a></div>
-    </li>
-    <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\07\17\20220717-Vulkan-Vulkan显示与绘制\" rel="bookmark">【Vulkan】显示与绘制</a></div>
     </li>
     <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\07\17\20220717-Vulkan-Vulkan资源绑定和状态管理\" rel="bookmark">【Vulkan】资源绑定和状态管理</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\07\16\20220716-Vulkan-Vulkan对象总结\" rel="bookmark">【Vulkan】常用组件总结</a></div>
     </li>
     <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\07\17\20220717-Vulkan-Vulkan多线程渲染\" rel="bookmark">【Vulkan】多线程渲染</a></div>
@@ -504,7 +500,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/LycTechStack.github.io/archives/">
         
-          <span class="site-state-item-count">114</span>
+          <span class="site-state-item-count">115</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -562,13 +558,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">913k</span>
+    <span title="站点总字数">914k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">13:50</span>
+    <span title="站点阅读时长">13:51</span>
 </div>
 
         
