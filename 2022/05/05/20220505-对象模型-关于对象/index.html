@@ -29,18 +29,18 @@
 <meta property="og:site_name" content="LycTechStack">
 <meta property="og:description" content="《深度探索 C++ 对象模型》第一章重点梳理。主要内容包括：  C++ 封装对象的布局成本 C++ 对象模型，详述 C++ 如何组织类对象及其成员 C++ 继承简述，简述 C++ 三种继承关系和三种继承方式，关于继承布局模型会在之后的章节详述 C++ 支持多态的三种方式 指针类型和多态的实现原理">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/05/20220505-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E5%AF%B9%E8%B1%A1/image-20220505095707450.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/05/20220505-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E5%AF%B9%E8%B1%A1/image-20220505112402307.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/05/20220505-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E5%AF%B9%E8%B1%A1/image-20220505112658895.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/05/20220505-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E5%AF%B9%E8%B1%A1/image-20220505150626835.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/05/20220505-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E5%AF%B9%E8%B1%A1/image-20220505150739142.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220505095707450.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220505112402307.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220505112658895.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220505150626835.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220505150739142.png">
 <meta property="article:published_time" content="2022-05-05T07:33:58.000Z">
 <meta property="article:modified_time" content="2022-05-11T07:15:59.208Z">
 <meta property="article:author" content="Lyc">
 <meta property="article:tag" content="C++">
 <meta property="article:tag" content="C++对象模型">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/05/20220505-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E5%AF%B9%E8%B1%A1/image-20220505095707450.png">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220505095707450.png">
 
 <link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/05/05/20220505-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E5%AF%B9%E8%B1%A1/">
 
@@ -315,14 +315,12 @@
 </blockquote>
 <p>以下面的类为例：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Point</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Point</span>(<span class="type">float</span> xval);</span><br><span class="line">    <span class="keyword">virtual</span> ~<span class="built_in">Point</span>();</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="type">float</span> <span class="title">x</span><span class="params">()</span> <span class="type">const</span></span>;</span><br><span class="line">    <span class="function"><span class="type">static</span> <span class="type">int</span> <span class="title">PointCount</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> ostream&amp; <span class="title">print</span><span class="params">(ostream &amp;os)</span> <span class="type">const</span></span>;</span><br><span class="line">    </span><br><span class="line">    <span class="type">float</span> _x;</span><br><span class="line">    <span class="type">static</span> <span class="type">int</span> _point_count;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
 <p>其对象模型如下图所示：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/05/20220505-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E5%AF%B9%E8%B1%A1/image-20220505095707450.png" alt="image-20220505095707450"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220505095707450.png" alt="image-20220505095707450"></p>
 <p>C++ 这样构建对象模型的主要优点在于空间和存取时间效率高，但缺点在于如果程序代码本身没有更改，但所用到的类对象的非静态成员变量有所修改，那么代码就需要重新编译。</p>
 <p>另一种没有应用在 C++ 中的对象模型——双表格模型可以解决这个问题，双表格模型把所有成员变量放在数据表格中，把所有指向函数的指针放在函数表格中，每一个类对象只包含指向这两个表格的指针。这样虽然更灵活，但也因此付出了空间和执行效率两方面的代价。</p>
 <h3 id="3-C-继承简述"><a href="#3-C-继承简述" class="headerlink" title="3 C++ 继承简述"></a>3 C++ 继承简述</h3><p>C++ 支持单一继承、多重继承和虚拟继承：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 单一继承</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Library_Materials</span> &#123; ... &#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Book</span> : <span class="keyword">public</span> Library_Materials &#123; ... &#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Rental_Book</span> : <span class="keyword">public</span> Book &#123; ... &#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 多重继承</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">iostream</span> : <span class="keyword">public</span> istream, <span class="keyword">public</span> ostream &#123; ... &#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 虚拟继承</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">istream</span> : <span class="keyword">virtual</span> <span class="keyword">public</span> ios &#123;...&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ostream</span> : <span class="keyword">virtual</span> <span class="keyword">public</span> ios &#123;...&#125;;</span><br></pre></td></tr></table></figure>
-
 <blockquote>
 <p><strong>为什么需要虚拟继承？</strong></p>
 <p>虚拟继承是为了防止多重继承中，一个派生类继承自两个相同的基类的情况。</p>
@@ -346,12 +344,10 @@
 <li>隐式转换：将派生类指针转化为一个指向其基类的指针：</li>
 </ul>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shape *ps = <span class="keyword">new</span> <span class="built_in">circle</span>();</span><br></pre></td></tr></table></figure>
-
 <ul>
 <li>虚函数机制：基类中定义虚函数（纯虚函数），派生类进行重载，在运行时决定调用哪个函数对象：</li>
 </ul>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps-&gt;<span class="built_in">rotate</span>();</span><br></pre></td></tr></table></figure>
-
 <ul>
 <li>dynamic_cast 和 type_id 运算符，在上面的虚拟继承提到过，用来将指向基类的指针转化为指向派生类对象的指针，或者获取对象的 type_info</li>
 </ul>
@@ -359,7 +355,6 @@
 <p>以内存需求的观点来说，没有什么不同，它们都需要有足够的内存来放置一个机器地址，指向不同类型的指针之间的差异既不在其声明方法不同，也不在其内容（代表一个地址）不同，而是在其所寻址出来的 object 类型不同。也就是说，”指针类型”会告诉编译器如何解释某个特定地址中的内存内容及其大小。</p>
 <p>例如下面的类：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">ZooAnimal</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    ...</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">rotate</span><span class="params">()</span></span>;</span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">    <span class="type">int</span> loc;</span><br><span class="line">    string name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>那么指向类 ZooAnimal 的对象的指针将会包含：</p>
 <ul>
 <li>指向 int 类型的指针，在 32 位计算机上，int 占 4 字节</li>
@@ -367,28 +362,24 @@
 <li>指向虚函数表的指针，占 4 字节</li>
 </ul>
 <p>因此类 ZooAnimal 的对象一共占用 16 字节，如果 ZooAnimal 对象存放在内存地址 1000，那么一个指向 ZooAnimal 对象的指针将会知道它需要涵盖内存的内存范围是 1000~1015.</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/05/20220505-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E5%AF%B9%E8%B1%A1/image-20220505112402307.png" alt="image-20220505112402307"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220505112402307.png" alt="image-20220505112402307"></p>
 <p>如果不告诉编译器这个指针指向什么类型，比如泛型指针 void*，那么编译器将不知道指针涵盖的地址范围，也就不能通过指针访问到正确的内存内容。</p>
 <p>现在我们定义一个 Bear 类继承自 ZooAnimal 类：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Bear</span> : <span class="keyword">public</span> ZooAnimal &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    ...</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">rotate</span><span class="params">()</span></span>;</span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">    <span class="keyword">enum</span> <span class="title class_">Dances</span> &#123; ... &#125;;	<span class="comment">//枚举类型默认使用int方式存储，占用4字节</span></span><br><span class="line">    </span><br><span class="line">    Dances dances_known;</span><br><span class="line">    <span class="type">int</span> cell_block;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>那么指向 Bear 对象的指针覆盖的内存大小是其基类子对象的大小（16字节）加上该对象成员变量的大小（4 + 4 字节）：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/05/20220505-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E5%AF%B9%E8%B1%A1/image-20220505112658895.png" alt="image-20220505112658895"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220505112658895.png" alt="image-20220505112658895"></p>
 <p>假设 Bear 对象存放在内存地址 1000 处，那么指向基类 ZooAnimal 的指针 pz 和指向派生类 Bear 的指针 pb 都指向内存地址 1000，区别在于 pz 指针涵盖的内存范围只包含基类成员的 16 字节，而 pb 指针涵盖的内存范围包含整个 Bear 对象。</p>
 <p>除了 ZooAnimal 对象中出现的成员，我们不能使用 pz 来处理 Bear 对象的任何成员，除非使用 virtual 机制：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 不可以，虽然 pz 指向一个 bear 对象的地址</span></span><br><span class="line">pz-&gt;cell_block;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 可以，经过显式转换</span></span><br><span class="line">((Bear*)pz)-&gt;cell_block;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 更好的方式是使用 RTTI，dynamic_cast返回一个指定派生类的指针，如果无法转换则返回空指针</span></span><br><span class="line"><span class="keyword">if</span>(Bear* pb2 = <span class="built_in">dynamic_cast</span>&lt;Bear*&gt;(pz))</span><br><span class="line">    pb2-&gt;cell_block;</span><br></pre></td></tr></table></figure>
-
 <p>现在来看这种情况：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Bear b;</span><br><span class="line">ZooAnimal za = b;</span><br><span class="line"><span class="comment">// 这将会调用 ZooAnimal 的 rotate 方法而不是 Bear 的</span></span><br><span class="line">za.<span class="built_in">rotate</span>();</span><br></pre></td></tr></table></figure>
-
 <p>为什么 za 调用的是 ZooAnimal 的 rotate 方法？这是由于当一个基类对象直接被初始化为一个派生类对象时，会发生切割（sliced），以塞入较小的基类内存中，而无法体现出任何派生类的痕迹。这时多态就“失效”了，实际上这是由于多态不能够发挥在“直接存取对象”这件事情上，<strong>因为多态机制是依靠指针（pointer）或引用（reference）完成的</strong>。</p>
 <p>举例来说明，比如有下面的类继承关系：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/05/20220505-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E5%AF%B9%E8%B1%A1/image-20220505150626835.png" alt="image-20220505150626835"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220505150626835.png" alt="image-20220505150626835"></p>
 <p>然后我们使用下面一组定义：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    ZooAnimal za;</span><br><span class="line">    ZooAnimal *pza;</span><br><span class="line">    </span><br><span class="line">    Bear b;</span><br><span class="line">    Panda *pp = <span class="keyword">new</span> Panda;</span><br><span class="line">    </span><br><span class="line">    pza = &amp;b;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>这组定义可能的内存布局如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/05/20220505-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E5%AF%B9%E8%B1%A1/image-20220505150739142.png" alt="image-20220505150739142"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220505150739142.png" alt="image-20220505150739142"></p>
 <p>将对象 za 或者 b 的地址，或者指针 pp 的内容（也是个地址）赋给指针 pza，是完全没有问题的，后续还可以通过各种转换得到想要的不同派生类的对象，也就实现了多态。一个指针或者引用之所以支持多态，就是因为他们并不会引发内存配置的资源量的改变，会受到改变的只是它们所指向的内存的“大小和解释方式”而已。</p>
 <p>但如果直接对对象进行操作，就会改变内存中的资源需求量，比如之前的例子，把整个 Bear 对象指定给 za，就会溢出它所配置得到的内存，自然也就无法得到正确的结果。</p>
 <p>总之，多态是一种强大的机制，允许你继一个抽象的 public 接口之后，封装相关的类型。需要付出的代价就是额外的间接性——不论是在“内存的获得”或是在“类型的决断”上。C++ 通过 class 的 pointers 和 references 来支待多态，这种程序设计风格就称为“面向对象”。</p>
@@ -442,10 +433,10 @@
   <div class="popular-posts-header">相关文章</div>
   <ul class="popular-posts">
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\07\20220507-对象模型-关于数据成员\" rel="bookmark">【C++对象模型】（三）关于数据成员</a></div>
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\09\20220509-对象模型-关于函数成员\" rel="bookmark">【C++对象模型】（四）关于函数成员</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\09\20220509-对象模型-关于函数成员\" rel="bookmark">【C++对象模型】（四）关于函数成员</a></div>
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\07\20220507-对象模型-关于数据成员\" rel="bookmark">【C++对象模型】（三）关于数据成员</a></div>
     </li>
     <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\09\20220509-对象模型-对象复制和析构\" rel="bookmark">【C++对象模型】（五）对象复制和析构</a></div>
@@ -611,13 +602,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">920k</span>
+    <span title="站点总字数">914k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">13:56</span>
+    <span title="站点阅读时长">13:51</span>
 </div>
 
         
