@@ -29,53 +29,53 @@
 <meta property="og:site_name" content="LycTechStack">
 <meta property="og:description" content="全局光照是实时渲染中非常重要的部分，一般来说最简单的评价一个游戏画面好坏的方法就是看画面有多亮，而这就是完全由全局光照质量所决定的。所谓全局光照，指的是光线经过多次弹射后照亮其他物体，在实时渲染中为了减少运算降低开销，一般只考虑光线的一次额外弹射。这一节我们分别讨论一些三维空间和屏幕空间的实时全局光照算法，主要了解大致的思路。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220603103514616.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220603103524667.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220603104607816.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220603104650506.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220603105635240.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220603103524667.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220603105452496.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220603111036435.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220603111410505.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220603111539524.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220603111714792.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220603111846023.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220605105404933.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220605105617924.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220605105818137.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220605105715490.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220605110006953.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220605105715490.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220605110447249.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220605110615757.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220605111352019.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220605111534174.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220605111716185.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220605112300423.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220605112324715.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220605112905103.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220605113407580.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220605113455806.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220605113729167.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220605114441736.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220605115220889.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220605115237982.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220605115334563.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220605125808577.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220605130111638.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220605130239538.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220605130325578.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220605130448099.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220605130610015.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220605130649452.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220605130728981.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220605130912940.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220605130937759.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220605131027338.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220605131201515.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220605131343414.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220605131427066.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220603103514616.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220603103524667.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220603104607816.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220603104650506.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220603105635240.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220603103524667.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220603105452496.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220603111036435.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220603111410505.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220603111539524.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220603111714792.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220603111846023.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605105404933.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605105617924.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605105818137.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605105715490.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605110006953.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605105715490.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605110447249.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605110615757.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605111352019.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605111534174.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605111716185.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605112300423.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605112324715.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605112905103.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605113407580.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605113455806.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605113729167.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605114441736.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605115220889.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605115237982.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605115334563.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605125808577.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605130111638.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605130239538.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605130325578.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605130448099.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605130610015.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605130649452.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605130728981.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605130912940.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605130937759.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605131027338.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605131201515.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605131343414.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605131427066.png">
 <meta property="article:published_time" content="2022-06-05T05:44:59.000Z">
 <meta property="article:modified_time" content="2022-06-13T03:32:30.197Z">
 <meta property="article:author" content="Lyc">
@@ -83,7 +83,7 @@
 <meta property="article:tag" content="游戏引擎">
 <meta property="article:tag" content="实时渲染">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220603103514616.png">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220603103514616.png">
 
 <link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/">
 
@@ -329,24 +329,24 @@
 <p>那么怎么得到场景中被光源直接照亮的表面信息呢？Shadow Map 所做的正是这个工作，Shadow Map 的每一个 texel 都可以代表场景中的一块区域，这一块区域就一定是被光源直接照亮的区域，就可以作为次级光源照亮其他物体，因此 Shadow Map 实际上可以看作存储了场景中所有的次级光源，因此我们在渲染每个着色点的时候，考虑这些次级光源的贡献即可。</p>
 <p>现在的问题是，每一个次级光源对着色点的贡献相当于从着色点 p 看向这个光源表面所得到的光照结果（其实和光线追踪原理一样），那么如果这个表面是 Glossy 的，情况会非常复杂，因此 RSM 假设所有次级光源表面都是 diffuse 的，这样次级光源对着色点 p 的光照就与他们的相对方向无关了，这样一来次级光源就被抽象为一个向各个方向均匀发光的面光源了。</p>
 <p>那么对于面光源，我们在路径追踪中有推导过如何将渲染方程中对方向立体角的积分转化为对面光源的积分：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220603103514616.png" alt="image-20220603103514616"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220603103514616.png" alt="image-20220603103514616"></p>
 <p>于是渲染方程可以写成：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220603103524667.png" alt="image-20220603103524667"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220603103524667.png" alt="image-20220603103524667"></p>
 <p>其中 $patch$ 就是代表每一个小的次级光源。现在来看渲染方程中的每一项：</p>
 <p>首先是 BRDF 项，没有什么问题。</p>
-<p>然后是 visibility 项，visibility 要考虑次级光源和着色点的遮挡关系，这是很难得到的，想要得到就要对每一个次级光源生成一个 Shadow Map，而假设我们的直接光照的 Shadow Map 分辨率是 512 <em> 512，那就代表我们有 512 </em> 512 个次级光源，每个次级光源都生成一次 Shadow Map，这是不可能的，因此 RSM 选择不计算 visibility 项，毕竟间接光照是低频的，而且这么多次级光源分别的贡献实际上都很小，所以不计算 visibility 影响也不大。</p>
+<p>然后是 visibility 项，visibility 要考虑次级光源和着色点的遮挡关系，这是很难得到的，想要得到就要对每一个次级光源生成一个 Shadow Map，而假设我们的直接光照的 Shadow Map 分辨率是 512 * 512，那就代表我们有 512 * 512 个次级光源，每个次级光源都生成一次 Shadow Map，这是不可能的，因此 RSM 选择不计算 visibility 项，毕竟间接光照是低频的，而且这么多次级光源分别的贡献实际上都很小，所以不计算 visibility 影响也不大。</p>
 <p>最麻烦的是次级光源到着色点的光照 $L_i(q\rightarrow p)$，这要根据该表面的直接光照得到，因为假设了表面是 diffuse 的，所以 BRDF 是一个常数：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220603104607816.png" alt="image-20220603104607816"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220603104607816.png" alt="image-20220603104607816"></p>
 <p>需要注意这里的 BRDF 是指计算次级光源表面被实际光源直接照射时的渲染方程中的 BRDF，而上面的渲染方程是计算着色点被次级光源照射时的方程。于是 $L_i(q\rightarrow p)$ 就可以写成：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220603104650506.png" alt="image-20220603104650506"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220603104650506.png" alt="image-20220603104650506"></p>
 <p>因为 BRDF 是出射的 Radiance 和入射的 Irradiance 的比值，因此乘上该表面入射的 Irradiance，得到的就是出射的 Radiance，也就是我们想要的次级光源发出的光线。而该表面入射的 Irradiance 可以根据定义表示为直接光源的光通量，也就是功率除以单位面积（因为 Irradiance 表示单位面积上的光的能量），所以就有上面的公式了。上面公式的好处在于带入渲染方程中，我们会发现单位面积 dA 被约掉了，说明之后的计算与次级光源的面积无关。</p>
-<p>接下来考虑的问题是，假设我们的直接光照的 Shadow Map 分辨率是 512 <em> 512，那就代表我们有 512 </em> 512 个次级光源，如果每个次级光源都进行上面的计算，开销也是很大的，而实际上很多次级光源可能对着色点是没有贡献的，如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220603105635240.png" alt="image-20220603105635240"></p>
+<p>接下来考虑的问题是，假设我们的直接光照的 Shadow Map 分辨率是 512 * 512，那就代表我们有 512 * 512 个次级光源，如果每个次级光源都进行上面的计算，开销也是很大的，而实际上很多次级光源可能对着色点是没有贡献的，如下图：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220603105635240.png" alt="image-20220603105635240"></p>
 <p>着色点为 x，而 Shadow Map 中存储的桌子上的点就显然是对 x 没有贡献的，不需要进行计算，因此我们可以根据法线方向去掉一些不需要计算的次级光源；此外，距离着色点太远的次级光源也不需要计算，因此我们只需要计算着色点一定距离范围内的有贡献的次级光源就可以了，经过这些筛选最后剩下的次级光源数量是可以接受的，也是完全可以做到实时计算的。</p>
 <p>综上，要计算渲染方程：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220603103524667.png" alt="image-20220603103524667"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220603103524667.png" alt="image-20220603103524667"></p>
 <p>我们需要知道的信息有：次级光源到着色点的距离，直接光源对次级光源的光通量以及次级光源表面的法线，因此 Reﬂective Shadow Maps 中存储的就是这些信息：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220603105452496.png" alt="image-20220603105452496"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220603105452496.png" alt="image-20220603105452496"></p>
 <p>RSM 只需要在 SM 的基础上额外存储一些信息就可以实现全局光照，是很容易实现的。但也存在很多缺点，比如因为是基于 Shadow Map，那么对于场景中的所有直接光源都要生成一张 RSM，复杂度会随着光源数量增加；而且整个算法做了很多舍弃和假设，比如舍弃了 visibility 项的计算，假设所有次级光源都是 diffuse 的，这会对最终效果产生一定影响。</p>
 <h3 id="1-2-Light-Propagation-Volumes（LPV）"><a href="#1-2-Light-Propagation-Volumes（LPV）" class="headerlink" title="1.2 Light Propagation Volumes（LPV）"></a>1.2 Light Propagation Volumes（LPV）</h3><p>LPV 的核心思想是，我们要计算着色点的间接光照就需要知道着色点上从各个方向来的 Radiance 是多少，也就是 RSM 中计算的所有次级光源的 Radiance，那如果我们在渲染着色点的时候能直接查询到各个方向来的 Radiance，就不需要额外的计算了。</p>
 <p>于是 LPV 将空间分为一个个网格，然后将所有次级光源表面发出的 Radiance 注入到表面所在的网格中，然后这些 Radiance 根据各自的方向向周围的网格传播，这样一来在渲染的时候只需要查询着色点所在的网格中的 Radiance 就可以快速计算渲染方程了。具体步骤如下：</p>
@@ -354,96 +354,96 @@
 <li>第一步：找到能被光源直接照亮的表面，这直接使用 RSM 即可</li>
 <li>第二步：计算这些表面的 Radiance，并注入到所在的网格中，网格中将这些 Radiance 加起来，会得到一个二维函数，表示不同方向上的 Radiance，因为是只与方向有关的二维函数，那么自然可以近似表示为 SH，一般只需要使用前两阶 SH 表示即可，因为 LPV 同样假设次级光源是 diffuse 的，那么次级光源的光照就是低频的，所以不需要太高阶的 SH：</li>
 </ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220603111036435.png" alt="image-20220603111036435"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220603111036435.png" alt="image-20220603111036435"></p>
 <ul>
 <li>第三步：每个格子中的 Radiance 沿着格子进行传传播，每个格子的 Radiance 会传播到它相邻的六个格子中，传播过去的 Radiance 被加入到那个格子的 Radiance 中，如此迭代，一般 4 到 5 次迭代就可以让整个网格基本达到稳定，这时所有格子里的 Radiance 就可以代表这里的各个方向传播来的 Radiance 了，渲染时可以直接使用：</li>
 </ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220603111410505.png" alt="image-20220603111410505"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220603111410505.png" alt="image-20220603111410505"></p>
 <ul>
 <li>第四步：渲染时直接将着色点所在的网格中的 Radiance 作为着色点的 Radiance 进行渲染即可。</li>
 </ul>
 <p>通过上面的步骤可以看出 LPV 有一个很严重的问题，就是如下图中的情况：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220603111539524.png" alt="image-20220603111539524"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220603111539524.png" alt="image-20220603111539524"></p>
 <p>点 p 是一个次级光源，正常来说它发出的 Radiance 不应该照亮墙的背面，但是由于它发出的 Radiance 会被认为是整个网格的 Radiance  ，于是这些 Radiance 就可以照亮墙的背面，也就会发生漏光现象：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220603111714792.png" alt="image-20220603111714792"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220603111714792.png" alt="image-20220603111714792"></p>
 <p>不过这不影响 LPV 是一个优秀的实时全局光照解决方案。</p>
 <h3 id="1-3-Voxel-Global-Illumination（VXGI）"><a href="#1-3-Voxel-Global-Illumination（VXGI）" class="headerlink" title="1.3 Voxel Global Illumination（VXGI）"></a>1.3 Voxel Global Illumination（VXGI）</h3><p>VXGI 同样是基于体素（Voxel）的，不同于 LPV，VXGI 将场景体素化，并创建层次结构（LPV 没有层次结构）：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220603111846023.png" alt="image-20220603111846023"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220603111846023.png" alt="image-20220603111846023"></p>
 <p>这样一来 RSM 中每个 texel 对应的一片区域就变成对应一些体素，这样就可以计算体素中物体表面的光照作为间接光照，因此 VXGI 可以计算次级光源的 Glossy 光照，不需要假设所有次级光源都是 Glossy 的，所以效果更好，但效率自然更低。VXGI 的实现非常复杂，这里不再赘述。</p>
 <h2 id="2-屏幕空间全局光照"><a href="#2-屏幕空间全局光照" class="headerlink" title="2 屏幕空间全局光照"></a>2 屏幕空间全局光照</h2><h3 id="2-1-Screen-Space-Ambient-Occlusion（SSAO）"><a href="#2-1-Screen-Space-Ambient-Occlusion（SSAO）" class="headerlink" title="2.1 Screen Space Ambient Occlusion（SSAO）"></a>2.1 Screen Space Ambient Occlusion（SSAO）</h3><p>我们之前学习过，环境光遮蔽（AO）是一种对全局光照的近似方法，实现简单，但是可以大幅增强画面的层次感，所以被广泛使用。环境光遮蔽的想法非常简单，Blinn Phong 模型把所有间接光照抽象成了一个常数，叠加到所有着色点上进行一个统一的亮度增强来模拟全局光照，这样的问题在于所有着色点的亮度增强程度是一样的，所以无法增强明暗遮蔽关系，如果我们能对每一个着色点，根据它所处位置的遮蔽关系给这个统一的环境光常数乘上一个系数再累加到着色结果上，就可以体现出物体之间的遮蔽关系了。而这个系数正是渲染方程中的 visibility 项。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220605105404933.png" alt="image-20220605105404933"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605105404933.png" alt="image-20220605105404933"></p>
 <p>上面的过程可以通过渲染方程来更深入的理解。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220605105617924.png" alt="image-20220605105617924"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605105617924.png" alt="image-20220605105617924"></p>
 <p>我们使用之前常用的近似积分拆解公式：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220605105818137.png" alt="image-20220605105818137"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605105818137.png" alt="image-20220605105818137"></p>
 <p>把 visibility 项拿出来：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220605105715490.png" alt="image-20220605105715490"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605105715490.png" alt="image-20220605105715490"></p>
 <p>这里我们把 $cos\theta_idw_i$ 看成了一个整体，当作公式中的 $dx$，这实际上是有意义的，我们知道 $dw_i$ 是微分立体角，是单位球面上的一小块面积，乘上了一个和法线的夹角余弦相当于把这一小块面积投影到了单位圆上，如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220605110006953.png" alt="image-20220605110006953"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605110006953.png" alt="image-20220605110006953"></p>
 <p>所以 $cos\theta_idw_i$ 这个整体也叫做微分投影立体角，是单位圆中的一小块面积，因此对 $cos\theta_idw_i$ 的积分实际上就是单位圆的面积 $\pi$，这也从另一个角度解释了半球面上对 $cos\theta$ 的积分为什么是  $\pi$。</p>
-<p>现在回到渲染方程，把 visibility 项拿出来之后，渲染方程分为了两部分：<br><img src="https://lz328.github.io/LycTechStack.github.io/image-20220605105715490.png" alt="image-20220605105715490"></p>
+<p>现在回到渲染方程，把 visibility 项拿出来之后，渲染方程分为了两部分：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605105715490.png" alt="image-20220605105715490"></p>
 <p>其中，蓝色框中实际上就是对着色点 p 周围<strong>遮挡关系结果的加权平均</strong>（加权和除以权值和就是加权平均），权值是 $cos\theta$，即离法线近的权值大，离法线远的权值小。而分母就是对投影立体角的积分，结果是 $\pi$，于是蓝框中的部分就是：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220605110447249.png" alt="image-20220605110447249"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605110447249.png" alt="image-20220605110447249"></p>
 <p>一般就写成一个系数 $k_A$  来表示环境光遮蔽系数。</p>
 <p>而黄色框中的部分是一个渲染方程，通过之前的算法我们知道，实时渲染中一般在计算全局光照的时候都会假设所有物体表面都是 diffuse 的，这样每一个次级光源就被抽象成了一个均匀发光的面光源，而在这里， SSAO 还假设所有物体的间接光照都一样，这和 Blinn Phong 模型的假设一致，于是间接光照 $L_i^{indir}$ 就是一个常数，diffuse 的 BRDF 也是常数，因此黄色框部分可以写成：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220605110615757.png" alt="image-20220605110615757"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605110615757.png" alt="image-20220605110615757"></p>
 <p>自然就是一个常数，这就相当于 Blinn Phong 中的环境光常数，我们可以直接给定。于是整个渲染方程就是环境光常数乘上了每个片段的遮蔽系数，也就是我们一开始说的那个过程。因为上面的推导中使用了积分拆解近似式，而该公式近似的准确的条件是 $g(x)$ 要么连续，要么在积分区间上波动很小，而在这里 $g(x)$ 就是一个常数，自然满足这两个条件，因此使用这样的方法来近似是完全准确的。</p>
 <p>屏幕空间环境光遮蔽自然是在屏幕空间完成上述过程，那么关键就在于如何只通过屏幕上的信息得到每一个像素对应的场景中的位置的遮蔽关系，从而得到 visibility 系数。</p>
 <p>SSAO 的做法是在屏幕上每一个像素对应的场景中的点周围一个球体范围内随机采样一些点，根据这些点到相机的深度来判断这些点是不是能被看到，用这些结果来近似点 p 会被周围多少物体遮挡，从而得到一个 visibility 系数，如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220605111352019.png" alt="image-20220605111352019"></p>
-<p>这样做的问题在于我们实际去判断一个点的遮挡关系的时候只应该考虑该点法线方向半球上的遮挡关系，而这里用了整个球体内采样，是不准确的，于是一种解决方法是当采样点中被遮挡的点的数量大于一半时才开始考虑这一点的 AO，这样相当于粗略的截取了一个半球：<br><img src="https://lz328.github.io/LycTechStack.github.io/image-20220605111534174.png" alt="image-20220605111534174"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605111352019.png" alt="image-20220605111352019"></p>
+<p>这样做的问题在于我们实际去判断一个点的遮挡关系的时候只应该考虑该点法线方向半球上的遮挡关系，而这里用了整个球体内采样，是不准确的，于是一种解决方法是当采样点中被遮挡的点的数量大于一半时才开始考虑这一点的 AO，这样相当于粗略的截取了一个半球：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605111534174.png" alt="image-20220605111534174"></p>
 <p>当然现代渲染中，我们在屏幕空间也可以得到每一个像素对应的法线，因此可以直接准确的在法线方向半球内采样，并且知道了法线还可以考虑上面公式中的 $cos\theta$ 的加权平均，结果会更加准确：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220605111716185.png" alt="image-20220605111716185"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605111716185.png" alt="image-20220605111716185"></p>
 <p>这种方法叫做 HBAO，得到的结果也会比 SSAO 更加真实。</p>
 <h3 id="2-2-Screen-Space-Directional-Occlusion（SSDO）"><a href="#2-2-Screen-Space-Directional-Occlusion（SSDO）" class="headerlink" title="2.2 Screen Space Directional Occlusion（SSDO）"></a>2.2 Screen Space Directional Occlusion（SSDO）</h3><p>SSDO 是 SSAO 的改进，SSAO 中假设一个点接收到的所有来自于其他物体反射光源的间接光照都是一样的（常数），但实际上我们利用 RSM 的思想，我们是知道哪些物体表面是被直接照亮的，因此我们不需要这样简单粗暴的假设，我们可以去准确的计算这些次级光源发出的间接光照是什么。</p>
 <p>SSDO 像是在屏幕空间进行光线追踪一样，在每一个着色点向四面八方打出光光线，如果没有碰到周围的表面说明是直接光照，如果碰到了其他表面就计算该表面的间接光照作为该着色点间接光照的一部分贡献，这里计算其他表面的间接光照还是假设该表面是 diffuse 的：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220605112300423.png" alt="image-20220605112300423"></p>
-<p>于是就只有两种情况，可以表示为：<br><img src="https://lz328.github.io/LycTechStack.github.io/image-20220605112324715.png" alt="image-20220605112324715"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605112300423.png" alt="image-20220605112300423"></p>
+<p>于是就只有两种情况，可以表示为：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605112324715.png" alt="image-20220605112324715"></p>
 <p>当然，SSDO 既然是屏幕空间的算法，自然不是从 RSM 中获哪那些表面是被直接照亮的，只需要通过深度图就可以近似得到，更准确地说我们认为相机看到的就是被直接照亮的，相机看到的每个点的直接光照结果就作为该点的间接光照去照亮其他点，在实际实现中也不是真的从着色点向周围发出许多光线，而是类似于 HBAO，在着色点法线所在半球随机取点，然后判断这些点的深度是否被遮挡，如果深度大于深度缓冲中的深度，就认为被遮挡，进而认为点 p 到这一点的光线打到了遮挡该点的那个表面，就将那个表面的间接光照作为点 p 的间接光照的贡献之一，整个过程如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220605112905103.png" alt="image-20220605112905103"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605112905103.png" alt="image-20220605112905103"></p>
 <p>当然这样的做法毕竟不是真正的追踪光线，因此必然会出现一些问题，比如上图中最右边的情况，当点 A 和相机之间有一个遮挡物，点 A 会认为被遮挡，进而认为光线 PA 会打到 z1 所对应的那个点，这显然是不对的，同理点 B 被认为没有被遮挡，但实际上光线 PB 被旁边的表面遮挡到了，不过这些瑕疵在实时渲染中不会对结果有太大影响，因此可以忽略，只要整体结果是好的，那么这个是算法就是好的。</p>
 <p>SSDO 存在的问题不止上面说到的，由于是屏幕空间的算法，所以我们所拥有的全部信息就是屏幕中的信息，相当于是整个场景能被看到的一层外壳，看不到的部分对我们来说是完全不知道的，因此就会丢失掉一些遮蔽信息：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220605113407580.png" alt="image-20220605113407580"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605113407580.png" alt="image-20220605113407580"></p>
 <p>此外，由于是在法线所在半球内随机取点，这个半球一定对应一个范围，这个范围不能太大，如果无限大那就是光线追踪了，因此对于比较远的间接反射 SSDO 是做不出来的，比如：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220605113455806.png" alt="image-20220605113455806"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605113455806.png" alt="image-20220605113455806"></p>
 <p>上图中立方体反射出了右边的绿色墙面，这是光线追踪的结果，SSDO 是不能做到的，因为它追踪不了那么远，但是近处的颜色是可以得到的，比如左边的红色墙面，这也是 SSDO 最大的优势，就是可以实现 color blending 的效果，能够将物体之间的反射颜色融合起来，这也是因为它把我们看到的颜色作为次级光源来计算着色点的间接光照，而不是像 SSAO 一样全局的设定一个间接光照，下图中最右边可以看出蓝色物体表面映射出了一点黄色：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220605113729167.png" alt="image-20220605113729167"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605113729167.png" alt="image-20220605113729167"></p>
 <h3 id="2-3-Screen-Space-Reﬂection（SSR）"><a href="#2-3-Screen-Space-Reﬂection（SSR）" class="headerlink" title="2.3 Screen Space Reﬂection（SSR）"></a>2.3 Screen Space Reﬂection（SSR）</h3><p>屏幕空间反射 SSR 真正做到了屏幕空间的光线追踪，所以 SSR 更准确地应该被叫做屏幕空间光线追踪（Screen Space Ray-tracing），因此效果很好，也是目前在实时渲染中最广泛使用的方法。</p>
 <p>既然是光线追踪，那么一定分为两步，一是光线和场景求交点，在屏幕空间没有三维场景的信息，实际上计算的是光线和我们看到的场景的一个外壳求交点；二是计算着色，根据采样光线求解渲染方程，这一步和正常的光线追踪完全一样。</p>
 <p>SSR 有效的一个重要原因在于，屏幕中我们能看到的场景中的反射的部分，一定有绝大部分是已经存在于当前的屏幕中的，如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220605114441736.png" alt="image-20220605114441736"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605114441736.png" alt="image-20220605114441736"></p>
 <p>街道上反射的就是屏幕的上半部分，因此屏幕空间光线追踪是完全可行的，仅利用屏幕中的信息是足够的。</p>
 <p>对于每一个像素，如果只考虑最简单的镜面反射情况，那么我们直接从该点追踪镜面反射方向，就可以找到镜面反射光线和场景外壳上的一个交点，这个交点的颜色我们是直接可以知道的，就把这个颜色作为间接光照颜色（间接光照渲染方程的结果）加到该像素上就可以了，对于更复杂的 Glossy 和漫反射就像光线追踪一样采样更多光线即可，但是也不需要像光线追踪那样采样那么多，因为间接光照最后是要叠加到直接光照结果上的，所以我们只要采样少一些光线，得到一个有噪声的间接光照结果，简单去一下噪（加个模糊之类的）再叠加到直接光照上就能得到不错的结果了。</p>
-<p>下图是镜面反射的结果：<br><img src="https://lz328.github.io/LycTechStack.github.io/image-20220605115220889.png" alt="image-20220605115220889"></p>
+<p>下图是镜面反射的结果：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605115220889.png" alt="image-20220605115220889"></p>
 <p>以及 Glossy 的结果：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220605115237982.png" alt="image-20220605115237982"></p>
-<p>SSR 还可以实现表面不平整的反射，无非就是不平整的表面法线影响了光线的反射方向而已：<br><img src="https://lz328.github.io/LycTechStack.github.io/image-20220605115334563.png" alt="image-20220605115334563"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605115237982.png" alt="image-20220605115237982"></p>
+<p>SSR 还可以实现表面不平整的反射，无非就是不平整的表面法线影响了光线的反射方向而已：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605115334563.png" alt="image-20220605115334563"></p>
 <p>于是现在最主要的问题就是如何在屏幕空间追踪光线，也就是如何求得光线和我们看到的这一层外壳的交点。</p>
 <p>最原始的做法是从着色点出发，沿着要追踪的光线方向，一次移动一定的距离，每次移动后判断对应的深度，如果深度小于深度缓冲中的深度则继续移动，直到深度大于深度缓冲中的深度，则认为找到了交点：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220605125808577.png" alt="image-20220605125808577"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605125808577.png" alt="image-20220605125808577"></p>
 <p>这种方法找到的交点是不准确的，交点的精度取决于每次移动的步长，步长过大会找到不准确的交点，步长过小又会影响速度，因此要进行加速优化，这里又要用到图形学中常用的加速手段，类似于三维空间中的 BVH，我们为深度图生成 Mipmap，但这里的 Mipmap 不能取多个深度的均值，要取多个深度的最小值，也就是离我们最近的深度作为下一 level 的深度：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220605130111638.png" alt="image-20220605130111638"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605130111638.png" alt="image-20220605130111638"></p>
 <p>这样一来，我们就构建了层次深度结构，每次沿着光线移动时可以试探性地增大步长，也就是在更高一层移动，如果找到交点就降低 level 去找具体和哪个像素相交了，举例来说：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220605130239538.png" alt="image-20220605130239538"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605130239538.png" alt="image-20220605130239538"></p>
 <p>对于上图的情况，我们第一次从着色点出发，先在 level 0 移动，这时每一步会移动一个像素：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220605130325578.png" alt="image-20220605130325578"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605130325578.png" alt="image-20220605130325578"></p>
 <p>此时深度小于深度缓冲中的深度，说明没有遮挡，继续移动，这次我们增加一个 level，在 level 1上移动，level 1 中每一个像素代表了 level 0 中的 4 个（我们这里是二维，所以是 2 个）像素深度的最小值：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220605130448099.png" alt="image-20220605130448099"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605130448099.png" alt="image-20220605130448099"></p>
 <p>移动之后还是没有交点，于是再增加一个 level，在 level 2上移动，level 2 中每一个像素代表了 level 0 中的 16 个（我们这里是二维，所以是 4 个）像素深度的最小值：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220605130610015.png" alt="image-20220605130610015"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605130610015.png" alt="image-20220605130610015"></p>
 <p>这时发现有交点了，于是减小一个 level，继续判断：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220605130649452.png" alt="image-20220605130649452"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605130649452.png" alt="image-20220605130649452"></p>
 <p>继续减小 level 到 level 0：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220605130728981.png" alt="image-20220605130728981"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605130728981.png" alt="image-20220605130728981"></p>
 <p>这时发现在 level 1有交点的像素细化到 level 0 之后没有交点，于是继续传播，因为没有交点，所以 level 加一，在 level 1 上移动：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220605130912940.png" alt="image-20220605130912940"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605130912940.png" alt="image-20220605130912940"></p>
 <p>找到了交点，再次减小一个 level：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220605130937759.png" alt="image-20220605130937759"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605130937759.png" alt="image-20220605130937759"></p>
 <p>最终找到了交点所在的像素，将这个像素对应的颜色作为间接光照累加到当前着色点上即可。上述过程的伪代码如下：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220605131027338.png" alt="image-20220605131027338"></p>
-<p>屏幕空间光线追踪可以很好的实现全局光照，但也一定存在问题，因为我们只有屏幕中的场景信息，这些信息只是整个场景的一个外壳，内部的信息我们是完全不知道的，因此也就会导致我们看不到的部分就不会产生反射，如下图：<br><img src="https://lz328.github.io/LycTechStack.github.io/image-20220605131201515.png" alt="image-20220605131201515"></p>
-<p>此外，SSR 也只能反射屏幕中存在的物体，因此一部分在屏幕外的物体的反射就会被“切断”，如下图：<br><img src="https://lz328.github.io/LycTechStack.github.io/image-20220605131343414.png" alt="image-20220605131343414"></p>
-<p>不过这可以通过增加一个随距离增大的模糊衰减来解决，使结果看起来更真实：<br><img src="https://lz328.github.io/LycTechStack.github.io/image-20220605131427066.png" alt="image-20220605131427066"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605131027338.png" alt="image-20220605131027338"></p>
+<p>屏幕空间光线追踪可以很好的实现全局光照，但也一定存在问题，因为我们只有屏幕中的场景信息，这些信息只是整个场景的一个外壳，内部的信息我们是完全不知道的，因此也就会导致我们看不到的部分就不会产生反射，如下图：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605131201515.png" alt="image-20220605131201515"></p>
+<p>此外，SSR 也只能反射屏幕中存在的物体，因此一部分在屏幕外的物体的反射就会被“切断”，如下图：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605131343414.png" alt="image-20220605131343414"></p>
+<p>不过这可以通过增加一个随距离增大的模糊衰减来解决，使结果看起来更真实：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/05/20220605-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%A8%E5%B1%80%E5%85%89%E7%85%A7/image-20220605131427066.png" alt="image-20220605131427066"></p>
 <p>当然这只是 SSR 最基本的思想，实际实现中有非常多的细节和优化问题，比如重要性采样、样本在时间和空间上的复用等等，这里就不再展开了。</p>
 
     </div>
@@ -665,13 +665,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">914k</span>
+    <span title="站点总字数">921k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">13:51</span>
+    <span title="站点阅读时长">13:57</span>
 </div>
 
         
