@@ -29,20 +29,20 @@
 <meta property="og:site_name" content="LycTechStack">
 <meta property="og:description" content="这一节讨论 Vulkan 的资源绑定和状态管理机制，过程中可以加深对 Pipeline、Pipeline layout、Descriptor、Descriptor Set、Descriptor set layout、Descriptor binding 等概念的理解。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/image-20220717150433528.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/image-20220717144401753.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/image-20220717144735429.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/image-20220717145643661.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/image-20220717145816221.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/image-20220717145943704.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/image-20220717150351889.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/image-20220717150433528.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220717150433528.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220717144401753.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220717144735429.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220717145643661.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220717145816221.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220717145943704.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220717150351889.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220717150433528.png">
 <meta property="article:published_time" content="2022-07-17T07:11:59.000Z">
 <meta property="article:modified_time" content="2022-07-24T07:22:48.041Z">
 <meta property="article:author" content="Lyc">
 <meta property="article:tag" content="Vulkan">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/image-20220717150433528.png">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220717150433528.png">
 
 <link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/">
 
@@ -283,7 +283,7 @@
 
       
         <p>这一节讨论 Vulkan 的资源绑定和状态管理机制，过程中可以加深对 Pipeline、Pipeline layout、Descriptor、Descriptor Set、Descriptor set layout、Descriptor binding 等概念的理解。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/image-20220717150433528.png" alt="image-20220717150433528"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220717150433528.png" alt="image-20220717150433528"></p>
 <p><em><span id="more"></span></em></p>
 <h3 id="1-Pipeline-状态管理"><a href="#1-Pipeline-状态管理" class="headerlink" title="1 Pipeline 状态管理"></a>1 Pipeline 状态管理</h3><p>Vulkan中的管线分为两种：Compute Pipeline 和 Graphics Pipeline。这两种Pipeline的作用跟其他CG API并没有太大的差别。</p>
 <ul>
@@ -293,14 +293,12 @@
 <p>回忆一下 OpenGL 的设计，每一次的 API 调用你都需要知道将要设置的 OpenGL 状态，所有的状态都由 OpenGL 的 VM 进行管理，因此在使用 OpenGL 时需要时刻将 VM 的状态熟记于心，而 Vulkan 则完全相反，你需要将所有的渲染状态显式的设置到一个原始的 VkPipeline 对象上，该对象打包了所有可编程 (programable) 渲染状态以及所有的固定功能 (fixed-function) 状态。</p>
 <p>VkPipeline 对象的创建在加载阶段，可以在运行游戏时动态创建，也可以直接从文件中读取预编译的对象，预先创建 Pipeline 对象可以减少游戏过程中的卡顿(hitch)现象，下面的代码片段是创建一个 Pipeline 对象所必须设置的状态：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">VkGraphicsPipelineCreateInfo</span> &#123;</span><br><span class="line">    VkStructureType                                  sType;</span><br><span class="line">    <span class="type">const</span> <span class="type">void</span>*                                      pNext;</span><br><span class="line">    VkPipelineCreateFlags                            flags;</span><br><span class="line">    <span class="type">uint32_t</span>                                         stageCount;</span><br><span class="line">    <span class="type">const</span> VkPipelineShaderStageCreateInfo*           pStages;</span><br><span class="line">    <span class="type">const</span> VkPipelineVertexInputStateCreateInfo*      pVertexInputState;</span><br><span class="line">    <span class="type">const</span> VkPipelineInputAssemblyStateCreateInfo*    pInputAssemblyState;</span><br><span class="line">    <span class="type">const</span> VkPipelineTessellationStateCreateInfo*     pTessellationState;</span><br><span class="line">    <span class="type">const</span> VkPipelineViewportStateCreateInfo*         pViewportState;</span><br><span class="line">    <span class="type">const</span> VkPipelineRasterizationStateCreateInfo*    pRasterizationState;</span><br><span class="line">    <span class="type">const</span> VkPipelineMultisampleStateCreateInfo*      pMultisampleState;</span><br><span class="line">    <span class="type">const</span> VkPipelineDepthStencilStateCreateInfo*     pDepthStencilState;</span><br><span class="line">    <span class="type">const</span> VkPipelineColorBlendStateCreateInfo*       pColorBlendState;</span><br><span class="line">    <span class="type">const</span> VkPipelineDynamicStateCreateInfo*          pDynamicState;</span><br><span class="line">    VkPipelineLayout                                 layout;</span><br><span class="line">    VkRenderPass                                     renderPass;</span><br><span class="line">    <span class="type">uint32_t</span>                                         subpass;</span><br><span class="line">    VkPipeline                                       basePipelineHandle;</span><br><span class="line">    <span class="type">int32_t</span>                                          basePipelineIndex;</span><br><span class="line">&#125; VkGraphicsPipelineCreateInfo;</span><br></pre></td></tr></table></figure>
-
 <p>其中每一个 CreateInfo 又包含一大堆参数，可以说相当繁琐，我们需要设置 GPU 在当前管线下工作时的每个状态。</p>
 <p>从早期开始，OpenGL 状态机就提供了更细颗粒度的状态控制，比如：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">glEnable</span>(GL_BLEND);</span><br><span class="line"><span class="built_in">glBlendFunc</span>(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);</span><br></pre></td></tr></table></figure>
-
 <p>但精细颗粒度的控制对驱动程序带来了负担，驱动程序不得不对状态进行缓存和运行时编译，但是现在新的 API，几乎把整个 GPU state vector 封装到一个 object 中。比如，如果我们想切换状态，是通过切换 pipeline A 和 pipeline B。而不是像 OpenGL 中那样更改标志位。</p>
 <p>这样粗颗粒度的状态对象的优势是方便驱动程序的编译和验证，有助于避免在状态改变时造成的暂停现象。Vulkan 的 Pipeline状态管理参考的是 Mantel，提供了 Pipeline State Object（PSO）进行状态管理：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/image-20220717144401753.png" alt="image-20220717144401753"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220717144401753.png" alt="image-20220717144401753"></p>
 <p>这些状态包括：</p>
 <ul>
 <li><p>Vertex input state：Vertex input state 用来管理 Vertex 数据的位置、索引、布局等信息</p>
@@ -315,22 +313,20 @@
 </li>
 <li><p>Color Blend state：Color Blend 是 Vulkan Graphics Pipeline 的最后阶段，这个阶段负责将片段写入 color attachments。在许多情况下，这是一个简单的操作，仅用 Fragment Shader 输出的值覆盖 attachments 中的值。除此之外，color blend 还可以将这些值与 FrameBuffer 中的值混合，并进行简单的逻辑运算。</p>
 </li>
-<li><p>Depth&#x2F;Stencil state：Depth&#x2F;Stencil state 控制着 Depth 和 Stencil 测试的方式</p>
+<li><p>Depth/Stencil state：Depth/Stencil state 控制着 Depth 和 Stencil 测试的方式</p>
 </li>
 <li><p>Multi-Sampling State：多重采样的目的是为了抗锯齿，Multi-Sampling State 管理多重采样</p>
 </li>
 </ul>
 <p>Vulkan 还允许动态状态管理，因为 Graphics Pipeline 很复杂，包含很多状态，一些图形应用希望能以更高的频率更改某些状态。如果每种状态更改都要创建一个新的 Pipeline 对象，非常不利于管理。Dynamic state 可以管理 viewport、stencil、line widths（线宽）、blending constants、stencil comparison masks 等状态。应用无需重建 Pipeline 对象，只需要通过 Command Buffer 就可以实现状态更新。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/image-20220717144735429.png" alt="image-20220717144735429"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220717144735429.png" alt="image-20220717144735429"></p>
 <p>接下来对一些状态进行进一步说明。</p>
 <h4 id="1-1-ShaderMoudle"><a href="#1-1-ShaderMoudle" class="headerlink" title="1.1 ShaderMoudle"></a>1.1 ShaderMoudle</h4><p>Shader 是 Pipeline 状态中最为核心的一个，Vulkan 完全摒弃了固定渲染管线。Vulkan 中 shader 对象被称为 VkShaderMoudle，在图形渲染管线(VkGraphicPipeline)中必不可少的 Shader 有 Vertex shader 和 Fragment shader，当然在一些特殊应用中也可以有细分 shader 以及几何 shader。</p>
 <p>Vulkan 并没有特定的 Shader语法，而是使用了一种编译后的中间格式——SPIRV，通常情况下一般使用第三方库将 GLSL 或 HLSL 离线或实时编译成 SPIRV 格式，例如对于 GLSL 可以使用 LunaG 中提供的工具离线将其编译成 SPIRV 格式，也可以使用第三方库 Glslang 将其实时编译成 SPIRV 格式(但这样会有一定的运行时开销，可以将编译后的 SPIRV 格式保存存文件，下次直接加载)。</p>
 <h4 id="1-2-Input-Assembly-State"><a href="#1-2-Input-Assembly-State" class="headerlink" title="1.2 Input Assembly State"></a>1.2 Input Assembly State</h4><p>该状态一般也缩写为 IA，用来指定图元的拓扑方式(topology)，如 Point, Line, TriangleList 等，作用等同于 OpenGL 中 glDrawElements 中的 Mode 参数：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">enum</span> <span class="title class_">VkPrimitiveTopology</span> &#123;</span><br><span class="line">    VK_PRIMITIVE_TOPOLOGY_POINT_LIST = <span class="number">0</span>,</span><br><span class="line">    VK_PRIMITIVE_TOPOLOGY_LINE_LIST = <span class="number">1</span>,</span><br><span class="line">    VK_PRIMITIVE_TOPOLOGY_LINE_STRIP = <span class="number">2</span>,</span><br><span class="line">    VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST = <span class="number">3</span>,</span><br><span class="line">    VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP = <span class="number">4</span>,</span><br><span class="line">    VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN = <span class="number">5</span>,</span><br><span class="line">    VK_PRIMITIVE_TOPOLOGY_LINE_LIST_WITH_ADJACENCY = <span class="number">6</span>,</span><br><span class="line">    VK_PRIMITIVE_TOPOLOGY_LINE_STRIP_WITH_ADJACENCY = <span class="number">7</span>,</span><br><span class="line">    VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST_WITH_ADJACENCY = <span class="number">8</span>,</span><br><span class="line">    VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP_WITH_ADJACENCY = <span class="number">9</span>,</span><br><span class="line">    VK_PRIMITIVE_TOPOLOGY_PATCH_LIST = <span class="number">10</span>,</span><br><span class="line">    VK_PRIMITIVE_TOPOLOGY_MAX_ENUM = <span class="number">0x7FFFFFFF</span></span><br><span class="line">&#125; VkPrimitiveTopology;</span><br></pre></td></tr></table></figure>
-
 <h4 id="1-3-Rasterization"><a href="#1-3-Rasterization" class="headerlink" title="1.3 Rasterization"></a>1.3 Rasterization</h4><p>Pipeline 对象中需要显式指定光栅化操作中需要的状态，Vulkan 不支持光栅化的可编程操作，但支持光栅化模块的参数配置，如 CullMode，FrontFace 的缠绕(winding)方式，depth 偏移(bias)，线宽等：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">VkPipelineRasterizationStateCreateInfo</span> &#123;</span><br><span class="line">    VkStructureType                            sType;</span><br><span class="line">    <span class="type">const</span> <span class="type">void</span>*                                pNext;</span><br><span class="line">    VkPipelineRasterizationStateCreateFlags    flags;</span><br><span class="line">    VkBool32                                   depthClampEnable;</span><br><span class="line">    VkBool32                                   rasterizerDiscardEnable;</span><br><span class="line">    VkPolygonMode                              polygonMode;</span><br><span class="line">    VkCullModeFlags                            cullMode;</span><br><span class="line">    VkFrontFace                                frontFace;</span><br><span class="line">    VkBool32                                   depthBiasEnable;</span><br><span class="line">    <span class="type">float</span>                                      depthBiasConstantFactor;</span><br><span class="line">    <span class="type">float</span>                                      depthBiasClamp;</span><br><span class="line">    <span class="type">float</span>                                      depthBiasSlopeFactor;</span><br><span class="line">    <span class="type">float</span>                                      lineWidth;</span><br><span class="line">&#125; VkPipelineRasterizationStateCreateInfo;</span><br></pre></td></tr></table></figure>
-
 <h4 id="1-4-Multisampling"><a href="#1-4-Multisampling" class="headerlink" title="1.4 Multisampling"></a>1.4 Multisampling</h4><p>Vulkan支持多重采样(Multisampling)，由于多重采样在是渲染管线之中，因此也也需要在 Pipeline 对象中指定多重采样状态，一般支持 1、4、8、16 个采样点，这依赖于硬件的支持情况，Vulkan 最多支持 64 个多重采样点。如果采样点数量不为 1 时，attchment 必须支持相应的多重采样，即创建 VkImage 时的 samples 参数必须与之相同。</p>
 <h4 id="1-5-Blend"><a href="#1-5-Blend" class="headerlink" title="1.5 Blend"></a>1.5 Blend</h4><p>Blend 同样也是 fixed-function 阶段，可以使用不同的参数进行配置，混合只发生于 color attchment，因此需要为不同的颜色 attchement 指定相应的混合参数，典型的混合参数有 <code>VK_BLEND_FACTOR_ZERO</code>, <code>VK_BLEND_FACTOR_ONE</code> 等，典型的混合操作有如 <code>VK_BLEND_OP_ADD</code>， <code>VK_BLEND_OP_SUBTRACT</code> 等。</p>
 <p>混合参数也可以指定常量 <code>VK_BLEND_FACTOR_CONSTANT_COLOR</code>，这时会使用创建 Pipeline 对象时指定的 <code>VkPipelineColorBlendStateCreateInfo</code> 中的 <code>blendConstants</code> 参数，也可以使用命令 <code>vkCmdSetBlendConstants</code> 设置的常量。</p>
@@ -351,16 +347,16 @@
 <li>Pipeline layout</li>
 <li>Push constant</li>
 </ul>
-<h4 id="2-1-Descriptor"><a href="#2-1-Descriptor" class="headerlink" title="2.1 Descriptor"></a>2.1 Descriptor</h4><p>Descriptor 是一个 GPU 特定编码格式的数据块。Descriptor 所指的内容不同，就可以表示不同的数据类型。比如指向纹理的 texture descriptor 可能包括指向纹理数据的指针，以及宽度&#x2F;高度，格式等信息。</p>
+<h4 id="2-1-Descriptor"><a href="#2-1-Descriptor" class="headerlink" title="2.1 Descriptor"></a>2.1 Descriptor</h4><p>Descriptor 是一个 GPU 特定编码格式的数据块。Descriptor 所指的内容不同，就可以表示不同的数据类型。比如指向纹理的 texture descriptor 可能包括指向纹理数据的指针，以及宽度/高度，格式等信息。</p>
 <p>Descriptor 的内存不可以分配和释放，只能 write，copy 和 move。</p>
 <h4 id="2-2-Descriptor-Set"><a href="#2-2-Descriptor-Set" class="headerlink" title="2.2 Descriptor Set"></a>2.2 Descriptor Set</h4><p>Descriptor Set 是一个绑定在 Pipeline 上资源集合。多个 Descriptor Set 可以同时绑定到一个 Pipeline 上。</p>
 <p>每个 Descriptor Set 都有一个 layout，Descriptor set Layout 会控制当前资源集当中的资源排布方式，给 shader 提供了读取资源的接口。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/image-20220717145643661.png" alt="image-20220717145643661"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220717145643661.png" alt="image-20220717145643661"></p>
 <h4 id="2-3-Descriptor-set-layout"><a href="#2-3-Descriptor-set-layout" class="headerlink" title="2.3 Descriptor set layout"></a>2.3 Descriptor set layout</h4><p>Descriptor set layout 本质上是 Descriptor bindings 的集合。Descriptor binding 可以是一个 texture descriptor、buffer descriptor 或者 sampler descriptor 等。</p>
 <p>正是通过 Descriptor binding，Descriptor Set 才实现了 shader 和资源的绑定，方便了 shader 对资源的读写操作。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/image-20220717145816221.png" alt="image-20220717145816221"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220717145816221.png" alt="image-20220717145816221"></p>
 <h4 id="2-4-Pipeline-layout"><a href="#2-4-Pipeline-layout" class="headerlink" title="2.4 Pipeline layout"></a>2.4 Pipeline layout</h4><p>Pipeline layout 是由 Pipeline 可以访问的 descriptor set layouts 和 push constant ranges 组成，它表示 Pipeline 可以访问的完整资源集。其中，<strong>Push constant</strong> 提供了一个快速更新 shader 中常量的方法。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/image-20220717145943704.png" alt="image-20220717145943704"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220717145943704.png" alt="image-20220717145943704"></p>
 <h4 id="2-5-Binding-model"><a href="#2-5-Binding-model" class="headerlink" title="2.5 Binding model"></a>2.5 Binding model</h4><p>我们把上述元素组织在一起，就是 Vulkan 的资源绑定模型。</p>
 <p>Descriptor Set 包含一组 Descriptor 和 Descriptor Set layout：</p>
 <ul>
@@ -369,9 +365,9 @@
 <li>Descriptor binding 将 Descriptor 和 shader 进行绑定，给 shader 提供了对资源操作的接口。</li>
 </ul>
 <p>Constants register array（Root Table） 把多个Descriptor Set 和 push constant 组织在一起。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/image-20220717150351889.png" alt="image-20220717150351889"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220717150351889.png" alt="image-20220717150351889"></p>
 <p>Pipeline layout 表示整个渲染管线的资源布局。最后看一下资源和状态管理的整体架构：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/17/20220717-Vulkan-Vulkan%E8%B5%84%E6%BA%90%E7%BB%91%E5%AE%9A%E5%92%8C%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/image-20220717150433528.png" alt="image-20220717150433528"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220717150433528.png" alt="image-20220717150433528"></p>
 
     </div>
 
@@ -587,13 +583,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">920k</span>
+    <span title="站点总字数">914k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">13:57</span>
+    <span title="站点阅读时长">13:51</span>
 </div>
 
         
