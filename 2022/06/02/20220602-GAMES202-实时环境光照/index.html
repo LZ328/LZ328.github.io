@@ -77,7 +77,7 @@
 <meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602152155042-165416238901838.png">
 <meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602172803653.png">
 <meta property="article:published_time" content="2022-06-02T07:34:32.000Z">
-<meta property="article:modified_time" content="2022-06-13T03:32:11.647Z">
+<meta property="article:modified_time" content="2022-08-29T03:10:41.784Z">
 <meta property="article:author" content="Lyc">
 <meta property="article:tag" content="计算机图形学">
 <meta property="article:tag" content="游戏引擎">
@@ -279,7 +279,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-13 11:32:11" itemprop="dateModified" datetime="2022-06-13T11:32:11+08:00">2022-06-13</time>
+                <time title="修改时间：2022-08-29 11:10:41" itemprop="dateModified" datetime="2022-08-29T11:10:41+08:00">2022-08-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -457,6 +457,7 @@
 <p>这是因为 SH 是从低到高的频段表示，我们使用前 n 阶的 SH，就只能表示信号中对应的这么多频段的信息，更高频的信息就会丢失掉，对于一些高频环境光照的场景，可以使用其他基函数，比如二维小波函数（Wavelet），任意一个二维函数都可以表示为所有小波基函数的线性组合，而我们可以只保留线性组合系数最高的那些项来表示原函数，因此小波表示是全频率的，比 SH 更适合表示高频环境光，但小波函数不具有快速旋转性质，当环境光变化时处理非常不灵活，下图是 SH 和 小波函数的渲染结果对比：</p>
 <p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/02/20220602-GAMES202-%E5%AE%9E%E6%97%B6%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7/image-20220602172803653.png" alt="image-20220602172803653"></p>
 <p>显然小波保留了更多的高频信息，得到了更好的阴影和反射效果。</p>
+<h4 id="5-5-实现"><a href="#5-5-实现" class="headerlink" title="5.5 实现"></a>5.5 实现</h4><p>查看<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_36242312/article/details/118490949">GAMES 202 - 作业 2: Precomputed Radiance Transfer</a></p>
 
     </div>
 
@@ -603,7 +604,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%9B%9E%E9%A1%BE%E7%8E%AF%E5%A2%83%E8%B4%B4%E5%9B%BE"><span class="nav-text">1 回顾环境贴图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Split-Sum"><span class="nav-text">2 Split Sum</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7%E7%9A%84%E9%98%B4%E5%BD%B1"><span class="nav-text">3 环境光照的阴影</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E7%90%83%E9%9D%A2%E8%B0%90%E6%B3%A2%E5%87%BD%E6%95%B0"><span class="nav-text">4 球面谐波函数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-%E7%90%83%E8%B0%90%E5%87%BD%E6%95%B0%E7%9A%84%E5%AE%9A%E4%B9%89%E5%92%8C%E6%80%A7%E8%B4%A8"><span class="nav-text">4.1 球谐函数的定义和性质</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-%E7%94%A8%E7%90%83%E8%B0%90%E5%87%BD%E6%95%B0%E8%A1%A8%E7%A4%BA%E7%8E%AF%E5%A2%83%E5%85%89"><span class="nav-text">4.2 用球谐函数表示环境光</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-Precomputed-radiance-transfer%EF%BC%88PRT%EF%BC%89"><span class="nav-text">5 Precomputed radiance transfer（PRT）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#5-1-PRT-%E5%8E%9F%E7%90%86"><span class="nav-text">5.1 PRT 原理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-2-%E6%BC%AB%E5%8F%8D%E5%B0%84%E6%83%85%E5%86%B5"><span class="nav-text">5.2 漫反射情况</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-3-Glossy-%E6%83%85%E5%86%B5"><span class="nav-text">5.3 Glossy 情况</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-4-%E6%80%BB%E7%BB%93"><span class="nav-text">5.4 总结</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%9B%9E%E9%A1%BE%E7%8E%AF%E5%A2%83%E8%B4%B4%E5%9B%BE"><span class="nav-text">1 回顾环境贴图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Split-Sum"><span class="nav-text">2 Split Sum</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E7%8E%AF%E5%A2%83%E5%85%89%E7%85%A7%E7%9A%84%E9%98%B4%E5%BD%B1"><span class="nav-text">3 环境光照的阴影</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E7%90%83%E9%9D%A2%E8%B0%90%E6%B3%A2%E5%87%BD%E6%95%B0"><span class="nav-text">4 球面谐波函数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-%E7%90%83%E8%B0%90%E5%87%BD%E6%95%B0%E7%9A%84%E5%AE%9A%E4%B9%89%E5%92%8C%E6%80%A7%E8%B4%A8"><span class="nav-text">4.1 球谐函数的定义和性质</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-%E7%94%A8%E7%90%83%E8%B0%90%E5%87%BD%E6%95%B0%E8%A1%A8%E7%A4%BA%E7%8E%AF%E5%A2%83%E5%85%89"><span class="nav-text">4.2 用球谐函数表示环境光</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-Precomputed-radiance-transfer%EF%BC%88PRT%EF%BC%89"><span class="nav-text">5 Precomputed radiance transfer（PRT）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#5-1-PRT-%E5%8E%9F%E7%90%86"><span class="nav-text">5.1 PRT 原理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-2-%E6%BC%AB%E5%8F%8D%E5%B0%84%E6%83%85%E5%86%B5"><span class="nav-text">5.2 漫反射情况</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-3-Glossy-%E6%83%85%E5%86%B5"><span class="nav-text">5.3 Glossy 情况</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-4-%E6%80%BB%E7%BB%93"><span class="nav-text">5.4 总结</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-5-%E5%AE%9E%E7%8E%B0"><span class="nav-text">5.5 实现</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
