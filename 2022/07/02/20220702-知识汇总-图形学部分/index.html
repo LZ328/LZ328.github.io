@@ -29,7 +29,7 @@
 <meta property="og:site_name" content="LycTechStack">
 <meta property="og:description" content="本篇总结图形学相关知识点，提供之前笔记的索引，并补充部分内容，方便查找，将持续更新。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220720142829531.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/02/20220702-%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB-%E5%9B%BE%E5%BD%A2%E5%AD%A6%E9%83%A8%E5%88%86/image-20220720142829531.png">
 <meta property="article:published_time" content="2022-07-02T03:42:18.000Z">
 <meta property="article:modified_time" content="2022-08-03T02:30:45.745Z">
 <meta property="article:author" content="Lyc">
@@ -37,7 +37,7 @@
 <meta property="article:tag" content="实时渲染">
 <meta property="article:tag" content="OpenGL">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220720142829531.png">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/02/20220702-%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB-%E5%9B%BE%E5%BD%A2%E5%AD%A6%E9%83%A8%E5%88%86/image-20220720142829531.png">
 
 <link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/07/02/20220702-%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB-%E5%9B%BE%E5%BD%A2%E5%AD%A6%E9%83%A8%E5%88%86/">
 
@@ -279,7 +279,7 @@
       
         <p>本篇总结图形学相关知识点，提供之前笔记的索引，并补充部分内容，方便查找，将持续更新。</p>
 <p><em><span id="more"></span></em></p>
-<h4 id="GPU-渲染管线"><a href="#GPU-渲染管线" class="headerlink" title="GPU 渲染管线"></a>GPU 渲染管线</h4><p>可以查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/12/20220512-RTR-图形渲染管线/">【Real-Time Rendering】图形渲染管线</a> 和 <a href="https://lz328.github.io/LycTechStack.github.io/2022/05/13/20220513-RTR-GPU管线/">【Real-Time Rendering】GPU 管线</a></p>
+<h4 id="GPU-渲染管线"><a href="#GPU-渲染管线" class="headerlink" title="GPU 渲染管线"></a>GPU 渲染管线</h4><p>可以查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/12/20220512-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF/">【Real-Time Rendering】图形渲染管线</a> 和 <a href="https://lz328.github.io/LycTechStack.github.io/2022/05/13/20220513-RTR-GPU%E7%AE%A1%E7%BA%BF/">【Real-Time Rendering】GPU 管线</a></p>
 <p>图形渲染管线是抽象的图像渲染流程，GPU 渲染管线是现代 GPU 对该流程的具体实现。</p>
 <h4 id="图形渲染过程中有哪些坐标空间？他们是如何进行变换的？具体的矩阵"><a href="#图形渲染过程中有哪些坐标空间？他们是如何进行变换的？具体的矩阵" class="headerlink" title="图形渲染过程中有哪些坐标空间？他们是如何进行变换的？具体的矩阵"></a>图形渲染过程中有哪些坐标空间？他们是如何进行变换的？具体的矩阵</h4><p>包括模型空间、世界空间、观察空间、裁剪空间、NDC和屏幕空间</p>
 <p>M 变换从模型空间到世界空间</p>
@@ -287,32 +287,32 @@
 <p>P 变换从观察空间到裁剪空间</p>
 <p>透视除法从裁剪空间到 NDC</p>
 <p>视口变换从 NDC 到屏幕空间</p>
-<p>各种矩阵的推导查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/21/20220521-渲染器-变换与深度测试/">【光栅化渲染器】（三）变换与深度测试</a></p>
+<p>各种矩阵的推导查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/21/20220521-%E6%B8%B2%E6%9F%93%E5%99%A8-%E5%8F%98%E6%8D%A2%E4%B8%8E%E6%B7%B1%E5%BA%A6%E6%B5%8B%E8%AF%95/">【光栅化渲染器】（三）变换与深度测试</a></p>
 <h4 id="变换过程中的坐标系哪些是左手系哪些是右手系，为什么会发生变化"><a href="#变换过程中的坐标系哪些是左手系哪些是右手系，为什么会发生变化" class="headerlink" title="变换过程中的坐标系哪些是左手系哪些是右手系，为什么会发生变化"></a>变换过程中的坐标系哪些是左手系哪些是右手系，为什么会发生变化</h4><p>模型空间和世界空间是什么坐标系不重要，描述的都是一样的世界，但观察空间就取决于我们的定义了，OpenGL 中模型、世界、相机坐标系使用的都是右手系，即沿 -Z 轴方向观察，经过投影之后变换到裁剪空间是左手系，因为在观察空间中，沿 -Z 方向观察，距离我们近的物体 Z 坐标更大，距离我们远的物体 Z 坐标更小，经过投影矩阵的变换，所有物体的 Z 坐标被变换到 -w 到 w 之间，其中较大的  Z 值 被映射到 -w，较小的 Z 值被映射到 w，也就是距离我们近的物体 Z 会更小，距离我们远的物体 Z 会更大，这正是左手坐标系的 Z 轴走向。</p>
 <h4 id="正交投影和透视投影有什么区别"><a href="#正交投影和透视投影有什么区别" class="headerlink" title="正交投影和透视投影有什么区别"></a>正交投影和透视投影有什么区别</h4><p>正交投影的视锥体是一个立方体，进行的是平行投影，相当于只做了平移和缩放，透视投影的视锥体是一个四棱台，近大远小，本质上相当于利用 Z 坐标对其他坐标进行了缩放。</p>
 <h4 id="NDC-是什么"><a href="#NDC-是什么" class="headerlink" title="NDC 是什么"></a>NDC 是什么</h4><p>归一化设备坐标系，x 和 y 都是 -1 到 1 之间，Z 在 -1 到 1 （OpenGL）或 0 到 1 之间（DirectX），方便通过视口变换得到屏幕坐标。</p>
 <h4 id="视口变换的作用是什么，空间的维度是如何变化的"><a href="#视口变换的作用是什么，空间的维度是如何变化的" class="headerlink" title="视口变换的作用是什么，空间的维度是如何变化的"></a>视口变换的作用是什么，空间的维度是如何变化的</h4><p>视口变换将 NDC 坐标变换到屏幕空间上，也叫屏幕映射，虽然屏幕坐标可以认为是二维的，但是依然保留了每个片段的深度。</p>
 <h4 id="顶点着色器的作用"><a href="#顶点着色器的作用" class="headerlink" title="顶点着色器的作用"></a>顶点着色器的作用</h4><p>顶点着色器用于进行顶点处理，必须完成的就是将顶点坐标变换到裁剪空间，也可以做顶点的着色、移动等处理。</p>
 <h4 id="片元和像素的区别"><a href="#片元和像素的区别" class="headerlink" title="片元和像素的区别"></a>片元和像素的区别</h4><p>片元是像素的候选</p>
-<h4 id="逐顶点光照和逐片元光照"><a href="#逐顶点光照和逐片元光照" class="headerlink" title="逐顶点光照和逐片元光照"></a>逐顶点光照和逐片元光照</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/03/09/20220309-着色/">【计算机图形学】（六）着色</a></p>
+<h4 id="逐顶点光照和逐片元光照"><a href="#逐顶点光照和逐片元光照" class="headerlink" title="逐顶点光照和逐片元光照"></a>逐顶点光照和逐片元光照</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/03/09/20220309-%E7%9D%80%E8%89%B2/">【计算机图形学】（六）着色</a></p>
 <h4 id="光栅化的作用"><a href="#光栅化的作用" class="headerlink" title="光栅化的作用"></a>光栅化的作用</h4><p>生成片元。找到三角形覆盖哪些像素，生成对应的片元。</p>
-<h4 id="常用的光栅化算法"><a href="#常用的光栅化算法" class="headerlink" title="常用的光栅化算法"></a>常用的光栅化算法</h4><p>扫描线和边界函数算法，具体查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/20/20220520-渲染器-框架搭建/">【光栅化渲染器】（二）框架搭建</a>和<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/25/20220525-渲染器-改进光栅化/">【光栅化渲染器】（九）改进光栅化</a></p>
+<h4 id="常用的光栅化算法"><a href="#常用的光栅化算法" class="headerlink" title="常用的光栅化算法"></a>常用的光栅化算法</h4><p>扫描线和边界函数算法，具体查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/20/20220520-%E6%B8%B2%E6%9F%93%E5%99%A8-%E6%A1%86%E6%9E%B6%E6%90%AD%E5%BB%BA/">【光栅化渲染器】（二）框架搭建</a>和<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/25/20220525-%E6%B8%B2%E6%9F%93%E5%99%A8-%E6%94%B9%E8%BF%9B%E5%85%89%E6%A0%85%E5%8C%96/">【光栅化渲染器】（九）改进光栅化</a></p>
 <h4 id="Phong-和-Blinn-Phong-的区别，为什么这么改进"><a href="#Phong-和-Blinn-Phong-的区别，为什么这么改进" class="headerlink" title="Phong 和 Blinn Phong 的区别，为什么这么改进"></a>Phong 和 Blinn Phong 的区别，为什么这么改进</h4><p>区别在于高光项的计算，改进的原因一方面在于计算量，另一方面因为视线方向可能和反射方向夹角大于 90 度，从而导致高光截断或者过渡不自然，而正常情况下半程向量和法线夹角不可能大于 90 度，从而使得高光过度更加自然。</p>
 <h4 id="走样产生的原因，如何解决"><a href="#走样产生的原因，如何解决" class="headerlink" title="走样产生的原因，如何解决"></a>走样产生的原因，如何解决</h4><p>光栅化的走样和纹理走样</p>
-<p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-反走样/">【计算机图形学】（四）反走样</a>和<a href="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-纹理映射/">【计算机图形学】（七）纹理映射</a></p>
-<h4 id="MipMap-的作用、原理、如何确定使用哪一层"><a href="#MipMap-的作用、原理、如何确定使用哪一层" class="headerlink" title="MipMap 的作用、原理、如何确定使用哪一层"></a>MipMap 的作用、原理、如何确定使用哪一层</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-纹理映射/">【计算机图形学】（七）纹理映射</a></p>
-<p>一般使用 ddx 和 ddy 确定使用的层级，ddx 和 ddy 可以快速求出像素某一属性的变化率，因为 GPU 在执行片段着色的时候不是逐像素进行的，是以 2 <em> 2 的块为单位执行的，每个 wrap 被分为 8 </em> 4 个线程组，每个像素快就被分配到一个包含 4 个线程的线程组执行，所以可以快速得到相邻像素某属性的变化率，通过计算相邻像素纹理坐标的差值可以得出：</p>
+<p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%8F%8D%E8%B5%B0%E6%A0%B7/">【计算机图形学】（四）反走样</a>和<a href="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/">【计算机图形学】（七）纹理映射</a></p>
+<h4 id="MipMap-的作用、原理、如何确定使用哪一层"><a href="#MipMap-的作用、原理、如何确定使用哪一层" class="headerlink" title="MipMap 的作用、原理、如何确定使用哪一层"></a>MipMap 的作用、原理、如何确定使用哪一层</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/03/10/20220310-%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84/">【计算机图形学】（七）纹理映射</a></p>
+<p>一般使用 ddx 和 ddy 确定使用的层级，ddx 和 ddy 可以快速求出像素某一属性的变化率，因为 GPU 在执行片段着色的时候不是逐像素进行的，是以 2 * 2 的块为单位执行的，每个 wrap 被分为 8 * 4 个线程组，每个像素快就被分配到一个包含 4 个线程的线程组执行，所以可以快速得到相邻像素某属性的变化率，通过计算相邻像素纹理坐标的差值可以得出：</p>
 <ul>
 <li>相邻像素纹理坐标差值越大，说明纹理在屏幕上对应的空间越小，因此就使用越大的 mipmap 层级</li>
 <li>相邻像素纹理坐标差值越小，说明纹理在屏幕上对应的空间越大，因此就使用更小的 mipmap 层级</li>
 </ul>
 <p>更多细节可以查看<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/70269212">在shader中计算贴图mipmap级别</a>中的公式和代码</p>
-<h4 id="法线贴图的种类，优缺点"><a href="#法线贴图的种类，优缺点" class="headerlink" title="法线贴图的种类，优缺点"></a>法线贴图的种类，优缺点</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-纹理总结/">【Real-Time Rendering】纹理总结</a>第七部分</p>
-<h4 id="伽马校正是什么，为什么需要"><a href="#伽马校正是什么，为什么需要" class="headerlink" title="伽马校正是什么，为什么需要"></a>伽马校正是什么，为什么需要</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/04/15/20220415-RayTracer-漫反射材质/">【RayTracer】（四）漫反射材质</a>第三部分</p>
-<h4 id="HDR-和色调映射，常用的映射算法"><a href="#HDR-和色调映射，常用的映射算法" class="headerlink" title="HDR 和色调映射，常用的映射算法"></a>HDR 和色调映射，常用的映射算法</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/18/20220518-RTR-基于图像的渲染技术总结/">【Real-Time Rendering】基于图像的渲染技术总结</a>第 10 部分</p>
-<h4 id="Shadow-Map-的实现、缺点、有哪些改进"><a href="#Shadow-Map-的实现、缺点、有哪些改进" class="headerlink" title="Shadow Map 的实现、缺点、有哪些改进"></a>Shadow Map 的实现、缺点、有哪些改进</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-实时阴影/">【高质量实时渲染】实时阴影</a></p>
-<h4 id="PCF-和-PCSS"><a href="#PCF-和-PCSS" class="headerlink" title="PCF 和 PCSS"></a>PCF 和 PCSS</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-实时阴影/">【高质量实时渲染】实时阴影</a></p>
-<h4 id="常用的抗锯齿方法"><a href="#常用的抗锯齿方法" class="headerlink" title="常用的抗锯齿方法"></a>常用的抗锯齿方法</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/13/20220513-RTR-图形渲染和视觉外观/">【Real-Time Rendering】图形渲染和视觉处理</a>第三部分和<a href="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-反走样/">【计算机图形学】（四）反走样</a></p>
+<h4 id="法线贴图的种类，优缺点"><a href="#法线贴图的种类，优缺点" class="headerlink" title="法线贴图的种类，优缺点"></a>法线贴图的种类，优缺点</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/">【Real-Time Rendering】纹理总结</a>第七部分</p>
+<h4 id="伽马校正是什么，为什么需要"><a href="#伽马校正是什么，为什么需要" class="headerlink" title="伽马校正是什么，为什么需要"></a>伽马校正是什么，为什么需要</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/04/15/20220415-RayTracer-%E6%BC%AB%E5%8F%8D%E5%B0%84%E6%9D%90%E8%B4%A8/">【RayTracer】（四）漫反射材质</a>第三部分</p>
+<h4 id="HDR-和色调映射，常用的映射算法"><a href="#HDR-和色调映射，常用的映射算法" class="headerlink" title="HDR 和色调映射，常用的映射算法"></a>HDR 和色调映射，常用的映射算法</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/18/20220518-RTR-%E5%9F%BA%E4%BA%8E%E5%9B%BE%E5%83%8F%E7%9A%84%E6%B8%B2%E6%9F%93%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/">【Real-Time Rendering】基于图像的渲染技术总结</a>第 10 部分</p>
+<h4 id="Shadow-Map-的实现、缺点、有哪些改进"><a href="#Shadow-Map-的实现、缺点、有哪些改进" class="headerlink" title="Shadow Map 的实现、缺点、有哪些改进"></a>Shadow Map 的实现、缺点、有哪些改进</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/">【高质量实时渲染】实时阴影</a></p>
+<h4 id="PCF-和-PCSS"><a href="#PCF-和-PCSS" class="headerlink" title="PCF 和 PCSS"></a>PCF 和 PCSS</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/30/20220530-GAMES202-%E5%AE%9E%E6%97%B6%E9%98%B4%E5%BD%B1/">【高质量实时渲染】实时阴影</a></p>
+<h4 id="常用的抗锯齿方法"><a href="#常用的抗锯齿方法" class="headerlink" title="常用的抗锯齿方法"></a>常用的抗锯齿方法</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/13/20220513-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E5%92%8C%E8%A7%86%E8%A7%89%E5%A4%96%E8%A7%82/">【Real-Time Rendering】图形渲染和视觉处理</a>第三部分和<a href="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%8F%8D%E8%B5%B0%E6%A0%B7/">【计算机图形学】（四）反走样</a></p>
 <p>另外工业上目前在用的一些方法的详细原理和实现可以查看：</p>
 <ul>
 <li><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/431384101">主流抗锯齿方案详解（三）FXAA</a></p>
@@ -321,24 +321,24 @@
 </li>
 </ul>
 <p>通常在项目中会将多种 AA 算法混合起来使用以达到更好的效果。</p>
-<h4 id="什么是模板测试"><a href="#什么是模板测试" class="headerlink" title="什么是模板测试"></a>什么是模板测试</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/14/20220514-RTR-模板测试和深度测试/">【Real-Time Rendering】模板测试和深度测试</a></p>
-<h4 id="透明度混合和透明度测试"><a href="#透明度混合和透明度测试" class="headerlink" title="透明度混合和透明度测试"></a>透明度混合和透明度测试</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/04/03/20220403-Shader-透明效果/">【Unity Shader】（三）透明效果</a></p>
-<h4 id="各种物体的的渲染顺序"><a href="#各种物体的的渲染顺序" class="headerlink" title="各种物体的的渲染顺序"></a>各种物体的的渲染顺序</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/04/03/20220403-Shader-透明效果/">【Unity Shader】（三）透明效果</a></p>
-<h4 id="顺序无关的透明渲染算法"><a href="#顺序无关的透明渲染算法" class="headerlink" title="顺序无关的透明渲染算法"></a>顺序无关的透明渲染算法</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/13/20220513-RTR-图形渲染和视觉外观/">【Real-Time Rendering】图形渲染和视觉处理</a>第 4 部分</p>
+<h4 id="什么是模板测试"><a href="#什么是模板测试" class="headerlink" title="什么是模板测试"></a>什么是模板测试</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/14/20220514-RTR-%E6%A8%A1%E6%9D%BF%E6%B5%8B%E8%AF%95%E5%92%8C%E6%B7%B1%E5%BA%A6%E6%B5%8B%E8%AF%95/">【Real-Time Rendering】模板测试和深度测试</a></p>
+<h4 id="透明度混合和透明度测试"><a href="#透明度混合和透明度测试" class="headerlink" title="透明度混合和透明度测试"></a>透明度混合和透明度测试</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/04/03/20220403-Shader-%E9%80%8F%E6%98%8E%E6%95%88%E6%9E%9C/">【Unity Shader】（三）透明效果</a></p>
+<h4 id="各种物体的的渲染顺序"><a href="#各种物体的的渲染顺序" class="headerlink" title="各种物体的的渲染顺序"></a>各种物体的的渲染顺序</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/04/03/20220403-Shader-%E9%80%8F%E6%98%8E%E6%95%88%E6%9E%9C/">【Unity Shader】（三）透明效果</a></p>
+<h4 id="顺序无关的透明渲染算法"><a href="#顺序无关的透明渲染算法" class="headerlink" title="顺序无关的透明渲染算法"></a>顺序无关的透明渲染算法</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/13/20220513-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E5%92%8C%E8%A7%86%E8%A7%89%E5%A4%96%E8%A7%82/">【Real-Time Rendering】图形渲染和视觉处理</a>第 4 部分</p>
 <h4 id="compute-shader-是干嘛的"><a href="#compute-shader-是干嘛的" class="headerlink" title="compute shader 是干嘛的"></a>compute shader 是干嘛的</h4><p>在图形管线之外的，但可以将计算数据传入管线或回传给自己，实现利用 GPU 进行通用计算任务</p>
 <h4 id="渲染方程"><a href="#渲染方程" class="headerlink" title="渲染方程"></a>渲染方程</h4><p>经典渲染方程和实时渲染中的渲染方程（带 visibility 项）</p>
 <h4 id="BRDF-简介"><a href="#BRDF-简介" class="headerlink" title="BRDF 简介"></a>BRDF 简介</h4><p>描述入射光和出射光关系的函数，分为经验模型、物理模型和测量模型，各类常用的模型举例，以及各向同性各向异性</p>
-<p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-BRDF总结/">【Real-Time Rendering】BRDF 总结</a></p>
+<p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-BRDF%E6%80%BB%E7%BB%93/">【Real-Time Rendering】BRDF 总结</a></p>
 <h4 id="菲涅尔项-F0-的意义"><a href="#菲涅尔项-F0-的意义" class="headerlink" title="菲涅尔项 F0 的意义"></a>菲涅尔项 F0 的意义</h4><p>F0 是基础反射率，与介质的折射率有关，可以代表物体本身的颜色，从 SG 模型的 Specular 纹理中得到或者从 MR 模型的 base color 纹理中采样再经过 metalic 插值得到</p>
 <h4 id="PBR-的原理"><a href="#PBR-的原理" class="headerlink" title="PBR 的原理"></a>PBR 的原理</h4><p>基于物理的渲染，关键在于能量守恒，菲涅尔项和 BRDF 的计算（cook-torrance 模型）</p>
 <h4 id="PBR-的计算需要哪些量"><a href="#PBR-的计算需要哪些量" class="headerlink" title="PBR 的计算需要哪些量"></a>PBR 的计算需要哪些量</h4><p>基础反射率 F0，粗糙程度，光线和法线夹角，观察方向和法线夹角</p>
-<h4 id="光线追踪和路径追踪"><a href="#光线追踪和路径追踪" class="headerlink" title="光线追踪和路径追踪"></a>光线追踪和路径追踪</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted风格光线追踪/">【计算机图形学】（十一）Whitted 风格光线追踪</a>、<a href="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-路径追踪/">【计算机图形学】（十三）路径追踪</a>、<a href="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-实时光线追踪/">【高质量实时渲染】实时光线追踪</a></p>
-<h4 id="蒙特卡洛积分方法"><a href="#蒙特卡洛积分方法" class="headerlink" title="蒙特卡洛积分方法"></a>蒙特卡洛积分方法</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/04/24/20220424-RayTracer-重要性采样/">【RayTracer】（十八）重要性采样</a></p>
-<h4 id="延迟渲染的原理，对比正向渲染，延迟渲染的改进"><a href="#延迟渲染的原理，对比正向渲染，延迟渲染的改进" class="headerlink" title="延迟渲染的原理，对比正向渲染，延迟渲染的改进"></a>延迟渲染的原理，对比正向渲染，延迟渲染的改进</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-延迟渲染总结/">【Real-Time Rendering】延迟渲染总结</a></p>
-<h4 id="延迟渲染和-MSAA"><a href="#延迟渲染和-MSAA" class="headerlink" title="延迟渲染和 MSAA"></a>延迟渲染和 MSAA</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-延迟渲染总结/">【Real-Time Rendering】延迟渲染总结</a></p>
+<h4 id="光线追踪和路径追踪"><a href="#光线追踪和路径追踪" class="headerlink" title="光线追踪和路径追踪"></a>光线追踪和路径追踪</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/03/17/20220317-Whitted%E9%A3%8E%E6%A0%BC%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/">【计算机图形学】（十一）Whitted 风格光线追踪</a>、<a href="https://lz328.github.io/LycTechStack.github.io/2022/03/20/20220320-%E8%B7%AF%E5%BE%84%E8%BF%BD%E8%B8%AA/">【计算机图形学】（十三）路径追踪</a>、<a href="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/">【高质量实时渲染】实时光线追踪</a></p>
+<h4 id="蒙特卡洛积分方法"><a href="#蒙特卡洛积分方法" class="headerlink" title="蒙特卡洛积分方法"></a>蒙特卡洛积分方法</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/04/24/20220424-RayTracer-%E9%87%8D%E8%A6%81%E6%80%A7%E9%87%87%E6%A0%B7/">【RayTracer】（十八）重要性采样</a></p>
+<h4 id="延迟渲染的原理，对比正向渲染，延迟渲染的改进"><a href="#延迟渲染的原理，对比正向渲染，延迟渲染的改进" class="headerlink" title="延迟渲染的原理，对比正向渲染，延迟渲染的改进"></a>延迟渲染的原理，对比正向渲染，延迟渲染的改进</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-%E5%BB%B6%E8%BF%9F%E6%B8%B2%E6%9F%93%E6%80%BB%E7%BB%93/">【Real-Time Rendering】延迟渲染总结</a></p>
+<h4 id="延迟渲染和-MSAA"><a href="#延迟渲染和-MSAA" class="headerlink" title="延迟渲染和 MSAA"></a>延迟渲染和 MSAA</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/16/20220516-RTR-%E5%BB%B6%E8%BF%9F%E6%B8%B2%E6%9F%93%E6%80%BB%E7%BB%93/">【Real-Time Rendering】延迟渲染总结</a></p>
 <h4 id="一些提高渲染效率的方法"><a href="#一些提高渲染效率的方法" class="headerlink" title="一些提高渲染效率的方法"></a>一些提高渲染效率的方法</h4><p>固定视角渲染只渲染一次固定物体，剔除被 UI 遮挡的物体</p>
 <p>双缓冲或者三重缓冲保持帧率稳定</p>
-<p>其他查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/18/20220518-RTR-渲染加速技术总结/">【Real-Time Rendering】渲染加速技术总结</a></p>
+<p>其他查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/05/18/20220518-RTR-%E6%B8%B2%E6%9F%93%E5%8A%A0%E9%80%9F%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/">【Real-Time Rendering】渲染加速技术总结</a></p>
 <h4 id="如何优化-shader-代码"><a href="#如何优化-shader-代码" class="headerlink" title="如何优化 shader 代码"></a>如何优化 shader 代码</h4><p>尽量避免分支语句、条件判断和循环，尽量减少纹理采样次数，减少复杂数学函数调用，少在片段着色器做矩阵运算，降低浮点数精度等</p>
 <p>具体查看<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/210221918">Shader中的代码优化原理分析</a></p>
 <h4 id="GLFW-的作用"><a href="#GLFW-的作用" class="headerlink" title="GLFW 的作用"></a>GLFW 的作用</h4><p>用于创建窗口，创建 OpenGL 上下文、接收一些鼠标键盘事件的第三方库</p>
@@ -347,8 +347,8 @@
 <h4 id="DirectX-和-OpenGL"><a href="#DirectX-和-OpenGL" class="headerlink" title="DirectX 和 OpenGL"></a>DirectX 和 OpenGL</h4><p>查看<a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1532783">微软DirectX和OpenGL的区别（比较详细）</a></p>
 <p>总结来说 OpenGL 只提供核心的渲染功能，至于窗口显示，设备输入处理等都需要第三方库，但 OpenGL 有良好的跨平台特性</p>
 <p>DirectX 并不是一个单纯的图形API，它是由微软公司开发的用途广泛的API，它可让以 windows 为平台的游戏或多媒体程序获得更高的执行效率，加强 3d 图形和声音效果。</p>
-<h4 id="后处理方法"><a href="#后处理方法" class="headerlink" title="后处理方法"></a>后处理方法</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/04/07/20220407-Shader-基础屏幕特效/">【Unity Shader】（七）基础屏幕特效</a>和<a href="https://lz328.github.io/LycTechStack.github.io/2022/04/09/20220409-Shader-高级屏幕特效/">【Unity Shader】（八）高级屏幕特效</a></p>
-<h4 id="NPR-基本原理、描边算法"><a href="#NPR-基本原理、描边算法" class="headerlink" title="NPR 基本原理、描边算法"></a>NPR 基本原理、描边算法</h4><p><a href="https://lz328.github.io/LycTechStack.github.io/2022/04/09/20220409-Shader-非真实感渲染/">【Unity Shader】（九）非真实感渲染</a></p>
+<h4 id="后处理方法"><a href="#后处理方法" class="headerlink" title="后处理方法"></a>后处理方法</h4><p>查看笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/04/07/20220407-Shader-%E5%9F%BA%E7%A1%80%E5%B1%8F%E5%B9%95%E7%89%B9%E6%95%88/">【Unity Shader】（七）基础屏幕特效</a>和<a href="https://lz328.github.io/LycTechStack.github.io/2022/04/09/20220409-Shader-%E9%AB%98%E7%BA%A7%E5%B1%8F%E5%B9%95%E7%89%B9%E6%95%88/">【Unity Shader】（八）高级屏幕特效</a></p>
+<h4 id="NPR-基本原理、描边算法"><a href="#NPR-基本原理、描边算法" class="headerlink" title="NPR 基本原理、描边算法"></a>NPR 基本原理、描边算法</h4><p><a href="https://lz328.github.io/LycTechStack.github.io/2022/04/09/20220409-Shader-%E9%9D%9E%E7%9C%9F%E5%AE%9E%E6%84%9F%E6%B8%B2%E6%9F%93/">【Unity Shader】（九）非真实感渲染</a></p>
 <h4 id="利用深度和屏幕坐标算世界坐标"><a href="#利用深度和屏幕坐标算世界坐标" class="headerlink" title="利用深度和屏幕坐标算世界坐标"></a>利用深度和屏幕坐标算世界坐标</h4><p>利用屏幕坐标得到 NDC 坐标，或者将纹理坐标映射到 NDC 坐标 -1 到 1 范围内，再乘以投影矩阵的逆矩阵得到投影前的坐标，记得除以 w 值进行坐标归一化，然后再乘以 V 矩阵的逆矩阵得到世界空间坐标</p>
 <p>具体查看<a target="_blank" rel="noopener" href="https://blog.csdn.net/ag_cill/article/details/61428172">Unity根据深度值计算世界坐标</a></p>
 <h4 id="深度精度问题和-reversed-Z"><a href="#深度精度问题和-reversed-Z" class="headerlink" title="深度精度问题和 reversed-Z"></a>深度精度问题和 reversed-Z</h4><p>查看<a target="_blank" rel="noopener" href="https://www.cnblogs.com/jackmaxwell/p/6851728.html">Reversed-Z详解</a>和<a target="_blank" rel="noopener" href="https://juejin.cn/post/6844904053193834503">Depth精度问题分析</a></p>
@@ -369,16 +369,17 @@
 <h4 id="BVH-划分维度造成的问题"><a href="#BVH-划分维度造成的问题" class="headerlink" title="BVH 划分维度造成的问题"></a>BVH 划分维度造成的问题</h4><p>对于走廊一样的场景，如果不沿着最长的维度分割，就会造成物体在某一个维度上被分开了，集中在一定范围内，但是其他维度上这些物体分布非常分散，导致最终的 AABB 会很大，每个节点的 AABB 都覆盖了很大的范围，并且各个 BVH 节点之间的 AABB 就会有很大的重合，导致 BVH 的加速效果不好。</p>
 <h4 id="纹理坐标到纹理的映射公式"><a href="#纹理坐标到纹理的映射公式" class="headerlink" title="纹理坐标到纹理的映射公式"></a>纹理坐标到纹理的映射公式</h4><p>直接上代码：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 纹理采样，使用重复寻址方式,等同于OpenGL的GL_REPEAT</span></span><br><span class="line"><span class="function">glm::vec4 <span class="title">Sample2D</span><span class="params">(<span class="type">const</span> glm::vec2&amp; texcoord)</span> </span>&#123;</span><br><span class="line">    <span class="type">float</span> x = texcoord.x - (<span class="type">float</span>)<span class="built_in">floor</span>(texcoord.x);</span><br><span class="line">    <span class="type">float</span> y = texcoord.y - (<span class="type">float</span>)<span class="built_in">floor</span>(texcoord.y);</span><br><span class="line">    x = x &lt; <span class="number">0</span> ? -x : x;</span><br><span class="line">    y = y &lt; <span class="number">0</span> ? -y : y;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">GetColor</span>(x * (width - <span class="number">1</span>), y * (height - <span class="number">1</span>)) / <span class="number">255.0f</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h4 id="实例化渲染和批处理"><a href="#实例化渲染和批处理" class="headerlink" title="实例化渲染和批处理"></a>实例化渲染和批处理</h4><p>参考：</p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_35312463/article/details/105742042">Vulkan实例化渲染</a></li>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/chenweiyu11962/article/details/121340711">合批/批量渲染 （Batch）、实例化Instancing</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/chenweiyu11962/article/details/121340711">合批&#x2F;批量渲染 （Batch）、实例化Instancing</a></li>
 </ul>
 <h4 id="Vulkan-中-Pass-和-SubPass-的关系"><a href="#Vulkan-中-Pass-和-SubPass-的关系" class="headerlink" title="Vulkan 中 Pass 和 SubPass 的关系"></a>Vulkan 中 Pass 和 SubPass 的关系</h4><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/539718382">Vulkan学习笔记(四）厘清Pipeline和RenderPass的关系 - 知乎 (zhihu.com)</a></p>
 <h4 id="从-cache-角度讲-Mipmap-为什么比直接采样纹理效率高"><a href="#从-cache-角度讲-Mipmap-为什么比直接采样纹理效率高" class="headerlink" title="从 cache 角度讲 Mipmap 为什么比直接采样纹理效率高"></a>从 cache 角度讲 Mipmap 为什么比直接采样纹理效率高</h4><p>首先影响采样效率的主要原因并不是在于纹理采样有多耗时，纹理采样主要是通过 TMU 模块进行执行的，TMU 模块是一种有限的硬件资源， 因此你采样更多（不一样的）纹理，就需要消耗更多的周期。这是因为当采样纹理的时候要加载纹理数据，TMU 会首先向 Texture Cache 中去加载，如果 Cache Miss 就会从 L2 加载到 Textuer Cache，如果 L2 也 Cache Miss，就会从 DRAM(显存) 中加载纹理，然后依次填充 L2 和 Texture Cache。</p>
 <p>而我们知道从Thread 读到 Texture Cache 只需要几十个周期，而从 L2 向 DRAM 加载则需要几百个周期。在这些周期内，需要采样纹理的 Warp Scheduler 都需要被换出(swap out)。</p>
 <p>更多可以查看<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/385585791">更新一些GPU相关知识 - 知乎 (zhihu.com)</a></p>
-<h4 id="MSAA-是逐像素做-Z-test-还是逐-sample-做-Z-Test"><a href="#MSAA-是逐像素做-Z-test-还是逐-sample-做-Z-Test" class="headerlink" title="MSAA 是逐像素做 Z-test 还是逐 sample 做 Z-Test"></a>MSAA 是逐像素做 Z-test 还是逐 sample 做 Z-Test</h4><p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220720142829531.png" alt="image-20220720142829531"></p>
+<h4 id="MSAA-是逐像素做-Z-test-还是逐-sample-做-Z-Test"><a href="#MSAA-是逐像素做-Z-test-还是逐-sample-做-Z-Test" class="headerlink" title="MSAA 是逐像素做 Z-test 还是逐 sample 做 Z-Test"></a>MSAA 是逐像素做 Z-test 还是逐 sample 做 Z-Test</h4><p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/02/20220702-%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB-%E5%9B%BE%E5%BD%A2%E5%AD%A6%E9%83%A8%E5%88%86/image-20220720142829531.png" alt="image-20220720142829531"></p>
 <h4 id="PBR-的核心是什么"><a href="#PBR-的核心是什么" class="headerlink" title="PBR 的核心是什么"></a>PBR 的核心是什么</h4><p>关键在于能量守恒以及菲涅尔项的计算得到的直接光照，以及 IBL 得到的间接光照。实际上单单使用 Cook-Torrance 模型计算的光照结果并不比经验模型比如 Blinn-Phong 真实多少，关键在于间接光照的加持，才使得整个材质看起来更真实。</p>
 <h4 id="线性空间和-sRGB-是什么意思"><a href="#线性空间和-sRGB-是什么意思" class="headerlink" title="线性空间和 sRGB 是什么意思"></a>线性空间和 sRGB 是什么意思</h4><p>所谓线性空间就是真实世界的亮度变化，但是显示器并不是线性的，显示伽马大约为 2.2，因此我们才要进行伽马校正（0.45 次幂）</p>
 <p>sRGB 相当于是一个 gamma0.45 的空间，其中的颜色值可以认为已经经过了 0.45 次幂的伽马校正，因此可以直接显示</p>
@@ -604,13 +605,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">925k</span>
+    <span title="站点总字数">931k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">14:01</span>
+    <span title="站点阅读时长">14:07</span>
 </div>
 
         

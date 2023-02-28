@@ -29,23 +29,23 @@
 <meta property="og:site_name" content="LycTechStack">
 <meta property="og:description" content="《深度探索C++对象模型》第三章重点梳理。主要内容包括：  C++ 字节对齐和类大小计算 数据成员的布局、虚函数表和虚基类表的布局">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220507102541174.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220507102558864.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220507102738036.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220507102832628.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220507113905627.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220507113943452.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220507115635356.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220507120353989.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220507120419152.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220507164044837.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507102541174.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507102558864.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507102738036.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507102832628.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507113905627.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507113943452.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507115635356.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507120353989.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507120419152.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507164044837.png">
 <meta property="article:published_time" content="2022-05-07T08:49:49.000Z">
 <meta property="article:modified_time" content="2022-07-10T01:40:04.438Z">
 <meta property="article:author" content="Lyc">
 <meta property="article:tag" content="C++">
 <meta property="article:tag" content="C++对象模型">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220507102541174.png">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507102541174.png">
 
 <link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/">
 
@@ -300,8 +300,10 @@
 </li>
 <li><p>字节对齐是要看变量所在偏移地址是否为变量字节数（或指定对齐字节数 n，取二者较小值）的整数倍</p>
 </li>
-<li>对于结构成员，要按照结构成员中对齐长度最大的一个对齐</li>
-<li>对齐后还要看结构或类的总大小是否为其中最长变量（或指定对齐字节数 n，取二者较小值）的整数倍</li>
+<li><p>对于结构成员，要按照结构成员中对齐长度最大的一个对齐</p>
+</li>
+<li><p>对齐后还要看结构或类的总大小是否为其中最长变量（或指定对齐字节数 n，取二者较小值）的整数倍</p>
+</li>
 </ul>
 <p>按照以上规则可以保证对齐后整个结构或类对象所占空间最小，并保证读取效率。</p>
 <h3 id="2-C-类大小计算"><a href="#2-C-类大小计算" class="headerlink" title="2 C++ 类大小计算"></a>2 C++ 类大小计算</h3><p>关于 C++ 类的大小计算这篇文章讲的非常全面：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/fengyaoyao/p/10262312.html">C++类的大小计算汇总</a></p>
@@ -326,24 +328,25 @@
 <li>由于指针大小为 8 字节，因此含有虚函数的任何类的大小都是原本大小加上 8 字节</li>
 <li>当继承的基类含有虚函数时，在派生类中不对基类的虚函数进行覆盖，同时派生类中还拥有自己的虚函数。此时派生类的虚函数表中首先存放基类虚函数地址，再存放派生类虚函数地址，所有虚函数地址顺序与声明顺序一致。因此无论是基类还是派生类，其大小也还是原本大小加 8 字节</li>
 </ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220507102541174.png" alt="image-20220507102541174"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507102541174.png" alt="image-20220507102541174"></p>
 <ul>
 <li>如果派生类中对基类的虚函数进行了覆盖，同时派生类中还拥有自己的虚函数。此时虚函数表中原本存放基类虚函数的位置会被覆盖为派生类重写的虚函数地址，其他顺序不变。因此无论是基类还是派生类，其大小也还是原本大小加 8 字节</li>
 </ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220507102558864.png" alt="image-20220507102558864"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507102558864.png" alt="image-20220507102558864"></p>
 <ul>
 <li>当一个派生类继承自多个含有虚函数的基类，并对基类虚函数无重载，此时派生类虚函数被放在第一个基类虚函数表后面，派生类的大小就是原本大小加上基类数量 * 8 字节</li>
 </ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220507102738036.png" alt="image-20220507102738036"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507102738036.png" alt="image-20220507102738036"></p>
 <ul>
 <li>当一个派生类继承自多个含有虚函数的基类，并对基类虚函数有重载，情况和上述一致，这时任意一个基类指针指向派生类对象都可以调用派生类重载的基类虚函数</li>
 </ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220507102832628.png" alt="image-20220507102832628"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507102832628.png" alt="image-20220507102832628"></p>
 <p>上面文章中的一个例子，在 Visual C++ 中的运行结果和文章中不同：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">A</span>    </span><br><span class="line">&#123;    </span><br><span class="line">&#125;;   </span><br><span class="line"> </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">B</span>    </span><br><span class="line">&#123; </span><br><span class="line">    <span class="type">char</span> ch;    </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func0</span><span class="params">()</span>  </span>&#123;  &#125;  </span><br><span class="line">&#125;;  </span><br><span class="line"> </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">C</span>   </span><br><span class="line">&#123; </span><br><span class="line">    <span class="type">char</span> ch1; </span><br><span class="line">    <span class="type">char</span> ch2; </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func</span><span class="params">()</span>  </span>&#123;  &#125;   </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func1</span><span class="params">()</span>  </span>&#123;  &#125;  </span><br><span class="line">&#125;; </span><br><span class="line"> </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">D</span>: <span class="keyword">public</span> A, <span class="keyword">public</span> C </span><br><span class="line">&#123;    </span><br><span class="line">    <span class="type">int</span> d;    </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func</span><span class="params">()</span>  </span>&#123;  &#125;  </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func1</span><span class="params">()</span>  </span>&#123;  &#125; </span><br><span class="line">&#125;;    </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">E</span>: <span class="keyword">public</span> B, <span class="keyword">public</span> C </span><br><span class="line">&#123;    </span><br><span class="line">    <span class="type">int</span> e;    </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func0</span><span class="params">()</span>  </span>&#123;  &#125;  </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func1</span><span class="params">()</span>  </span>&#123;  &#125; </span><br><span class="line">&#125;; </span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">void</span>)</span> </span></span><br><span class="line"><span class="function"></span>&#123; </span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;A=&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(A)&lt;&lt;endl;    <span class="comment">//result=1 </span></span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;B=&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(B)&lt;&lt;endl;    <span class="comment">//result=16     </span></span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;C=&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(C)&lt;&lt;endl;    <span class="comment">//result=16 </span></span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;D=&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(D)&lt;&lt;endl;    <span class="comment">//result=24 </span></span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;E=&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(E)&lt;&lt;endl;    <span class="comment">//result=40 </span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>这里关于类 E 的大小，有必要再详细分析一下：类 E 包含一个类 B 子对象 16字节，一个类 C 子对象 16 字节，以及自身的 int 4 字节，现在一共是 36字节，但因为要跟成员中最大变量虚函数表指针 8 字节对齐，最终补齐到 40 字节。</p>
 <blockquote>
-<p>可以在 VS 中输出类的布局，打开 vs项目属性-&gt;配置属性-&gt; c/c++ -&gt;命令行，在其它选项中添加如下命令：</p>
+<p>可以在 VS 中输出类的布局，打开 vs项目属性-&gt;配置属性-&gt; c&#x2F;c++ -&gt;命令行，在其它选项中添加如下命令：</p>
 <ul>
 <li><code>/d1 reportAllClassLayout</code> 是查看所有类的布局</li>
 <li><code>/d1 reportSingleClassLayoutXX</code> 是查看名为XX的类的布局</li>
@@ -351,30 +354,32 @@
 <p>配置之后重新编译项目，会在编译输出中打印类布局。</p>
 </blockquote>
 <p>上面例子中，类 E 的布局打印出来如下：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220507113905627.png" alt="image-20220507113905627"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507113905627.png" alt="image-20220507113905627"></p>
 <p>和我们的分析一致，同时还可以看到类 E 的两个虚函数表的布局：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220507113943452.png" alt="image-20220507113943452"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507113943452.png" alt="image-20220507113943452"></p>
 <p>其中 <code>E::$vftable@B@</code> 是基类 B 的虚函数表，存放的是被 E 重载后的函数 func0 的指针， <code>E::$vftable@C@</code> 是基类 C 的虚函数表，存放的是 C 的函数 func 和被 E 重载的函数 func1 的指针。</p>
 <h4 id="2-3-关于虚继承"><a href="#2-3-关于虚继承" class="headerlink" title="2.3 关于虚继承"></a>2.3 关于虚继承</h4><p>Visual C++ 中虚继承的情况比较简单，只是多了一个指向虚基类表的指针 vbptr，而真正的指向虚基类的指针存放在虚基类表中。</p>
 <h3 id="3-数据成员的布局"><a href="#3-数据成员的布局" class="headerlink" title="3 数据成员的布局"></a>3 数据成员的布局</h3><p>最后通过一个例子总结 C++ 数据成员布局，通过下面这个例子可以清晰的认识 C++ 类数据成员布局、虚函数表和虚基类表的布局：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">X</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="type">int</span> i;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Y</span> : <span class="keyword">public</span> <span class="keyword">virtual</span> X &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func0</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Z</span> : <span class="keyword">public</span> <span class="keyword">virtual</span> X &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="type">int</span> j;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func1</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">A</span> : <span class="keyword">public</span> Y, <span class="keyword">public</span> Z &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="type">char</span> x;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func1</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func2</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;size of class X is &quot;</span> &lt;&lt; <span class="built_in">sizeof</span>(X) &lt;&lt; std::endl;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;size of class Y is &quot;</span> &lt;&lt; <span class="built_in">sizeof</span>(Y) &lt;&lt; std::endl;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;size of class Z is &quot;</span> &lt;&lt; <span class="built_in">sizeof</span>(Z) &lt;&lt; std::endl;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;size of class A is &quot;</span> &lt;&lt; <span class="built_in">sizeof</span>(A) &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>上面的例子中包含了虚继承、多重继承、虚函数的情况，运行结果如下：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">size of class X is 4</span><br><span class="line">size of class Y is 24</span><br><span class="line">size of class Z is 32</span><br><span class="line">size of class A is 56</span><br></pre></td></tr></table></figure>
+
 <p>我们打印类 A 的布局：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220507115635356.png" alt="image-20220507115635356"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507115635356.png" alt="image-20220507115635356"></p>
 <p>可以看到类 A 的布局：</p>
 <ul>
 <li>首先是基类 Y 的子对象，Y 包含一个虚函数，同时有一个虚基类，所以 Y 的内存中就是两个指针，一个是虚函数表指针 vfptr，一个是虚基类表指针 vbptr，共 16 字节；</li>
 <li>然后是基类 Z 的子对象，Z 同样包含 vfptr 和 vbptr，以及一个 int 成员，字节对齐后一共是 24 字节，此时类 A 总共偏移 40 字节</li>
 <li>然后是类 A 自己的数据成员，char 类型一个字节，类 A 总共偏移 41 字节，最终要和类中最长成员 8 字节对齐，因此对齐到 48 字节</li>
-<li>类 A 的全部成员都存放完后，最后存放虚基类成员，int 占 4 字节，此时类 A 总共 52 字节，但输出是 56 字节，实际又做了一次 8 字节对齐，因为打印出的内存布局把类 A 和虚基类子对象作为两个独立的部分，所以打印 48 + 4 = 52 字节，但实际还要做一次 8 字节对齐，所以 sizeof 输出 56 字节</li>
+<li>类 A 的全部成员都存放完后，最后存放虚基类成员，int 占 4 字节，此时类 A 总共 52 字节，但输出是 56 字节，实际又做了一次 8 字节对齐，因为打印出的内存布局把类 A 和虚基类子对象作为两个独立的部分，所以打印 48 + 4 &#x3D; 52 字节，但实际还要做一次 8 字节对齐，所以 sizeof 输出 56 字节</li>
 </ul>
 <p>然后是类 A 的虚函数表：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220507120353989.png" alt="image-20220507120353989"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507120353989.png" alt="image-20220507120353989"></p>
 <p>虚函数表的第一项表示派生类对象指针相对于虚函数表指针的偏移，这里派生类 A 相对于基类 Y 的虚函数表指针的偏移是 0 字节，相对于基类 Z 的虚函数表指针的偏移是 -16 字节。</p>
 <p>最后是类 A 的虚基类表：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220507120419152.png" alt="image-20220507120419152"></p>
-<p>虚基类表原理与虚函数表类似，表的第一项表示派生类对象指针相对于虚基类表指针的偏移，这里是 -8 字节，因为虚基类表指针前面还有一个虚函数表指针占用了 8 个字节，所以派生类 Y 对象的指针相对于其虚基类表指针的偏移量是 -8，派生类 Z 对象的指针相对于其虚基类表指针的偏移也是 -8，注意这里的派生类不再是指 A 了，而是指虚基类的派生类，所以就是 Y 和 Z；虚基类表从第二项开始，表示各个虚基类地址相对于虚基类表指针的偏移。这里虚基类 X 相对于 Y 的虚基类表指针偏移了 40 个字节，因此虚基类 X 相对于派生类 Y 的地址总共偏移了 48 字节，对于派生类 Z 也同样如此，总共偏移了 24 + 8 = 32 个字节，从上面的内存布局可以清晰地看出这一点。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507120419152.png" alt="image-20220507120419152"></p>
+<p>虚基类表原理与虚函数表类似，表的第一项表示派生类对象指针相对于虚基类表指针的偏移，这里是 -8 字节，因为虚基类表指针前面还有一个虚函数表指针占用了 8 个字节，所以派生类 Y 对象的指针相对于其虚基类表指针的偏移量是 -8，派生类 Z 对象的指针相对于其虚基类表指针的偏移也是 -8，注意这里的派生类不再是指 A 了，而是指虚基类的派生类，所以就是 Y 和 Z；虚基类表从第二项开始，表示各个虚基类地址相对于虚基类表指针的偏移。这里虚基类 X 相对于 Y 的虚基类表指针偏移了 40 个字节，因此虚基类 X 相对于派生类 Y 的地址总共偏移了 48 字节，对于派生类 Z 也同样如此，总共偏移了 24 + 8 &#x3D; 32 个字节，从上面的内存布局可以清晰地看出这一点。</p>
 <p>可以看到，Y 和 Z 的虚基类表都指向同一个虚基类 X 的子对象，正如之前所说的，虚基类无论在继承链中被继承多少次，都只产生一个实体，即虚基类子对象，但是“不同的派生类中虚基类子对象的位置不同”这句话，一方面是指虚基类子对象相对于派生类的起始地址偏移量不同，并不是存在多个虚基类子对象；另一方面，随着类的派生，虚基类子对象的位置确实可能变化，但所有派生类的虚基类表中都指向那同一个虚基类子对象。</p>
 <p>最后总结一下，C++ 中数据成员布局与编译器有关，但总体原理一致，Visual C++ 中数据成员布局顺序为：</p>
 <ul>
@@ -392,7 +397,7 @@
 </blockquote>
 <p>最最后附上一个简单的问题：为什么不把派生类的成员填到基类子对象由于字节对齐而填充的空白内存中，而是要保留基类子对象的空白内存？</p>
 <p>直接借用书中的图解释：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220507164044837.png" alt="image-20220507164044837"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/07/20220507-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B-%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220507164044837.png" alt="image-20220507164044837"></p>
 
     </div>
 
@@ -446,6 +451,9 @@
       <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\05\20220505-对象模型-关于对象\" rel="bookmark">【C++对象模型】（一）关于对象</a></div>
     </li>
     <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\09\20220509-对象模型-关于函数成员\" rel="bookmark">【C++对象模型】（四）关于函数成员</a></div>
+    </li>
+    <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\09\20220509-对象模型-对象复制和析构\" rel="bookmark">【C++对象模型】（五）对象复制和析构</a></div>
     </li>
     <li class="popular-posts-item">
@@ -453,9 +461,6 @@
     </li>
     <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\11\20220511-对象模型-模板和RTTI\" rel="bookmark">【C++对象模型】（七）模板和RTTI</a></div>
-    </li>
-    <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\09\20220509-对象模型-关于函数成员\" rel="bookmark">【C++对象模型】（四）关于函数成员</a></div>
     </li>
   </ul>
 
@@ -612,13 +617,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">925k</span>
+    <span title="站点总字数">931k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">14:01</span>
+    <span title="站点阅读时长">14:07</span>
 </div>
 
         
