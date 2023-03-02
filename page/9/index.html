@@ -195,6 +195,199 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://lz328.github.io/LycTechStack.github.io/2022/04/15/20220415-RayTracer-%E7%9B%B8%E6%9C%BA%E7%B1%BB%E5%92%8C%E5%8F%8D%E8%B5%B0%E6%A0%B7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/LycTechStack.github.io/images/avatar.png">
+      <meta itemprop="name" content="Lyc">
+      <meta itemprop="description" content="个人学习总结和技术经验分享，主要内容包括C++、数据结构、算法、计算机图形学、3D数学、实时渲染、游戏引擎等等，希望未来能真正踏入图形/引擎开发的大门！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LycTechStack">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/LycTechStack.github.io/2022/04/15/20220415-RayTracer-%E7%9B%B8%E6%9C%BA%E7%B1%BB%E5%92%8C%E5%8F%8D%E8%B5%B0%E6%A0%B7/" class="post-title-link" itemprop="url">【RayTracer】（三）相机类和反走样</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-04-15 11:37:24" itemprop="dateCreated datePublished" datetime="2022-04-15T11:37:24+08:00">2022-04-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-04-19 19:56:08" itemprop="dateModified" datetime="2022-04-19T19:56:08+08:00">2022-04-19</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/LycTechStack.github.io/categories/RayTracer/" itemprop="url" rel="index"><span itemprop="name">RayTracer</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>上一节渲染的球体边缘可以明显看到锯齿，为了得到更好的效果我们需要实现一个简单的反走样算法，并且实现一个相机类，以便于管理虚拟摄像机和之后的各种场景采样任务。</p>
+<p><em></em></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/LycTechStack.github.io/2022/04/15/20220415-RayTracer-%E7%9B%B8%E6%9C%BA%E7%B1%BB%E5%92%8C%E5%8F%8D%E8%B5%B0%E6%A0%B7/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <div>
+    
+    </div>
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://lz328.github.io/LycTechStack.github.io/2022/04/15/20220415-RayTracer-%E7%89%A9%E4%BD%93%E7%B1%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/LycTechStack.github.io/images/avatar.png">
+      <meta itemprop="name" content="Lyc">
+      <meta itemprop="description" content="个人学习总结和技术经验分享，主要内容包括C++、数据结构、算法、计算机图形学、3D数学、实时渲染、游戏引擎等等，希望未来能真正踏入图形/引擎开发的大门！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LycTechStack">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/LycTechStack.github.io/2022/04/15/20220415-RayTracer-%E7%89%A9%E4%BD%93%E7%B1%BB/" class="post-title-link" itemprop="url">【RayTracer】（二）实现物体类</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-04-15 10:29:14 / 修改时间：11:40:10" itemprop="dateCreated datePublished" datetime="2022-04-15T10:29:14+08:00">2022-04-15</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/LycTechStack.github.io/categories/RayTracer/" itemprop="url" rel="index"><span itemprop="name">RayTracer</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>10k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>9 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>有了基本工具类，现在我们可以回顾图形学中的知识，从最简单的渲染一个球体开始，逐渐熟悉光线追踪的实现。<br><em></em></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/LycTechStack.github.io/2022/04/15/20220415-RayTracer-%E7%89%A9%E4%BD%93%E7%B1%BB/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <div>
+    
+    </div>
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://lz328.github.io/LycTechStack.github.io/2022/04/13/20220413-%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -955,201 +1148,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://lz328.github.io/LycTechStack.github.io/2022/04/06/20220406-%E4%BC%98%E5%85%88%E9%98%9F%E5%88%97%E5%92%8C%E5%A0%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/LycTechStack.github.io/images/avatar.png">
-      <meta itemprop="name" content="Lyc">
-      <meta itemprop="description" content="个人学习总结和技术经验分享，主要内容包括C++、数据结构、算法、计算机图形学、3D数学、实时渲染、游戏引擎等等，希望未来能真正踏入图形/引擎开发的大门！">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LycTechStack">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/LycTechStack.github.io/2022/04/06/20220406-%E4%BC%98%E5%85%88%E9%98%9F%E5%88%97%E5%92%8C%E5%A0%86/" class="post-title-link" itemprop="url">【数据结构】优先队列和堆</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2022-04-06 20:30:11 / 修改时间：20:32:44" itemprop="dateCreated datePublished" datetime="2022-04-06T20:30:11+08:00">2022-04-06</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/LycTechStack.github.io/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>8.7k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>8 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><strong>优先队列（Priority Queue）</strong>是计算机科学中的一类<strong>抽象数据类型</strong>。优先队列中的每个元素都有各自的优先级，优先级最高的元素最先得到服务；优先级相同的元素按照其在优先队列中的顺序得到服务。<strong>堆（Heap）</strong>是一种数据结构，是<strong>实现优先队列的一种方式</strong>。所以堆并不等同于优先队列。</p>
-<p><em></em></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/LycTechStack.github.io/2022/04/06/20220406-%E4%BC%98%E5%85%88%E9%98%9F%E5%88%97%E5%92%8C%E5%A0%86/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <div>
-    
-    </div>
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://lz328.github.io/LycTechStack.github.io/2022/04/05/20220405-%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/LycTechStack.github.io/images/avatar.png">
-      <meta itemprop="name" content="Lyc">
-      <meta itemprop="description" content="个人学习总结和技术经验分享，主要内容包括C++、数据结构、算法、计算机图形学、3D数学、实时渲染、游戏引擎等等，希望未来能真正踏入图形/引擎开发的大门！">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LycTechStack">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/LycTechStack.github.io/2022/04/05/20220405-%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95/" class="post-title-link" itemprop="url">【算法】贪心算法</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-04-05 11:28:40" itemprop="dateCreated datePublished" datetime="2022-04-05T11:28:40+08:00">2022-04-05</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-09 19:40:37" itemprop="dateModified" datetime="2022-04-09T19:40:37+08:00">2022-04-09</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/LycTechStack.github.io/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>16k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>15 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>贪心算法也是最常用的算法之一，很多困难问题使用贪心算法会大幅简化。贪心算法的思想很简单，贪心算法每一次都做出当前看起来最好的选择，而不用考虑其它可能的选择。</p>
-<p>贪心算法的学习可以与动态规划算法进行比较，看看它到底比动态规划算法少考虑了哪些子问题，为什么可以少考虑那些子问题，而每次只专注于求解一个子问题，通过逐步递推得到原问题的答案。</p>
-<p><em></em></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/LycTechStack.github.io/2022/04/05/20220405-%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <div>
-    
-    </div>
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1221,7 +1219,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/LycTechStack.github.io/archives/">
         
-          <span class="site-state-item-count">118</span>
+          <span class="site-state-item-count">120</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1279,13 +1277,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">931k</span>
+    <span title="站点总字数">938k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">14:07</span>
+    <span title="站点阅读时长">14:13</span>
 </div>
 
         
