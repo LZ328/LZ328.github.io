@@ -29,17 +29,17 @@
 <meta property="og:site_name" content="LycTechStack">
 <meta property="og:description" content="本篇对《Real-Time Rendering》一书中与图形渲染基础和视觉处理相关的知识进行概括总结。主要内容包括：  光照与材质 着色 抗锯齿总结 透明渲染 伽马校正">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/13/20220513-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E5%92%8C%E8%A7%86%E8%A7%89%E5%A4%96%E8%A7%82/image-20220513110002009.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/13/20220513-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E5%92%8C%E8%A7%86%E8%A7%89%E5%A4%96%E8%A7%82/image-20220513110116016.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/13/20220513-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E5%92%8C%E8%A7%86%E8%A7%89%E5%A4%96%E8%A7%82/image-20220513110421641.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/13/20220513-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E5%92%8C%E8%A7%86%E8%A7%89%E5%A4%96%E8%A7%82/image-20220513113600088.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220513110002009.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220513110116016.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220513110421641.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220513113600088.png">
 <meta property="article:published_time" content="2022-05-13T07:42:45.000Z">
 <meta property="article:modified_time" content="2022-05-16T08:01:48.398Z">
 <meta property="article:author" content="Lyc">
 <meta property="article:tag" content="计算机图形学">
 <meta property="article:tag" content="实时渲染">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/13/20220513-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E5%92%8C%E8%A7%86%E8%A7%89%E5%A4%96%E8%A7%82/image-20220513110002009.png">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220513110002009.png">
 
 <link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/05/13/20220513-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E5%92%8C%E8%A7%86%E8%A7%89%E5%A4%96%E8%A7%82/">
 
@@ -291,16 +291,16 @@
 <h3 id="1-光照与材质"><a href="#1-光照与材质" class="headerlink" title="1 光照与材质"></a>1 光照与材质</h3><h4 id="1-1-光源特性"><a href="#1-1-光源特性" class="headerlink" title="1.1 光源特性"></a>1.1 光源特性</h4><p>光被不同地模拟为几何光线，电磁波或光子（具有一些波特性的量子粒子）。无论如何处理，光都是电磁辐射能，即通过空间传播的电磁能。光源发光，而不是散射或吸收光。根据渲染目的，光源可以以许多不同的方式来表示。光源可以分为三种不同类型：<strong>平行光源、点光源和聚光灯。</strong></p>
 <h4 id="1-2-光的散射与吸收"><a href="#1-2-光的散射与吸收" class="headerlink" title="1.2 光的散射与吸收"></a>1.2 光的散射与吸收</h4><p><strong>从根本上来说，所有的光物质相互作用都是两种现象的结果：散射（scattering）和吸收（absorption）。</strong></p>
 <p>散射（scattering）发生在当光线遇到任何种类的光学不连续性（optical discontinuity）时，可能存在于具有不同光学性质的两种物质分界之处，晶体结构破裂处，密度的变化处等。散射不会改变光量，它只是使其改变方向。光的散射（scattering）一般又分为反射（reflection）和折射（refraction）。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/13/20220513-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E5%92%8C%E8%A7%86%E8%A7%89%E5%A4%96%E8%A7%82/image-20220513110002009.png" alt="image-20220513110002009"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220513110002009.png" alt="image-20220513110002009"></p>
 <p>吸收（absorption）发生在物质内部，其会导致一些光转变成另一种能量并消失。吸收会减少光量，但不会影响其方向。</p>
 <h4 id="1-3-镜面反射和漫反射"><a href="#1-3-镜面反射和漫反射" class="headerlink" title="1.3 镜面反射和漫反射"></a>1.3 镜面反射和漫反射</h4><p><strong>镜面反射光表示在表面反射的光。而漫反射光表示经历透射（transmission），吸收（absorption）和散射（scattering）的光。</strong></p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/13/20220513-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E5%92%8C%E8%A7%86%E8%A7%89%E5%A4%96%E8%A7%82/image-20220513110116016.png" alt="image-20220513110116016"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220513110116016.png" alt="image-20220513110116016"></p>
 <h4 id="1-4-颜色"><a href="#1-4-颜色" class="headerlink" title="1.4 颜色"></a>1.4 颜色</h4><p>入射光（Incoming illumination）通过表面辉度（irradiance）来度量。而出射光（outgoing light）通过出射率（exitance）来度量。<strong>出射率除以辉度可以作为材质的衡量特性。对于不发光的表面，该比率为 0 到 1 之间。出射率和辉度的比率对于不同的光颜色是不同的，所以其表示为 RGB 矢量，也就是我们通常说的颜色。</strong></p>
 <h4 id="1-5-表面与散射分布"><a href="#1-5-表面与散射分布" class="headerlink" title="1.5 表面与散射分布"></a>1.5 表面与散射分布</h4><p>镜面反射项的方向分布取决于表面粗糙度（roughness，其反义词是 smoothness，光滑度）。反射光线对于更平滑的表面更加紧密，并且对于较粗糙的表面更加分散。我们可以看到下图中的这种依赖关系，它显示了不同粗糙度的两个表面的反射效果。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/13/20220513-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E5%92%8C%E8%A7%86%E8%A7%89%E5%A4%96%E8%A7%82/image-20220513110421641.png" alt="image-20220513110421641"></p>
-<h3 id="2-着色"><a href="#2-着色" class="headerlink" title="2 着色"></a>2 着色</h3><p>可以查看以前的笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/03/09/20220309-%E7%9D%80%E8%89%B2/">【计算机图形学】（六）着色</a></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220513110421641.png" alt="image-20220513110421641"></p>
+<h3 id="2-着色"><a href="#2-着色" class="headerlink" title="2 着色"></a>2 着色</h3><p>可以查看以前的笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/03/09/20220309-着色/">【计算机图形学】（六）着色</a></p>
 <h3 id="3-抗锯齿方法总结"><a href="#3-抗锯齿方法总结" class="headerlink" title="3 抗锯齿方法总结"></a>3 抗锯齿方法总结</h3><p>抗锯齿，也称反走样。它是一种消除显示器输出的画面中图物边缘出现凹凸锯齿的技术，那些凹凸的锯齿通常因为高分辨率的信号以低分辨率表示或无法准确运算出 3D 图形坐标定位时所导致的走样（aliasing）而产生的，抗锯齿技术能有效地解决这些问题。</p>
-<p>关于抗锯齿的原理可以查看之前的笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-%E5%8F%8D%E8%B5%B0%E6%A0%B7/">【计算机图形学】（四）反走样</a>，下面将常见的抗锯齿类型进行总结介绍，也包括  RTR 中没有讲到的，最近几年新提出的常见抗锯齿类型。</p>
+<p>关于抗锯齿的原理可以查看之前的笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/03/06/20220306-反走样/">【计算机图形学】（四）反走样</a>，下面将常见的抗锯齿类型进行总结介绍，也包括  RTR 中没有讲到的，最近几年新提出的常见抗锯齿类型。</p>
 <h4 id="3-1-超级采样抗锯齿（SSAA）"><a href="#3-1-超级采样抗锯齿（SSAA）" class="headerlink" title="3.1 超级采样抗锯齿（SSAA）"></a>3.1 超级采样抗锯齿（SSAA）</h4><p>超级采样抗锯齿（Super-Sampling Anti-Aliasing，简称  SSAA）是比较早期的抗锯齿方法，比较消耗资源，但简单直接。这种抗锯齿方法先把图像映射到缓存并把它放大，再用超级采样把放大后的图像像素进行采样，一般选取 2 个或 4 个邻近像素，把这些采样混合起来后，生成的最终像素，这样每个像素拥有邻近像素的特征，像素与像素之间的过渡色彩，就变得近似，使得图形的边缘色彩过渡趋于平滑。再把最终像素还原回原来大小的图像，并保存到帧缓存也就是显存中，替代原图像存储起来，最后输出到显示器，显示出一帧画面。这样就等于把一幅模糊的大图，通过细腻化后再缩小成清晰的小图。比如在 1024x768 分辨率上开启 2xSSAA，GPU 会先渲染 2048x1536 图像，再“塞进”1024x768 的屏幕中，将画面精细度提升一倍，毫无疑问会改善边缘锯齿情况。超级采样抗锯齿中使用的采样法一般有两种：</p>
 <ul>
 <li>OGSS，顺序栅格超级采样（Ordered Grid Super-Sampling，简称  OGSS），采样时选取  2 个邻近像素</li>
@@ -318,14 +318,14 @@
 <h4 id="3-8-多帧采样抗锯齿（MFAA）"><a href="#3-8-多帧采样抗锯齿（MFAA）" class="headerlink" title="3.8 多帧采样抗锯齿（MFAA）"></a>3.8 多帧采样抗锯齿（MFAA）</h4><p>多帧采样抗锯齿（Multi-Frame Sampled Anti-Aliasing，MFAA）是 NVIDIA 公司根据 MSAA 改进出的一种抗锯齿技术。可以将 MFAA 理解为 MSAA 的优化版，能够在得到几乎相同效果的同时提升性能上的表现。MFAA 与 MSAA 最大的差别就在于在同样开启 4 倍效果的时候 MSAA 是真正的针对每个边缘像素周围的 4 个像素进行采样，MFAA 则是仅仅只是采用交错的方式采样边缘某个像素周围的两个像素。</p>
 <h4 id="3-9-深度学习超采样（DLSS）"><a href="#3-9-深度学习超采样（DLSS）" class="headerlink" title="3.9 深度学习超采样（DLSS）"></a>3.9 深度学习超采样（DLSS）</h4><p>利用神经网络的重建能力进行图像处理。DLSS 背后使用的技术是 Recurrent CNN，递归神经网络与卷积神经网络的一种结合。因此他能结合时域上的信息保证时域稳定性，即像素具有帧间连贯性，不会出现过多闪烁、跳变现象。其次，结合神经网络的强大图形重建能力，DLSS 能够分别对几何边缘以及着色进行重建。</p>
 <h4 id="3-10-图示抗锯齿"><a href="#3-10-图示抗锯齿" class="headerlink" title="3.10 图示抗锯齿"></a>3.10 图示抗锯齿</h4><p>下图展示了不同采样方法的效果：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/13/20220513-RTR-%E5%9B%BE%E5%BD%A2%E6%B8%B2%E6%9F%93%E5%92%8C%E8%A7%86%E8%A7%89%E5%A4%96%E8%A7%82/image-20220513113600088.png" alt="image-20220513113600088"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220513113600088.png" alt="image-20220513113600088"></p>
 <h3 id="4-透明渲染"><a href="#4-透明渲染" class="headerlink" title="4 透明渲染"></a>4 透明渲染</h3><h4 id="4-1-透明渲染算法"><a href="#4-1-透明渲染算法" class="headerlink" title="4.1 透明渲染算法"></a>4.1 透明渲染算法</h4><p>透明渲染是是图形学里面的常见问题之一，可以从《Real-Time Rendering》中总结出如下两个算法：</p>
 <ul>
 <li>Screen-Door Transparency 方法。基本思想是用棋盘格填充模式来绘制透明多边形，也就是说，以每隔一个像素绘制一点方式的来绘制一个多边形，这样会使在其后面的物体部分可见，通常情况下，屏幕上的像素比较紧凑，以至于棋盘格的这种绘制方式并不会露馅。同样的想法也用于剪切纹理的抗锯齿边缘，但是在子像素级别中的，这是一种称为 alpha 覆盖（alpha to coverage）的特征。screen-door transparency 方法的优点就是简单，可以在任何时间任何顺序绘制透明物体，并不需要特殊的硬件支持（只要支持填充模式）。缺点是透明度效果仅在 50% 时最好，且屏幕的每个区域中只能绘制一个透明物体。</li>
 <li>Alpha 混合（Alpha Blending）方法。这个方法比较常见，其实就是按照 Alpha 混合向量的值来混合源像素和目标像素。当在屏幕上绘制某个物体时，与每个像素相关联的值有 RGB 颜色和 Z 缓冲深度值，以及另外一个成分 alpha 分量，这个 alpha 值也可以根据需要生成并存储，它描述的是给定像素的对象片段的不透明度的值。alpha 为 1.0 表示对象不透明，完全覆盖像素所在区域; 0.0 表示像素完全透明。为了使对象透明，在现有场景的上方，以小于 1 的透明度进行绘制即可。每个像素将从渲染管线接收到一个  RGBA 结果，并将这个值和原始像素颜色相混合。</li>
 </ul>
 <h4 id="4-2-透明排序"><a href="#4-2-透明排序" class="headerlink" title="4.2 透明排序"></a>4.2 透明排序</h4><p>要将透明对象正确地渲染到场景中，通常需要对物体进行排序。下面分别介绍两种比较基本的透明排序方法（画家算法和深度缓冲）和两种高级别的透明排序算法（加权平均值算法和深度剥离）。</p>
-<h5 id="4-2-1-画家算法和深度缓冲"><a href="#4-2-1-画家算法和深度缓冲" class="headerlink" title="4.2.1  画家算法和深度缓冲"></a>4.2.1  画家算法和深度缓冲</h5><p>可查看之前的笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%86%B2/">【计算机图形学】（五）深度缓冲</a></p>
+<h5 id="4-2-1-画家算法和深度缓冲"><a href="#4-2-1-画家算法和深度缓冲" class="headerlink" title="4.2.1  画家算法和深度缓冲"></a>4.2.1  画家算法和深度缓冲</h5><p>可查看之前的笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/03/08/20220308-深度缓冲/">【计算机图形学】（五）深度缓冲</a></p>
 <h5 id="4-2-2-加权平均值算法（Weighted-Average）"><a href="#4-2-2-加权平均值算法（Weighted-Average）" class="headerlink" title="4.2.2 加权平均值算法（Weighted Average）"></a>4.2.2 加权平均值算法（Weighted Average）</h5><p>使用简单的透明混合公式来实现无序透明渲染的算法，它通过扩展透明混合公式，来实现无序透明物件的渲染，从而得到一定程度上逼真的结果。</p>
 <p>NVIDIA 公司的 Louis Bavoil 在此基础上提出了新的算法，使用物体的不透明度作为加权值的加权平均值算法。此算法的主要思想如下：</p>
 <p>对于某个位置的像素点，如果所有的不透明物件是相同的颜色，那么渲染的结果与它们的渲染顺序无关。那么，对于不相同颜色值的情况，如果我们用某一个颜色来替换这些颜色，比如这些颜色的平均值。对于这种情况，我们使用各个颜色的不透明度作为权重来计算出它们的加权平均值作为最终颜色替换这些颜色，这样渲染就与顺序无关。</p>
@@ -337,7 +337,7 @@
 <li>重复第二步操作，就把所有顶点颜色按照深度一层一层剥离出来，最后按照从后往前的顺序进行渲染，这样就可以得到正确的结果了。</li>
 </ul>
 <p>这种方法与渲染物体的顺序无关，并且得到的结果保证正确，但缺点也很明显，需要剥离 N 次才能完成，就需要 N 个 Pass，N 是深度复杂度，因此性能是严重的瓶颈，另外如何确定 N 也是个问题。</p>
-<h3 id="5-伽马校正"><a href="#5-伽马校正" class="headerlink" title="5 伽马校正"></a>5 伽马校正</h3><p>查看之前笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/04/15/20220415-RayTracer-%E6%BC%AB%E5%8F%8D%E5%B0%84%E6%9D%90%E8%B4%A8/">【RayTracer】（四）漫反射材质</a>中的第三部分。</p>
+<h3 id="5-伽马校正"><a href="#5-伽马校正" class="headerlink" title="5 伽马校正"></a>5 伽马校正</h3><p>查看之前笔记<a href="https://lz328.github.io/LycTechStack.github.io/2022/04/15/20220415-RayTracer-漫反射材质/">【RayTracer】（四）漫反射材质</a>中的第三部分。</p>
 
     </div>
 
@@ -499,7 +499,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/LycTechStack.github.io/archives/">
         
-          <span class="site-state-item-count">122</span>
+          <span class="site-state-item-count">125</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -563,7 +563,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">14:25</span>
+    <span title="站点阅读时长">14:24</span>
 </div>
 
         

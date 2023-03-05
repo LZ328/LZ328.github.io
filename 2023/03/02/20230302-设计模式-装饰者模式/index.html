@@ -29,17 +29,17 @@
 <meta property="og:site_name" content="LycTechStack">
 <meta property="og:description" content="本篇介绍了装饰者模式及相关的面向对象设计原则。装饰者模式动态的将责任附加到对象身上，扩展功能时，装饰者模式相比于继承能为系统带来更好的弹性。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/02/20230302-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F/image-20230302164118582.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/02/20230302-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F/image-20230302165122699.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/02/20230302-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F/image-20230302165135782.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/02/20230302-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F/image-20230302165152185.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/02/20230302-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F/image-20230302165414471.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20230302164118582.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20230302165122699.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20230302165135782.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20230302165152185.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20230302165414471.png">
 <meta property="article:published_time" content="2023-03-02T09:18:17.000Z">
 <meta property="article:modified_time" content="2023-03-02T09:19:42.691Z">
 <meta property="article:author" content="Lyc">
 <meta property="article:tag" content="设计模式">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/02/20230302-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F/image-20230302164118582.png">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/image-20230302164118582.png">
 
 <link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2023/03/02/20230302-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F/">
 
@@ -276,34 +276,29 @@
         <p>本篇介绍了装饰者模式及相关的面向对象设计原则。装饰者模式动态的将责任附加到对象身上，扩展功能时，装饰者模式相比于继承能为系统带来更好的弹性。</p>
 <p><em><span id="more"></span></em></p>
 <h3 id="1-引例"><a href="#1-引例" class="headerlink" title="1 引例"></a>1 引例</h3><p>一个咖啡饮料系统需要为所有类型的饮料定义各自的类，最原始的设计是这样：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/03/02/20230302-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F/image-20230302164118582.png" alt="image-20230302164118582"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20230302164118582.png" alt="image-20230302164118582"></p>
 <p>在购买饮料时，顾客可以在某种饮料的基础上加入各种调料，比如奶泡、摩卡等，不同调料的价格也不同，组合而成的饮料价格也就不同，不同的调料搭配不同的饮料可能会出现无数种组合，如果一味的使用继承，将会使饮料子类的数量急剧膨胀，难以管理的同时还会出现大量的重复代码。因此我们希望能有一种设计模式来解决这种问题。</p>
 <h3 id="2-装饰者模式"><a href="#2-装饰者模式" class="headerlink" title="2 装饰者模式"></a>2 装饰者模式</h3><blockquote>
 <p><strong>设计原则：开放-关闭原则，对扩展开放，对修改关闭。</strong></p>
 </blockquote>
 <p>开放-关闭原则是指当一个类设计好之后，尽可能不对他进行修改，但又能允许该类进行扩展，也就是在不修改现有代码的前提下，扩展新的行为。装饰者模式就实现了这一目的。</p>
 <p>以一杯加了奶泡和摩卡的深焙咖啡为例，构建这样一种饮品的流程是：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/03/02/20230302-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F/image-20230302165122699.png" alt="image-20230302165122699"></p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/03/02/20230302-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F/image-20230302165135782.png" alt="image-20230302165135782"></p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/03/02/20230302-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F/image-20230302165152185.png" alt="image-20230302165152185"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20230302165122699.png" alt="image-20230302165122699"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20230302165135782.png" alt="image-20230302165135782"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20230302165152185.png" alt="image-20230302165152185"></p>
 <p>这就是一个装饰者模式的流程，装饰者模式的类图结构如下：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/03/02/20230302-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F/image-20230302165414471.png" alt="image-20230302165414471"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20230302165414471.png" alt="image-20230302165414471"></p>
 <p>按着上面的类图，饮料就作为组件，具体的饮料类型对应于具体组件，而调料作为装饰器，具体的调料对应不同的具体装饰器，于是我们可以开始用装饰者模式实现上面的饮料系统。</p>
 <p>首先是组件（饮料）类：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Component</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="comment">// 其他内容...</span></span><br><span class="line">    </span><br><span class="line">    string discription = <span class="string">&quot;Unknow Beverage&quot;</span>;</span><br><span class="line">    <span class="function">string <span class="title">getDiscription</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> discription;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">double</span> <span class="title">cost</span><span class="params">()</span> </span>= <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
 <p>装饰器（调料）要和组件是同一类，这样才能保证所有装饰器都能代替组件，调用同一个接口，因此需要继承于组件类：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Decorator</span> : <span class="keyword">public</span> Component &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="comment">// 所有调料都要有自己的描述，这样才能输出完整的配料</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> string <span class="title">getDiscription</span><span class="params">()</span> </span>= <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
 <p>接下来实现一个具体组件类，比如浓缩咖啡（Espresso）类：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Espresso</span> : <span class="keyword">public</span> Component &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Espresso</span>() &#123;</span><br><span class="line">        discription = <span class="string">&quot;Espresso&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">double</span> <span class="title">cost</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1.99</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
 <p>然后实现一个具体装饰器，比如摩卡（Mocha）类：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Mocha</span> : <span class="keyword">public</span> Decorator &#123;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    Component* beverage;	<span class="comment">//被装饰者</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Mocha</span>(Component* b) : <span class="built_in">beverage</span>(b) &#123;&#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> string <span class="title">getDiscription</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> beverage-&gt;<span class="built_in">getDiscription</span>() + <span class="string">&quot;, Mocha&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">double</span> <span class="title">cost</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> beverage-&gt;<span class="built_in">cost</span>() + <span class="number">0.2</span>;</span><br><span class="line">    &#125;  </span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
 <p>按照上面的方法可以构建不同的饮料和调料，之后就可以随意组合了，在调用的时候也会变得无比方便：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Component* beverage = <span class="keyword">new</span> <span class="built_in">Espresso</span>();	<span class="comment">// 一杯浓缩咖啡</span></span><br><span class="line">    beverage = <span class="keyword">new</span> <span class="built_in">Mocha</span>(beverage);			<span class="comment">// 加入一份摩卡</span></span><br><span class="line">    beverage = <span class="keyword">new</span> <span class="built_in">Whip</span>(beverage);			<span class="comment">// 加入一份奶泡</span></span><br><span class="line">    beverage = <span class="keyword">new</span> <span class="built_in">Sugar</span>(beverage);			<span class="comment">// 加入一份糖</span></span><br><span class="line">    cout &lt;&lt; beverage.<span class="built_in">getDiscription</span>() &lt;&lt; endl;</span><br><span class="line">    cout &lt;&lt; beverage.<span class="built_in">cost</span>() &lt;&lt; endl;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>总结来看，装饰者类是一个组件类，也就是和被装饰者是 is-a 的关系，但同时装饰者类中又包含组件类，对组件类进行扩展，因此二者之间还存在 has-a 的关系。装饰者模式利用组合解决了继承带来的子类膨胀和灵活性差的问题。</p>
 
     </div>
@@ -361,10 +356,13 @@
       <div class="popular-posts-title"><a href="\LycTechStack.github.io\2023\03\02\20230302-设计模式-观察者模式\" rel="bookmark">【设计模式】观察者模式</a></div>
     </li>
     <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2023\03\04\20230304-设计模式-工厂模式\" rel="bookmark">【设计模式】工厂模式</a></div>
+    </li>
+    <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="\LycTechStack.github.io\2023\03\04\20230304-设计模式-单例模式\" rel="bookmark">【设计模式】单例模式</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2023\03\04\20230304-设计模式-工厂模式\" rel="bookmark">【设计模式】工厂模式</a></div>
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2023\03\05\20230305-设计模式-命令模式\" rel="bookmark">【设计模式】命令模式</a></div>
     </li>
   </ul>
 
@@ -462,7 +460,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/LycTechStack.github.io/archives/">
         
-          <span class="site-state-item-count">122</span>
+          <span class="site-state-item-count">125</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -526,7 +524,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">14:25</span>
+    <span title="站点阅读时长">14:24</span>
 </div>
 
         

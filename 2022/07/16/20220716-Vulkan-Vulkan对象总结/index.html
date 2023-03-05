@@ -29,14 +29,14 @@
 <meta property="og:site_name" content="LycTechStack">
 <meta property="og:description" content="本篇总结 Vulkan 常用组件之间的关系，以便于后续关于 Vulkan 多线程渲染、内存管理、资源绑定、状态管理等部分的讨论。下图展示了 Vulkan 中重要的组件及其工作流程，我们在之后还会反复见到这张图。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/16/20220716-Vulkan-Vulkan%E5%AF%B9%E8%B1%A1%E6%80%BB%E7%BB%93/vulkan-instance-device-queue.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/16/20220716-Vulkan-Vulkan%E5%AF%B9%E8%B1%A1%E6%80%BB%E7%BB%93/v2-adcf46b99591a0e498c0dd345042f3c8_r.jpg">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/vulkan-instance-device-queue.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/v2-adcf46b99591a0e498c0dd345042f3c8_r.jpg">
 <meta property="article:published_time" content="2022-07-16T03:28:39.000Z">
 <meta property="article:modified_time" content="2022-07-17T02:20:48.040Z">
 <meta property="article:author" content="Lyc">
 <meta property="article:tag" content="Vulkan">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/16/20220716-Vulkan-Vulkan%E5%AF%B9%E8%B1%A1%E6%80%BB%E7%BB%93/vulkan-instance-device-queue.png">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/vulkan-instance-device-queue.png">
 
 <link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/07/16/20220716-Vulkan-Vulkan%E5%AF%B9%E8%B1%A1%E6%80%BB%E7%BB%93/">
 
@@ -257,7 +257,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>3.2k</span>
+              <span>3.1k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -277,11 +277,11 @@
 
       
         <p>本篇总结 Vulkan 常用组件之间的关系，以便于后续关于 Vulkan 多线程渲染、内存管理、资源绑定、状态管理等部分的讨论。下图展示了 Vulkan 中重要的组件及其工作流程，我们在之后还会反复见到这张图。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/16/20220716-Vulkan-Vulkan%E5%AF%B9%E8%B1%A1%E6%80%BB%E7%BB%93/vulkan-instance-device-queue.png" alt="vulkan-instance-device-queue"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/vulkan-instance-device-queue.png" alt="vulkan-instance-device-queue"></p>
 <p><em><span id="more"></span></em></p>
 <p> Vulkan 相比于 DX12 和 Metal，其接口包装的最全也最复杂，但基本能够覆盖 DX12 和 Metal 的功能并且具备非常好的跨平台能力。首先来总结 Vulkan 中各种对象之间的关系。</p>
 <p>下图展示了 Vulkan 中大部分常用对象和它们之间的关系，下面从上到下具体来介绍一下，这里要注意，实际 API 会有个 Vk 前缀，比如图里 Instance，在代码中是 VkInstance，CommandBuffer 在代码中是 VkCommandBuffer：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/16/20220716-Vulkan-Vulkan%E5%AF%B9%E8%B1%A1%E6%80%BB%E7%BB%93/v2-adcf46b99591a0e498c0dd345042f3c8_r.jpg" alt="v2-adcf46b99591a0e498c0dd345042f3c8_r"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/v2-adcf46b99591a0e498c0dd345042f3c8_r.jpg" alt="v2-adcf46b99591a0e498c0dd345042f3c8_r"></p>
 <ul>
 <li><strong>Instance</strong>：全局的 Vulkan 实例，有一些全局设置存在这个对象上，<strong>对应于 OpenGL 中的 context</strong>。正常情况一个游戏就创建一个。</li>
 <li><strong>SurfaceKHR：</strong>窗口，这个应该不算 Vulkan 内部的，属于扩展，因为毕竟 Vulkan 要显示到实际的系统窗口里，这个对象主要处理和系统窗口之间的关系，各种设置之类。</li>
@@ -289,8 +289,8 @@
 <li><strong>Device</strong>：这个是逻辑设备的封装，一个物理设备可能有多种功能，可以把一种功能归为一个逻辑设备。一个物理设备可以对应多个逻辑设备。因此 VkDevice 是 VkPhysicalDevice 的子功能集抽象；由于 GPU 中有Queue的概念，这一点被 OpenGL 屏蔽了；但是 Vulkan 暴露了出来；GPU 不一定整个使用；可以使用其中部分的 queue，通常图形引擎只用两个：present 和 graphics，因此，用户可以自己选择 queue “打包”为 1 个 Device（逻辑设备）构造出来。Device 是一个基础概念，几乎绝大部分函数都需要 Device 作为输入参数，由于 Vulkan 是 C，没有类的概念，<strong>从 C++ 角度来看，Vulkan 大部分函数都是 Device 的成员函数</strong>。</li>
 <li><strong>Queue</strong>：这个是设备提供的队列，一般来说，提交给硬件的命令，硬件设备也不是马上执行的，而是放在自己队列里再慢慢执行，当然有的设备也提供多个队列。</li>
 <li><strong>CommandBuffer</strong>：<strong>这个就是具体业务提交的命令缓冲区，drawcall 就是先交到这里</strong>。CommandPool 是创建 CommandBuffer 的对象池，因为 CommandBuffer 创建销毁都比较耗，所以有个池子可以重用以提高性能，另外池子本身是绑定 DeviceFamily 的，所以多个设备的命令没法混一起交。CommandBuffer 是先收集一大堆命令，然后用 vkQueueSubmit 提交给设备的 Queue。</li>
-<li><strong>Buffer&#x2F;Image</strong>：<strong>Buffer 可以理解为一段一维的内存数据</strong>，就像我们平常代码里写的 char* 指针加一个大小表示的区域，也可以说是一维数组，<strong>Image 可以理解为一段多维的内存数据</strong>，也可以说是多维数组，贴图一般都是二维的，所以要用这个表示，当然也能表示一维的，最高三维，这里都是纯数据。Vulkan 本身没有 VertexBuffer 或 IndexBuffer 这样的概念，他们都是Buffer。</li>
-<li><strong>BufferView&#x2F;ImageView</strong>：这两个就是对应 Buffer 和 Image 的视图，本身没存数据，相当于是 Buffer 和 Image 的解读说明书，让 Vulkan 知道具体怎么解释一段内存，要和 Buffer 或者 Image 绑定使用。</li>
+<li><strong>Buffer/Image</strong>：<strong>Buffer 可以理解为一段一维的内存数据</strong>，就像我们平常代码里写的 char<em> 指针加一个大小表示的区域，也可以说是一维数组，<em>*Image 可以理解为一段多维的内存数据</em></em>，也可以说是多维数组，贴图一般都是二维的，所以要用这个表示，当然也能表示一维的，最高三维，这里都是纯数据。Vulkan 本身没有 VertexBuffer 或 IndexBuffer 这样的概念，他们都是Buffer。</li>
+<li><strong>BufferView/ImageView</strong>：这两个就是对应 Buffer 和 Image 的视图，本身没存数据，相当于是 Buffer 和 Image 的解读说明书，让 Vulkan 知道具体怎么解释一段内存，要和 Buffer 或者 Image 绑定使用。</li>
 <li><strong>Sampler</strong>：采样器，就是个数据的壳，也是告诉 Vulkan 具体怎么解读数据的。但和 ImageView 不一样，他<strong>不需要绑定到 Image 上</strong>。</li>
 <li><strong>DescriptorSet</strong>：描述符集，shader 没法直接访问资源，要通过 DescriptorSet 来访问，<strong>DescriptorSet  其实就是个内存到 shader 的映射器</strong>。DX12 里叫描述符堆 DescriptorHeap。为什么要搞一个这东西呢？<strong>主要是为了让 shader 复用资源，把需要的资源接口定义好，当贴图或 Buffer 什么的发生了变化，只要还符合接口格式要求，那么就还是能复用相同 shader</strong>。假如没有这一层，直接让 shader 绑死资源，那么换一个贴图就要一个新的 shader，这样就太不灵活了。DescriptorSet 也是通过池来创建的，需要先指定布局 DescriptorSetLayout，相当于是个模板。多个 DescriptorSet 可以通过 PipelineLayout 绑定到 CommandBuffer 上。</li>
 <li><strong>FrameBuffer</strong>：<strong>就是最后要画到屏幕的那个 RT</strong>。BeginRenderPass 的时候，就要带上 FrameBuffer 这个参数，这样 Vulkan 才知道往哪画。每个 RenderPass 都对应一个 FrameBuffer，也就是说可以创建多个 FrameBuffer，然后多个线程同时画，除了上面说的在 CommandBuffer 上能多线程，这里也能多线程。vkCmdBeginRenderPass 和 vkCmdEndRenderPass 之间的代码，就是真正绘制的代码。默认 RenderPass 只有一个 Subpass，创建 RenderPass 时候的参数里可以设多个 Subpass，绘制时候通过 vkCmdNextSubpass 切换。</li>
@@ -347,10 +347,10 @@
   <div class="popular-posts-header">相关文章</div>
   <ul class="popular-posts">
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\07\17\20220717-Vulkan-Vulkan显示与绘制\" rel="bookmark">【Vulkan】显示与绘制</a></div>
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\07\17\20220717-Vulkan-Vulkan内存管理\" rel="bookmark">【Vulkan】内存管理</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\07\17\20220717-Vulkan-Vulkan内存管理\" rel="bookmark">【Vulkan】内存管理</a></div>
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\07\17\20220717-Vulkan-Vulkan显示与绘制\" rel="bookmark">【Vulkan】显示与绘制</a></div>
     </li>
     <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\07\17\20220717-Vulkan-Vulkan资源绑定和状态管理\" rel="bookmark">【Vulkan】资源绑定和状态管理</a></div>
@@ -453,7 +453,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/LycTechStack.github.io/archives/">
         
-          <span class="site-state-item-count">122</span>
+          <span class="site-state-item-count">125</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -517,7 +517,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">14:25</span>
+    <span title="站点阅读时长">14:24</span>
 </div>
 
         
