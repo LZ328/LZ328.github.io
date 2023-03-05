@@ -29,17 +29,17 @@
 <meta property="og:site_name" content="LycTechStack">
 <meta property="og:description" content="本篇介绍了适配器模式和外观模式及相关的面向对象设计原则。适配器模式（Adapter）和外观模式（Facade）都是用于“接口隔离”的设计模式。  适配器模式将一个类的接口转换成客户希望的另一个接口。适配器模式使得原本由于接口不兼容而不能在一起工作的那些类可以一起工作。 外观模式提供了一个统一的接口，用来访问子系统中的一群接口，外观定义了一个高层接口，让子系统更容易使用。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20230305142721206.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20230305142803328.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20230305142925575.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20230305143022285.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20230305143835788.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/05/20230305-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F%E5%92%8C%E5%A4%96%E8%A7%82%E6%A8%A1%E5%BC%8F/image-20230305142721206.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/05/20230305-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F%E5%92%8C%E5%A4%96%E8%A7%82%E6%A8%A1%E5%BC%8F/image-20230305142803328.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/05/20230305-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F%E5%92%8C%E5%A4%96%E8%A7%82%E6%A8%A1%E5%BC%8F/image-20230305142925575.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/05/20230305-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F%E5%92%8C%E5%A4%96%E8%A7%82%E6%A8%A1%E5%BC%8F/image-20230305143022285.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/05/20230305-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F%E5%92%8C%E5%A4%96%E8%A7%82%E6%A8%A1%E5%BC%8F/image-20230305143835788.png">
 <meta property="article:published_time" content="2023-03-05T06:45:32.000Z">
 <meta property="article:modified_time" content="2023-03-05T06:46:15.209Z">
 <meta property="article:author" content="Lyc">
 <meta property="article:tag" content="设计模式">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/image-20230305142721206.png">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/05/20230305-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F%E5%92%8C%E5%A4%96%E8%A7%82%E6%A8%A1%E5%BC%8F/image-20230305142721206.png">
 
 <link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2023/03/05/20230305-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F%E5%92%8C%E5%A4%96%E8%A7%82%E6%A8%A1%E5%BC%8F/">
 
@@ -280,17 +280,17 @@
 </ul>
 <p><em><span id="more"></span></em></p>
 <h3 id="1-适配器模式"><a href="#1-适配器模式" class="headerlink" title="1 适配器模式"></a>1 适配器模式</h3><p>很多情况下，当我们已经有一个软件系统，并希望和一个新的厂商类库搭配使用，但厂商类库的接口和当前软件的接口不适配：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20230305142721206.png" alt="image-20230305142721206"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/03/05/20230305-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F%E5%92%8C%E5%A4%96%E8%A7%82%E6%A8%A1%E5%BC%8F/image-20230305142721206.png" alt="image-20230305142721206"></p>
 <p>而我们又不想改变现有代码，于是就需要写一个适配器，来讲类库的接口转变为当前软件支持的接口：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20230305142803328.png" alt="image-20230305142803328"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/03/05/20230305-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F%E5%92%8C%E5%A4%96%E8%A7%82%E6%A8%A1%E5%BC%8F/image-20230305142803328.png" alt="image-20230305142803328"></p>
 <p>这就是适配器模式。</p>
 <p>适配器模式有两种实现方式，一种称为对象适配器，我们可以将被适配对象包含在适配器对象中，这样适配器就可以调用被适配对象的方法，并实现一个客户支持的接口，这种方式的类图如下：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20230305142925575.png" alt="image-20230305142925575"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/03/05/20230305-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F%E5%92%8C%E5%A4%96%E8%A7%82%E6%A8%A1%E5%BC%8F/image-20230305142925575.png" alt="image-20230305142925575"></p>
 <p>另一种方式是类适配器，可以利用多重继承，让适配器成为被适配对象和目标接口的子类，这样就可以将被适配对象的接口转化为目标接口了，这种方式的类图如下：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20230305143022285.png" alt="image-20230305143022285"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/03/05/20230305-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F%E5%92%8C%E5%A4%96%E8%A7%82%E6%A8%A1%E5%BC%8F/image-20230305143022285.png" alt="image-20230305143022285"></p>
 <p>显然，对象适配器通过组合来实现适配，而类适配器通过继承来实现适配，二者各有优劣，可以根据实际情况使用。</p>
 <h3 id="2-外观模式"><a href="#2-外观模式" class="headerlink" title="2 外观模式"></a>2 外观模式</h3><p>外观模式非常简单，直接来看类图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20230305143835788.png" alt="image-20230305143835788"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/03/05/20230305-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F%E5%92%8C%E5%A4%96%E8%A7%82%E6%A8%A1%E5%BC%8F/image-20230305143835788.png" alt="image-20230305143835788"></p>
 <p>需要注意的是，外观模式并不是要把所有类的接口都整合到一起，外观对象的内部应该是一个相互关联的子系统，而不是简单的功能集合。</p>
 <p>从客户程序的角度来看，外观模式简化了整个组件系统的接口，将他们统一起来，方便客户程序调用，这样一来子系统内部的任何变化都不会改变客户程序的调用接口，从而实现了解耦。</p>
 <p>外观模式带来了新的设计原则：</p>
@@ -358,10 +358,10 @@
       <div class="popular-posts-title"><a href="\LycTechStack.github.io\2023\03\02\20230302-设计模式-观察者模式\" rel="bookmark">【设计模式】观察者模式</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2023\03\04\20230304-设计模式-工厂模式\" rel="bookmark">【设计模式】工厂模式</a></div>
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2023\03\04\20230304-设计模式-单例模式\" rel="bookmark">【设计模式】单例模式</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2023\03\04\20230304-设计模式-单例模式\" rel="bookmark">【设计模式】单例模式</a></div>
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2023\03\04\20230304-设计模式-工厂模式\" rel="bookmark">【设计模式】工厂模式</a></div>
     </li>
   </ul>
 
@@ -517,13 +517,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">951k</span>
+    <span title="站点总字数">957k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">14:24</span>
+    <span title="站点阅读时长">14:30</span>
 </div>
 
         

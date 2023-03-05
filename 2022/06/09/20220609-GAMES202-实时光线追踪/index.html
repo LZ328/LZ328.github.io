@@ -29,31 +29,31 @@
 <meta property="og:site_name" content="LycTechStack">
 <meta property="og:description" content="随着 NVIDIA 图灵架构的问世，实时光线追踪由不可能变为了可能，并且由于光线追踪能够带来自然的软阴影、环境光照、全局光照、环境光遮蔽等效果，其迅速成为主流 3A 大作的标配。这一节来简要了解实时光线追踪的实现思路以及主要解决的问题。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220609142644271.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220609142722281.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220609142901751.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220609143945517.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220609144749719.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220609144824808.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220609145638690.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220609150034090.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220609150605655.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220609151126653.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220609151336724.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220609151431056.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220609151532403.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220609151859574.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220609152103914.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220609152123879.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220609152151531.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220609152409311.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220609152546782.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220609152716311.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220609153019170.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220609153703827.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220609153851851.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220609154028387.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220609154224920.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609142644271.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609142722281.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609142901751.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609143945517.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609144749719.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609144824808.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609145638690.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609150034090.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609150605655.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609151126653.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609151336724.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609151431056.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609151532403.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609151859574.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609152103914.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609152123879.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609152151531.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609152409311.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609152546782.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609152716311.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609153019170.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609153703827.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609153851851.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609154028387.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609154224920.png">
 <meta property="article:published_time" content="2022-06-09T08:03:44.000Z">
 <meta property="article:modified_time" content="2022-07-09T07:41:59.734Z">
 <meta property="article:author" content="Lyc">
@@ -61,7 +61,7 @@
 <meta property="article:tag" content="游戏引擎">
 <meta property="article:tag" content="实时渲染">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220609142644271.png">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609142644271.png">
 
 <link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/">
 
@@ -282,7 +282,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>3.9k</span>
+              <span>4k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -305,88 +305,84 @@
 <p><em><span id="more"></span></em></p>
 <h3 id="1-实时光线追踪基本思路"><a href="#1-实时光线追踪基本思路" class="headerlink" title="1 实时光线追踪基本思路"></a>1 实时光线追踪基本思路</h3><p>NVIDIA 在 2018 年推出了 RTX 系列显卡，采用 Turing 架构，引入了专门处理光线追踪的 RT Core，使得光线追踪这种计算开销极大的算法能够实时运行。</p>
 <p>实时光线追踪和离线光线追踪使用的算法完全一致，都是采样光线，计算交点，然后循环迭代，RTX 20 系列支持每秒 100 亿根光线的处理，这个数字看似很多，但实际上还要除以屏幕的分辨率，通常就是几千万个像素，还要除以帧率，因此最终实际上目前真正的实时光线追踪只能达到每帧每个像素采样一根光线。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220609142644271.png" alt="image-20220609142644271"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609142644271.png" alt="image-20220609142644271"></p>
 <p>可想而知这样得出的结果是噪声非常严重的。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220609142722281.png" alt="image-20220609142722281"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609142722281.png" alt="image-20220609142722281"></p>
 <p>因此实时光线追踪的重点实际上不是光线追踪，而是如何对 1 SPP 的 RTRT 结果进行降噪，使其达到和离线光线追踪一样的效果。下图展示了现在的实时光线追踪降噪技术所能达到的效果，非常不可思议：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220609142901751.png" alt="image-20220609142901751"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609142901751.png" alt="image-20220609142901751"></p>
 <p>简单来说，实时光线追踪会首先生成一张 1 SPP 的 noisy 结果，然后对单帧进行图像空间降噪（Spatial Denoising），之后再联合前一帧图像（任何时候都假设前一帧已经没有噪声）进行时域降噪（Temporal Denoising），最终得到一帧没有噪声的结果。</p>
 <h3 id="2-Spatial-Denoising"><a href="#2-Spatial-Denoising" class="headerlink" title="2 Spatial Denoising"></a>2 Spatial Denoising</h3><h4 id="2-1-联合双边滤波"><a href="#2-1-联合双边滤波" class="headerlink" title="2.1 联合双边滤波"></a>2.1 联合双边滤波</h4><p>单帧图像空间降噪简单的自然是使用低通滤波，比如高斯模糊，这样可以去掉高频的噪声，但同时也会丢掉图像中高频的信息，也就是一些细节，因此为了保留图像细节一般使用双边滤波（Bilateral Filtering）进行降噪。</p>
 <p>双边滤波只是对高斯滤波的改进，高斯滤波只考虑了像素之间的距离作为权值的衰减因素，而为了保留高频信息，双边滤波还考虑了颜色，当两个像素的颜色差异过大时，权值也进一步变小，这样就可以保留原图中的边缘等高频信息：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220609143945517.png" alt="image-20220609143945517"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609143945517.png" alt="image-20220609143945517"></p>
 <p>上式中后一项是对颜色的距离进行了一个计算，这样相当于两个高斯分布的乘积作为一个像素周围其他像素的权值。</p>
 <p>更进一步，既然可以考虑颜色，那么自然也可以考虑更多的因素，<strong>联合双边滤波（Joint Bilateral Filtering）</strong>就是将许多不同因素作为影响权值衰减的因素，除了像素之间的距离、颜色之外，还可以利用 G-Buffer 中存储的每个像素的深度、法线、反射率等等，因此联合双边滤波非常适合用来做 RTRT 的图像降噪，因为 G-Buffer 中的信息在渲染时就可以顺便得到，几乎不需要任何额外开销。</p>
 <p>需要说明的是，上面是以高斯滤波为例的，实际上双边滤波或者联合双边滤波中的衰减系数不一定要是高斯分布的，可以是指数分布、余弦分布等等，只要能够描述衰减关系就可以。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220609144749719.png" alt="image-20220609144749719"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609144749719.png" alt="image-20220609144749719"></p>
 <p>下面以一个例子来说明联合双边滤波的作用：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220609144824808.png" alt="image-20220609144824808"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609144824808.png" alt="image-20220609144824808"></p>
 <p>这是一张噪声很大的渲染结果，我们使用联合双边滤波考虑深度、法线、颜色的影响，于是在对点 B 进行滤波时，可能会将点 A 和点 C 的贡献加入到点 B，但是因为点 A 和点 B 的深度差异比较大，因此点 A 的贡献就会变小，而点 C 和点 B 的法线差异比较大，因此点 C 的贡献也会变小。而点 D 和点 E 的深度和法线相差不大，但颜色相差很大，因此权值也会变小，这样就可以得到比较好的滤波效果。</p>
-<h4 id="2-2-大范围滤波优化"><a href="#2-2-大范围滤波优化" class="headerlink" title="2.2 大范围滤波优化"></a>2.2 大范围滤波优化</h4><p>这里还有一个问题需要讨论，因为使用联合双边滤波，我们的滤波核范围通常很大，不是通常的 5 <em> 5 或者 7 </em> 7，如果滤波核是 128 * 128，那么对每个像素进行滤波都要访问它周围一万多个像素，会非常耗时，因此需要对大滤波核的滤波进行优化，通常使用以下两种方法：</p>
+<h4 id="2-2-大范围滤波优化"><a href="#2-2-大范围滤波优化" class="headerlink" title="2.2 大范围滤波优化"></a>2.2 大范围滤波优化</h4><p>这里还有一个问题需要讨论，因为使用联合双边滤波，我们的滤波核范围通常很大，不是通常的 5 * 5 或者 7 * 7，如果滤波核是 128 * 128，那么对每个像素进行滤波都要访问它周围一万多个像素，会非常耗时，因此需要对大滤波核的滤波进行优化，通常使用以下两种方法：</p>
 <ul>
-<li>Separate Passes：也就是将 128 <em> 128 的一次滤波分为 1 </em> 128 和 128 * 1 两次滤波，这样就可以大幅降低复杂度，只需要访问 256 次就可以完成之前访问一万多次的工作：</li>
+<li>Separate Passes：也就是将 128 * 128 的一次滤波分为 1 * 128 和 128 * 1 两次滤波，这样就可以大幅降低复杂度，只需要访问 256 次就可以完成之前访问一万多次的工作：</li>
 </ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220609145638690.png" alt="image-20220609145638690"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609145638690.png" alt="image-20220609145638690"></p>
 <p>这么做可行的原因在于二维高斯分布本身就是两个一维高斯分布的乘积，因此也自然可以将一次二维滤波拆成两次一维滤波。但是对于双边滤波和联合双边滤波，不再是简单的二维高斯分布，因此不满足这样的特性，理论上不能使用这个方法，不过工业界依然使用这样的方法，在滤波核不是特别大的时候不会看出什么问题。</p>
 <ul>
 <li>Progressively Growing Sizes：这种方法将一个大的滤波拆分成多次小的滤波，但是每次小的滤波所取得周围像素的间隔会逐渐增大，如下图：</li>
 </ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220609150034090.png" alt="image-20220609150034090"></p>
-<p>将一个 64 <em> 64 的滤波拆分成了 5 次 5 </em> 5 的滤波，第一次在像素周围 5 <em> 5 的区域进行，第二次取的像素之间都会间隔 2 个像素，第三次间隔 4 个像素，直到第 5 次，间隔 16 个像素，整个区域刚好就是 64 </em> 64，这样将 64 <em> 64 变成了 5 </em> 5 * 5，同样大幅降低了复杂度。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609150034090.png" alt="image-20220609150034090"></p>
+<p>将一个 64 * 64 的滤波拆分成了 5 次 5 * 5 的滤波，第一次在像素周围 5 * 5 的区域进行，第二次取的像素之间都会间隔 2 个像素，第三次间隔 4 个像素，直到第 5 次，间隔 16 个像素，整个区域刚好就是 64 * 64，这样将 64 * 64 变成了 5 * 5 * 5，同样大幅降低了复杂度。</p>
 <h4 id="2-3-异常像素移除"><a href="#2-3-异常像素移除" class="headerlink" title="2.3 异常像素移除"></a>2.3 异常像素移除</h4><p>异常像素移除（Outlier Removal）是在进行滤波之前做的一项工作，所谓异常像素（outlier）是指在噪声图像中会有一些非常亮的像素，如果不去除，那在滤波的时候这些非常亮的像素就会扩散到周围一定的区域造成异常：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220609150605655.png" alt="image-20220609150605655"></p>
-<p>去除他们的方法非常简单，对每一个像素，取它周围一定区域，通常是 7 * 7，然后求出这个区域内颜色的均值和方差，根据均值和方差可以确定一个范围：</p>
-<script type="math/tex; mode=display">
-[\mu-k\sigma,\mu+k\sigma]</script><p>将不在这个范围内的像素颜色截断在这个范围内即可。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609150605655.png" alt="image-20220609150605655"></p>
+<p>去除他们的方法非常简单，对每一个像素，取它周围一定区域，通常是 7 * 7，然后求出这个区域内颜色的均值和方差，根据均值和方差可以确定一个范围：<br>$$<br>[\mu-k\sigma,\mu+k\sigma]<br>$$<br>将不在这个范围内的像素颜色截断在这个范围内即可。</p>
 <h3 id="3-Temporal-Denoising"><a href="#3-Temporal-Denoising" class="headerlink" title="3 Temporal Denoising"></a>3 Temporal Denoising</h3><h4 id="3-1-Motion-Vector"><a href="#3-1-Motion-Vector" class="headerlink" title="3.1 Motion Vector"></a>3.1 Motion Vector</h4><p>时域滤波是实时光线追踪能够实现的重要原因之一，基本思想就是假设前一帧总是没有噪声的，于是可以将这一帧的像素所显示的位置对应到前一帧的那个像素找到，将它的颜色和这一帧像素的颜色线性融合起来，实现非常好的降噪效果。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220609151126653.png" alt="image-20220609151126653"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609151126653.png" alt="image-20220609151126653"></p>
 <p>对于第 i 帧的一个像素，我们可以从 G-Buffer 中得到该像素对应的世界空间位置，如果没有 G-Buffer，还可以通过屏幕坐标逆变换得到世界空间坐标：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220609151336724.png" alt="image-20220609151336724"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609151336724.png" alt="image-20220609151336724"></p>
 <p>然后我们在渲染的过程中一定知道这两帧之间物体是怎样移动的，因为我们掌控整个渲染过程，也就知道整个场景的变化过程，于是将当前帧的位置进行场景变换的逆变换，得到前一帧中该点的位置：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220609151431056.png" alt="image-20220609151431056"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609151431056.png" alt="image-20220609151431056"></p>
 <p>再利用前一帧的各种矩阵将该点投影到屏幕上，就得到了前一帧中对应的像素坐标：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220609151532403.png" alt="image-20220609151532403"></p>
-<p>将该像素的颜色和当前帧的颜色进行融合：</p>
-<script type="math/tex; mode=display">
-color_i = \alpha color_i + (1-\alpha)color_{i-1}</script><p>因为前一帧是没有噪声的图片，所以会让前一帧的颜色的权值更大，一般来说 $\alpha$ 取 0.1 到 0.2，也就是说当前帧的颜色有 80% 到 90% 取决于前一帧。</p>
-<p>于是整个实时光线追踪去噪的过程可以表示为：<br><img src="https://lz328.github.io/LycTechStack.github.io/image-20220609151859574.png" alt="image-20220609151859574"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609151532403.png" alt="image-20220609151532403"></p>
+<p>将该像素的颜色和当前帧的颜色进行融合：<br>$$<br>color_i &#x3D; \alpha color_i + (1-\alpha)color_{i-1}<br>$$<br>因为前一帧是没有噪声的图片，所以会让前一帧的颜色的权值更大，一般来说 $\alpha$ 取 0.1 到 0.2，也就是说当前帧的颜色有 80% 到 90% 取决于前一帧。</p>
+<p>于是整个实时光线追踪去噪的过程可以表示为：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609151859574.png" alt="image-20220609151859574"></p>
 <p>其中带有 - 的表示滤波后的图片，带有 ~ 的表示没有滤波的图片，什么都没有的表示没有噪声的图片。上面的公式表示先对当前帧进行单帧的 Spatial Denoising，再联合前一帧进行 Temporal Denoising。</p>
 <p>下图是 1 SPP 的 RTRT 结果：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220609152103914.png" alt="image-20220609152103914"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609152103914.png" alt="image-20220609152103914"></p>
 <p>使用了上述去噪方法后得到的结果：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220609152123879.png" alt="image-20220609152123879"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609152123879.png" alt="image-20220609152123879"></p>
 <p>这里的图片相比于有噪声的结果看起来变亮了很多，但实际上并没有，只是因为 RTRT 得出的有噪声的结果中像素的颜色很大，经过色调映射显示出来就会显得很暗，去噪的过程一定是能量守恒的。</p>
 <p>下面是离线光线追踪的结果：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220609152151531.png" alt="image-20220609152151531"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609152151531.png" alt="image-20220609152151531"></p>
 <p>可以看到除了一些物体接触的地方的阴影没有渲染出来之外，实时光线追踪的结果和离线结果非常接近。</p>
 <h4 id="3-2-Temporal-的问题"><a href="#3-2-Temporal-的问题" class="headerlink" title="3.2 Temporal 的问题"></a>3.2 Temporal 的问题</h4><p>时域去噪方法效果很好，但存在很多问题：</p>
 <ul>
 <li>切换场景的时候，时域去噪会失效，因为前后两帧几乎没有任何对应关系：</li>
 </ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220609152409311.png" alt="image-20220609152409311"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609152409311.png" alt="image-20220609152409311"></p>
 <ul>
 <li>当我们在一个场景中的倒退的时候也会有问题，因为倒退的时候会有更多场景中的景象进入视野，于是就会出现当前帧的某个地方在上一帧中还没出现：</li>
 </ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220609152546782.png" alt="image-20220609152546782"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609152546782.png" alt="image-20220609152546782"></p>
 <ul>
 <li>还有当物体移动的时候，会对其他物体造成遮挡，前后两帧中遮挡关系不一样，导致同一个位置会对应到不同的物体上，造成拖影现象：</li>
 </ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220609152716311.png" alt="image-20220609152716311"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609152716311.png" alt="image-20220609152716311"></p>
 <ul>
 <li>以及由于光源移动造成的阴影拖影现象，虽然物体没有动，但是因为光照关系变了导致这一点的着色结果变了，从而使得后一帧融合了前一帧的颜色会显示出前一帧的拖影：</li>
 </ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220609153019170.png" alt="image-20220609153019170"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609153019170.png" alt="image-20220609153019170"></p>
 <h4 id="3-3-Clamping"><a href="#3-3-Clamping" class="headerlink" title="3.3 Clamping"></a>3.3 Clamping</h4><p>解决上述问题的一个最简单的方法是将前一帧对应的像素的颜色截断到当前帧像素周边一定范围内颜色的均值附近，利用上面的异常像素移除的方法就可以实现，然后再融合到当前像素上，这样可以一定程度解决前后帧颜色不对应的情况，但对于切换场景等情况也无能为力。此外由于将没有噪声的颜色截断到了有噪声的颜色范围内，一定会引入新的噪声。</p>
 <h4 id="3-4-其他解决方案"><a href="#3-4-其他解决方案" class="headerlink" title="3.4 其他解决方案"></a>3.4 其他解决方案</h4><p>Clamping 自然是一个简单的解决方案，但会引入新的问题，对于遮挡、阴影、Glossy 等情况如何寻找上一帧可用的像素信息是一个相对复杂的问题，一些更好的解决方案可以参考<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/376502501#:~:text=Motion">实时渲染｜Filtering and Denoising：Temporal Reliable Motion Vector</a>中提到的方法。</p>
 <h3 id="4-SVGF"><a href="#4-SVGF" class="headerlink" title="4 SVGF"></a>4 SVGF</h3><p>Spatiotemporal Variance-Guided Filtering 是一个实时光线追踪的具体解决方案，流程和我们上面说到的一致，只是在滤波核的设计上加入了一些更周全的考虑，因此可以得到非常好的效果。</p>
 <p>SVGF 同样考虑了三个因素来影响滤波权值衰减：深度、法线和颜色。</p>
 <p>对于深度，如下图中的情况：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220609153703827.png" alt="image-20220609153703827"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609153703827.png" alt="image-20220609153703827"></p>
 <p>由于箱子是侧对我们的，点 A 和点 B 的深度会有差异而使得滤波时的权值变小，但实际上他们属于同一面，不应该因为深度差异是他们的融合权值变小，因此引入了深度的梯度来修正这个影响，其中 $\epsilon$ 是为了防止两个点距离过近导致分母为 0：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220609153851851.png" alt="image-20220609153851851"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609153851851.png" alt="image-20220609153851851"></p>
 <p>对于法线，使用了两点法线的点乘来作为衰减因素，同时加了一个指数来控制衰减的速度，这个指数和布林冯模型中高光的指数作用完全一致：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220609154028387.png" alt="image-20220609154028387"></p>
-<p>对于颜色，SVGF 使用的是光照度，也就是像素的灰度值，首先计算了像素周围 7 <em> 7 范围内的灰度方差，然后还将这个方差进行了时域上的平均，最后在当前帧又取了周围 3 </em> 3 区域的方差来进行滤波衰减：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220609154224920.png" alt="image-20220609154224920"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609154028387.png" alt="image-20220609154028387"></p>
+<p>对于颜色，SVGF 使用的是光照度，也就是像素的灰度值，首先计算了像素周围 7 * 7 范围内的灰度方差，然后还将这个方差进行了时域上的平均，最后在当前帧又取了周围 3 * 3 区域的方差来进行滤波衰减：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/06/09/20220609-GAMES202-%E5%AE%9E%E6%97%B6%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA/image-20220609154224920.png" alt="image-20220609154224920"></p>
 <p>SVGF 速度快效果好，但是拖影问题依然存在。</p>
 
     </div>
@@ -441,10 +437,10 @@ color_i = \alpha color_i + (1-\alpha)color_{i-1}</script><p>因为前一帧是�
       <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\30\20220530-GAMES202-实时阴影\" rel="bookmark">【高质量实时渲染】实时阴影</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\06\02\20220602-GAMES202-实时环境光照\" rel="bookmark">【高质量实时渲染】实时环境光照</a></div>
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\06\05\20220605-GAMES202-实时全局光照\" rel="bookmark">【高质量实时渲染】实时全局光照</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\06\05\20220605-GAMES202-实时全局光照\" rel="bookmark">【高质量实时渲染】实时全局光照</a></div>
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\06\02\20220602-GAMES202-实时环境光照\" rel="bookmark">【高质量实时渲染】实时环境光照</a></div>
     </li>
     <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\06\08\20220608-GAMES202-实时PBR材质\" rel="bookmark">【高质量实时渲染】实时PBR材质</a></div>
@@ -608,13 +604,13 @@ color_i = \alpha color_i + (1-\alpha)color_{i-1}</script><p>因为前一帧是�
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">951k</span>
+    <span title="站点总字数">957k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">14:24</span>
+    <span title="站点阅读时长">14:30</span>
 </div>
 
         
