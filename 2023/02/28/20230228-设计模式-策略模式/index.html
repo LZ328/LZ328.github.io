@@ -29,16 +29,16 @@
 <meta property="og:site_name" content="LycTechStack">
 <meta property="og:description" content="本篇介绍了策略模式及相关的面向对象设计原则。策略模式定义了一族算法，将它们分别封装起来，让它们之间可以相互替换，此模式让算法的变化独立于使用算法的用户。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/02/28/20230228-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/image-20230228141328616.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/02/28/20230228-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/image-20230228141532173.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/02/28/20230228-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/image-20230228141813782.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/02/28/20230228-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/image-20230228142529567.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20230228141328616.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20230228141532173.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20230228141813782.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20230228142529567.png">
 <meta property="article:published_time" content="2023-02-28T07:46:59.000Z">
 <meta property="article:modified_time" content="2023-02-28T07:49:42.551Z">
 <meta property="article:author" content="Lyc">
 <meta property="article:tag" content="设计模式">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2023/02/28/20230228-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/image-20230228141328616.png">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/image-20230228141328616.png">
 
 <link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2023/02/28/20230228-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/">
 
@@ -275,14 +275,14 @@
         <p>本篇介绍了策略模式及相关的面向对象设计原则。策略模式定义了一族算法，将它们分别封装起来，让它们之间可以相互替换，此模式让算法的变化独立于使用算法的用户。</p>
 <p><em><span id="more"></span></em></p>
 <h3 id="1-引例"><a href="#1-引例" class="headerlink" title="1 引例"></a>1 引例</h3><p>鸭子模拟游戏中会出现各种鸭子，一边游泳，一边呱呱叫，此系统内部使用了标准的面向对象技术，设计了一个鸭子父类，并让各种鸭子继承此父类。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/02/28/20230228-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/image-20230228141328616.png" alt="image-20230228141328616"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20230228141328616.png" alt="image-20230228141328616"></p>
 <p>此时如果希望鸭子能飞起来，最简单的方法就是在父类中加上一个<code>fly()</code>方法：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/02/28/20230228-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/image-20230228141532173.png" alt="image-20230228141532173"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20230228141532173.png" alt="image-20230228141532173"></p>
 <p>但并不是所有鸭子都会飞，于是想到可以在子类中重写<code>fly()</code>方法，让其什么也不做，从而覆盖掉父类的<code>fly()</code>方法。同样，也是不所有鸭子都会嘎嘎叫，比如橡皮鸭子是吱吱叫，同样可以通过重写<code>quack()</code>方法覆盖掉父类的方法来实现。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/02/28/20230228-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/image-20230228141813782.png" alt="image-20230228141813782"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20230228141813782.png" alt="image-20230228141813782"></p>
 <p>之后，如果我们想新加入一个木头假鸭类型，它既不会飞也不会叫，那么用同样的方式覆盖父类对应的方法就可以实现。但是当我们需要不断地新增不同类型的鸭子，或者不断地修改不同类型鸭子的行为时，就需要不停的新建子类，重写并覆盖原来的方法，显然这样的实现方式使得我们虽然利用了面向对象的“继承”这一特性，但却并没有实现代码的复用。</p>
 <p>转变思路，我们可以将<code>fly()</code>方法从鸭子类中分离出来，放进一个<code>Flyable</code>的接口（抽象类）中，只有会飞的鸭子才继承此抽象类，并实现其中的<code>fly()</code>方法，<code>quack()</code>方法同样分离出来放在<code>Quackable</code>的抽象类中，只有会叫的鸭子才继承此抽象类并实现其中的<code>quack()</code>方法。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/02/28/20230228-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/image-20230228142529567.png" alt="image-20230228142529567"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20230228142529567.png" alt="image-20230228142529567"></p>
 <p>这样的设计看似更加巧妙，但重复的代码会变得更多，且代码依然无法复用，我们要为每一个会叫的鸭子写一套<code>quack()</code>代码，即使他们叫的方式是相同的。</p>
 <p>对于上面这个例子，似乎继承和接口都不能很好的解决问题，而恰好有一个设计模式，可以适用于这种情况。</p>
 <h3 id="2-策略模式"><a href="#2-策略模式" class="headerlink" title="2 策略模式"></a>2 策略模式</h3><blockquote>
@@ -291,25 +291,18 @@
 </blockquote>
 <p>对于上面的例子，显然<code>fly()</code>和<code>quack()</code>就是代码中需要变化的部分，因为他们会随着不同的鸭子类型或者不同的用户需求随时发生变化，所以我们可以将他们从鸭子类中独立出来，分别建立两个抽象类<code>FlyBehavior</code>和<code>QuackBehavior</code>：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">FlyBehavior</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">fly</span><span class="params">()</span> </span>= <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">QuackBehavior</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">quack</span><span class="params">()</span> </span>= <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
 <p>这两个抽象类代表飞和叫这两种行为，至于怎么飞，怎么叫，通过具体的行为类继承于这两个抽象类来实现，比如飞的行为可以分为用翅膀飞和不会飞这两种：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">FlyWithWings</span> : <span class="keyword">public</span> FlyBehavior &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">fly</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;用翅膀飞&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">FlyNoWay</span> : <span class="keyword">public</span> FlyBehavior &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">fly</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;不会飞&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
 <p>叫的行为也类似，比如可以实现嘎嘎叫和不会叫：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Quack</span> : <span class="keyword">public</span> QuackBehavior &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">quack</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;嘎嘎叫&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MuteQuack</span> : <span class="keyword">public</span> QuackBehavior &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">quack</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;不会叫&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
 <p>之后我们在鸭子类中加入这两种行为类的对象，然后将原本的<code>fly()</code>和<code>quack()</code>方法改为<code>PerformFly()</code>和<code>PerformQuack()</code>方法：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Duck</span>&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    FlyBehavior* flyBehavior;</span><br><span class="line">    QuackBehavior* quackBehavior;</span><br><span class="line">    <span class="comment">//其他成员</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">PerformFly</span><span class="params">()</span></span>&#123;</span><br><span class="line">        flyBehavior-&gt;<span class="built_in">fly</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">PerformQuack</span><span class="params">()</span></span>&#123;</span><br><span class="line">        quackBehavior-&gt;<span class="built_in">quack</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>当我们想要构造一个鸭子子类的时候，只需要继承鸭子父类，并在构造函数中指定该子类的具体行为对象，就可以控制鸭子子类的行为了：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">MallardDuck</span> : <span class="keyword">public</span> Duck&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">MallardDuck</span>()&#123;</span><br><span class="line">        flyBehavior = <span class="keyword">new</span> <span class="built_in">FlyWithWings</span>();	<span class="comment">// 绿头鸭会用翅膀飞</span></span><br><span class="line">        quackBehavior = <span class="keyword">new</span> <span class="built_in">Quack</span>();		<span class="comment">// 绿头鸭会嘎嘎叫</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
 <p>利用上面的设计方法可以让我们在编程时不需要关注鸭子是什么具体类型，因为我们可以利用多态，比如有一个<code>getDuck()</code>函数会返回一个具体类型的鸭子，至于是什么类型，可能在程序运行时才能确定，那么我们的主函数就可以这样写：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    Duck* duck = <span class="built_in">getDuck</span>();</span><br><span class="line">    duck-&gt;<span class="built_in">PerformFly</span>();</span><br><span class="line">    duck-&gt;<span class="built_in">PerformQuack</span>();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>当然，上面的设计依然不够有弹性，因为每一个子类的鸭子具有什么行为是在构造函数中指定的，如果我们希望同一类鸭子也能自由的设定不同的行为，那么只需要在鸭子父类中加上一个设定行为的方法就可以了：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Duck</span>&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    FlyBehavior* flyBehavior;</span><br><span class="line">    QuackBehavior* quackBehavior;</span><br><span class="line">    <span class="comment">//其他成员</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">PerformFly</span><span class="params">()</span></span>&#123;</span><br><span class="line">        flyBehavior-&gt;<span class="built_in">fly</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">PerformQuack</span><span class="params">()</span></span>&#123;</span><br><span class="line">        quackBehavior-&gt;<span class="built_in">quack</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//动态设定行为</span></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">SetFlyBehavior</span><span class="params">(FlyBehavior* fb)</span></span>&#123;</span><br><span class="line">        flyBehavior = fb;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">SetQuackBehavior</span><span class="params">(QuackBehavior* qb)</span></span>&#123;</span><br><span class="line">        quackBehavior = qb;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
 <p>这样我们通过调用鸭子的<code>SetFlyBehavior()</code>和<code>SetQuackBehavior()</code>方法就可以随时改变鸭子的行为了。</p>
 <p>纵观上面的设计过程，我们把鸭子类中经常变化的部分独立出来，封装成了单独的抽象类，也就是一个接口，然后用不同的代码去实现这个接口（抽象类的子类），这些不同的代码就是“一族算法”，而在鸭子类中，只要包含这一族算法的统一接口就可以灵活地使用他们当中的任何一个。</p>
 <blockquote>
@@ -372,19 +365,19 @@
   <div class="popular-posts-header">相关文章</div>
   <ul class="popular-posts">
     <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2023\03\02\20230302-设计模式-装饰者模式\" rel="bookmark">【设计模式】装饰者模式</a></div>
+    </li>
+    <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="\LycTechStack.github.io\2023\03\02\20230302-设计模式-观察者模式\" rel="bookmark">【设计模式】观察者模式</a></div>
     </li>
     <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="\LycTechStack.github.io\2023\03\04\20230304-设计模式-单例模式\" rel="bookmark">【设计模式】单例模式</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2023\03\02\20230302-设计模式-装饰者模式\" rel="bookmark">【设计模式】装饰者模式</a></div>
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2023\03\04\20230304-设计模式-工厂模式\" rel="bookmark">【设计模式】工厂模式</a></div>
     </li>
     <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="\LycTechStack.github.io\2023\03\05\20230305-设计模式-命令模式\" rel="bookmark">【设计模式】命令模式</a></div>
-    </li>
-    <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2023\03\05\20230305-设计模式-模板方法模式\" rel="bookmark">【设计模式】模板方法模式</a></div>
     </li>
   </ul>
 
@@ -540,13 +533,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">964k</span>
+    <span title="站点总字数">957k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">14:36</span>
+    <span title="站点阅读时长">14:30</span>
 </div>
 
         
