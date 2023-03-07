@@ -29,19 +29,19 @@
 <meta property="og:site_name" content="LycTechStack">
 <meta property="og:description" content="在之前的光栅化渲染器中，我们在光栅化插值的过程中对所有顶点的属性都除以了该顶点的深度值 w，然后又在线性插值之后乘以了该点的深度值，这样才能得到正确的插值属性，这一步叫做透视插值校正。这一节我们来详细讨论透视插值校正的具体原理。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220525160340619.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022-05-25160428.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/v2-d6f128e3e3150d0ab3941dfdc452e111_r.jpg">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/v2-67871f21f22f9573e64d3bd30788c033_b.jpg">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/v2-9ef76bf017541df6b268f0fc5d50f400_b.jpg">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/v2-1766a667c7a314f19092ecc00ea03b6b_b.jpg">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/25/20220525-%E9%80%8F%E8%A7%86%E6%8F%92%E5%80%BC%E6%A0%A1%E6%AD%A3/image-20220525160340619.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/25/20220525-%E9%80%8F%E8%A7%86%E6%8F%92%E5%80%BC%E6%A0%A1%E6%AD%A3/2022-05-25160428.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/25/20220525-%E9%80%8F%E8%A7%86%E6%8F%92%E5%80%BC%E6%A0%A1%E6%AD%A3/v2-d6f128e3e3150d0ab3941dfdc452e111_r.jpg">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/25/20220525-%E9%80%8F%E8%A7%86%E6%8F%92%E5%80%BC%E6%A0%A1%E6%AD%A3/v2-67871f21f22f9573e64d3bd30788c033_b.jpg">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/25/20220525-%E9%80%8F%E8%A7%86%E6%8F%92%E5%80%BC%E6%A0%A1%E6%AD%A3/v2-9ef76bf017541df6b268f0fc5d50f400_b.jpg">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/25/20220525-%E9%80%8F%E8%A7%86%E6%8F%92%E5%80%BC%E6%A0%A1%E6%AD%A3/v2-1766a667c7a314f19092ecc00ea03b6b_b.jpg">
 <meta property="article:published_time" content="2022-05-25T08:51:00.000Z">
 <meta property="article:modified_time" content="2022-05-25T09:16:54.596Z">
 <meta property="article:author" content="Lyc">
 <meta property="article:tag" content="计算机图形学">
 <meta property="article:tag" content="3D数学">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220525160340619.png">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/25/20220525-%E9%80%8F%E8%A7%86%E6%8F%92%E5%80%BC%E6%A0%A1%E6%AD%A3/image-20220525160340619.png">
 
 <link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/05/25/20220525-%E9%80%8F%E8%A7%86%E6%8F%92%E5%80%BC%E6%A0%A1%E6%AD%A3/">
 
@@ -247,7 +247,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.9k</span>
+              <span>2k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -269,46 +269,22 @@
         <p>在之前的光栅化渲染器中，我们在光栅化插值的过程中对所有顶点的属性都除以了该顶点的深度值 w，然后又在线性插值之后乘以了该点的深度值，这样才能得到正确的插值属性，这一步叫做透视插值校正。这一节我们来详细讨论透视插值校正的具体原理。</p>
 <p><em><span id="more"></span></em></p>
 <h3 id="1-为什么需要透视插值校正"><a href="#1-为什么需要透视插值校正" class="headerlink" title="1 为什么需要透视插值校正"></a>1 为什么需要透视插值校正</h3><p>透视投影我们已经非常熟悉了，透视投影是为了模拟人眼所看到的近大远小的效果，比如一个正方形，如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220525160340619.png" alt="image-20220525160340619"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/25/20220525-%E9%80%8F%E8%A7%86%E6%8F%92%E5%80%BC%E6%A0%A1%E6%AD%A3/image-20220525160340619.png" alt="image-20220525160340619"></p>
 <p>如果是正交投影，那么点 Q 就在 BC 连线中点处，而如果是透视投影，如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2022-05-25160428.png" alt="屏幕截图 2022-05-25 160428"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/25/20220525-%E9%80%8F%E8%A7%86%E6%8F%92%E5%80%BC%E6%A0%A1%E6%AD%A3/2022-05-25160428.png" alt="屏幕截图 2022-05-25 160428"></p>
 <p>点 Q 就不再处于 BC 连线的中间处了，在我们的渲染器中纹理出现变形的原因就是我们在对顶点的纹理坐标进行插值的时候没有考虑透视的影响。如下图，红色坐标为纹理坐标，黑色为顶点位置：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/v2-d6f128e3e3150d0ab3941dfdc452e111_r.jpg" alt="v2-d6f128e3e3150d0ab3941dfdc452e111_r"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/25/20220525-%E9%80%8F%E8%A7%86%E6%8F%92%E5%80%BC%E6%A0%A1%E6%AD%A3/v2-d6f128e3e3150d0ab3941dfdc452e111_r.jpg" alt="v2-d6f128e3e3150d0ab3941dfdc452e111_r"></p>
 <p>当摄像机视线垂直于平面时，将贴图按照 uv 坐标插值，贴到正方形上会如右图所示，不会出现任何问题，但如果相机不垂直于平面：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/v2-67871f21f22f9573e64d3bd30788c033_b.jpg" alt="v2-67871f21f22f9573e64d3bd30788c033_b"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/25/20220525-%E9%80%8F%E8%A7%86%E6%8F%92%E5%80%BC%E6%A0%A1%E6%AD%A3/v2-67871f21f22f9573e64d3bd30788c033_b.jpg" alt="v2-67871f21f22f9573e64d3bd30788c033_b"></p>
 <p>本来按照正确的透视，正方形的中心点应该在 AC 和 BD 的交点 Q，我们应该把纹理坐标为 (0.5, 0.5) 的颜色值赋给 Q，但是图中却赋给了 P 点，这是因为我们在光栅化插值的时候，使用的是屏幕坐标进行的线性插值，屏幕坐标是投影后的坐标，是没有考虑近大远小的。</p>
 <p>也就是说通，过屏幕坐标插值，可以得到 AC 的中点为点 P，AB 的中点为点 N，AD 的中点为点 M，这些都是投影后屏幕上线段的中点，而不是实际这个正方形在空间中线段的中点，因此就会出现纹理映射错误的情况。所以这时候我们就需要进行透视插值校正。</p>
 <h3 id="2-如何进行透视插值校正"><a href="#2-如何进行透视插值校正" class="headerlink" title="2 如何进行透视插值校正"></a>2 如何进行透视插值校正</h3><p>我们在二维空间中进行推导会简单许多。下图为二维空间中的投影，因为是二维，所以我们把 x 坐标全部置 0，各种几何关系如图所示：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/v2-9ef76bf017541df6b268f0fc5d50f400_b.jpg" alt="v2-9ef76bf017541df6b268f0fc5d50f400_b"></p>
-<p>二维空间中的线段 AB 被投影到 Z = C 平面上，显示为线段 A’B’，利用投影平面的坐标进行插值可以得到：</p>
-<script type="math/tex; mode=display">
-P' = (1-m)A' + mB'</script><p>于是现在的问题是，如何通过屏幕上的点 P‘ 得到空间中原本的点 P，并求出一个插值关系：</p>
-<script type="math/tex; mode=display">
-P = (1-n)A + nB</script><p>最简单的方法自然是对点 P’ 应用透视投影变换的逆变换，但矩阵变换太麻烦，我们完全可以通过几何关系解决这个问题。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/25/20220525-%E9%80%8F%E8%A7%86%E6%8F%92%E5%80%BC%E6%A0%A1%E6%AD%A3/v2-9ef76bf017541df6b268f0fc5d50f400_b.jpg" alt="v2-9ef76bf017541df6b268f0fc5d50f400_b"></p>
+<p>二维空间中的线段 AB 被投影到 Z &#x3D; C 平面上，显示为线段 A’B’，利用投影平面的坐标进行插值可以得到：<br>$$<br>P’ &#x3D; (1-m)A’ + mB’<br>$$<br>于是现在的问题是，如何通过屏幕上的点 P‘ 得到空间中原本的点 P，并求出一个插值关系：<br>$$<br>P &#x3D; (1-n)A + nB<br>$$<br>最简单的方法自然是对点 P’ 应用透视投影变换的逆变换，但矩阵变换太麻烦，我们完全可以通过几何关系解决这个问题。</p>
 <p>在图中添加两条辅助线：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/v2-1766a667c7a314f19092ecc00ea03b6b_b.jpg" alt="v2-1766a667c7a314f19092ecc00ea03b6b_b"></p>
-<p>根据三角形相似可以得到：</p>
-<script type="math/tex; mode=display">
-\frac{n}{1-n} = \frac{|AG|}{|BK|} = \frac{|A'P'|\frac{Z_1}{c}}{|B'P'|\frac{Z_2}{c}} = \frac{mZ_1}{(1-m)Z_2}</script><p>等式两边取倒数可得：</p>
-<script type="math/tex; mode=display">
-\frac{1}{n} - 1 = \frac{(1-m)Z_2}{mZ_1}</script><p>由此可以解得：</p>
-<script type="math/tex; mode=display">
-n = \frac{mZ_1}{mZ_1 + (1-m)Z_2}</script><p>这样我们就得到了已知屏幕空间的插值系数 m，求观察空间的插值系数 n 的方法。使用插值系数 n 就可以对顶点的任意属性进行插值了。比如点 P 的 Z 坐标：</p>
-<script type="math/tex; mode=display">
-Z_n = (1-n)Z_1 + nZ_2 = \frac{(1-m)Z_2}{mZ_1 + (1-m)Z_2}Z_1 + \frac{mZ_1}{mZ_1 + (1-m)Z_2}Z_2</script><p>化简后得到：</p>
-<script type="math/tex; mode=display">
-Z_n = \frac{Z_1Z_2}{mZ_1 + (1-m)Z_2} = \frac{1}{\frac{1-m}{Z_1} + \frac{m}{Z_2}}</script><p>这样计算其他属性的插值就可以直接将 $Z_n$ 带入，为什么要将 $Z_n$ 带入呢？因为我们的观察方向都是沿着 -Z 轴方向，所以透视的缩放关系只和深度 Z 有关。比如求点 P 的纹理坐标：</p>
-<script type="math/tex; mode=display">
-UV_P = \frac{(1-m)Z_2}{mZ_1 + (1-m)Z_2}UV_A + \frac{mZ_1}{mZ_1 + (1-m)Z_2}UV_B</script><p>将 $Z_n$ 带入得：</p>
-<script type="math/tex; mode=display">
-UV_P = Z_n(\frac{1-m}{Z_1}UV_A + \frac{m}{Z_2}UV_B)</script><p>上式就是我们在代码中实现的，将所有顶点的所有属性都除以其深度值 w（经过投影变换，w 是 -Z，一次乘法一次除法负号消掉了），然后使用屏幕坐标对顶点进行所有属性的线性插值之后再乘以插值点的深度值，就完成了线性插值的透视校正。</p>
-<p>现在推广到三维空间，可以得到：</p>
-<script type="math/tex; mode=display">
-Z_n = \frac{1}{\frac{1-u-v}{Z_1} + \frac{u}{Z_2} + \frac{v}{Z_3}}</script><p>其中 u 和 v 是重心插值系数：</p>
-<script type="math/tex; mode=display">
-P = (1-u-v)A + uB + vC</script><p>于是在三维空间中，点 P 的纹理坐标为：</p>
-<script type="math/tex; mode=display">
-UV_P = Z_n(\frac{1-u-v}{Z_1}UV_A + \frac{u}{Z_2}UV_B + \frac{v}{Z_3}UV_C)</script><p>于是同样的，在透视除法中，将所有顶点的所有属性都除以其深度值 w（经过投影变换，w 是 -Z，一次乘法一次除法负号消掉了），然后使用屏幕坐标对顶点进行所有属性的重心插值之后再乘以插值点的深度值，就完成了重心插值的透视校正。</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/25/20220525-%E9%80%8F%E8%A7%86%E6%8F%92%E5%80%BC%E6%A0%A1%E6%AD%A3/v2-1766a667c7a314f19092ecc00ea03b6b_b.jpg" alt="v2-1766a667c7a314f19092ecc00ea03b6b_b"></p>
+<p>根据三角形相似可以得到：<br>$$<br>\frac{n}{1-n} &#x3D; \frac{|AG|}{|BK|} &#x3D; \frac{|A’P’|\frac{Z_1}{c}}{|B’P’|\frac{Z_2}{c}} &#x3D; \frac{mZ_1}{(1-m)Z_2}<br>$$<br>等式两边取倒数可得：<br>$$<br>\frac{1}{n} - 1 &#x3D; \frac{(1-m)Z_2}{mZ_1}<br>$$<br>由此可以解得：<br>$$<br>n &#x3D; \frac{mZ_1}{mZ_1 + (1-m)Z_2}<br>$$<br>这样我们就得到了已知屏幕空间的插值系数 m，求观察空间的插值系数 n 的方法。使用插值系数 n 就可以对顶点的任意属性进行插值了。比如点 P 的 Z 坐标：<br>$$<br>Z_n &#x3D; (1-n)Z_1 + nZ_2 &#x3D; \frac{(1-m)Z_2}{mZ_1 + (1-m)Z_2}Z_1 + \frac{mZ_1}{mZ_1 + (1-m)Z_2}Z_2<br>$$<br>化简后得到：<br>$$<br>Z_n &#x3D; \frac{Z_1Z_2}{mZ_1 + (1-m)Z_2} &#x3D; \frac{1}{\frac{1-m}{Z_1} + \frac{m}{Z_2}}<br>$$<br>这样计算其他属性的插值就可以直接将 $Z_n$ 带入，为什么要将 $Z_n$ 带入呢？因为我们的观察方向都是沿着 -Z 轴方向，所以透视的缩放关系只和深度 Z 有关。比如求点 P 的纹理坐标：<br>$$<br>UV_P &#x3D; \frac{(1-m)Z_2}{mZ_1 + (1-m)Z_2}UV_A + \frac{mZ_1}{mZ_1 + (1-m)Z_2}UV_B<br>$$<br>将 $Z_n$ 带入得：<br>$$<br>UV_P &#x3D; Z_n(\frac{1-m}{Z_1}UV_A + \frac{m}{Z_2}UV_B)<br>$$<br>上式就是我们在代码中实现的，将所有顶点的所有属性都除以其深度值 w（经过投影变换，w 是 -Z，一次乘法一次除法负号消掉了），然后使用屏幕坐标对顶点进行所有属性的线性插值之后再乘以插值点的深度值，就完成了线性插值的透视校正。</p>
+<p>现在推广到三维空间，可以得到：<br>$$<br>Z_n &#x3D; \frac{1}{\frac{1-u-v}{Z_1} + \frac{u}{Z_2} + \frac{v}{Z_3}}<br>$$<br>其中 u 和 v 是重心插值系数：<br>$$<br>P &#x3D; (1-u-v)A + uB + vC<br>$$<br>于是在三维空间中，点 P 的纹理坐标为：<br>$$<br>UV_P &#x3D; Z_n(\frac{1-u-v}{Z_1}UV_A + \frac{u}{Z_2}UV_B + \frac{v}{Z_3}UV_C)<br>$$<br>于是同样的，在透视除法中，将所有顶点的所有属性都除以其深度值 w（经过投影变换，w 是 -Z，一次乘法一次除法负号消掉了），然后使用屏幕坐标对顶点进行所有属性的重心插值之后再乘以插值点的深度值，就完成了重心插值的透视校正。</p>
 
     </div>
 
@@ -368,10 +344,10 @@ UV_P = Z_n(\frac{1-u-v}{Z_1}UV_A + \frac{u}{Z_2}UV_B + \frac{v}{Z_3}UV_C)</scrip
       <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\06\20220306-光栅化\" rel="bookmark">【计算机图形学】（三）光栅化</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\08\20220308-深度缓冲\" rel="bookmark">【计算机图形学】（五）深度缓冲</a></div>
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\06\20220306-反走样\" rel="bookmark">【计算机图形学】（四）反走样</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\06\20220306-反走样\" rel="bookmark">【计算机图形学】（四）反走样</a></div>
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\08\20220308-深度缓冲\" rel="bookmark">【计算机图形学】（五）深度缓冲</a></div>
     </li>
   </ul>
 
@@ -528,13 +504,13 @@ UV_P = Z_n(\frac{1-u-v}{Z_1}UV_A + \frac{u}{Z_2}UV_B + \frac{v}{Z_3}UV_C)</scrip
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">957k</span>
+    <span title="站点总字数">964k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">14:30</span>
+    <span title="站点阅读时长">14:36</span>
 </div>
 
         

@@ -29,23 +29,23 @@
 <meta property="og:site_name" content="LycTechStack">
 <meta property="og:description" content="上一篇提到过，程序纹理基本上都是通过噪声纹理来实现的，不同的噪声纹理适合制作不同的效果，如云雾、水波、大理石、能量波等。这一节对常见的程序噪声算法进行总结，主要包括：  Value Noise Gradient Noise（Perlin Noise、Simplex Noise） Voronoi Noise 和 Worley Noise Fractal Brownian Motion Curl No">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/19200103-442ada94477d7682.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/19200103-6ee079fe186022e5.gif">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/19200103-e8fe35196eb9ddd9.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/19200103-bdec0bdd9617cdd0.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/19200103-a89ea620cfe2aad9.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/19200103-d8bc4eb896a6a039.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/19200103-a5f536670231116e.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/19200103-ef43d7f381fca207.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/19200103-7b5e9e3939c7b8ce.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/19200103-c17c41b69b51b075.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%A8%8B%E5%BA%8F%E5%99%AA%E5%A3%B0%E6%80%BB%E7%BB%93/19200103-442ada94477d7682.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%A8%8B%E5%BA%8F%E5%99%AA%E5%A3%B0%E6%80%BB%E7%BB%93/19200103-6ee079fe186022e5.gif">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%A8%8B%E5%BA%8F%E5%99%AA%E5%A3%B0%E6%80%BB%E7%BB%93/19200103-e8fe35196eb9ddd9.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%A8%8B%E5%BA%8F%E5%99%AA%E5%A3%B0%E6%80%BB%E7%BB%93/19200103-bdec0bdd9617cdd0.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%A8%8B%E5%BA%8F%E5%99%AA%E5%A3%B0%E6%80%BB%E7%BB%93/19200103-a89ea620cfe2aad9.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%A8%8B%E5%BA%8F%E5%99%AA%E5%A3%B0%E6%80%BB%E7%BB%93/19200103-d8bc4eb896a6a039.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%A8%8B%E5%BA%8F%E5%99%AA%E5%A3%B0%E6%80%BB%E7%BB%93/19200103-a5f536670231116e.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%A8%8B%E5%BA%8F%E5%99%AA%E5%A3%B0%E6%80%BB%E7%BB%93/19200103-ef43d7f381fca207.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%A8%8B%E5%BA%8F%E5%99%AA%E5%A3%B0%E6%80%BB%E7%BB%93/19200103-7b5e9e3939c7b8ce.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%A8%8B%E5%BA%8F%E5%99%AA%E5%A3%B0%E6%80%BB%E7%BB%93/19200103-c17c41b69b51b075.png">
 <meta property="article:published_time" content="2022-05-15T07:24:30.000Z">
 <meta property="article:modified_time" content="2022-05-15T07:25:56.380Z">
 <meta property="article:author" content="Lyc">
 <meta property="article:tag" content="计算机图形学">
 <meta property="article:tag" content="实时渲染">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/19200103-442ada94477d7682.png">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%A8%8B%E5%BA%8F%E5%99%AA%E5%A3%B0%E6%80%BB%E7%BB%93/19200103-442ada94477d7682.png">
 
 <link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%A8%8B%E5%BA%8F%E5%99%AA%E5%A3%B0%E6%80%BB%E7%BB%93/">
 
@@ -298,55 +298,42 @@
 <li>四方连续，为了保证 tiling 时不会出现肉眼可辩的缝隙，需要保证上下左右四个方向都是连续的（如果使用了大量 tiling 可能会导致重复纹样，而解决重复的做法就是将 tiling 尺寸设得足够大，虽然可能会引入其他问题，但是这个问题可以通过其他方式来规避）。</li>
 </ul>
 <h3 id="2-Value-Noise"><a href="#2-Value-Noise" class="headerlink" title="2 Value Noise"></a>2 Value Noise</h3><p>Value Noise 是最简单的一类噪声，其实现算法非常简单，以 2D 为例，我们在一个规整的 2D 网格上的每个顶点（如下图中的每个红色小圆点）放置一个随机数（通常范围在 [0, 1] 之间），之后使用线性插值填充每个小方格，得到的结果就是 Value Noise。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/19200103-442ada94477d7682.png" alt="19200103-442ada94477d7682"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%A8%8B%E5%BA%8F%E5%99%AA%E5%A3%B0%E6%80%BB%E7%BB%93/19200103-442ada94477d7682.png" alt="19200103-442ada94477d7682"></p>
 <h3 id="3-Gradient-Noise"><a href="#3-Gradient-Noise" class="headerlink" title="3 Gradient Noise"></a>3 Gradient Noise</h3><p>Value Noise 是通过对周边顶点的随机 Value 进行插值来得到噪声贴图的，而 Gradient Noise 的实现原理与 Value Noise 类似，不同的是，这里是通过对周边顶点的 Gradient（梯度，可以理解为某个点的速度，常用向量来表示）进行插值来输出噪声贴图。</p>
 <p>对梯度进行插值，这里有一个问题需要解决，那就是对向量的插值，得到的结果肯定还是向量，而前面说过，噪声的输出结果应该是一个浮点数，那么要怎么实现这二者的转换呢？这里的做法是将当前像素点到对应顶点的连线作为一个向量，与这个顶点的梯度进行点乘，就得到了对应的浮点数，之后再对这个浮点数应用与 Value Noise 一样的插值算法，就能得到对应的噪声结果了。</p>
 <p>根据插值顶点选取算法的不同，这里又有不同的细分，Perlin Noise 与前面的 Value Noise 类似，都是选取周边四个顶点（如果是 3D 的，就是周边 8 个顶点，以此类推）的数据进行插值，而 Simplex Noise 则不同，选取的是等边三个顶点的数据（如果是 3D，选取的就是正四面体的四个顶点进行插值），下面来看这两种噪声的实现细节。</p>
-<h4 id="3-1-Perlin-Noise"><a href="#3-1-Perlin-Noise" class="headerlink" title="3.1 Perlin Noise"></a>3.1 Perlin Noise</h4><p>Perlin Noise 非常常见，关于 Perlin  Noise 可以查看之前在光线追踪中的实现：<a href="https://lz328.github.io/LycTechStack.github.io/2022/04/19/20220419-RayTracer-Perlin噪声/">【RayTracer】（十二）Perlin 噪声</a>。</p>
+<h4 id="3-1-Perlin-Noise"><a href="#3-1-Perlin-Noise" class="headerlink" title="3.1 Perlin Noise"></a>3.1 Perlin Noise</h4><p>Perlin Noise 非常常见，关于 Perlin  Noise 可以查看之前在光线追踪中的实现：<a href="https://lz328.github.io/LycTechStack.github.io/2022/04/19/20220419-RayTracer-Perlin%E5%99%AA%E5%A3%B0/">【RayTracer】（十二）Perlin 噪声</a>。</p>
 <h4 id="3-2-Simplex-Noise"><a href="#3-2-Simplex-Noise" class="headerlink" title="3.2 Simplex Noise"></a>3.2 Simplex Noise</h4><p>实际上，Simplex 噪声跟 Perlin 噪声都是 Ken Perlin 发明的，后者是对前者的优化替代，Simplex 实际上是一种算法，既可以用于实现 Value Noise，同样也可以用于实现 Gradient Noise，不过由于 Gradient Noise 的应用范围更广，因此这里我们就直接跳过 Value Noise 部分，只介绍用于实现 Gradient Noise 的部分。</p>
 <p>Simplex Noise 与 Perlin Noise 的区别在于其插值时所选取的周边顶点的算法不同，具体而言，是选取此像素所从属的 grid 中的正三角形（等边三角形）的三个顶点（即将 Perlin Noise 中的插值正方形沿着对角线一分为二，选取当前像素所在的那个正三角形的三个顶点，对应到 3D 空间，Perlin 使用的是立方体的 8 个顶点，而 Simplex 使用的则是连接相邻三个面的对角线组成的四面体转换后的正立方体的四个顶点）作为插值的数据源。</p>
 <p>相对 Perlin Noise，Simplex 的实现更为简洁，其成本也更低。与前面计算某个像素对应的噪声值需要通过对周边顶点数据进行插值不同，Simplex 采用的是衰减函数，比如根据某个顶点到此像素的距离来计算此顶点数据对于此像素的贡献，之后将周边顶点的贡献进行累加就得到了最终的输出结果。</p>
-<p>前面说到，Simplex 噪声来自于正三角形（正四面体）的数据衰减，那么这个正三角形是怎么来的呢？我们知道，一个 2D 平面，既可以使用正方形进行无缝平铺，这种 tiling 方式对应的就是前面 Value / Perlin Noise 的计算基础，同时也可以使用正三角形进行平铺，而这对应的则是 Simplex 噪声的实现基础，这里的一个问题就是这二者是如何转换的，毕竟我们平常使用的基本上都是 grid，也就是正方形的平铺方式。这个转换过程可以参考：</p>
+<p>前面说到，Simplex 噪声来自于正三角形（正四面体）的数据衰减，那么这个正三角形是怎么来的呢？我们知道，一个 2D 平面，既可以使用正方形进行无缝平铺，这种 tiling 方式对应的就是前面 Value &#x2F; Perlin Noise 的计算基础，同时也可以使用正三角形进行平铺，而这对应的则是 Simplex 噪声的实现基础，这里的一个问题就是这二者是如何转换的，毕竟我们平常使用的基本上都是 grid，也就是正方形的平铺方式。这个转换过程可以参考：</p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/9cfb678fbd95">图形学中常见噪声生成算法综述</a>中的 2.2 节</li>
 <li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Simplex_noise">Simplex noise - Wikipedia</a></li>
 </ul>
 <h3 id="4-Voronoi-Noise-和-Worley-Noise"><a href="#4-Voronoi-Noise-和-Worley-Noise" class="headerlink" title="4 Voronoi Noise 和 Worley Noise"></a>4 Voronoi Noise 和 Worley Noise</h3><p>Voronoi Noise 与 Worley Noise 在形态上十分相似，在图形学中的应用也基本一致，比如同样用于进行云层创建，水底焦散现象模拟等，那同样的噪声为什么会有两个名字呢？实际上图形学中最开始使用的是 Voronoi 噪声，只是这种噪声的实现算法消耗比较高，后面 Steven Worley 对齐进行了改进，提出了以其名字命名的 Worley 噪声。下面我们一起来看一下这两种噪声的实现算法。</p>
 <p>Voronoi 噪声是通过在空间中生成随机分布的多个特征点，之后对于每个需要计算的像素，对所有的特征点进行遍历，找到距离其最近的特征点，以其对应的特征值作为此像素的值进行输出。下图展示了 Voronoi 噪声的生成过程：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/19200103-6ee079fe186022e5.gif" alt="19200103-6ee079fe186022e5"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%A8%8B%E5%BA%8F%E5%99%AA%E5%A3%B0%E6%80%BB%E7%BB%93/19200103-6ee079fe186022e5.gif" alt="19200103-6ee079fe186022e5"></p>
 <p>Voronoi 噪声的思路很简单，但是由于需要对每个特征点进行遍历，整个算法的复杂度就变得很高了，为了降低计算的消耗，Worley 噪声就应运而生了。</p>
-<p>Worley 噪声是通过将空间（2D / 3D）划分成一个个的 cell（正方形 / 立方体），在每个 cell 中的随机位置随机生成一个特征点，之后对于每个待计算的像素，搜寻周边的 cell，找到距离其最近的噪点，之后以距离此噪点的距离作为当前像素的噪声结果，就得到了对应的 Worley 噪声。相对于 Voronoi 噪声，Worley 算法的改进点在于将搜寻范围从所有特征点限定在了周边的若干个 cell 之中，理论上最正确的搜索范围是周边 25 个 cell，但实际上如果噪声函数选取得当，使用九宫格进行搜索也能得到正确的结果。下图展示了 Worley 噪声的结果：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/19200103-e8fe35196eb9ddd9.png" alt="19200103-e8fe35196eb9ddd9"></p>
+<p>Worley 噪声是通过将空间（2D &#x2F; 3D）划分成一个个的 cell（正方形 &#x2F; 立方体），在每个 cell 中的随机位置随机生成一个特征点，之后对于每个待计算的像素，搜寻周边的 cell，找到距离其最近的噪点，之后以距离此噪点的距离作为当前像素的噪声结果，就得到了对应的 Worley 噪声。相对于 Voronoi 噪声，Worley 算法的改进点在于将搜寻范围从所有特征点限定在了周边的若干个 cell 之中，理论上最正确的搜索范围是周边 25 个 cell，但实际上如果噪声函数选取得当，使用九宫格进行搜索也能得到正确的结果。下图展示了 Worley 噪声的结果：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%A8%8B%E5%BA%8F%E5%99%AA%E5%A3%B0%E6%80%BB%E7%BB%93/19200103-e8fe35196eb9ddd9.png" alt="19200103-e8fe35196eb9ddd9"></p>
 <p>如果将搜索范围换成 9 个 cell，会发现结果会存在异常，这是因为在某些随机函数作用下，九宫格搜索会漏掉一些正确解导致：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/19200103-bdec0bdd9617cdd0.png" alt="19200103-bdec0bdd9617cdd0"></p>
-<h3 id="5-Fractal-Brownian-Motion"><a href="#5-Fractal-Brownian-Motion" class="headerlink" title="5 Fractal Brownian Motion"></a>5 Fractal Brownian Motion</h3><p>有时候单一频率的噪声不足以满足需求，会需要使用多级噪声累加的结果来实现程序化生成，这种方式我们称之为分形布朗运动（Fractal Brownian Motion，简称 FBM），也称为 Turbulence，简单来说就是将多个不同频率的噪声按照不同的振幅进行混合，在<a href="https://lz328.github.io/LycTechStack.github.io/2022/04/19/20220419-RayTracer-Perlin噪声/">【RayTracer】（十二）Perlin 噪声</a>中有 Turbulence 应用于 Perlin Noise 的代码实现。还可以将 FBM 应用于 Worley 噪声，得到的效果：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/19200103-a89ea620cfe2aad9.png" alt="19200103-a89ea620cfe2aad9"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%A8%8B%E5%BA%8F%E5%99%AA%E5%A3%B0%E6%80%BB%E7%BB%93/19200103-bdec0bdd9617cdd0.png" alt="19200103-bdec0bdd9617cdd0"></p>
+<h3 id="5-Fractal-Brownian-Motion"><a href="#5-Fractal-Brownian-Motion" class="headerlink" title="5 Fractal Brownian Motion"></a>5 Fractal Brownian Motion</h3><p>有时候单一频率的噪声不足以满足需求，会需要使用多级噪声累加的结果来实现程序化生成，这种方式我们称之为分形布朗运动（Fractal Brownian Motion，简称 FBM），也称为 Turbulence，简单来说就是将多个不同频率的噪声按照不同的振幅进行混合，在<a href="https://lz328.github.io/LycTechStack.github.io/2022/04/19/20220419-RayTracer-Perlin%E5%99%AA%E5%A3%B0/">【RayTracer】（十二）Perlin 噪声</a>中有 Turbulence 应用于 Perlin Noise 的代码实现。还可以将 FBM 应用于 Worley 噪声，得到的效果：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%A8%8B%E5%BA%8F%E5%99%AA%E5%A3%B0%E6%80%BB%E7%BB%93/19200103-a89ea620cfe2aad9.png" alt="19200103-a89ea620cfe2aad9"></p>
 <h3 id="6-Curl-Noise"><a href="#6-Curl-Noise" class="headerlink" title="6 Curl Noise"></a>6 Curl Noise</h3><p>Curl 噪声在图形学中有着广泛的应用，比如可以用于对粒子位置进行调制，使之产生卷曲的效果；比如可以对烟雾水流效果进行调制，生成湍流扰动效果等。相对于其他的流体模拟算法，Curl Noise 的生成算法算是十分简单的，但是应用起来效果却并没有减色多少。</p>
-<p>Curl 噪声中的 Curl 可以看成是跟加减乘除号同等的一种运算符号，其输入数据是一个向量，经过 curl 运算之后，就得到了一个 divergence free（无散度）的向量场，这里先介绍下什么是向量的 divergence，即散度：</p>
-<script type="math/tex; mode=display">
-div\ \vec a = \nabla · \vec a = \frac{\partial a_x}{\partial x} + \frac{\partial a_y}{\partial y} + \frac{\partial a_z}{\partial z}</script><p>散度指的是向量三个分量在对应坐标轴方向上的偏微分之和，从物理上来说，指的是一个向量场在某个给定的位置散开或者说收敛的程度，日常生活中常见的流体比如水流，空气，烟雾等都是 divergence-free（无散）的。curl 噪声从物理上来说，可以用来表征用于对向量进行转向的力的大小。</p>
-<p>下面我们来介绍一下 Curl 噪声的实现算法，对一个潜在的 3D 向量场 $\Psi$ 而言，令：</p>
-<script type="math/tex; mode=display">
-\vec \Psi = (\Psi_1, \Psi_2, \Psi_3)</script><p>由此我们可以计算出其 Curl Velocity 算子：</p>
-<script type="math/tex; mode=display">
-\vec v(x,y,z) = (\frac{\partial \Psi_3}{\partial y} - \frac{\partial \Psi_2}{\partial z},
-\frac{\partial \Psi_1}{\partial z} - \frac{\partial \Psi_3}{\partial x},
-\frac{\partial \Psi_2}{\partial x} - \frac{\partial \Psi_1}{\partial y})</script><p>2D 情况较为简单：</p>
-<script type="math/tex; mode=display">
-\vec v(x,y) = (\frac{\partial \Psi}{\partial y},-\frac{\partial \Psi}{\partial x})</script><p>根据流体力学可知，上述速度场都是无散的，即：</p>
-<script type="math/tex; mode=display">
-\nabla·\vec v = 0</script><p>具体来说，假设我们以二维 Perlin 噪声作为向量场，那么最终的 Curl 噪声就可以用如下公式表示：</p>
-<script type="math/tex; mode=display">
-\vec v(x,y) = (\frac{PerlinNoise(x,y)}{\partial y},-\frac{PerlinNoise(x,y)}{\partial x})</script><p>代码如下：</p>
+<p>Curl 噪声中的 Curl 可以看成是跟加减乘除号同等的一种运算符号，其输入数据是一个向量，经过 curl 运算之后，就得到了一个 divergence free（无散度）的向量场，这里先介绍下什么是向量的 divergence，即散度：<br>$$<br>div\ \vec a &#x3D; \nabla · \vec a &#x3D; \frac{\partial a_x}{\partial x} + \frac{\partial a_y}{\partial y} + \frac{\partial a_z}{\partial z}<br>$$<br>散度指的是向量三个分量在对应坐标轴方向上的偏微分之和，从物理上来说，指的是一个向量场在某个给定的位置散开或者说收敛的程度，日常生活中常见的流体比如水流，空气，烟雾等都是 divergence-free（无散）的。curl 噪声从物理上来说，可以用来表征用于对向量进行转向的力的大小。</p>
+<p>下面我们来介绍一下 Curl 噪声的实现算法，对一个潜在的 3D 向量场 $\Psi$ 而言，令：<br>$$<br>\vec \Psi &#x3D; (\Psi_1, \Psi_2, \Psi_3)<br>$$<br>由此我们可以计算出其 Curl Velocity 算子：<br>$$<br>\vec v(x,y,z) &#x3D; (\frac{\partial \Psi_3}{\partial y} - \frac{\partial \Psi_2}{\partial z},<br>\frac{\partial \Psi_1}{\partial z} - \frac{\partial \Psi_3}{\partial x},<br>\frac{\partial \Psi_2}{\partial x} - \frac{\partial \Psi_1}{\partial y})<br>$$<br>2D 情况较为简单：<br>$$<br>\vec v(x,y) &#x3D; (\frac{\partial \Psi}{\partial y},-\frac{\partial \Psi}{\partial x})<br>$$<br>根据流体力学可知，上述速度场都是无散的，即：<br>$$<br>\nabla·\vec v &#x3D; 0<br>$$<br>具体来说，假设我们以二维 Perlin 噪声作为向量场，那么最终的 Curl 噪声就可以用如下公式表示：<br>$$<br>\vec v(x,y) &#x3D; (\frac{PerlinNoise(x,y)}{\partial y},-\frac{PerlinNoise(x,y)}{\partial x})<br>$$<br>代码如下：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">vec2 <span class="title">curlNoise</span><span class="params">(vec2 uv)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">float</span> eps = <span class="number">0.00001</span>;</span><br><span class="line">    <span class="type">float</span> x = uv.x;</span><br><span class="line">    <span class="type">float</span> y = uv.y;</span><br><span class="line">    <span class="comment">//Find rate of change in X direction</span></span><br><span class="line">    <span class="type">int</span> firstOctave = <span class="number">3</span>;</span><br><span class="line">    <span class="type">int</span> accumOctaves = <span class="number">3</span>;</span><br><span class="line">    <span class="type">bool</span> revertPerlin = <span class="literal">false</span>;</span><br><span class="line">    <span class="type">float</span> n1 = <span class="built_in">perlin2DNoise</span>(<span class="built_in">vec2</span>(x, y + eps), revertPerlin).x;</span><br><span class="line">    <span class="type">float</span> n2 = <span class="built_in">perlin2DNoise</span>(<span class="built_in">vec2</span>(x, y - eps), revertPerlin).x;</span><br><span class="line">    <span class="comment">//Average to find approximate derivative</span></span><br><span class="line">    <span class="type">float</span> a = (n1 - n2)/(<span class="number">2.0</span> * eps);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//Find rate of change in Y direction</span></span><br><span class="line">    <span class="type">float</span> n3 = <span class="built_in">perlin2DNoise</span>(<span class="built_in">vec2</span>(x + eps, y), revertPerlin).x;</span><br><span class="line">    <span class="type">float</span> n4 = <span class="built_in">perlin2DNoise</span>(<span class="built_in">vec2</span>(x - eps, y), revertPerlin).x;</span><br><span class="line">    <span class="comment">//Average to find approximate derivative</span></span><br><span class="line">    <span class="type">float</span> b = (n3 - n4)/(<span class="number">2.0</span> * eps);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//Curl</span></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">vec2</span>(a, -b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>效果如下：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/19200103-d8bc4eb896a6a039.png" alt="19200103-d8bc4eb896a6a039"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%A8%8B%E5%BA%8F%E5%99%AA%E5%A3%B0%E6%80%BB%E7%BB%93/19200103-d8bc4eb896a6a039.png" alt="19200103-d8bc4eb896a6a039"></p>
 <p>将之用速度向量来表示，如下图所示：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/19200103-a5f536670231116e.png" alt="19200103-a5f536670231116e"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%A8%8B%E5%BA%8F%E5%99%AA%E5%A3%B0%E6%80%BB%E7%BB%93/19200103-a5f536670231116e.png" alt="19200103-a5f536670231116e"></p>
 <p>其中灰色部分表示的是原始的 Perlin 噪声，而白色箭头表示的则是 Curl 噪声向量的方向与大小。</p>
 <p>提高噪声频率得到的效果如下：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/19200103-ef43d7f381fca207.png" alt="19200103-ef43d7f381fca207"></p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/19200103-7b5e9e3939c7b8ce.png" alt="19200103-7b5e9e3939c7b8ce"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%A8%8B%E5%BA%8F%E5%99%AA%E5%A3%B0%E6%80%BB%E7%BB%93/19200103-ef43d7f381fca207.png" alt="19200103-ef43d7f381fca207"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%A8%8B%E5%BA%8F%E5%99%AA%E5%A3%B0%E6%80%BB%E7%BB%93/19200103-7b5e9e3939c7b8ce.png" alt="19200103-7b5e9e3939c7b8ce"></p>
 <h3 id="7-White-Noise"><a href="#7-White-Noise" class="headerlink" title="7 White Noise"></a>7 White Noise</h3><p>白噪声（White Noise）是一种在各个频率上的强度都十分均匀的噪声，这种噪声并不平滑，而自然界的各种纹理实际上都是连续的，因此通常不适合用于贴图生成。</p>
 <p>实际上，所谓的白噪声并不是特指的某一种噪声，而是一种信号的统计模型。在离散采样中，白噪声具有如下特点：</p>
 <ul>
@@ -354,7 +341,7 @@ div\ \vec a = \nabla · \vec a = \frac{\partial a_x}{\partial x} + \frac{\partia
 <li>信号的均值为0，方差有限。</li>
 </ul>
 <p>实现白噪声最简单的算法就是直接使用一个随机数作为返回值。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/19200103-c17c41b69b51b075.png" alt="19200103-c17c41b69b51b075"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%A8%8B%E5%BA%8F%E5%99%AA%E5%A3%B0%E6%80%BB%E7%BB%93/19200103-c17c41b69b51b075.png" alt="19200103-c17c41b69b51b075"></p>
 
     </div>
 
@@ -408,10 +395,10 @@ div\ \vec a = \nabla · \vec a = \frac{\partial a_x}{\partial x} + \frac{\partia
       <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\13\20220513-RTR-GPU管线\" rel="bookmark">【Real-Time Rendering】GPU管线</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\14\20220514-RTR-模板测试和深度测试\" rel="bookmark">【Real-Time Rendering】模板测试和深度测试</a></div>
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\13\20220513-RTR-图形渲染和视觉外观\" rel="bookmark">【Real-Time Rendering】图形渲染和视觉处理</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\13\20220513-RTR-图形渲染和视觉外观\" rel="bookmark">【Real-Time Rendering】图形渲染和视觉处理</a></div>
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\14\20220514-RTR-模板测试和深度测试\" rel="bookmark">【Real-Time Rendering】模板测试和深度测试</a></div>
     </li>
     <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\05\16\20220516-RTR-BRDF总结\" rel="bookmark">【Real-Time Rendering】BRDF总结</a></div>
@@ -574,13 +561,13 @@ div\ \vec a = \nabla · \vec a = \frac{\partial a_x}{\partial x} + \frac{\partia
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">957k</span>
+    <span title="站点总字数">964k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">14:30</span>
+    <span title="站点阅读时长">14:36</span>
 </div>
 
         
