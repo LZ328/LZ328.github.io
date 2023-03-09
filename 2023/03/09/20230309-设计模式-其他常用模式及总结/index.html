@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/LycTechStack.github.io/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/LycTechStack.github.io/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/LycTechStack.github.io/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/LycTechStack.github.io/images/safari-pinned-tab.svg" color="#222">
+
+<link rel="stylesheet" href="/LycTechStack.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="/LycTechStack.github.io/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/LycTechStack.github.io/lib/pace/pace-theme-minimal.min.css">
+  <script src="/LycTechStack.github.io/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lz328.github.io","root":"/LycTechStack.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":5,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="本篇介绍了其他常用设计模式并对所有设计模式及相关设计原则进行了总结。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【设计模式】其他常用模式及总结">
+<meta property="og:url" content="https://lz328.github.io/LycTechStack.github.io/2023/03/09/20230309-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%85%B6%E4%BB%96%E5%B8%B8%E7%94%A8%E6%A8%A1%E5%BC%8F%E5%8F%8A%E6%80%BB%E7%BB%93/index.html">
+<meta property="og:site_name" content="LycTechStack">
+<meta property="og:description" content="本篇介绍了其他常用设计模式并对所有设计模式及相关设计原则进行了总结。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-03-09T03:54:36.000Z">
+<meta property="article:modified_time" content="2023-03-09T03:56:57.182Z">
+<meta property="article:author" content="Lyc">
+<meta property="article:tag" content="设计模式">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2023/03/09/20230309-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%85%B6%E4%BB%96%E5%B8%B8%E7%94%A8%E6%A8%A1%E5%BC%8F%E5%8F%8A%E6%80%BB%E7%BB%93/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>【设计模式】其他常用模式及总结 | LycTechStack</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/LycTechStack.github.io/atom.xml" title="LycTechStack" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/LycTechStack.github.io/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LycTechStack</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Lyc的个人成长技术栈</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/LycTechStack.github.io/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/LycTechStack.github.io/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/LycTechStack.github.io/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/LycTechStack.github.io/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/LycTechStack.github.io/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://lz328.github.io/LycTechStack.github.io/2023/03/09/20230309-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%85%B6%E4%BB%96%E5%B8%B8%E7%94%A8%E6%A8%A1%E5%BC%8F%E5%8F%8A%E6%80%BB%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/LycTechStack.github.io/images/avatar.png">
+      <meta itemprop="name" content="Lyc">
+      <meta itemprop="description" content="个人学习总结和技术经验分享，主要内容包括C++、数据结构、算法、计算机图形学、3D数学、实时渲染、游戏引擎等等，希望未来能真正踏入图形/引擎开发的大门！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LycTechStack">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【设计模式】其他常用模式及总结
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-03-09 11:54:36 / 修改时间：11:56:57" itemprop="dateCreated datePublished" datetime="2023-03-09T11:54:36+08:00">2023-03-09</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/LycTechStack.github.io/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>12k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>11 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本篇介绍了其他常用设计模式并对所有设计模式及相关设计原则进行了总结。</p>
+<p><em><span id="more"></span></em></p>
+<h3 id="1-其他常用设计模式"><a href="#1-其他常用设计模式" class="headerlink" title="1 其他常用设计模式"></a>1 其他常用设计模式</h3><h4 id="1-1-桥模式（Bridge）"><a href="#1-1-桥模式（Bridge）" class="headerlink" title="1.1 桥模式（Bridge）"></a>1.1 桥模式（Bridge）</h4><p>桥模式与装饰者模式类似，都是执行“单一职责”原则的模式。在某些情况下，有些类的实现可能包含多个维度的变化，例如一个信息发送器类：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Messager</span>&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="comment">// 第一部分，由具体业务实现</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">Login</span><span class="params">(string username, string password)</span></span>=<span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">SendMessage</span><span class="params">(string message)</span></span>=<span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">SendPicture</span><span class="params">(Image image)</span></span>=<span class="number">0</span>;</span><br><span class="line">    <span class="comment">// 第二部分，由平台实现</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">PlaySound</span><span class="params">()</span></span>=<span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">DrawShape</span><span class="params">()</span></span>=<span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">WriteText</span><span class="params">()</span></span>=<span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">Connect</span><span class="params">()</span></span>=<span class="number">0</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">virtual</span> ~<span class="built_in">Messager</span>()&#123;&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>该类中第一部分方法需要调用第二部分方法，但每一部分方法都有不同的实现，比如PC平台下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// PC平台实现具体方法</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">PCMessagerBase</span> : <span class="keyword">public</span> Messager&#123;</span><br><span class="line"><span class="keyword">public</span>: </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">PlaySound</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">//**********</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">DrawShape</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">//**********</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">WriteText</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">//**********</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">Connect</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">//**********</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">// 基于PC平台实现不同业务逻辑</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">PCMessagerLite</span> : <span class="keyword">public</span> PCMessagerBase &#123;</span><br><span class="line"><span class="keyword">public</span>:    </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">Login</span><span class="params">(string username, string password)</span></span>&#123;</span><br><span class="line">        PCMessagerBase::<span class="built_in">Connect</span>();</span><br><span class="line">        <span class="comment">//........</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">SendMessage</span><span class="params">(string message)</span></span>&#123;</span><br><span class="line">        PCMessagerBase::<span class="built_in">WriteText</span>();</span><br><span class="line">        <span class="comment">//........</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">SendPicture</span><span class="params">(Image image)</span></span>&#123;        </span><br><span class="line">        PCMessagerBase::<span class="built_in">DrawShape</span>();</span><br><span class="line">        <span class="comment">//........</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">PCMessagerPerfect</span> : <span class="keyword">public</span> PCMessagerBase &#123;</span><br><span class="line"><span class="keyword">public</span>:    </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">Login</span><span class="params">(string username, string password)</span></span>&#123;        </span><br><span class="line">        PCMessagerBase::<span class="built_in">PlaySound</span>();</span><br><span class="line">        <span class="comment">//********</span></span><br><span class="line">        PCMessagerBase::<span class="built_in">Connect</span>();</span><br><span class="line">        <span class="comment">//........</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">SendMessage</span><span class="params">(string message)</span></span>&#123;        </span><br><span class="line">        PCMessagerBase::<span class="built_in">PlaySound</span>();</span><br><span class="line">        <span class="comment">//********</span></span><br><span class="line">        PCMessagerBase::<span class="built_in">WriteText</span>();</span><br><span class="line">        <span class="comment">//........</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">SendPicture</span><span class="params">(Image image)</span></span>&#123;        </span><br><span class="line">        PCMessagerBase::<span class="built_in">PlaySound</span>();</span><br><span class="line">        <span class="comment">//********</span></span><br><span class="line">        PCMessagerBase::<span class="built_in">DrawShape</span>();</span><br><span class="line">        <span class="comment">//........</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>而当我们想要加入一个移动平台时，移动平台的业务逻辑也需要全部重写，从而产生大量重复代码，并且在修改业务逻辑时，也要对每个平台的代码进行修改。</p>
+<p>使用桥模式，将抽象部分（业务）和实现部分（平台）分离，使他们可以独立的变化。因此将业务和平台分离成两个基类：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 业务部分</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Messager</span>&#123;</span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">     MessagerImp* messagerImp;<span class="comment">//...</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">Login</span><span class="params">(string username, string password)</span></span>=<span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">SendMessage</span><span class="params">(string message)</span></span>=<span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">SendPicture</span><span class="params">(Image image)</span></span>=<span class="number">0</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">virtual</span> ~<span class="built_in">Messager</span>()&#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">// 平台部分</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MessagerImp</span>&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">PlaySound</span><span class="params">()</span></span>=<span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">DrawShape</span><span class="params">()</span></span>=<span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">WriteText</span><span class="params">()</span></span>=<span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">Connect</span><span class="params">()</span></span>=<span class="number">0</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="title">MessagerImp</span><span class="params">()</span></span>&#123;&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>然后平台的实现：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// PC平台</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">PCMessagerImp</span> : <span class="keyword">public</span> MessagerImp&#123;</span><br><span class="line"><span class="keyword">public</span>:    </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">PlaySound</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">//**********</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">DrawShape</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">//**********</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">WriteText</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">//**********</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">Connect</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">//**********</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">// 移动平台</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MobileMessagerImp</span> : <span class="keyword">public</span> MessagerImp&#123;</span><br><span class="line"><span class="keyword">public</span>:    </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">PlaySound</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">//==========</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">DrawShape</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">//==========</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">WriteText</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">//==========</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">Connect</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">//==========</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>之后业务部分包含一个平台对象，就无需关注具体的平台是谁了：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">MessagerLite</span> :<span class="keyword">public</span> Messager &#123;   </span><br><span class="line"><span class="keyword">public</span>:    </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">Login</span><span class="params">(string username, string password)</span></span>&#123;        </span><br><span class="line">        messagerImp-&gt;<span class="built_in">Connect</span>();</span><br><span class="line">        <span class="comment">//........</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">SendMessage</span><span class="params">(string message)</span></span>&#123;        </span><br><span class="line">        messagerImp-&gt;<span class="built_in">WriteText</span>();</span><br><span class="line">        <span class="comment">//........</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">SendPicture</span><span class="params">(Image image)</span></span>&#123;        </span><br><span class="line">        messagerImp-&gt;<span class="built_in">DrawShape</span>();</span><br><span class="line">        <span class="comment">//........</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MessagerPerfect</span>  :<span class="keyword">public</span> Messager &#123;   </span><br><span class="line"><span class="keyword">public</span>:    </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">Login</span><span class="params">(string username, string password)</span></span>&#123;        </span><br><span class="line">        messagerImp-&gt;<span class="built_in">PlaySound</span>();</span><br><span class="line">        <span class="comment">//********</span></span><br><span class="line">        messagerImp-&gt;<span class="built_in">Connect</span>();</span><br><span class="line">        <span class="comment">//........</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">SendMessage</span><span class="params">(string message)</span></span>&#123;        </span><br><span class="line">        messagerImp-&gt;<span class="built_in">PlaySound</span>();</span><br><span class="line">        <span class="comment">//********</span></span><br><span class="line">        messagerImp-&gt;<span class="built_in">WriteText</span>();</span><br><span class="line">        <span class="comment">//........</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">SendPicture</span><span class="params">(Image image)</span></span>&#123;        </span><br><span class="line">        messagerImp-&gt;<span class="built_in">PlaySound</span>();</span><br><span class="line">        <span class="comment">//********</span></span><br><span class="line">        messagerImp-&gt;<span class="built_in">DrawShape</span>();</span><br><span class="line">        <span class="comment">//........</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>这样就实现了抽象和实现的解耦，每个类只具有单一的职责。</p>
+<p>桥模式使用“对象间的组合关系”解耦了抽象和实现之间固有的绑定关系，使得抽象和实现可以沿着各自的维度来变化。所谓抽象和实现沿着各自维度的变化，即“子类化”它们。桥模式有时候类似于多继承方案，但是多继承方案往往违背单一职责原则，因此复用性比较差。桥模式是比多继承方案更好的解决方法。</p>
+<h4 id="1-2-生成器模式（Builder）"><a href="#1-2-生成器模式（Builder）" class="headerlink" title="1.2 生成器模式（Builder）"></a>1.2 生成器模式（Builder）</h4><p>生成器模式与工厂模式同属于对象创建模式，都是用来管理对象创建的模式。在软件系统中，有时候面临着“一个复杂对象”的创建工作，其通常由各个部分的子对象用一定的算法构成，但由于需求的变化，这个复杂对象的各个部分经常面临着剧烈的变化，但是将它们组合在 一起的算法却相对稳定。生成器模式将一个复杂对象的构建与其表示相分离，使得同样的构建过程可以创建不同的表示。</p>
+<p>以搭建房子为例，生成器模式会很好理解，代码如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">House</span>&#123;</span><br><span class="line">    <span class="comment">//....</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">HouseBuilder</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">House* <span class="title">GetResult</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> pHouse;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">virtual</span> ~<span class="built_in">HouseBuilder</span>()&#123;&#125;</span><br><span class="line"><span class="keyword">protected</span>:   </span><br><span class="line">    House* pHouse;</span><br><span class="line">	<span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">BuildPart1</span><span class="params">()</span></span>=<span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">BuildPart2</span><span class="params">()</span></span>=<span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">BuildPart3</span><span class="params">()</span></span>=<span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">BuildPart4</span><span class="params">()</span></span>=<span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">BuildPart5</span><span class="params">()</span></span>=<span class="number">0</span>;	</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">StoneHouse</span>: <span class="keyword">public</span> House&#123;</span><br><span class="line">    </span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">StoneHouseBuilder</span>: <span class="keyword">public</span> HouseBuilder&#123;</span><br><span class="line"><span class="keyword">protected</span>:  </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">BuildPart1</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">//pHouse-&gt;Part1 = ...;</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">BuildPart2</span><span class="params">()</span></span>&#123;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">BuildPart3</span><span class="params">()</span></span>&#123;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">BuildPart4</span><span class="params">()</span></span>&#123;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">BuildPart5</span><span class="params">()</span></span>&#123;</span><br><span class="line">        </span><br><span class="line">    &#125;    </span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">HouseDirector</span>&#123;   </span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    HouseBuilder* pHouseBuilder;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">HouseDirector</span>(HouseBuilder* pHouseBuilder)&#123;</span><br><span class="line">        <span class="keyword">this</span>-&gt;pHouseBuilder=pHouseBuilder;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function">House* <span class="title">Construct</span><span class="params">()</span></span>&#123;        </span><br><span class="line">        pHouseBuilder-&gt;<span class="built_in">BuildPart1</span>();        </span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">4</span>; i++)&#123;</span><br><span class="line">            pHouseBuilder-&gt;<span class="built_in">BuildPart2</span>();</span><br><span class="line">        &#125;        </span><br><span class="line">        <span class="type">bool</span> flag=pHouseBuilder-&gt;<span class="built_in">BuildPart3</span>();</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span>(flag)&#123;</span><br><span class="line">            pHouseBuilder-&gt;<span class="built_in">BuildPart4</span>();</span><br><span class="line">        &#125;        </span><br><span class="line">        pHouseBuilder-&gt;<span class="built_in">BuildPart5</span>();        </span><br><span class="line">        <span class="keyword">return</span> pHouseBuilder-&gt;<span class="built_in">GetResult</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>从上面的代码可见，Builder 模式主要用于“分步骤构建一个复杂的对象”。在这其中“分步骤”是一个稳定的算法，而复杂对象的各个部分则经常变化。</p>
+<h4 id="1-3-职责链模式（Chain-of-Resposibility）"><a href="#1-3-职责链模式（Chain-of-Resposibility）" class="headerlink" title="1.3 职责链模式（Chain of Resposibility）"></a>1.3 职责链模式（Chain of Resposibility）</h4><p>职责链模式与组合模式、迭代器模式类似，都属于面向数据结构的设计模式。在软件设计中，一个请求可能被多个对象处理，但是每个请求在运行时只能有一个接收者，如果显式指定，将带来发送者和接收者之间的紧耦合。职责链模式将对象连成一条链，并沿着这条链传递请求，直到有一个对象处理它为止。</p>
+<p>代码实现也非常直观：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="comment">// 请求类型，不同的接收者只能处理一个类型的请求</span></span><br><span class="line"><span class="keyword">enum class</span> <span class="title class_">RequestType</span></span><br><span class="line">&#123;</span><br><span class="line">    REQ_HANDLER1,</span><br><span class="line">    REQ_HANDLER2,</span><br><span class="line">    REQ_HANDLER3</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">// 请求发出者</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Reqest</span></span><br><span class="line">&#123;</span><br><span class="line">    string description;</span><br><span class="line">    RequestType reqType;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Reqest</span>(<span class="type">const</span> string &amp; desc, RequestType type) : <span class="built_in">description</span>(desc), <span class="built_in">reqType</span>(type) &#123;&#125;</span><br><span class="line">    <span class="function">RequestType <span class="title">getReqType</span><span class="params">()</span> <span class="type">const</span> </span>&#123; <span class="keyword">return</span> reqType; &#125;</span><br><span class="line">    <span class="function"><span class="type">const</span> string&amp; <span class="title">getDescription</span><span class="params">()</span> <span class="type">const</span> </span>&#123; <span class="keyword">return</span> description; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">// 责任链对象基类</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ChainHandler</span>&#123;   </span><br><span class="line">    ChainHandler *nextChain;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">sendReqestToNextHandler</span><span class="params">(<span class="type">const</span> Reqest &amp; req)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (nextChain != <span class="literal">nullptr</span>)</span><br><span class="line">            nextChain-&gt;<span class="built_in">handle</span>(req);</span><br><span class="line">    &#125;</span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">bool</span> <span class="title">canHandleRequest</span><span class="params">(<span class="type">const</span> Reqest &amp; req)</span> </span>= <span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">processRequest</span><span class="params">(<span class="type">const</span> Reqest &amp; req)</span> </span>= <span class="number">0</span>;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">ChainHandler</span>() &#123; nextChain = <span class="literal">nullptr</span>; &#125;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">setNextChain</span><span class="params">(ChainHandler *next)</span> </span>&#123; nextChain = next; &#125;</span><br><span class="line">    <span class="comment">// 能处理请求则处理，否则将请求发送给链上的下一个对象  </span></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">handle</span><span class="params">(<span class="type">const</span> Reqest &amp; req)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="built_in">canHandleRequest</span>(req))</span><br><span class="line">            <span class="built_in">processRequest</span>(req);</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            <span class="built_in">sendReqestToNextHandler</span>(req);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 请求接收对象1</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Handler1</span> : <span class="keyword">public</span> ChainHandler&#123;</span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">canHandleRequest</span><span class="params">(<span class="type">const</span> Reqest &amp; req)</span> <span class="keyword">override</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> req.<span class="built_in">getReqType</span>() == RequestType::REQ_HANDLER1;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">processRequest</span><span class="params">(<span class="type">const</span> Reqest &amp; req)</span> <span class="keyword">override</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;Handler1 is handle reqest: &quot;</span> &lt;&lt; req.<span class="built_in">getDescription</span>() &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">// 请求接收对象2 </span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Handler2</span> : <span class="keyword">public</span> ChainHandler&#123;</span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">canHandleRequest</span><span class="params">(<span class="type">const</span> Reqest &amp; req)</span> <span class="keyword">override</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> req.<span class="built_in">getReqType</span>() == RequestType::REQ_HANDLER2;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">processRequest</span><span class="params">(<span class="type">const</span> Reqest &amp; req)</span> <span class="keyword">override</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;Handler2 is handle reqest: &quot;</span> &lt;&lt; req.<span class="built_in">getDescription</span>() &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">// 请求接收对象3</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Handler3</span> : <span class="keyword">public</span> ChainHandler&#123;</span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">canHandleRequest</span><span class="params">(<span class="type">const</span> Reqest &amp; req)</span> <span class="keyword">override</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> req.<span class="built_in">getReqType</span>() == RequestType::REQ_HANDLER3;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">processRequest</span><span class="params">(<span class="type">const</span> Reqest &amp; req)</span> <span class="keyword">override</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;Handler3 is handle reqest: &quot;</span> &lt;&lt; req.<span class="built_in">getDescription</span>() &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    Handler1 h1;</span><br><span class="line">    Handler2 h2;</span><br><span class="line">    Handler3 h3;</span><br><span class="line">    h1.<span class="built_in">setNextChain</span>(&amp;h2);</span><br><span class="line">    h2.<span class="built_in">setNextChain</span>(&amp;h3);</span><br><span class="line">    </span><br><span class="line">    <span class="function">Reqest <span class="title">req</span><span class="params">(<span class="string">&quot;process task ... &quot;</span>, RequestType::REQ_HANDLER3)</span></span>;</span><br><span class="line">    h1.<span class="built_in">handle</span>(req);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>职责链模式使多个对象都有处理请求的机会，从而避免了请求发送者和接受者的紧耦合。应用职责链模式可以使对象的指责分派更加灵活，可以在运行时动态的添加或者修改请求处理的职责。</p>
+<h4 id="1-4-享元模式（Flyweight）"><a href="#1-4-享元模式（Flyweight）" class="headerlink" title="1.4 享元模式（Flyweight）"></a>1.4 享元模式（Flyweight）</h4><p>在软件运行中，大量相同的对象会带来很大的运行开销，降低软件运行效率。享元模式通过共享技术减少运行时实例对象的个数从而提升性能。所谓共享技术就是使用一个对象工厂来管理许多虚拟对象，这些虚拟对象只要状态一样就只会存在一个，从而达到了减少对象数量的目的：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Font</span> &#123;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="comment">//unique object key</span></span><br><span class="line">    string key;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//object state</span></span><br><span class="line">    <span class="comment">//....</span></span><br><span class="line">    </span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Font</span>(<span class="type">const</span> string&amp; key)&#123;</span><br><span class="line">        <span class="comment">//...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">FontFactory</span>&#123;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    map&lt;string,Font* &gt; fontPool;    </span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">Font* <span class="title">GetFont</span><span class="params">(<span class="type">const</span> string&amp; key)</span></span>&#123;</span><br><span class="line">        map&lt;string,Font*&gt;::iterator item=fontPool.<span class="built_in">find</span>(key);        </span><br><span class="line">        <span class="keyword">if</span>(item!=footPool.<span class="built_in">end</span>())&#123;</span><br><span class="line">            <span class="keyword">return</span> fontPool[key];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span>&#123;</span><br><span class="line">            Font* font = <span class="keyword">new</span> <span class="built_in">Font</span>(key);</span><br><span class="line">            fontPool[key]= font;</span><br><span class="line">            <span class="keyword">return</span> font;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">clear</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">//...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-5-备忘录模式（Memento）"><a href="#1-5-备忘录模式（Memento）" class="headerlink" title="1.5 备忘录模式（Memento）"></a>1.5 备忘录模式（Memento）</h4><p>备忘录模式与状态模式类似，属于应对状态变化的模式。在软件设计中，某些对象在状态转换过程中，由于某种需要可能要求程序能够回溯到对象之前的某个状态，如果使用一些公有接口来实现，则会暴露对象的实现细节。备忘录模式在不破坏封装的前提下，捕获一个对象的内部状态，并在对象外保存这个状态，这样就可以在之后需要的时候将对象恢复到原先保存的状态。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Memento</span></span><br><span class="line">&#123;</span><br><span class="line">    string state;</span><br><span class="line">    <span class="comment">//..</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Memento</span>(<span class="type">const</span> string &amp; s) : <span class="built_in">state</span>(s) &#123;&#125;</span><br><span class="line">    <span class="function">string <span class="title">getState</span><span class="params">()</span> <span class="type">const</span> </span>&#123; <span class="keyword">return</span> state; &#125;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">setState</span><span class="params">(<span class="type">const</span> string &amp; s)</span> </span>&#123; state = s; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Originator</span></span><br><span class="line">&#123;</span><br><span class="line">    string state;</span><br><span class="line">    <span class="comment">//....</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Originator</span>() &#123;&#125;</span><br><span class="line">    <span class="function">Memento <span class="title">createMomento</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="function">Memento <span class="title">m</span><span class="params">(state)</span></span>;</span><br><span class="line">        <span class="keyword">return</span> m;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">setMomento</span><span class="params">(<span class="type">const</span> Memento &amp; m)</span> </span>&#123;</span><br><span class="line">        state = m.<span class="built_in">getState</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Originator orginator;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//捕获对象状态，存储到备忘录</span></span><br><span class="line">    Memento mem = orginator.<span class="built_in">createMomento</span>();</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//... 改变orginator状态</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">//从备忘录中恢复</span></span><br><span class="line">    orginator.<span class="built_in">setMomento</span>(memento);    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-6-访问者模式（Visitor）"><a href="#1-6-访问者模式（Visitor）" class="headerlink" title="1.6 访问者模式（Visitor）"></a>1.6 访问者模式（Visitor）</h4><p>在软件构建过程中，由于需求变化，某些类层次结构中常常需要增加新的行为（方法），如果直接在基类中更改，将会给子类带来繁重的变更负担，甚至破坏原有设计。访问者模式定义一个访问者对象来表示一个作用于某对象结构中各元素的操作，使得可以在不改变各元素类的前提下定义作用于这些元素的新操作。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Visitor</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Element</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">accept</span><span class="params">(Visitor&amp; visitor)</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">virtual</span> ~<span class="built_in">Element</span>()&#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ElementA</span> : <span class="keyword">public</span> Element</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">accept</span><span class="params">(Visitor &amp;visitor)</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">        visitor.<span class="built_in">visitElementA</span>(*<span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ElementB</span> : <span class="keyword">public</span> Element</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">accept</span><span class="params">(Visitor &amp;visitor)</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">        visitor.<span class="built_in">visitElementB</span>(*<span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Visitor</span>&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">visitElementA</span><span class="params">(ElementA&amp; element)</span> </span>= <span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">visitElementB</span><span class="params">(ElementB&amp; element)</span> </span>= <span class="number">0</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">virtual</span> ~<span class="built_in">Visitor</span>()&#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">//==================================</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//扩展1</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Visitor1</span> : <span class="keyword">public</span> Visitor&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">visitElementA</span><span class="params">(ElementA&amp; element)</span> <span class="keyword">override</span></span>&#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;Visitor1 is processing ElementA&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">        </span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">visitElementB</span><span class="params">(ElementB&amp; element)</span> <span class="keyword">override</span></span>&#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;Visitor1 is processing ElementB&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line">     </span><br><span class="line"><span class="comment">//扩展2</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Visitor2</span> : <span class="keyword">public</span> Visitor&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">visitElementA</span><span class="params">(ElementA&amp; element)</span> <span class="keyword">override</span></span>&#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;Visitor2 is processing ElementA&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">visitElementB</span><span class="params">(ElementB&amp; element)</span> <span class="keyword">override</span></span>&#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;Visitor2 is processing ElementB&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line">             </span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Visitor2 visitor;</span><br><span class="line">    ElementB elementB;</span><br><span class="line">    elementB.<span class="built_in">accept</span>(visitor);</span><br><span class="line">    </span><br><span class="line">    ElementA elementA;</span><br><span class="line">    elementA.<span class="built_in">accept</span>(visitor);</span><br><span class="line">   </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-7-解释器模式（Interpreter）"><a href="#1-7-解释器模式（Interpreter）" class="headerlink" title="1.7 解释器模式（Interpreter）"></a>1.7 解释器模式（Interpreter）</h4><p>在软件构建过程中，如果某一特定领域的问题比较复杂，类似的结构不断重复出现，使用普通编程方式将面临非常频繁的变化，此时将特定领域的问题表达为某种语法规则下的句子，然后构建一个解释器来解释这样的句子，就可以解决问题。</p>
+<h4 id="1-8-中介者模式（Mediator）"><a href="#1-8-中介者模式（Mediator）" class="headerlink" title="1.8 中介者模式（Mediator）"></a>1.8 中介者模式（Mediator）</h4><p>中介者模式与适配器、外观、代理模式类似，是用于接口隔离的模式。在软件设计中，经常会出现多个对象互相关联交互的情况，对象之间经常会维持一种复杂的引用关系，如果遇到一些需求的更改，这样复杂的关系将面临不断地变化。中介者模式使用一个中介对象管理这种复杂关系，使这些对象之间不需要显式的引用彼此，避免相互交互的对象之间的紧耦合。</p>
+<h4 id="1-9-原型模式（Prototype）"><a href="#1-9-原型模式（Prototype）" class="headerlink" title="1.9 原型模式（Prototype）"></a>1.9 原型模式（Prototype）</h4><p>当创建给定类的实例的过程很复杂或者代价很大时，就可以使用原型模式。原型模式允许通过复制现有的实例来创建性的实例。</p>
+<h3 id="2-设计模式总结"><a href="#2-设计模式总结" class="headerlink" title="2 设计模式总结"></a>2 设计模式总结</h3><p>到此为止已经学习了全部常用的设计模式，但是模式并不代表是一成不变的，以上只是前人的经验总结出来的解决通用问题的通用技法，在具体任务中，最重要的还是利用面向对象的设计原则和思路，来使用适合当前任务的”模式“，这里的模式不一定是已经存在的模式，而是我们利用设计原则让复杂问题简单化的方法，是我们自己的”模式“，最好的模式就是忘掉模式，只记住原则。因此这里总结前面设计到的所有面向对象设计原则：</p>
+<ul>
+<li>依赖倒置原则（DIP）：高层模块(稳定)不应该依赖于低层模块(变化)，二者都应该依赖于抽象(稳定) 。抽象(稳定)不应该依赖于实现细节(变化) ，实现细节应该依赖于抽象(稳定)。</li>
+<li>开放封闭原则（OCP）：对扩展开放，对更改封闭。类模块应该是可扩展的，但是不可修改。</li>
+<li>单一职责原则（SRP）：一个类应该仅有一个引起它变化的原因。变化的方向隐含着类的责任。</li>
+<li>Liskov 替换原则（LSP）：子类必须能够替换它们的基类(IS-A)。</li>
+<li>接口隔离原则（ISP）：不应该强迫客户程序依赖它们不用的方法。接口应该小而完备。</li>
+<li>优先使用对象组合，而不是继承：继承在某种程度上破坏了封装性，子类父类耦合度高。而对象组合则只要求被组合的对象具有良好定义的接口，耦合度低。</li>
+<li>封装变化：使用封装来创建对象之间的分界层，让设计者可以在分界层的一侧进行修改，而不会对另一侧产生不良的影响，从而实现层次间的松耦合。</li>
+<li>针对接口编程，而不是针对实现编程：客户程序无需获知对象的具体类型，只需要知道对象所具有的接口。减少系统中各部分的依赖关系，从而实现“高内聚、松耦合”的类型设计方案。</li>
+</ul>
+<p>最后，所有设计原则都有一个共同的目标，就是<strong>管理变化，提高复用</strong>。</p>
+
+    </div>
+
+    
+    
+    
+
+    <div>
+    
+      <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">---- 本文结束 <i class="fa fa-trophy"></i> 知识又增加了亿点点！----</div>
+    
+</div>
+<br />
+<div>
+  <div>
+    <fieldset
+        style="
+            border: 1px dashed #C0C0C0;
+            padding: 10px;
+            border-radius: 5px;
+            line-height: 2em;
+            color: #6d6d6d;
+        ">
+        <legend
+            align="center"
+            style="
+                width: 30%;
+                text-align: center;
+                color: #6d6d6d;
+                border: 1px dashed #C0C0C0;
+                border-radius: 5px;
+            ">
+            文章版权声明
+        </legend>
+        1、博客名称：<font color="#37c6c0">LycTechStack</font><br />
+        2、博客网址：<font color="#37c6c0">https://lz328.github.io/LycTechStack.github.io/</font><br />
+        3、本博客的文章部分内容可能来源于网络，仅供大家学习与参考，如有侵权，请联系博主进行删除处理。<br />
+        4、本博客所有文章版权归博主所有，如需转载请标明出处。<br />
+    </fieldset>
+  </div>
+</div>
+
+    
+    </div>
+      
+  <div class="popular-posts-header">相关文章</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2023\02\28\20230228-设计模式-策略模式\" rel="bookmark">【设计模式】策略模式</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2023\03\02\20230302-设计模式-装饰者模式\" rel="bookmark">【设计模式】装饰者模式</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2023\03\02\20230302-设计模式-观察者模式\" rel="bookmark">【设计模式】观察者模式</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2023\03\04\20230304-设计模式-单例模式\" rel="bookmark">【设计模式】单例模式</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2023\03\05\20230305-设计模式-命令模式\" rel="bookmark">【设计模式】命令模式</a></div>
+    </li>
+  </ul>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/LycTechStack.github.io/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag"># 设计模式</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/LycTechStack.github.io/2023/03/08/20230308-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%A4%8D%E5%90%88%E6%A8%A1%E5%BC%8F/" rel="prev" title="【设计模式】复合模式">
+      <i class="fa fa-chevron-left"></i> 【设计模式】复合模式
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%85%B6%E4%BB%96%E5%B8%B8%E7%94%A8%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F"><span class="nav-text">1 其他常用设计模式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-%E6%A1%A5%E6%A8%A1%E5%BC%8F%EF%BC%88Bridge%EF%BC%89"><span class="nav-text">1.1 桥模式（Bridge）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-%E7%94%9F%E6%88%90%E5%99%A8%E6%A8%A1%E5%BC%8F%EF%BC%88Builder%EF%BC%89"><span class="nav-text">1.2 生成器模式（Builder）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-%E8%81%8C%E8%B4%A3%E9%93%BE%E6%A8%A1%E5%BC%8F%EF%BC%88Chain-of-Resposibility%EF%BC%89"><span class="nav-text">1.3 职责链模式（Chain of Resposibility）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-4-%E4%BA%AB%E5%85%83%E6%A8%A1%E5%BC%8F%EF%BC%88Flyweight%EF%BC%89"><span class="nav-text">1.4 享元模式（Flyweight）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-5-%E5%A4%87%E5%BF%98%E5%BD%95%E6%A8%A1%E5%BC%8F%EF%BC%88Memento%EF%BC%89"><span class="nav-text">1.5 备忘录模式（Memento）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-6-%E8%AE%BF%E9%97%AE%E8%80%85%E6%A8%A1%E5%BC%8F%EF%BC%88Visitor%EF%BC%89"><span class="nav-text">1.6 访问者模式（Visitor）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-7-%E8%A7%A3%E9%87%8A%E5%99%A8%E6%A8%A1%E5%BC%8F%EF%BC%88Interpreter%EF%BC%89"><span class="nav-text">1.7 解释器模式（Interpreter）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-8-%E4%B8%AD%E4%BB%8B%E8%80%85%E6%A8%A1%E5%BC%8F%EF%BC%88Mediator%EF%BC%89"><span class="nav-text">1.8 中介者模式（Mediator）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-9-%E5%8E%9F%E5%9E%8B%E6%A8%A1%E5%BC%8F%EF%BC%88Prototype%EF%BC%89"><span class="nav-text">1.9 原型模式（Prototype）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E6%80%BB%E7%BB%93"><span class="nav-text">2 设计模式总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Lyc"
+      src="/LycTechStack.github.io/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Lyc</p>
+  <div class="site-description" itemprop="description">个人学习总结和技术经验分享，主要内容包括C++、数据结构、算法、计算机图形学、3D数学、实时渲染、游戏引擎等等，希望未来能真正踏入图形/引擎开发的大门！</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/LycTechStack.github.io/archives/">
+        
+          <span class="site-state-item-count">130</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/LycTechStack.github.io/categories/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/LycTechStack.github.io/tags/">
+          
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/LZ328/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;LZ328&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:27487358@qq.com" title="E-Mail → mailto:27487358@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2021 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heartbeat"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lyc</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">978k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">14:49</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="/LycTechStack.github.io/lib/canvas-ribbon/canvas-ribbon.js"></script>
+  <script src="/LycTechStack.github.io/lib/anime.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/pjax/pjax.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4/dist/browser/pangu.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/velocity/velocity.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/LycTechStack.github.io/js/utils.js"></script>
+
+<script src="/LycTechStack.github.io/js/motion.js"></script>
+
+
+<script src="/LycTechStack.github.io/js/schemes/pisces.js"></script>
+
+
+<script src="/LycTechStack.github.io/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/LycTechStack.github.io/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '09aa5d8a5587f012a8af',
+      clientSecret: '7f7ec08f02d74e1865e57b5f03a982047700b547',
+      repo        : 'LycTechStack.github.io',
+      owner       : 'LZ328',
+      admin       : ['LZ328'],
+      id          : 'aabae6ad58adeaf5435cb0ddfea8acbc',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+    </div>
+  
+</body>
+</html>
