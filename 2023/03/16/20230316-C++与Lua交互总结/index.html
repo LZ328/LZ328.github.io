@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/LycTechStack.github.io/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/LycTechStack.github.io/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/LycTechStack.github.io/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/LycTechStack.github.io/images/safari-pinned-tab.svg" color="#222">
+
+<link rel="stylesheet" href="/LycTechStack.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="/LycTechStack.github.io/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/LycTechStack.github.io/lib/pace/pace-theme-minimal.min.css">
+  <script src="/LycTechStack.github.io/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lz328.github.io","root":"/LycTechStack.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":5,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="本篇全面总结了 C++ 与 Lua 脚本交互的相关内容。内容目录：  编译并配置 Lua 库  Lua 与 C++ 交互原理  C++ 调用 Lua 脚本  Lua 调用 C++ 函数  Lua 调用 C++ 函数模块  Lua 以模块形式使用 C++ 类  Lua 以面向对象形式使用 C++ 类  Lua 与 C++ 全局数组交互  常用 API 总结  参考资料">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++与Lua交互总结">
+<meta property="og:url" content="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/index.html">
+<meta property="og:site_name" content="LycTechStack">
+<meta property="og:description" content="本篇全面总结了 C++ 与 Lua 脚本交互的相关内容。内容目录：  编译并配置 Lua 库  Lua 与 C++ 交互原理  C++ 调用 Lua 脚本  Lua 调用 C++ 函数  Lua 调用 C++ 函数模块  Lua 以模块形式使用 C++ 类  Lua 以面向对象形式使用 C++ 类  Lua 与 C++ 全局数组交互  常用 API 总结  参考资料">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/image-20230316131921785.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/image-20230316132518494.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/image-20230316132641674.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/image-20230316132858537.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/image-20230316133226992.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/image-20230316133551991.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/image-20230316133830947.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/image-20230316133852242.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/image-20230316134056677.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/image-20230316134356516.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/1409576-20180729200454279-2026335911.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/1409576-20180729220537910-10080220.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/1409576-20180729220541857-857059720.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/1409576-20180729220545960-2028243880.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/image-20230316151109087.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/image-20230316151410612.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/image-20230316154903000.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/image-20230316160305168.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/image-20230316162945712.png">
+<meta property="article:published_time" content="2023-03-16T08:56:42.000Z">
+<meta property="article:modified_time" content="2023-03-16T08:58:20.195Z">
+<meta property="article:author" content="Lyc">
+<meta property="article:tag" content="C++">
+<meta property="article:tag" content="Lua">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/image-20230316131921785.png">
+
+<link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>C++与Lua交互总结 | LycTechStack</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/LycTechStack.github.io/atom.xml" title="LycTechStack" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/LycTechStack.github.io/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LycTechStack</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Lyc的个人成长技术栈</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/LycTechStack.github.io/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/LycTechStack.github.io/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/LycTechStack.github.io/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/LycTechStack.github.io/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/LycTechStack.github.io/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/LycTechStack.github.io/images/avatar.png">
+      <meta itemprop="name" content="Lyc">
+      <meta itemprop="description" content="个人学习总结和技术经验分享，主要内容包括C++、数据结构、算法、计算机图形学、3D数学、实时渲染、游戏引擎等等，希望未来能真正踏入图形/引擎开发的大门！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LycTechStack">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          C++与Lua交互总结
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-03-16 16:56:42 / 修改时间：16:58:20" itemprop="dateCreated datePublished" datetime="2023-03-16T16:56:42+08:00">2023-03-16</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/LycTechStack.github.io/categories/Lua/" itemprop="url" rel="index"><span itemprop="name">Lua</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>18k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>17 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本篇全面总结了 C++ 与 Lua 脚本交互的相关内容。内容目录：</p>
+<ol>
+<li><p>编译并配置 Lua 库</p>
+</li>
+<li><p>Lua 与 C++ 交互原理</p>
+</li>
+<li><p>C++ 调用 Lua 脚本</p>
+</li>
+<li><p>Lua 调用 C++ 函数</p>
+</li>
+<li><p>Lua 调用 C++ 函数模块</p>
+</li>
+<li><p>Lua 以模块形式使用 C++ 类</p>
+</li>
+<li><p>Lua 以面向对象形式使用 C++ 类</p>
+</li>
+<li><p>Lua 与 C++ 全局数组交互</p>
+</li>
+<li><p>常用 API 总结</p>
+</li>
+<li><p>参考资料</p>
+</li>
+</ol>
+<p><em><span id="more"></span></em></p>
+<h3 id="1-编译并配置-Lua-库"><a href="#1-编译并配置-Lua-库" class="headerlink" title="1 编译并配置 Lua 库"></a>1 编译并配置 Lua 库</h3><p>想要 Build 源码并直接使用 Lua 环境可以查看官网的详细步骤：<a target="_blank" rel="noopener" href="http://lua-users.org/wiki/BuildingLuaInWindowsForNewbies">lua-users wiki: Building Lua In Windows For Newbies</a></p>
+<p>为了与 C++ 程序交互，这里我们使用 VS 来将 Lua 编译成动态库，供 C++ 程序调用。</p>
+<p>首先在 VS 中新建一个 DLL 项目：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/image-20230316131921785.png" alt="image-20230316131921785"></p>
+<p>切换到 Release 模式，然后将 Lua 源码的 src 文件夹复制到工程目录下，并将其中除 lua.c 和 luac.c 之外的所有 .c 和 .h 文件添加到工程中（因为这两个文件中有 main 函数，编译时会出错，也可以把 main 改个名字）。</p>
+<p>修改工程属性，C&#x2F;C++ -&gt; 预编译头 -&gt; 不使用预编译头：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/image-20230316132518494.png" alt="image-20230316132518494"></p>
+<p>再修改：C&#x2F;C++ -&gt; 预处理器 -&gt; 预处理器定义，加上 <code>LUA_BUILD_AS_DLL</code> 宏定义：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/image-20230316132641674.png" alt="image-20230316132641674"></p>
+<p>之后进行生成，就可以得到编译后的库文件了：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/image-20230316132858537.png" alt="image-20230316132858537"></p>
+<p>接下来为了方便后续使用，我们在合适的位置新建一个文件夹来放置 Lua 库和头文件：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/image-20230316133226992.png" alt="image-20230316133226992"></p>
+<p>然后将 Lua 源码中的 src 文件夹下的文件复制到 include 文件夹下，将生成的 .lib 文件复制到 lib 文件夹下。</p>
+<p>接下来新建一个 C++ 工程，然后在配置项中加入包含目录：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/image-20230316133551991.png" alt="image-20230316133551991"></p>
+<p>在链接器配置中添加 Lua 库目录和库文件：<br><img src="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/image-20230316133830947.png" alt="image-20230316133830947"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/image-20230316133852242.png" alt="image-20230316133852242"></p>
+<p>之后生成项目的 Debug&#x2F;Release 目录，并将 Lua 动态库 .dll 文件放到该文件夹下：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/image-20230316134056677.png" alt="image-20230316134056677"></p>
+<p>然后写一个测试程序测试是否配置成功：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span>  </span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span>  </span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;   </span><br><span class="line"><span class="keyword">extern</span> <span class="string">&quot;C&quot;</span>  </span><br><span class="line">&#123;  </span><br><span class="line">    <span class="meta">#<span class="keyword">include</span> <span class="string">&quot;lua.h&quot;</span>  </span></span><br><span class="line">    <span class="meta">#<span class="keyword">include</span> <span class="string">&quot;lauxlib.h&quot;</span>  </span></span><br><span class="line">    <span class="meta">#<span class="keyword">include</span> <span class="string">&quot;lualib.h&quot;</span>  </span></span><br><span class="line">&#125;<span class="comment">// 也可直接 #include lua.hpp</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">main</span><span class="params">()</span>  </span></span><br><span class="line"><span class="function"></span>&#123;  </span><br><span class="line">    <span class="comment">// 1.创建一个 Lua state  </span></span><br><span class="line">    lua_State *L = <span class="built_in">luaL_newstate</span>();  </span><br><span class="line">       </span><br><span class="line">    <span class="comment">// 2.入栈操作  </span></span><br><span class="line">    <span class="built_in">lua_pushstring</span>(L, <span class="string">&quot;I am so cool~&quot;</span>);   </span><br><span class="line">    <span class="built_in">lua_pushnumber</span>(L, <span class="number">20</span>);  </span><br><span class="line">   </span><br><span class="line">    <span class="comment">// 3.取值操作  </span></span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">lua_isstring</span>(L, <span class="number">1</span>)) &#123;             <span class="comment">//判断是否可以转为string  </span></span><br><span class="line">        cout &lt;&lt; <span class="built_in">lua_tostring</span>(L,<span class="number">1</span>) &lt;&lt; endl;  <span class="comment">//转为string并返回  </span></span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">lua_isnumber</span>(L, <span class="number">2</span>)) &#123;  </span><br><span class="line">        cout &lt;&lt; <span class="built_in">lua_tonumber</span>(L, <span class="number">2</span>) &lt;&lt; endl;  </span><br><span class="line">    &#125;  </span><br><span class="line">   </span><br><span class="line">    <span class="comment">// 4.关闭 Lua state  </span></span><br><span class="line">    <span class="built_in">lua_close</span>(L);  </span><br><span class="line">    <span class="keyword">return</span>;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p> 输出：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/image-20230316134356516.png" alt="image-20230316134356516"></p>
+<p>就表明配置完成了。</p>
+<h3 id="2-Lua-与-C-交互原理"><a href="#2-Lua-与-C-交互原理" class="headerlink" title="2 Lua 与 C++ 交互原理"></a>2 Lua 与 C++ 交互原理</h3><p>Lua 与 C&#x2F;C++ 交互是通过一个虚拟栈来实现的，这个虚拟栈实际上就是一个 struct，具体实现可以从 Lua 源码中 lstate.c 文件中的 <code>static void stack_init (lua_State *L1, lua_State *L)</code> 函数看起。</p>
+<p>与常规栈不同的是 Lua 虚拟栈不仅有正向索引（正数），还有反向索引（负数），其中正数索引 1 表示栈底，负数索引 -1 表示栈顶：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/1409576-20180729200454279-2026335911.png" alt="1409576-20180729200454279-2026335911"></p>
+<p>于是 Lua 和 C++ 程序交互时，如果要传递值，基本原理就是：</p>
+<ul>
+<li><p>当 C++ 要调用 Lua 数据时，Lua 把值压入栈中，C++ 再从栈中取值</p>
+</li>
+<li><p>当 Lua 调用 C++ 数据时，C++ 要将数据压入栈中，让 Lua 从栈中取值</p>
+</li>
+</ul>
+<p>而如果要发生函数交互，过程会稍微复杂一点：</p>
+<ul>
+<li>当 C++ 要调用 Lua 函数时，Lua 先将 Lua 函数压入栈中，C++ 再将数据（作为参数）继续压入栈中，然后用 API 调用栈上的 Lua 函数 + 参数，调用完后，Lua 函数和参数都会出栈，而函数计算后的值会压入栈中：</li>
+</ul>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/1409576-20180729220537910-10080220.png" alt="1409576-20180729220537910-10080220"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/1409576-20180729220541857-857059720.png" alt="1409576-20180729220541857-857059720"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/1409576-20180729220545960-2028243880.png" alt="1409576-20180729220545960-2028243880"></p>
+<ul>
+<li>当 Lua 要调用 C++ 函数时，需要通过 API 注册符合 Lua 规范的 C++ 函数，来让 Lua 知道该 C++ 函数的定义。</li>
+</ul>
+<p>存入栈中的数据可以是 Lua 中的任何数据类型，包括数值, 字符串, 指针, talbe, 闭包等等，因为 Lua 的虚拟栈在源码中是这样定义的：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// lobject.h</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">union</span> <span class="title class_">StackValue</span> &#123;</span><br><span class="line">  TValue val;</span><br><span class="line">  <span class="keyword">struct</span> &#123;</span><br><span class="line">    TValuefields;</span><br><span class="line">    <span class="type">unsigned</span> <span class="type">short</span> delta;</span><br><span class="line">  &#125; tbclist;</span><br><span class="line">&#125; StackValue;</span><br></pre></td></tr></table></figure>
+
+<p>其中的数据都是用一个名为 <code>TValue</code> 的结构体来存储的，这个结构体中就包含了 Lua 中的所有数据类型：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">** Union of all Lua values</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">union</span> <span class="title class_">Value</span> &#123;</span><br><span class="line">  <span class="keyword">struct</span> <span class="title class_">GCObject</span> *gc;    <span class="comment">/* collectable objects */</span></span><br><span class="line">  <span class="type">void</span> *p;         <span class="comment">/* light userdata */</span></span><br><span class="line">  lua_CFunction f; <span class="comment">/* light C functions */</span></span><br><span class="line">  lua_Integer i;   <span class="comment">/* integer numbers */</span></span><br><span class="line">  lua_Number n;    <span class="comment">/* float numbers */</span></span><br><span class="line">&#125; Value;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">** Tagged Values. This is the basic representation of values in Lua:</span></span><br><span class="line"><span class="comment">** an actual value plus a tag with its type.</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> TValuefields	Value value_; lu_byte tt_</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">TValue</span> &#123;</span><br><span class="line">TValuefields;</span><br><span class="line">&#125; TValue;</span><br></pre></td></tr></table></figure>
+
+<p>更多的实现可以查看源码中的 lobject.h 文件。</p>
+<p>Lua 和 C++ 通信时有一个符合设计原则的约定：所有的 Lua 中的值由 Lua 来管理，C&#x2F;C++ 中产生的值 Lua 不知道, 类似表达了这样一种意思：”<strong>如果你（C&#x2F;C++）想要什么，你告诉我（Lua），我来产生，然后放到栈上，你只能通过 api 来操作这个值，而我负责管好我的世界</strong>“。这样的解耦很有必要，因为这可以保证只要是 Lua 中的变量，Lua 就要负责这些变量的生命周期和垃圾回收，而 C&#x2F;C++ 程序就无需多虑。所以，必须由 Lua 来创建这些值。</p>
+<h3 id="3-C-调用-Lua-脚本"><a href="#3-C-调用-Lua-脚本" class="headerlink" title="3 C++ 调用 Lua 脚本"></a>3 C++ 调用 Lua 脚本</h3><p>根据以上原理，C++ 调用 Lua 脚本时一般步骤是：</p>
+<ul>
+<li>使用 <code>luaL_newstate()</code> 创建 Lua 状态机，返回指向虚拟栈的指针</li>
+<li>使用 <code>luaL_loadfile()</code> 加载 Lua 脚本文件</li>
+<li>使用 <code>lua_pcall()</code> 运行 Lua 脚本文件</li>
+<li>需要获取 Lua 中的值时：<ul>
+<li>使用 <code>lua_getglobal</code> 获取值</li>
+<li>使用 <code>lua_toXXX</code> 将值转化为对应的 C++ 数据类型</li>
+<li>如果获取的值为 table 的话，可以使用 <code>lua_getfield</code> 和 <code>lua_setfield</code> 来获取和修改 table 中的元素</li>
+</ul>
+</li>
+<li>需要获取 Lua 中的函数时：<ul>
+<li>使用 <code>lua_getglobal</code> 获取函数</li>
+<li>如果函数有参数的话，使用 <code>lua_pushXXX</code> 将参数依次入栈</li>
+<li>使用 <code>lua_pcall()</code> 调用函数，然后从栈顶取出函数返回值即可</li>
+</ul>
+</li>
+</ul>
+<p>接下来我们创建一个简单的 Lua 脚本：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">str = <span class="string">&quot;Test Lua script.&quot;</span></span><br><span class="line">tbl = &#123;name = <span class="string">&quot;LYC&quot;</span>, id = <span class="number">2020262914</span>&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">add</span><span class="params">(a,b)</span></span></span><br><span class="line">	<span class="keyword">return</span> a + b</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+
+<p>然后使用 C++ 程序来调用脚本：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;lua.hpp&quot;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">// 创建 Lua 状态，返回一个指向堆栈的指针</span></span><br><span class="line">	lua_State* L = <span class="built_in">luaL_newstate</span>();</span><br><span class="line">	<span class="keyword">if</span> (L == <span class="literal">NULL</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 加载 Lua 文件</span></span><br><span class="line">	<span class="type">int</span> bRet = <span class="built_in">luaL_loadfile</span>(L, <span class="string">&quot;test.lua&quot;</span>);</span><br><span class="line">	<span class="keyword">if</span> (bRet)</span><br><span class="line">	&#123;</span><br><span class="line">		cout &lt;&lt; <span class="string">&quot;load file error&quot;</span> &lt;&lt; endl;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 运行 Lua 文件</span></span><br><span class="line">	bRet = <span class="built_in">lua_pcall</span>(L, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">	<span class="keyword">if</span> (bRet)</span><br><span class="line">	&#123;</span><br><span class="line">		cout &lt;&lt; <span class="string">&quot;pcall error&quot;</span> &lt;&lt; endl;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	* 读取 Lua 全局变量，内部实现过程为：</span></span><br><span class="line"><span class="comment">	* 1.把 str 压栈</span></span><br><span class="line"><span class="comment">	* 2.由 Lua 去寻找全局变量 str 的值，并将 str 的值返回栈顶（替换 str）</span></span><br><span class="line"><span class="comment">	* 如果存在相同命名的其他变量、table 或函数，就会报错（读取位置发生访问冲突）</span></span><br><span class="line"><span class="comment">	*/</span> </span><br><span class="line">	<span class="built_in">lua_getglobal</span>(L, <span class="string">&quot;str&quot;</span>);</span><br><span class="line">	<span class="comment">// 通过索引 -1 取出栈顶元素，转化为 C++ 的 string 类型</span></span><br><span class="line">	string str = <span class="built_in">lua_tostring</span>(L, <span class="number">-1</span>);</span><br><span class="line">	cout &lt;&lt; <span class="string">&quot;str = &quot;</span> &lt;&lt; str.<span class="built_in">c_str</span>() &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 读取 table</span></span><br><span class="line">	<span class="built_in">lua_getglobal</span>(L, <span class="string">&quot;tbl&quot;</span>);</span><br><span class="line">	<span class="comment">// 使用栈顶（-1）的 table 获取 table 中键为 name 的值，将其返回栈顶，替换掉 name</span></span><br><span class="line">	<span class="built_in">lua_getfield</span>(L, <span class="number">-1</span>, <span class="string">&quot;name&quot;</span>);</span><br><span class="line">	<span class="comment">// 也可以使用下面的写法，先把 name 压入栈中，然后此时 table 元素在 -2 位置，使用 lua_gettable 获取对应值</span></span><br><span class="line">	<span class="comment">//lua_pushstring(L, &quot;name&quot;);</span></span><br><span class="line">	<span class="comment">//lua_gettable(L, -2);</span></span><br><span class="line">	<span class="comment">// 获取栈顶的 name 值</span></span><br><span class="line">	str = <span class="built_in">lua_tostring</span>(L, <span class="number">-1</span>);</span><br><span class="line">	<span class="comment">// 因为此时 table 在栈顶的下面，所以取 -2，把 id 压栈，由 Lua 找到 table 中 id 键的值，并返回栈顶（替换id）</span></span><br><span class="line">	<span class="built_in">lua_getfield</span>(L, <span class="number">-2</span>, <span class="string">&quot;id&quot;</span>);</span><br><span class="line">	<span class="comment">// 获取 id 的值，此时 id 在栈顶，所以取 -1</span></span><br><span class="line">	<span class="type">int</span> id = <span class="built_in">lua_tonumber</span>(L, <span class="number">-1</span>);</span><br><span class="line">	cout &lt;&lt; <span class="string">&quot;tbl:name = &quot;</span> &lt;&lt; str.<span class="built_in">c_str</span>() &lt;&lt; endl;</span><br><span class="line">	cout &lt;&lt; <span class="string">&quot;tbl:id = &quot;</span> &lt;&lt; id &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 读取函数</span></span><br><span class="line">	<span class="comment">// 将函数 add 放入栈中，由 Lua 去寻找名为 add 的函数，并将该函数返回栈顶（替换add）</span></span><br><span class="line">	<span class="built_in">lua_getglobal</span>(L, <span class="string">&quot;add&quot;</span>);</span><br><span class="line">	<span class="comment">// 分别将函数参数压入栈中</span></span><br><span class="line">	<span class="built_in">lua_pushnumber</span>(L, <span class="number">10</span>);</span><br><span class="line">	<span class="built_in">lua_pushnumber</span>(L, <span class="number">20</span>);</span><br><span class="line">	<span class="comment">// 调用函数，调用完成以后，会将返回值压入栈中，2 表示参数个数，1 表示返回结果个数</span></span><br><span class="line">	<span class="comment">// 栈中的过程：参数出栈-&gt;保存参数-&gt;参数出栈-&gt;保存参数-&gt;函数出栈-&gt;调用函数-&gt;返回结果入栈</span></span><br><span class="line">	<span class="type">int</span> iRet = <span class="built_in">lua_pcall</span>(L, <span class="number">2</span>, <span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line">	<span class="keyword">if</span> (iRet)	<span class="comment">// 返回值为 0 表示调用成功</span></span><br><span class="line">	&#123;</span><br><span class="line">		<span class="comment">// 取出错误信息</span></span><br><span class="line">		<span class="type">const</span> <span class="type">char</span>* pErrorMsg = <span class="built_in">lua_tostring</span>(L, <span class="number">-1</span>);</span><br><span class="line">		cout &lt;&lt; pErrorMsg &lt;&lt; endl;</span><br><span class="line">		<span class="built_in">lua_close</span>(L);</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (<span class="built_in">lua_isnumber</span>(L, <span class="number">-1</span>))	<span class="comment">// 取值输出</span></span><br><span class="line">	&#123;</span><br><span class="line">		<span class="type">int</span> fValue = <span class="built_in">lua_tonumber</span>(L, <span class="number">-1</span>);</span><br><span class="line">		cout &lt;&lt; <span class="string">&quot;Result is &quot;</span> &lt;&lt; fValue &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//至此，栈中的情况是：</span></span><br><span class="line">	<span class="comment">//=================== 栈顶 =================== </span></span><br><span class="line">	<span class="comment">// 索引    类型       值</span></span><br><span class="line">	<span class="comment">// 5或-1   int       30 </span></span><br><span class="line">	<span class="comment">// 4或-2   int       2020262914</span></span><br><span class="line">	<span class="comment">// 3或-3   string    LYC </span></span><br><span class="line">	<span class="comment">// 2或-4   table	     tbl</span></span><br><span class="line">	<span class="comment">// 1或-5   string	 Test Lua script.</span></span><br><span class="line">	<span class="comment">//=================== 栈底 =================== </span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// push 一个 string</span></span><br><span class="line">	<span class="built_in">lua_pushstring</span>(L, <span class="string">&quot;Master&quot;</span>);</span><br><span class="line">	<span class="comment">// 修改 table 中的键值，注意索引值的使用，此时使用正向索引，因为 1 永远表示栈底元素</span></span><br><span class="line">	<span class="comment">// 会将&quot;Master&quot;值出栈，保存值，找到到 table 的 name 键，如果键存在，存储到 name 键中</span></span><br><span class="line">	<span class="built_in">lua_setfield</span>(L, <span class="number">2</span>, <span class="string">&quot;name&quot;</span>);</span><br><span class="line">	<span class="comment">// 读取</span></span><br><span class="line">	<span class="built_in">lua_getfield</span>(L, <span class="number">2</span>, <span class="string">&quot;name&quot;</span>);</span><br><span class="line">	str = <span class="built_in">lua_tostring</span>(L, <span class="number">-1</span>);</span><br><span class="line">	cout &lt;&lt; <span class="string">&quot;tbl:name = &quot;</span> &lt;&lt; str.<span class="built_in">c_str</span>() &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 创建新的 table</span></span><br><span class="line">	<span class="built_in">lua_newtable</span>(L);</span><br><span class="line">	<span class="built_in">lua_pushstring</span>(L, <span class="string">&quot;A New Table&quot;</span>);</span><br><span class="line">	<span class="built_in">lua_setfield</span>(L, <span class="number">-2</span>, <span class="string">&quot;name&quot;</span>);</span><br><span class="line">	<span class="comment">// 读取</span></span><br><span class="line">	<span class="built_in">lua_getfield</span>(L, <span class="number">-1</span>, <span class="string">&quot;name&quot;</span>);</span><br><span class="line">	str = <span class="built_in">lua_tostring</span>(L, <span class="number">-1</span>);</span><br><span class="line">	cout &lt;&lt; <span class="string">&quot;newtbl:name = &quot;</span> &lt;&lt; str.<span class="built_in">c_str</span>() &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 关闭state，会销毁指定 Lua 状态机中的所有对象， 并且释放状态机中使用的所有动态内存。</span></span><br><span class="line">	<span class="built_in">lua_close</span>(L);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/image-20230316151109087.png" alt="image-20230316151109087"></p>
+<p>当我们修改 Lua 脚本的内容：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">str = <span class="string">&quot;A new Lua script.&quot;</span></span><br><span class="line">tbl = &#123;name = <span class="string">&quot;New&quot;</span>, id = <span class="number">6666666</span>&#125;</span><br><span class="line">function <span class="built_in">add</span>(a, b)</span><br><span class="line">	<span class="keyword">for</span> i = <span class="number">10</span>, <span class="number">1</span>, <span class="number">-1</span> <span class="keyword">do</span></span><br><span class="line">		a = a + b</span><br><span class="line">	end</span><br><span class="line">	<span class="keyword">return</span> a</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+
+<p>重新运行的结果：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/image-20230316151410612.png" alt="image-20230316151410612"></p>
+<h3 id="4-Lua-调用-C-函数"><a href="#4-Lua-调用-C-函数" class="headerlink" title="4 Lua 调用 C++ 函数"></a>4 Lua 调用 C++ 函数</h3><p>Lua 中使用 C++ 函数的一般步骤是：</p>
+<ul>
+<li>将 C++ 函数包装成 Lua 环境认可的 Lua_CFunction 格式</li>
+<li>将包装好的函数注册到 Lua 环境中 </li>
+<li>像使用普通 Lua 函数那样使用注册函数</li>
+</ul>
+<p>Lua_CFunction 的基本格式如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">static</span> <span class="type">int</span> <span class="title">xxxxx</span><span class="params">(lua_State *L)</span> </span>&#123;</span><br><span class="line">　　 <span class="comment">// 函数功能</span></span><br><span class="line">    <span class="keyword">return</span> 一个数字;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>函数的返回值代表函数返回结果的个数，而要获取参数则是通过将栈中某个位置的元素转换成 C++ 数据类型来实现，比如一个 3 个输入参数，2 个返回值的函数实现为：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">static</span> <span class="type">int</span> <span class="title">average</span><span class="params">(lua_State *L)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">/* 得到参数个数 */</span></span><br><span class="line">	<span class="type">int</span> n = <span class="built_in">lua_gettop</span>(L);</span><br><span class="line">	<span class="type">double</span> sum = <span class="number">0</span>;</span><br><span class="line">	<span class="type">int</span> i;</span><br><span class="line"> </span><br><span class="line">	<span class="comment">/* 循环求参数之和 */</span></span><br><span class="line">	<span class="keyword">for</span> (i = <span class="number">1</span>; i &lt;= n; i++) &#123;</span><br><span class="line">		<span class="comment">/* 求和 */</span></span><br><span class="line">		sum += <span class="built_in">lua_tonumber</span>(L, i);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">/* 压入平均值 */</span></span><br><span class="line">	<span class="built_in">lua_pushnumber</span>(L, sum / n);</span><br><span class="line">	<span class="comment">/* 压入和 */</span></span><br><span class="line">	<span class="built_in">lua_pushnumber</span>(L, sum);</span><br><span class="line">	<span class="comment">/* 返回返回值的个数 */</span></span><br><span class="line">	<span class="keyword">return</span> <span class="number">2</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后将其注册到 Lua 环境中：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 第二个参数为 Lua 中的函数名称，第三个参数为 C++ 中的函数指针</span></span><br><span class="line"><span class="built_in">lua_register</span>(L, <span class="string">&quot;func&quot;</span>, average);</span><br></pre></td></tr></table></figure>
+
+<p>之后我们编写一个 Lua 脚本：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">--全局变量，在C++中赋值，Lua中直接使用</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;age&quot;</span>, age)</span><br><span class="line"></span><br><span class="line"><span class="comment">--新表，在C++中赋值，Lua中直接使用</span></span><br><span class="line"><span class="keyword">for</span> k,v <span class="keyword">in</span> <span class="built_in">pairs</span>(newTable) <span class="keyword">do</span> </span><br><span class="line">     <span class="built_in">print</span>(<span class="string">&quot;k = &quot;</span>,k,<span class="string">&quot; v = &quot;</span>,v)</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;name&quot;</span>, newTable.name)</span><br><span class="line"></span><br><span class="line"><span class="comment">--直接调用C++中的函数</span></span><br><span class="line">avg, sum = func(<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>, <span class="number">40</span>, <span class="number">50</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;The average is &quot;</span>, avg)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;The sum is &quot;</span>, sum)</span><br></pre></td></tr></table></figure>
+
+<p>接下来是 C++ 部分：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;lua.hpp&quot;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">static</span> <span class="type">int</span> <span class="title">average</span><span class="params">(lua_State* L)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">/* 得到参数个数 */</span></span><br><span class="line">	<span class="type">int</span> n = <span class="built_in">lua_gettop</span>(L);</span><br><span class="line">	<span class="type">double</span> sum = <span class="number">0</span>;</span><br><span class="line">	<span class="type">int</span> i;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* 循环求参数之和 */</span></span><br><span class="line">	<span class="keyword">for</span> (i = <span class="number">1</span>; i &lt;= n; i++) &#123;</span><br><span class="line">		<span class="comment">/* 求和 */</span></span><br><span class="line">		sum += <span class="built_in">lua_tonumber</span>(L, i);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">/* 压入平均值 */</span></span><br><span class="line">	<span class="built_in">lua_pushnumber</span>(L, sum / n);</span><br><span class="line">	<span class="comment">/* 压入和 */</span></span><br><span class="line">	<span class="built_in">lua_pushnumber</span>(L, sum);</span><br><span class="line">	<span class="comment">/* 返回返回值的个数 */</span></span><br><span class="line">	<span class="keyword">return</span> <span class="number">2</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	lua_State* L = <span class="built_in">luaL_newstate</span>();</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* 载入Lua基本库 */</span></span><br><span class="line">	<span class="built_in">luaL_openlibs</span>(L);</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* 注册函数 */</span></span><br><span class="line">	<span class="built_in">lua_register</span>(L, <span class="string">&quot;func&quot;</span>, average);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 设置 Lua 中的全局变量</span></span><br><span class="line">	<span class="built_in">lua_pushinteger</span>(L, <span class="number">18</span>);   <span class="comment">// 入栈</span></span><br><span class="line">	<span class="built_in">lua_setglobal</span>(L, <span class="string">&quot;age&quot;</span>);  <span class="comment">// 1.先将18值出栈，保存值，2.在Lua中，把值存储到全局变量age中</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// 设置 Lua 中的 table</span></span><br><span class="line">	<span class="built_in">lua_newtable</span>(L); <span class="comment">//创建一张空表，并将其压栈</span></span><br><span class="line">	<span class="built_in">lua_pushstring</span>(L, <span class="string">&quot;lili&quot;</span>);<span class="comment">// 入栈</span></span><br><span class="line">	<span class="built_in">lua_setfield</span>(L, <span class="number">-2</span>, <span class="string">&quot;name&quot;</span>);<span class="comment">//栈顶是lili，新创建的table在lili下，所以是-2，赋值后lili出栈</span></span><br><span class="line">	<span class="comment">// table出栈，保存到Lua中的newTable变量中</span></span><br><span class="line">	<span class="built_in">lua_setglobal</span>(L, <span class="string">&quot;newTable&quot;</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* 运行脚本 */</span></span><br><span class="line">	<span class="built_in">luaL_dofile</span>(L, <span class="string">&quot;test.lua&quot;</span>);</span><br><span class="line">	<span class="comment">/* 清除Lua */</span></span><br><span class="line">	<span class="built_in">lua_close</span>(L);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/image-20230316154903000.png" alt="image-20230316154903000"></p>
+<h3 id="5-Lua-调用-C-函数模块"><a href="#5-Lua-调用-C-函数模块" class="headerlink" title="5 Lua 调用 C++ 函数模块"></a>5 Lua 调用 C++ 函数模块</h3><p>当 Lua 中需要调用多个 C++ 函数时，可以将这些函数封装成一个模块，模块实际上是一个 table，然后使用 <code>luaL_newlib</code> 就可以将该模块压入栈中，之后将自定义的模块注册到 Lua 环境中就可以使用了。</p>
+<p>依然以上面的函数为例：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;lua.hpp&quot;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">static</span> <span class="type">int</span> <span class="title">average</span><span class="params">(lua_State* L)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">/* 得到参数个数 */</span></span><br><span class="line">	<span class="type">int</span> n = <span class="built_in">lua_gettop</span>(L);</span><br><span class="line">	<span class="type">double</span> sum = <span class="number">0</span>;</span><br><span class="line">	<span class="type">int</span> i;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* 循环求参数之和 */</span></span><br><span class="line">	<span class="keyword">for</span> (i = <span class="number">1</span>; i &lt;= n; i++)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="comment">/* 求和 */</span></span><br><span class="line">		sum += <span class="built_in">lua_tonumber</span>(L, i);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">/* 压入平均值 */</span></span><br><span class="line">	<span class="built_in">lua_pushnumber</span>(L, sum / n);</span><br><span class="line">	<span class="comment">/* 压入和 */</span></span><br><span class="line">	<span class="built_in">lua_pushnumber</span>(L, sum);</span><br><span class="line">	<span class="comment">/* 返回返回值的个数 */</span></span><br><span class="line">	<span class="keyword">return</span> <span class="number">2</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 列出需要封装的C++函数，luaL_Reg 为 Lua 中注册函数的数组类型</span></span><br><span class="line"><span class="type">static</span> <span class="type">const</span> luaL_Reg mylibs_funcs[] = &#123;</span><br><span class="line">	 &#123; <span class="string">&quot;func&quot;</span>, average &#125;,</span><br><span class="line">	 &#123; <span class="literal">NULL</span>, <span class="literal">NULL</span> &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 将所有函数放到一个table中，并压入栈中，直接使用 luaL_newlib 即可</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">lua_openmylib</span><span class="params">(lua_State* L)</span> </span>&#123;</span><br><span class="line">	<span class="comment">// luaL_newlib的内部实现为：</span></span><br><span class="line">	<span class="comment">// 创建一个新的表，将所有函数放到一个 table 中，将这个table压到stack里</span></span><br><span class="line">	<span class="built_in">luaL_newlib</span>(L, mylibs_funcs);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 将自定义模块加到注册列表里</span></span><br><span class="line"><span class="type">static</span> <span class="type">const</span> luaL_Reg lua_reg_libs[] = &#123;</span><br><span class="line">	 &#123; <span class="string">&quot;base&quot;</span>, luaopen_base &#125;,</span><br><span class="line">	 &#123; <span class="string">&quot;mylib&quot;</span>, lua_openmylib &#125;,</span><br><span class="line">	 &#123; <span class="literal">NULL</span>, <span class="literal">NULL</span> &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span>* argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	lua_State* L = <span class="built_in">luaL_newstate</span>();</span><br><span class="line">	<span class="built_in">luaL_openlibs</span>(L);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 注册让 Lua 使用的模块</span></span><br><span class="line">	<span class="type">const</span> luaL_Reg* lua_reg = lua_reg_libs;</span><br><span class="line">	<span class="keyword">for</span> (; lua_reg-&gt;func; ++lua_reg) &#123;</span><br><span class="line">		<span class="comment">// 加载模块</span></span><br><span class="line">		<span class="comment">// 首先查找 package.loaded 表， 检测 modname 是否被加载过。 </span></span><br><span class="line">		<span class="comment">// 如果被加载过，require 返回 package.loaded[modname] 中保存的值。</span></span><br><span class="line">		<span class="comment">// 如果 modname 不在 package.loaded 中， 则调用函数 openf ，并传入字符串 modname。</span></span><br><span class="line">		<span class="comment">// 将其返回值置入 package.loaded[modname]。</span></span><br><span class="line">		<span class="comment">// 如果最后一个参数为真， 同时也将模块设到全局变量 modname 里。在栈上留下该模块的副本。</span></span><br><span class="line">		<span class="built_in">luaL_requiref</span>(L, lua_reg-&gt;name, lua_reg-&gt;func, <span class="number">1</span>);</span><br><span class="line">		<span class="comment">// 从栈中弹出 1 个元素</span></span><br><span class="line">		<span class="built_in">lua_pop</span>(L, <span class="number">1</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* 运行脚本 */</span></span><br><span class="line">	<span class="built_in">luaL_dofile</span>(L, <span class="string">&quot;test.lua&quot;</span>);</span><br><span class="line">	<span class="built_in">lua_close</span>(L);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在 Lua 中使用自定义模块中的函数时需要加上模块名字：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">--调用C++自定义模块中的函数</span></span><br><span class="line">avg, sum = mylib.func(<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>, <span class="number">40</span>, <span class="number">50</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;The average is &quot;</span>, avg)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;The sum is &quot;</span>, sum)</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/image-20230316160305168.png" alt="image-20230316160305168"></p>
+<h3 id="6-Lua-以模块形式使用-C-类"><a href="#6-Lua-以模块形式使用-C-类" class="headerlink" title="6 Lua 以模块形式使用 C++ 类"></a>6 Lua 以模块形式使用 C++ 类</h3><p>Lua 中还可以调用 C++ 中的类。我们可以将 C++ 中的类封装成函数模块，供 Lua 使用。</p>
+<p>例如一个 Student 类：</p>
+<ul>
+<li>Student.h</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">pragma</span> once</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Student</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="built_in">Student</span>();</span><br><span class="line">	~<span class="built_in">Student</span>();</span><br><span class="line"></span><br><span class="line">	<span class="function">string <span class="title">get_name</span><span class="params">()</span></span>;</span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">set_name</span><span class="params">(string name)</span></span>;</span><br><span class="line">	<span class="function"><span class="type">unsigned</span> <span class="type">int</span> <span class="title">get_age</span><span class="params">()</span></span>;</span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">set_age</span><span class="params">(<span class="type">unsigned</span> <span class="type">int</span> age)</span></span>;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">print</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	string _name;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> _age;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Student.cpp</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;Student.h&quot;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line">Student::<span class="built_in">Student</span>() :_name(<span class="string">&quot;Empty&quot;</span>), _age(<span class="number">0</span>)</span><br><span class="line">&#123;</span><br><span class="line">	cout &lt;&lt; <span class="string">&quot;Student Constructor&quot;</span> &lt;&lt; endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Student::~<span class="built_in">Student</span>()</span><br><span class="line">&#123;</span><br><span class="line">	cout &lt;&lt; <span class="string">&quot;Student Destructor&quot;</span> &lt;&lt; endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">string <span class="title">Student::get_name</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">return</span> _name;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">Student::set_name</span><span class="params">(string name)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	_name = name;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">unsigned</span> <span class="type">int</span> <span class="title">Student::get_age</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">return</span> _age;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">Student::set_age</span><span class="params">(<span class="type">unsigned</span> <span class="type">int</span> age)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	_age = age;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">Student::print</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	cout &lt;&lt; <span class="string">&quot;name :&quot;</span> &lt;&lt; _name &lt;&lt; <span class="string">&quot; age : &quot;</span> &lt;&lt; _age &lt;&lt; endl;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后我们需要将这个类的各种方法以及创建这个类对象的方法注册成为 Lua 的全局函数：</p>
+<ul>
+<li>StudentRegFunc.h</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">pragma</span> once</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;Student.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;lua.hpp&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//------定义相关的全局函数------</span></span><br><span class="line"><span class="comment">//创建对象</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">lua_create_new_student</span><span class="params">(lua_State* L)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//get/set函数</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">lua_get_name</span><span class="params">(lua_State* L)</span></span>;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">lua_set_name</span><span class="params">(lua_State* L)</span></span>;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">lua_get_age</span><span class="params">(lua_State* L)</span></span>;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">lua_set_age</span><span class="params">(lua_State* L)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//打印函数</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">lua_print</span><span class="params">(lua_State* L)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//------注册全局函数供Lua使用------</span></span><br><span class="line"><span class="type">static</span> <span class="type">const</span> luaL_Reg lua_reg_student_funcs[] = &#123;</span><br><span class="line">	&#123; <span class="string">&quot;create&quot;</span>, lua_create_new_student &#125;,</span><br><span class="line">	&#123; <span class="string">&quot;get_name&quot;</span>, lua_get_name &#125;,</span><br><span class="line">	&#123; <span class="string">&quot;set_name&quot;</span>, lua_set_name &#125;,</span><br><span class="line">	&#123; <span class="string">&quot;get_age&quot;</span>, lua_get_age &#125;,</span><br><span class="line">	&#123; <span class="string">&quot;set_age&quot;</span>, lua_set_age &#125;,</span><br><span class="line">	&#123; <span class="string">&quot;print&quot;</span>, lua_print &#125;,</span><br><span class="line">	&#123; <span class="literal">NULL</span>, <span class="literal">NULL</span> &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">luaopen_student_libs</span><span class="params">(lua_State* L)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>StudentRegFunc.cpp</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;StudentRegFunc.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">lua_create_new_student</span><span class="params">(lua_State* L)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">//创建一个对象指针放到stack里，返回给Lua中使用</span></span><br><span class="line">	Student** s = (Student**)<span class="built_in">lua_newuserdata</span>(L, <span class="built_in">sizeof</span>(Student*));</span><br><span class="line">	*s = <span class="keyword">new</span> <span class="built_in">Student</span>();</span><br><span class="line">	<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">lua_get_name</span><span class="params">(lua_State* L)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">//得到第一个传入的对象参数（在stack最底部）</span></span><br><span class="line">	Student** s = (Student**)<span class="built_in">lua_touserdata</span>(L, <span class="number">1</span>);</span><br><span class="line">	<span class="built_in">luaL_argcheck</span>(L, s != <span class="literal">NULL</span>, <span class="number">1</span>, <span class="string">&quot;invalid user data&quot;</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//清空stack</span></span><br><span class="line">	<span class="built_in">lua_settop</span>(L, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//将数据放入stack中，供Lua使用</span></span><br><span class="line">	<span class="built_in">lua_pushstring</span>(L, (*s)-&gt;<span class="built_in">get_name</span>().<span class="built_in">c_str</span>());</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">lua_set_name</span><span class="params">(lua_State* L)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">//得到第一个传入的对象参数</span></span><br><span class="line">	Student** s = (Student**)<span class="built_in">lua_touserdata</span>(L, <span class="number">1</span>);</span><br><span class="line">	<span class="built_in">luaL_argcheck</span>(L, s != <span class="literal">NULL</span>, <span class="number">1</span>, <span class="string">&quot;invalid user data&quot;</span>);</span><br><span class="line">	<span class="comment">//检查当前栈顶元素是否符合类型要求</span></span><br><span class="line">	<span class="built_in">luaL_checktype</span>(L, <span class="number">-1</span>, LUA_TSTRING);</span><br><span class="line"></span><br><span class="line">	std::string name = <span class="built_in">lua_tostring</span>(L, <span class="number">-1</span>);</span><br><span class="line">	(*s)-&gt;<span class="built_in">set_name</span>(name);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">lua_get_age</span><span class="params">(lua_State* L)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	Student** s = (Student**)<span class="built_in">lua_touserdata</span>(L, <span class="number">1</span>);</span><br><span class="line">	<span class="built_in">luaL_argcheck</span>(L, s != <span class="literal">NULL</span>, <span class="number">1</span>, <span class="string">&quot;invalid user data&quot;</span>);</span><br><span class="line"></span><br><span class="line">	<span class="built_in">lua_pushinteger</span>(L, (*s)-&gt;<span class="built_in">get_age</span>());</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">lua_set_age</span><span class="params">(lua_State* L)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	Student** s = (Student**)<span class="built_in">lua_touserdata</span>(L, <span class="number">1</span>);</span><br><span class="line">	<span class="built_in">luaL_argcheck</span>(L, s != <span class="literal">NULL</span>, <span class="number">1</span>, <span class="string">&quot;invalid user data&quot;</span>);</span><br><span class="line"></span><br><span class="line">	<span class="built_in">luaL_checktype</span>(L, <span class="number">-1</span>, LUA_TNUMBER);</span><br><span class="line"></span><br><span class="line">	(*s)-&gt;<span class="built_in">set_age</span>((<span class="type">unsigned</span> <span class="type">int</span>)<span class="built_in">lua_tointeger</span>(L, <span class="number">-1</span>));</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">lua_print</span><span class="params">(lua_State* L)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	Student** s = (Student**)<span class="built_in">lua_touserdata</span>(L, <span class="number">1</span>);</span><br><span class="line">	<span class="built_in">luaL_argcheck</span>(L, s != <span class="literal">NULL</span>, <span class="number">1</span>, <span class="string">&quot;invalid user data&quot;</span>);</span><br><span class="line"></span><br><span class="line">	(*s)-&gt;<span class="built_in">print</span>();</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">luaopen_student_libs</span><span class="params">(lua_State* L)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">// 创建一张新的表，并把列表的函数注册进去</span></span><br><span class="line">	<span class="built_in">luaL_newlib</span>(L, lua_reg_student_funcs);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后来编写脚本：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">--调用由C++类封装成的模块</span></span><br><span class="line"><span class="comment">--创建Student对象</span></span><br><span class="line"><span class="keyword">local</span> student_obj = Student.<span class="built_in">create</span>()</span><br><span class="line"><span class="comment">--调用对象的函数</span></span><br><span class="line">Student.<span class="built_in">print</span>(student_obj)</span><br><span class="line">Student.set_name(student_obj,<span class="string">&quot;Jack&quot;</span>)</span><br><span class="line">Student.set_age(student_obj,<span class="number">25</span>)</span><br><span class="line">Student.<span class="built_in">print</span>(student_obj)</span><br></pre></td></tr></table></figure>
+
+<p>最后是主函数：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;Student.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;StudentRegFunc.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;lua.hpp&quot;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">const</span> luaL_Reg lua_reg_libs[] = &#123;</span><br><span class="line">	&#123; <span class="string">&quot;base&quot;</span>, luaopen_base &#125;, <span class="comment">//基础模块</span></span><br><span class="line">	&#123; <span class="string">&quot;Student&quot;</span>, luaopen_student_libs&#125;, <span class="comment">//自定义Student模块，注册函数是luaopen_student_libs</span></span><br><span class="line">	&#123; <span class="literal">NULL</span>, <span class="literal">NULL</span> &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span>* argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (lua_State* L = <span class="built_in">luaL_newstate</span>()) &#123;</span><br><span class="line"></span><br><span class="line">		<span class="comment">//注册让lua使用的库</span></span><br><span class="line">		<span class="type">const</span> luaL_Reg* lua_reg = lua_reg_libs;</span><br><span class="line">		<span class="keyword">for</span> (; lua_reg-&gt;func; ++lua_reg) &#123;</span><br><span class="line">			<span class="built_in">luaL_requiref</span>(L, lua_reg-&gt;name, lua_reg-&gt;func, <span class="number">1</span>);</span><br><span class="line">			<span class="built_in">lua_pop</span>(L, <span class="number">1</span>);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">//加载脚本，如果出错，则打印错误</span></span><br><span class="line">		<span class="keyword">if</span> (<span class="built_in">luaL_dofile</span>(L, <span class="string">&quot;test.lua&quot;</span>)) &#123;</span><br><span class="line">			cout &lt;&lt; <span class="built_in">lua_tostring</span>(L, <span class="number">-1</span>) &lt;&lt; endl;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="built_in">lua_close</span>(L);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span> &#123;</span><br><span class="line">		cout &lt;&lt; <span class="string">&quot;luaL_newstate error !&quot;</span> &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-C++%E4%B8%8ELua%E4%BA%A4%E4%BA%92%E6%80%BB%E7%BB%93/image-20230316162945712.png" alt="image-20230316162945712"></p>
+<h3 id="7-Lua-以面向对象方式使用-C-类"><a href="#7-Lua-以面向对象方式使用-C-类" class="headerlink" title="7 Lua 以面向对象方式使用 C++ 类"></a>7 Lua 以面向对象方式使用 C++ 类</h3><p>上述将 C++ 类注册为函数模块的形式有一个严重的问题，那就是我们无法保证 userdata 的合法性。因为在 C++ 中，我们只是简单的判断了一下传进来的 userdata 是否为 NULL，并没有办法判断传进来的 userdata 参数是通过 Student.create 函数得到的，如果我传一个错误的 userdata 进去，程序也会继续运行，但有可能使内存遭到破坏。</p>
+<p>一种可行的方案是，为每种类型创建一个唯一的元表。每当创建了一个 userdata 后，就用相应的元表来标记它。而每当得到一个 userdata 后，就检查它是否拥有正确的元表。由于 Lua 代码不能改变 userdata 的元表，因此也就无法传一个错误的 userdata 进去。</p>
+<p>为每个 userdata 都创建一个元表，那就需要有个地方来存储这个新的元表。在 Lua 中，通常习惯是将所有新的 C++ 类型注册到注册表中，以一个类型名作为 key，元表作为 value。由于注册表中还有其它的内容，所以必须小心地选择类型名，以避免与 key 冲突。</p>
+<p>具体的实现可以查看：<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq826364410/article/details/88639408">Lua和C++交互：在Lua中以面向对象的方式使用C++注册的类</a></p>
+<h3 id="8-Lua-与-C-全局数组交互"><a href="#8-Lua-与-C-全局数组交互" class="headerlink" title="8 Lua 与 C++ 全局数组交互"></a>8 Lua 与 C++ 全局数组交互</h3><p>具体查看：<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq826364410/article/details/88713839">Lua和C++交互：全局数组交互</a></p>
+<h3 id="9-常用-API-总结"><a href="#9-常用-API-总结" class="headerlink" title="9 常用 API 总结"></a>9 常用 API 总结</h3><h4 id="9-1-虚拟栈基本操作"><a href="#9-1-虚拟栈基本操作" class="headerlink" title="9.1 虚拟栈基本操作"></a>9.1 虚拟栈基本操作</h4><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span>   <span class="title">lua_gettop</span> <span class="params">(lua_State *L)</span></span>;	        <span class="comment">//返回栈顶索引（即栈长度）</span></span><br><span class="line"><span class="comment">// lua_settop将栈顶设置为一个指定的位置，即修改栈中元素的数量。</span></span><br><span class="line"><span class="comment">// 如果值比原栈顶高，则高的部分nil补足，如果值比原栈低，则原栈高出的部分舍弃。</span></span><br><span class="line"><span class="comment">// 所以可以用lua_settop(0)来清空栈。</span></span><br><span class="line"><span class="function"><span class="type">void</span>  <span class="title">lua_settop</span> <span class="params">(lua_State *L, <span class="type">int</span> idx)</span></span>;	</span><br><span class="line"><span class="function"><span class="type">void</span>  <span class="title">lua_pushvalue</span> <span class="params">(lua_State *L, <span class="type">int</span> idx)</span></span>;    <span class="comment">//将idx索引上的值的副本压入栈顶</span></span><br><span class="line"><span class="function"><span class="type">void</span>  <span class="title">lua_remove</span> <span class="params">(lua_State *L, <span class="type">int</span> idx)</span></span>;	<span class="comment">//移除idx索引上的值</span></span><br><span class="line"><span class="function"><span class="type">void</span>  <span class="title">lua_insert</span> <span class="params">(lua_State *L, <span class="type">int</span> idx)</span></span>;	<span class="comment">//弹出栈顶元素，并插入索引idx位置</span></span><br><span class="line"><span class="function"><span class="type">void</span>  <span class="title">lua_replace</span> <span class="params">(lua_State *L, <span class="type">int</span> idx)</span></span>;	<span class="comment">//弹出栈顶元素，并替换索引idx位置的值</span></span><br><span class="line"><span class="comment">// 确保堆栈上至少有 n 个额外空位。 如果不能把堆栈扩展到相应的尺寸，</span></span><br><span class="line"><span class="comment">// 函数返回假。 失败的原因包括将把栈扩展到比固定最大尺寸还大 （至少是几</span></span><br><span class="line"><span class="comment">// 千个元素）或分配内存失败。 这个函数永远不会缩小堆栈； 如果堆栈已经</span></span><br><span class="line"><span class="comment">// 比需要的大了，那么就保持原样</span></span><br><span class="line"><span class="function"><span class="type">int</span>   <span class="title">lua_checkstack</span> <span class="params">(lua_State *L, <span class="type">int</span> n)</span></span>; </span><br></pre></td></tr></table></figure>
+
+<h4 id="9-2-数据压栈"><a href="#9-2-数据压栈" class="headerlink" title="9.2 数据压栈"></a>9.2 数据压栈</h4><p>lua_pushXXX：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">LUA_API <span class="title">void</span>        <span class="params">(lua_pushnil)</span> <span class="params">(lua_State *L)</span></span>;</span><br><span class="line"><span class="function">LUA_API <span class="title">void</span>        <span class="params">(lua_pushnumber)</span> <span class="params">(lua_State *L, lua_Number n)</span></span>;</span><br><span class="line"><span class="function">LUA_API <span class="title">void</span>        <span class="params">(lua_pushinteger)</span> <span class="params">(lua_State *L, lua_Integer n)</span></span>;</span><br><span class="line">LUA_API <span class="type">const</span> <span class="type">char</span> *(lua_pushlstring) (lua_State *L, <span class="type">const</span> <span class="type">char</span> *s, <span class="type">size_t</span> len);</span><br><span class="line">LUA_API <span class="type">const</span> <span class="type">char</span> *(lua_pushstring) (lua_State *L, <span class="type">const</span> <span class="type">char</span> *s);</span><br><span class="line">LUA_API <span class="type">const</span> <span class="type">char</span> *(lua_pushvfstring) (lua_State *L, <span class="type">const</span> <span class="type">char</span> *fmt,</span><br><span class="line">                                                      va_list argp);</span><br><span class="line">LUA_API <span class="type">const</span> <span class="type">char</span> *(lua_pushfstring) (lua_State *L, <span class="type">const</span> <span class="type">char</span> *fmt, ...);</span><br><span class="line"><span class="function">LUA_API <span class="title">void</span>  <span class="params">(lua_pushcclosure)</span> <span class="params">(lua_State *L, lua_CFunction fn, <span class="type">int</span> n)</span></span>;</span><br><span class="line"><span class="function">LUA_API <span class="title">void</span>  <span class="params">(lua_pushboolean)</span> <span class="params">(lua_State *L, <span class="type">int</span> b)</span></span>;</span><br><span class="line"><span class="function">LUA_API <span class="title">void</span>  <span class="params">(lua_pushlightuserdata)</span> <span class="params">(lua_State *L, <span class="type">void</span> *p)</span></span>;</span><br><span class="line"><span class="function">LUA_API <span class="title">int</span>   <span class="params">(lua_pushthread)</span> <span class="params">(lua_State *L)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<h4 id="9-3-判断栈中数据类型"><a href="#9-3-判断栈中数据类型" class="headerlink" title="9.3 判断栈中数据类型"></a>9.3 判断栈中数据类型</h4><p>lua_isXXX：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">LUA_API <span class="title">int</span>             <span class="params">(lua_isnumber)</span> <span class="params">(lua_State *L, <span class="type">int</span> idx)</span></span>;</span><br><span class="line"><span class="function">LUA_API <span class="title">int</span>             <span class="params">(lua_isstring)</span> <span class="params">(lua_State *L, <span class="type">int</span> idx)</span></span>;</span><br><span class="line"><span class="function">LUA_API <span class="title">int</span>             <span class="params">(lua_iscfunction)</span> <span class="params">(lua_State *L, <span class="type">int</span> idx)</span></span>;</span><br><span class="line"><span class="function">LUA_API <span class="title">int</span>             <span class="params">(lua_isinteger)</span> <span class="params">(lua_State *L, <span class="type">int</span> idx)</span></span>;</span><br><span class="line"><span class="function">LUA_API <span class="title">int</span>             <span class="params">(lua_isuserdata)</span> <span class="params">(lua_State *L, <span class="type">int</span> idx)</span></span>;</span><br><span class="line"><span class="function">LUA_API <span class="title">int</span>             <span class="params">(lua_type)</span> <span class="params">(lua_State *L, <span class="type">int</span> idx)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<h4 id="9-4-获取栈中数据"><a href="#9-4-获取栈中数据" class="headerlink" title="9.4 获取栈中数据"></a>9.4 获取栈中数据</h4><p>lua_toXXX：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">LUA_API <span class="title">lua_Number</span>      <span class="params">(lua_tonumberx)</span> <span class="params">(lua_State *L, <span class="type">int</span> idx, <span class="type">int</span> *isnum)</span></span>;</span><br><span class="line"><span class="function">LUA_API <span class="title">lua_Integer</span>     <span class="params">(lua_tointegerx)</span> <span class="params">(lua_State *L, <span class="type">int</span> idx, <span class="type">int</span> *isnum)</span></span>;</span><br><span class="line"><span class="function">LUA_API <span class="title">int</span>             <span class="params">(lua_toboolean)</span> <span class="params">(lua_State *L, <span class="type">int</span> idx)</span></span>;</span><br><span class="line">LUA_API <span class="type">const</span> <span class="type">char</span>     *(lua_tolstring) (lua_State *L, <span class="type">int</span> idx, <span class="type">size_t</span> *len);</span><br><span class="line"><span class="function">LUA_API <span class="title">size_t</span>          <span class="params">(lua_rawlen)</span> <span class="params">(lua_State *L, <span class="type">int</span> idx)</span></span>;</span><br><span class="line"><span class="function">LUA_API <span class="title">lua_CFunction</span>   <span class="params">(lua_tocfunction)</span> <span class="params">(lua_State *L, <span class="type">int</span> idx)</span></span>;</span><br><span class="line">LUA_API <span class="type">void</span>           *(lua_touserdata) (lua_State *L, <span class="type">int</span> idx);</span><br><span class="line">LUA_API lua_State      *(lua_tothread) (lua_State *L, <span class="type">int</span> idx);</span><br><span class="line">LUA_API <span class="type">const</span> <span class="type">void</span>     *(lua_topointer) (lua_State *L, <span class="type">int</span> idx);</span><br></pre></td></tr></table></figure>
+
+<h4 id="9-5-获取栈中数据"><a href="#9-5-获取栈中数据" class="headerlink" title="9.5 获取栈中数据"></a>9.5 获取栈中数据</h4><p>lua_getXXX：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">LUA_API <span class="title">int</span> <span class="params">(lua_getglobal)</span> <span class="params">(lua_State *L, <span class="type">const</span> <span class="type">char</span> *name)</span></span>;</span><br><span class="line"><span class="function">LUA_API <span class="title">int</span> <span class="params">(lua_gettable)</span> <span class="params">(lua_State *L, <span class="type">int</span> idx)</span></span>;</span><br><span class="line"><span class="function">LUA_API <span class="title">int</span> <span class="params">(lua_getfield)</span> <span class="params">(lua_State *L, <span class="type">int</span> idx, <span class="type">const</span> <span class="type">char</span> *k)</span></span>;</span><br><span class="line"><span class="function">LUA_API <span class="title">int</span> <span class="params">(lua_geti)</span> <span class="params">(lua_State *L, <span class="type">int</span> idx, lua_Integer n)</span></span>;</span><br><span class="line"><span class="function">LUA_API <span class="title">int</span> <span class="params">(lua_rawget)</span> <span class="params">(lua_State *L, <span class="type">int</span> idx)</span></span>;</span><br><span class="line"><span class="function">LUA_API <span class="title">int</span> <span class="params">(lua_rawgeti)</span> <span class="params">(lua_State *L, <span class="type">int</span> idx, lua_Integer n)</span></span>;</span><br><span class="line"><span class="function">LUA_API <span class="title">int</span> <span class="params">(lua_rawgetp)</span> <span class="params">(lua_State *L, <span class="type">int</span> idx, <span class="type">const</span> <span class="type">void</span> *p)</span></span>;</span><br><span class="line"> </span><br><span class="line"><span class="function">LUA_API <span class="title">void</span>  <span class="params">(lua_createtable)</span> <span class="params">(lua_State *L, <span class="type">int</span> narr, <span class="type">int</span> nrec)</span></span>;</span><br><span class="line">LUA_API <span class="type">void</span> *(lua_newuserdata) (lua_State *L, <span class="type">size_t</span> sz);</span><br><span class="line"><span class="function">LUA_API <span class="title">int</span>   <span class="params">(lua_getmetatable)</span> <span class="params">(lua_State *L, <span class="type">int</span> objindex)</span></span>;</span><br><span class="line"><span class="function">LUA_API <span class="title">int</span>  <span class="params">(lua_getuservalue)</span> <span class="params">(lua_State *L, <span class="type">int</span> idx)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<h4 id="9-6-向栈中写入数据"><a href="#9-6-向栈中写入数据" class="headerlink" title="9.6 向栈中写入数据"></a>9.6 向栈中写入数据</h4><p>lua_setXXX：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">LUA_API <span class="title">void</span>  <span class="params">(lua_setglobal)</span> <span class="params">(lua_State *L, <span class="type">const</span> <span class="type">char</span> *name)</span></span>;</span><br><span class="line"><span class="function">LUA_API <span class="title">void</span>  <span class="params">(lua_settable)</span> <span class="params">(lua_State *L, <span class="type">int</span> idx)</span></span>;</span><br><span class="line"><span class="function">LUA_API <span class="title">void</span>  <span class="params">(lua_setfield)</span> <span class="params">(lua_State *L, <span class="type">int</span> idx, <span class="type">const</span> <span class="type">char</span> *k)</span></span>;</span><br><span class="line"><span class="function">LUA_API <span class="title">void</span>  <span class="params">(lua_seti)</span> <span class="params">(lua_State *L, <span class="type">int</span> idx, lua_Integer n)</span></span>;</span><br><span class="line"><span class="function">LUA_API <span class="title">void</span>  <span class="params">(lua_rawset)</span> <span class="params">(lua_State *L, <span class="type">int</span> idx)</span></span>;</span><br><span class="line"><span class="function">LUA_API <span class="title">void</span>  <span class="params">(lua_rawseti)</span> <span class="params">(lua_State *L, <span class="type">int</span> idx, lua_Integer n)</span></span>;</span><br><span class="line"><span class="function">LUA_API <span class="title">void</span>  <span class="params">(lua_rawsetp)</span> <span class="params">(lua_State *L, <span class="type">int</span> idx, <span class="type">const</span> <span class="type">void</span> *p)</span></span>;</span><br><span class="line"><span class="function">LUA_API <span class="title">int</span>   <span class="params">(lua_setmetatable)</span> <span class="params">(lua_State *L, <span class="type">int</span> objindex)</span></span>;</span><br><span class="line"><span class="function">LUA_API <span class="title">void</span>  <span class="params">(lua_setuservalue)</span> <span class="params">(lua_State *L, <span class="type">int</span> idx)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="10-参考资料"><a href="#10-参考资料" class="headerlink" title="10 参考资料"></a>10 参考资料</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://www.lua.org/">The Programming Language Lua</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq826364410/article/details/88624824">【最详细易懂】C++和Lua交互总结</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/KillerAery/p/9249145.html">C++与Lua交互之配置&amp;交互原理&amp;示例 </a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/sevenyuan/p/4511808.html">Lua和C++交互详细总结</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <div>
+    
+      <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">---- 本文结束 <i class="fa fa-trophy"></i> 知识又增加了亿点点！----</div>
+    
+</div>
+<br />
+<div>
+  <div>
+    <fieldset
+        style="
+            border: 1px dashed #C0C0C0;
+            padding: 10px;
+            border-radius: 5px;
+            line-height: 2em;
+            color: #6d6d6d;
+        ">
+        <legend
+            align="center"
+            style="
+                width: 30%;
+                text-align: center;
+                color: #6d6d6d;
+                border: 1px dashed #C0C0C0;
+                border-radius: 5px;
+            ">
+            文章版权声明
+        </legend>
+        1、博客名称：<font color="#37c6c0">LycTechStack</font><br />
+        2、博客网址：<font color="#37c6c0">https://lz328.github.io/LycTechStack.github.io/</font><br />
+        3、本博客的文章部分内容可能来源于网络，仅供大家学习与参考，如有侵权，请联系博主进行删除处理。<br />
+        4、本博客所有文章版权归博主所有，如需转载请标明出处。<br />
+    </fieldset>
+  </div>
+</div>
+
+    
+    </div>
+      
+  <div class="popular-posts-header">相关文章</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\02\20220303-线性数据结构\" rel="bookmark">【数据结构】线性数据结构</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\03\20220303-二叉树\" rel="bookmark">【数据结构】二叉树</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\07\20220307-线性动态规划-单串\" rel="bookmark">【动态规划】（一）线性动态规划之单串问题</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\04\06\20220406-优先队列和堆\" rel="bookmark">【数据结构】优先队列和堆</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\04\11\20220411-RayTracer-基本工具类\" rel="bookmark">【RayTracer】（一）实现基本工具类</a></div>
+    </li>
+  </ul>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/LycTechStack.github.io/tags/C/" rel="tag"># C++</a>
+              <a href="/LycTechStack.github.io/tags/Lua/" rel="tag"># Lua</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/LycTechStack.github.io/2023/03/16/20230316-%E5%AE%89%E5%85%A8%E7%BC%96%E7%A0%81-%E5%B9%B6%E5%8F%91%E5%92%8C%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="prev" title="【安全编码】并发和多线程">
+      <i class="fa fa-chevron-left"></i> 【安全编码】并发和多线程
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%BC%96%E8%AF%91%E5%B9%B6%E9%85%8D%E7%BD%AE-Lua-%E5%BA%93"><span class="nav-text">1 编译并配置 Lua 库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Lua-%E4%B8%8E-C-%E4%BA%A4%E4%BA%92%E5%8E%9F%E7%90%86"><span class="nav-text">2 Lua 与 C++ 交互原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-C-%E8%B0%83%E7%94%A8-Lua-%E8%84%9A%E6%9C%AC"><span class="nav-text">3 C++ 调用 Lua 脚本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-Lua-%E8%B0%83%E7%94%A8-C-%E5%87%BD%E6%95%B0"><span class="nav-text">4 Lua 调用 C++ 函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-Lua-%E8%B0%83%E7%94%A8-C-%E5%87%BD%E6%95%B0%E6%A8%A1%E5%9D%97"><span class="nav-text">5 Lua 调用 C++ 函数模块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-Lua-%E4%BB%A5%E6%A8%A1%E5%9D%97%E5%BD%A2%E5%BC%8F%E4%BD%BF%E7%94%A8-C-%E7%B1%BB"><span class="nav-text">6 Lua 以模块形式使用 C++ 类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-Lua-%E4%BB%A5%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E6%96%B9%E5%BC%8F%E4%BD%BF%E7%94%A8-C-%E7%B1%BB"><span class="nav-text">7 Lua 以面向对象方式使用 C++ 类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-Lua-%E4%B8%8E-C-%E5%85%A8%E5%B1%80%E6%95%B0%E7%BB%84%E4%BA%A4%E4%BA%92"><span class="nav-text">8 Lua 与 C++ 全局数组交互</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-%E5%B8%B8%E7%94%A8-API-%E6%80%BB%E7%BB%93"><span class="nav-text">9 常用 API 总结</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#9-1-%E8%99%9A%E6%8B%9F%E6%A0%88%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C"><span class="nav-text">9.1 虚拟栈基本操作</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#9-2-%E6%95%B0%E6%8D%AE%E5%8E%8B%E6%A0%88"><span class="nav-text">9.2 数据压栈</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#9-3-%E5%88%A4%E6%96%AD%E6%A0%88%E4%B8%AD%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-text">9.3 判断栈中数据类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#9-4-%E8%8E%B7%E5%8F%96%E6%A0%88%E4%B8%AD%E6%95%B0%E6%8D%AE"><span class="nav-text">9.4 获取栈中数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#9-5-%E8%8E%B7%E5%8F%96%E6%A0%88%E4%B8%AD%E6%95%B0%E6%8D%AE"><span class="nav-text">9.5 获取栈中数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#9-6-%E5%90%91%E6%A0%88%E4%B8%AD%E5%86%99%E5%85%A5%E6%95%B0%E6%8D%AE"><span class="nav-text">9.6 向栈中写入数据</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10-%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-text">10 参考资料</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Lyc"
+      src="/LycTechStack.github.io/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Lyc</p>
+  <div class="site-description" itemprop="description">个人学习总结和技术经验分享，主要内容包括C++、数据结构、算法、计算机图形学、3D数学、实时渲染、游戏引擎等等，希望未来能真正踏入图形/引擎开发的大门！</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/LycTechStack.github.io/archives/">
+        
+          <span class="site-state-item-count">135</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/LycTechStack.github.io/categories/">
+          
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/LycTechStack.github.io/tags/">
+          
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/LZ328/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;LZ328&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:27487358@qq.com" title="E-Mail → mailto:27487358@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2021 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heartbeat"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lyc</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">15:29</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="/LycTechStack.github.io/lib/canvas-ribbon/canvas-ribbon.js"></script>
+  <script src="/LycTechStack.github.io/lib/anime.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/pjax/pjax.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4/dist/browser/pangu.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/velocity/velocity.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/LycTechStack.github.io/js/utils.js"></script>
+
+<script src="/LycTechStack.github.io/js/motion.js"></script>
+
+
+<script src="/LycTechStack.github.io/js/schemes/pisces.js"></script>
+
+
+<script src="/LycTechStack.github.io/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/LycTechStack.github.io/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '09aa5d8a5587f012a8af',
+      clientSecret: '7f7ec08f02d74e1865e57b5f03a982047700b547',
+      repo        : 'LycTechStack.github.io',
+      owner       : 'LZ328',
+      admin       : ['LZ328'],
+      id          : 'a1191c7e1dccff0c35840cc6c6708bd4',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+    </div>
+  
+</body>
+</html>
