@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/LycTechStack.github.io/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/LycTechStack.github.io/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/LycTechStack.github.io/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/LycTechStack.github.io/images/safari-pinned-tab.svg" color="#222">
+
+<link rel="stylesheet" href="/LycTechStack.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="/LycTechStack.github.io/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/LycTechStack.github.io/lib/pace/pace-theme-minimal.min.css">
+  <script src="/LycTechStack.github.io/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lz328.github.io","root":"/LycTechStack.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":5,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="本篇总结了《C和C++安全编码》中并发和多线程相关的内容。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【安全编码】并发和多线程">
+<meta property="og:url" content="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-%E5%AE%89%E5%85%A8%E7%BC%96%E7%A0%81-%E5%B9%B6%E5%8F%91%E5%92%8C%E5%A4%9A%E7%BA%BF%E7%A8%8B/index.html">
+<meta property="og:site_name" content="LycTechStack">
+<meta property="og:description" content="本篇总结了《C和C++安全编码》中并发和多线程相关的内容。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-03-16T04:21:16.000Z">
+<meta property="article:modified_time" content="2023-03-16T04:26:17.098Z">
+<meta property="article:author" content="Lyc">
+<meta property="article:tag" content="C++">
+<meta property="article:tag" content="C和C++安全编码">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-%E5%AE%89%E5%85%A8%E7%BC%96%E7%A0%81-%E5%B9%B6%E5%8F%91%E5%92%8C%E5%A4%9A%E7%BA%BF%E7%A8%8B/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>【安全编码】并发和多线程 | LycTechStack</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/LycTechStack.github.io/atom.xml" title="LycTechStack" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/LycTechStack.github.io/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LycTechStack</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Lyc的个人成长技术栈</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/LycTechStack.github.io/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/LycTechStack.github.io/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/LycTechStack.github.io/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/LycTechStack.github.io/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/LycTechStack.github.io/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-%E5%AE%89%E5%85%A8%E7%BC%96%E7%A0%81-%E5%B9%B6%E5%8F%91%E5%92%8C%E5%A4%9A%E7%BA%BF%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/LycTechStack.github.io/images/avatar.png">
+      <meta itemprop="name" content="Lyc">
+      <meta itemprop="description" content="个人学习总结和技术经验分享，主要内容包括C++、数据结构、算法、计算机图形学、3D数学、实时渲染、游戏引擎等等，希望未来能真正踏入图形/引擎开发的大门！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LycTechStack">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【安全编码】并发和多线程
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-03-16 12:21:16 / 修改时间：12:26:17" itemprop="dateCreated datePublished" datetime="2023-03-16T12:21:16+08:00">2023-03-16</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/LycTechStack.github.io/categories/C%E5%92%8CC-%E5%AE%89%E5%85%A8%E7%BC%96%E7%A0%81/" itemprop="url" rel="index"><span itemprop="name">C和C++安全编码</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本篇总结了《C和C++安全编码》中并发和多线程相关的内容。</p>
+<p><em><span id="more"></span></em></p>
+<h3 id="多线程程序常见错误"><a href="#多线程程序常见错误" class="headerlink" title="多线程程序常见错误"></a>多线程程序常见错误</h3><p>当并发实现得不正确时，就会产生漏洞。多线程程序中常见错误有：</p>
+<ul>
+<li>没有用锁保护共享数据(即数据竞争)。</li>
+<li>当锁确实存在时，不使用锁访问共享数据。</li>
+<li>过早释放锁。</li>
+<li>对操作的一部分获取正确的锁，释放它，后来再次取得它，然后又释放它，而正确的做法是一直持有该锁。</li>
+<li>在想要用局部变量时，意外地通过使用全局变量共享数据。</li>
+<li>在不同的时间对共享数据使用两个不同的锁。</li>
+<li>由下列情况引起死锁：不恰当的锁定序列(加锁和解锁序列必须保持一致)；锁定机制使用不当或错误选择；不释放锁或试图再次获取已经持有的锁。</li>
+</ul>
+<p>一些常见的并发陷阱包括以下内容：</p>
+<ul>
+<li>缺乏公平：所有线程没有得到平等的机会来获得处理。</li>
+<li>饥饿：当一个线程霸占共享资源、阻止其它线程使用时发生。</li>
+<li>(3).活锁：线程继续执行，但未能获得处理。</li>
+<li>假设线程将：以一个特定的顺序运行；不能同时运行；同时运行；在一个线程结束前获得处理。</li>
+<li>假设一个变量不需要锁定，因为开发人员认为只有一个线程写入它且所有其它线程都读取它。这还假定该变量上的操作是原子的。</li>
+<li>使用非线程安全库。如果一个库能保证由多个线程同时访问时不会产生数据竞争，那么认为它是线程安全的。</li>
+<li>依托测试，以找到数据竞争和死锁。</li>
+<li>内存分配和释放问题。当内存在一个线程中分配而在另一个线程中释放时，这些问题可能出现，不正确的同步可能会导致内存仍然被访问时被释放。</li>
+</ul>
+<h4 id="1-死锁"><a href="#1-死锁" class="headerlink" title="1 死锁"></a>1 死锁</h4><p>传统上，通过使冲突的竞争窗口互斥，使得一旦一个临界区开始执行时，没有额外的线程可以执行，直到前一个线程退出临界区为止，从而消除竞争条件。但是，同步原语的不正确使用可能会导致死锁(deadlock)。当两个或多个控制流以彼此都不可以继续执行的方式阻止对方时，就会发生死锁。特别是，对于一个并发执行流的循环，如果其中在循环中的每个流都已经获得了导致在循环中随后的流悬停的同步对象，则会发生死锁。死锁的一个明显的安全漏洞是拒绝访问。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> shared_data5 = <span class="number">0</span>;</span><br><span class="line">std::mutex* locks5 = <span class="literal">nullptr</span>;</span><br><span class="line"><span class="type">int</span> thread_size5;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">thread_function5</span><span class="params">(<span class="type">int</span> id)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (<span class="number">0</span>) &#123; <span class="comment">// 产生死锁</span></span><br><span class="line">		<span class="comment">// 此代码将产生一个固定数量的线程,每个线程都修改一个值,然后读取它.虽然通常一个锁就足够了,但是每个</span></span><br><span class="line">		<span class="comment">// 线程(thread_size5)都用一个锁守卫共享数据值.每个线程都必须获得两个锁,然后才能再访问该值.如果</span></span><br><span class="line">		<span class="comment">// 一个线程首先获得锁0,第二个线程获得锁1,那么程序将会出现死锁</span></span><br><span class="line">		<span class="keyword">if</span> (id % <span class="number">2</span>)</span><br><span class="line">			<span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; thread_size5; ++i)</span><br><span class="line">				locks5[i].<span class="built_in">lock</span>();</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">			<span class="keyword">for</span> (<span class="type">int</span> i = thread_size5; i &gt;= <span class="number">0</span>; --i)</span><br><span class="line">				locks5[i].<span class="built_in">lock</span>();</span><br><span class="line"> </span><br><span class="line">		shared_data5 = id;</span><br><span class="line">		<span class="built_in">fprintf</span>(stdout, <span class="string">&quot;thread: %d, set shared value to: %d\n&quot;</span>, id, shared_data5);</span><br><span class="line"> </span><br><span class="line">		<span class="keyword">if</span> (id % <span class="number">2</span>)</span><br><span class="line">			<span class="keyword">for</span> (<span class="type">int</span> i = thread_size5; i &gt;= <span class="number">0</span>; --i)</span><br><span class="line">				locks5[i].<span class="built_in">unlock</span>();</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">			<span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; thread_size5; ++i)</span><br><span class="line">				locks5[i].<span class="built_in">unlock</span>();</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span> &#123; <span class="comment">// 不会产生死锁</span></span><br><span class="line">		<span class="comment">// 每个线程都以同一顺序获取锁,可以消除潜在的死锁.下面的程序无论创建多少线程都不会出现死锁</span></span><br><span class="line">		<span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; thread_size5; ++i)</span><br><span class="line">			locks5[i].<span class="built_in">lock</span>();</span><br><span class="line"> </span><br><span class="line">		shared_data5 = id;</span><br><span class="line">		<span class="built_in">fprintf</span>(stdout, <span class="string">&quot;thread: %d, set shared value to: %d\n&quot;</span>, id, shared_data5);</span><br><span class="line"> </span><br><span class="line">		<span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; thread_size5; ++i)</span><br><span class="line">			locks5[i].<span class="built_in">unlock</span>();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">test_concurrency_deadlock</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	thread_size5 = <span class="number">5</span>;</span><br><span class="line">	std::thread* threads = <span class="keyword">new</span> std::thread[thread_size5];</span><br><span class="line">	locks5 = <span class="keyword">new</span> std::mutex[thread_size5];</span><br><span class="line"> </span><br><span class="line">	<span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i &lt; thread_size5; ++i)</span><br><span class="line">		threads[i] = std::<span class="built_in">thread</span>(thread_function5, i);</span><br><span class="line"> </span><br><span class="line">	<span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i &lt; thread_size5; ++i)</span><br><span class="line">		threads[i].<span class="built_in">join</span>();</span><br><span class="line"> </span><br><span class="line">	<span class="comment">// test_concurrency_deadlock()继续之前,等待直到线程完成</span></span><br><span class="line">	<span class="keyword">delete</span>[] locks5;</span><br><span class="line">	<span class="keyword">delete</span>[] threads;</span><br><span class="line">	<span class="built_in">fprintf</span>(stdout, <span class="string">&quot;Done\n&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>像所有的数据竞争一样，死锁行为对环境的状态而不只是程序的输入敏感。特别是，死锁(和其它的数据竞争)可能对以下条件敏感：</p>
+<ul>
+<li>处理器速度。</li>
+<li>进程或线程调度算法的变动。</li>
+<li>在执行的时候，强加的不同内存限制。</li>
+<li>任何异步事件中断程序执行的能力。</li>
+<li>其它并发执行进程的状态。</li>
+</ul>
+<h4 id="2-过早释放锁"><a href="#2-过早释放锁" class="headerlink" title="2 过早释放锁"></a>2 过早释放锁</h4><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">std::mutex shared_lock6;</span><br><span class="line"><span class="type">int</span> shared_data6 = <span class="number">0</span>;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">thread_function6</span><span class="params">(<span class="type">int</span> id)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">// 每个线程都把一个共享变量设置为它的线程编号,然后打印出共享变量的值.为了防止数据竞争,每个线程都</span></span><br><span class="line">	<span class="comment">// 锁定一个互斥量,以使变量被正确地设置</span></span><br><span class="line">	<span class="keyword">if</span> (<span class="number">0</span>) &#123; <span class="comment">// 过早地释放锁</span></span><br><span class="line">		<span class="comment">// 当共享变量的每一个写操作都由互斥量所保护时,随后的读取是不受保护的</span></span><br><span class="line">		shared_lock6.<span class="built_in">lock</span>();</span><br><span class="line">		shared_data6 = id;</span><br><span class="line">		<span class="built_in">fprintf</span>(stdout, <span class="string">&quot;thread: %d, set shared value to: %d\n&quot;</span>, id, shared_data6);</span><br><span class="line">		shared_lock6.<span class="built_in">unlock</span>();</span><br><span class="line">		std::this_thread::<span class="built_in">sleep_for</span>(std::chrono::<span class="built_in">milliseconds</span>(id) * <span class="number">100</span>);</span><br><span class="line">		<span class="built_in">fprintf</span>(stdout, <span class="string">&quot;thread: %d, has shared value to: %d\n&quot;</span>, id, shared_data6);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="comment">// 读取和写入共享数据都必须受到保护,以确保每一个线程读取到它写入的相同的值.将临界区扩展为包括读取值,此代码就呈现为线程安全的</span></span><br><span class="line">		<span class="comment">// 需要注意的是,线程的顺序仍然可以有所不同,但每个线程都正确地打印出线程编号</span></span><br><span class="line">		shared_lock6.<span class="built_in">lock</span>();</span><br><span class="line">		shared_data6 = id;</span><br><span class="line">		<span class="built_in">fprintf</span>(stdout, <span class="string">&quot;thread: %d, set shared value to: %d\n&quot;</span>, id, shared_data6);</span><br><span class="line">		std::this_thread::<span class="built_in">sleep_for</span>(std::chrono::<span class="built_in">milliseconds</span>(id) * <span class="number">100</span>);</span><br><span class="line">		<span class="built_in">fprintf</span>(stdout, <span class="string">&quot;thread: %d, has shared value to: %d\n&quot;</span>, id, shared_data6);</span><br><span class="line">		shared_lock6.<span class="built_in">unlock</span>();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">test_concurrency_prematurely_release_lock</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="type">const</span> <span class="type">size_t</span> thread_size = <span class="number">10</span>;</span><br><span class="line">	std::thread threads[thread_size];</span><br><span class="line"> </span><br><span class="line">	<span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i &lt; thread_size; ++i)</span><br><span class="line">		threads[i] = std::<span class="built_in">thread</span>(thread_function6, i);</span><br><span class="line"> </span><br><span class="line">	<span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i &lt; thread_size; ++i)</span><br><span class="line">		threads[i].<span class="built_in">join</span>();</span><br><span class="line"> </span><br><span class="line">	<span class="comment">// test_concurrency_prematurely_release_lock()继续之前,等待直到线程完成</span></span><br><span class="line">	<span class="built_in">fprintf</span>(stdout, <span class="string">&quot;Done\n&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-争用"><a href="#3-争用" class="headerlink" title="3 争用"></a>3 争用</h4><p>当一个线程试图获取另一个线程持有的锁时，就会发生锁争用。有些锁争用是正常的，这表明，锁正在”工作”，以防止竞争条件。过多的锁争用会导致性能不佳。减少持有锁的时间量或通过降低每个锁保护的粒度或资源量，可以解决锁争用导致的性能差的问题。持有锁的时间越长，另一个线程尝试获取锁，并被迫等待的概率将越大。反之，减少持有锁的持续时间就减少了争用。例如，不会作用于共享资源的代码，不需要在临界区之内得到保护，并可以与其它线程并行运行。在一个临界区之内执行一个阻塞操作延伸了临界区的持续时间，从而增加了潜在的争用。在临界区之内的阻塞操作也可能导致死锁。在临界区之内执行阻塞操作几乎始终是一个严重的错误。</p>
+<p>锁的粒度也可以影响争用。增加由一个单一锁保护的共享资源的数量，或扩大共享资源的范围(例如，锁定整个表以访问一个单元格)，将使在同一时间多个线程尝试访问该资源的概率增大。在选择锁的数量时，增加锁的开销和减少锁争用之间有一个权衡。更细的粒度(每个保护少量的数据)需要更多的锁，使得锁本身的开销增加。额外的锁也会增加死锁的风险。锁一般是相当快的，但是，当然单个执行线程运行速度会比没有锁更慢。</p>
+<h4 id="4-ABA-问题"><a href="#4-ABA-问题" class="headerlink" title="4 ABA 问题"></a>4 ABA 问题</h4><p>在同步过程中，当一个位置被读取两次，并有相同的值供读取时，就发生 ABA 的问题。然而，第二个线程已在两次读取之间执行并修改了这个值，执行其它工作，然后把值再修改回来，从而愚弄第一个线程，让它以为第二个线程尚未执行。实现无锁数据结构时，经常会遇到 ABA 问题。如果将一个条目从列表中移除，并删除，然后分配一个新的条目，并把它添加到列表中，因为优化，新的对象通常会放置在被删除的对象的相同位置。因此，指向新条目的指针可能等于旧项目的指针，这可能会导致 ABA 问题。</p>
+<p>自旋锁(spinlock)是一种类型的锁实现，其中线程在一个循环中反复尝试获得锁，直到它终于成功。一般而言，只有当等待获得锁的时间很短时，自旋锁才是有效的。在这种情况下，自旋锁避免了昂贵的上下文切换时间和在传统的锁中等待资源时，调度运行需要花费的时间。当获得锁的等待时间是明显长时，自旋锁在试图获取一个锁时就会浪费大量的 CPU 时间。一个常见的防止自旋锁浪费 CPU 周期的缓解措施是，在 while 循环中让该线程休眠或把控制让给其它线程。</p>
+
+    </div>
+
+    
+    
+    
+
+    <div>
+    
+      <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">---- 本文结束 <i class="fa fa-trophy"></i> 知识又增加了亿点点！----</div>
+    
+</div>
+<br />
+<div>
+  <div>
+    <fieldset
+        style="
+            border: 1px dashed #C0C0C0;
+            padding: 10px;
+            border-radius: 5px;
+            line-height: 2em;
+            color: #6d6d6d;
+        ">
+        <legend
+            align="center"
+            style="
+                width: 30%;
+                text-align: center;
+                color: #6d6d6d;
+                border: 1px dashed #C0C0C0;
+                border-radius: 5px;
+            ">
+            文章版权声明
+        </legend>
+        1、博客名称：<font color="#37c6c0">LycTechStack</font><br />
+        2、博客网址：<font color="#37c6c0">https://lz328.github.io/LycTechStack.github.io/</font><br />
+        3、本博客的文章部分内容可能来源于网络，仅供大家学习与参考，如有侵权，请联系博主进行删除处理。<br />
+        4、本博客所有文章版权归博主所有，如需转载请标明出处。<br />
+    </fieldset>
+  </div>
+</div>
+
+    
+    </div>
+      
+  <div class="popular-posts-header">相关文章</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2023\03\16\20230316-安全编码-内存管理\" rel="bookmark">【安全编码】内存管理</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2023\03\16\20230316-安全编码-字符串\" rel="bookmark">【安全编码】字符串</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2023\03\16\20230316-安全编码-整数安全\" rel="bookmark">【安全编码】整数安全</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\03\20220303-二叉树\" rel="bookmark">【数据结构】二叉树</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\02\20220303-线性数据结构\" rel="bookmark">【数据结构】线性数据结构</a></div>
+    </li>
+  </ul>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/LycTechStack.github.io/tags/C/" rel="tag"># C++</a>
+              <a href="/LycTechStack.github.io/tags/C%E5%92%8CC-%E5%AE%89%E5%85%A8%E7%BC%96%E7%A0%81/" rel="tag"># C和C++安全编码</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/LycTechStack.github.io/2023/03/16/20230316-%E5%AE%89%E5%85%A8%E7%BC%96%E7%A0%81-%E6%95%B4%E6%95%B0%E5%AE%89%E5%85%A8/" rel="prev" title="【安全编码】整数安全">
+      <i class="fa fa-chevron-left"></i> 【安全编码】整数安全
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%A8%8B%E5%BA%8F%E5%B8%B8%E8%A7%81%E9%94%99%E8%AF%AF"><span class="nav-text">多线程程序常见错误</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E6%AD%BB%E9%94%81"><span class="nav-text">1 死锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E8%BF%87%E6%97%A9%E9%87%8A%E6%94%BE%E9%94%81"><span class="nav-text">2 过早释放锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E4%BA%89%E7%94%A8"><span class="nav-text">3 争用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-ABA-%E9%97%AE%E9%A2%98"><span class="nav-text">4 ABA 问题</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Lyc"
+      src="/LycTechStack.github.io/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Lyc</p>
+  <div class="site-description" itemprop="description">个人学习总结和技术经验分享，主要内容包括C++、数据结构、算法、计算机图形学、3D数学、实时渲染、游戏引擎等等，希望未来能真正踏入图形/引擎开发的大门！</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/LycTechStack.github.io/archives/">
+        
+          <span class="site-state-item-count">134</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/LycTechStack.github.io/categories/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/LycTechStack.github.io/tags/">
+          
+        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/LZ328/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;LZ328&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:27487358@qq.com" title="E-Mail → mailto:27487358@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2021 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heartbeat"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lyc</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">15:12</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="/LycTechStack.github.io/lib/canvas-ribbon/canvas-ribbon.js"></script>
+  <script src="/LycTechStack.github.io/lib/anime.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/pjax/pjax.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4/dist/browser/pangu.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/velocity/velocity.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/LycTechStack.github.io/js/utils.js"></script>
+
+<script src="/LycTechStack.github.io/js/motion.js"></script>
+
+
+<script src="/LycTechStack.github.io/js/schemes/pisces.js"></script>
+
+
+<script src="/LycTechStack.github.io/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/LycTechStack.github.io/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '09aa5d8a5587f012a8af',
+      clientSecret: '7f7ec08f02d74e1865e57b5f03a982047700b547',
+      repo        : 'LycTechStack.github.io',
+      owner       : 'LZ328',
+      admin       : ['LZ328'],
+      id          : '79b3f215d79ec902ee28be4e8f667444',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+    </div>
+  
+</body>
+</html>

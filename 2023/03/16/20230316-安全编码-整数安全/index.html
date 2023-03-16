@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/LycTechStack.github.io/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/LycTechStack.github.io/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/LycTechStack.github.io/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/LycTechStack.github.io/images/safari-pinned-tab.svg" color="#222">
+
+<link rel="stylesheet" href="/LycTechStack.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="/LycTechStack.github.io/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/LycTechStack.github.io/lib/pace/pace-theme-minimal.min.css">
+  <script src="/LycTechStack.github.io/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lz328.github.io","root":"/LycTechStack.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":5,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="本篇总结了《C和C++安全编码》中整数相关的内容。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【安全编码】整数安全">
+<meta property="og:url" content="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-%E5%AE%89%E5%85%A8%E7%BC%96%E7%A0%81-%E6%95%B4%E6%95%B0%E5%AE%89%E5%85%A8/index.html">
+<meta property="og:site_name" content="LycTechStack">
+<meta property="og:description" content="本篇总结了《C和C++安全编码》中整数相关的内容。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-03-16T04:21:07.000Z">
+<meta property="article:modified_time" content="2023-03-16T04:25:24.325Z">
+<meta property="article:author" content="Lyc">
+<meta property="article:tag" content="C++">
+<meta property="article:tag" content="C和C++安全编码">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-%E5%AE%89%E5%85%A8%E7%BC%96%E7%A0%81-%E6%95%B4%E6%95%B0%E5%AE%89%E5%85%A8/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>【安全编码】整数安全 | LycTechStack</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/LycTechStack.github.io/atom.xml" title="LycTechStack" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/LycTechStack.github.io/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LycTechStack</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Lyc的个人成长技术栈</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/LycTechStack.github.io/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/LycTechStack.github.io/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/LycTechStack.github.io/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/LycTechStack.github.io/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/LycTechStack.github.io/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-%E5%AE%89%E5%85%A8%E7%BC%96%E7%A0%81-%E6%95%B4%E6%95%B0%E5%AE%89%E5%85%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/LycTechStack.github.io/images/avatar.png">
+      <meta itemprop="name" content="Lyc">
+      <meta itemprop="description" content="个人学习总结和技术经验分享，主要内容包括C++、数据结构、算法、计算机图形学、3D数学、实时渲染、游戏引擎等等，希望未来能真正踏入图形/引擎开发的大门！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LycTechStack">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【安全编码】整数安全
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-03-16 12:21:07 / 修改时间：12:25:24" itemprop="dateCreated datePublished" datetime="2023-03-16T12:21:07+08:00">2023-03-16</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/LycTechStack.github.io/categories/C%E5%92%8CC-%E5%AE%89%E5%85%A8%E7%BC%96%E7%A0%81/" itemprop="url" rel="index"><span itemprop="name">C和C++安全编码</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>15k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>14 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本篇总结了《C和C++安全编码》中整数相关的内容。</p>
+<p><em><span id="more"></span></em></p>
+<h3 id="常见的整数安全漏洞"><a href="#常见的整数安全漏洞" class="headerlink" title="常见的整数安全漏洞"></a>常见的整数安全漏洞</h3><h4 id="1-无符号整数回绕"><a href="#1-无符号整数回绕" class="headerlink" title="1 无符号整数回绕"></a>1 无符号整数回绕</h4><p>涉及无符号操作数的计算永远不会溢出，因为回绕，一个无符号整数表达式永远无法求出小于零的值。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 回绕:涉及无符号操作数的计算永远不会溢出</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">test_integer_security_wrap_around</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> ui = UINT_MAX; <span class="built_in">fprintf</span>(stdout, <span class="string">&quot;ui value 1: %u\n&quot;</span>, ui); <span class="comment">// 4294967295</span></span><br><span class="line">	ui++; <span class="built_in">fprintf</span>(stdout, <span class="string">&quot;ui value 2: %u\n&quot;</span>, ui); <span class="comment">// 0</span></span><br><span class="line">	ui = <span class="number">0</span>; <span class="built_in">fprintf</span>(stdout, <span class="string">&quot;ui value 3: %u\n&quot;</span>, ui); <span class="comment">// 0</span></span><br><span class="line">	ui--; <span class="built_in">fprintf</span>(stdout, <span class="string">&quot;ui value 4: %u\n&quot;</span>, ui); <span class="comment">// 4294967295</span></span><br><span class="line"> </span><br><span class="line">	<span class="comment">//for (unsigned i = n; --i &gt;= 0; ) // 此循环将永远不会终止</span></span><br><span class="line"> </span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> i = <span class="number">0</span>, j = <span class="number">0</span>, sum = <span class="number">0</span>;</span><br><span class="line">	<span class="comment">// ... 对i, j, sum进行一些赋值运算操作</span></span><br><span class="line">	<span class="keyword">if</span> (sum + i &gt; UINT_MAX) &#123; &#125; <span class="comment">// 不会发生,因为sum+i回绕了</span></span><br><span class="line">	<span class="keyword">if</span> (i &gt; UINT_MAX - sum) &#123; &#125; <span class="comment">// 好很多</span></span><br><span class="line"> </span><br><span class="line">	<span class="keyword">if</span> (sum - j &lt; <span class="number">0</span>) &#123; &#125; <span class="comment">// 不会发生,因为sum-j回绕了</span></span><br><span class="line">	<span class="keyword">if</span> (j &gt; sum) &#123; &#125; <span class="comment">// 正确</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>但也并非所有无符号整数回绕都是安全缺陷。精心定义的无符号整数算术求模属性经常被特意使用，例如，在散列算法和C标准里rand()的示例实现中就都用到了这个属性。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">test_integer_security_wrap_around2</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">&#123; <span class="comment">// 展示了一个无符号整数回绕导致的实际漏洞的例子</span></span><br><span class="line">	<span class="type">size_t</span> len = <span class="number">1</span>;</span><br><span class="line">	<span class="type">char</span>* src = <span class="string">&quot;comment&quot;</span>;</span><br><span class="line"> </span><br><span class="line">	<span class="type">size_t</span> size;</span><br><span class="line">	size = len - <span class="number">2</span>;</span><br><span class="line">	<span class="built_in">fprintf</span>(stderr, <span class="string">&quot;size = %u, %x, %x, %d\n&quot;</span>, size, size, size+<span class="number">1</span>, size+<span class="number">1</span>); <span class="comment">// 4294967295, ffffffff, 0, 0</span></span><br><span class="line">	<span class="type">char</span>* comment = (<span class="type">char</span>*)<span class="built_in">malloc</span>(size + <span class="number">1</span>);</span><br><span class="line">	<span class="comment">//memcpy(comment, src, size); // crash</span></span><br><span class="line">	<span class="built_in">free</span>(comment);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">&#123;</span><br><span class="line">	<span class="type">int</span> <span class="type">element_t</span>;</span><br><span class="line">	<span class="type">int</span> count = <span class="number">10</span>;</span><br><span class="line">	<span class="comment">// 库函数calloc接受两个参数：存储元素类型所需要的空间和元素的个数.为了求出所需内存的大小,使用元素个数</span></span><br><span class="line">	<span class="comment">// 乘以该元素类型所需的单位空间来计算.如果计算所得结果无法用类型为size_t的无符号整数表示,那么,尽管分</span></span><br><span class="line">	<span class="comment">// 配程序看上去能够成功地执行,但实际上它只会分配非常小的内存空间.结果,应用程序对分配的缓冲区的写操作</span></span><br><span class="line">	<span class="comment">// 可能会越界,从而导致基于堆的缓冲区溢出</span></span><br><span class="line">	<span class="type">char</span>* p = (<span class="type">char</span>*)<span class="built_in">calloc</span>(<span class="built_in">sizeof</span>(<span class="type">element_t</span>), count);</span><br><span class="line">	<span class="built_in">free</span>(p);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">&#123;</span><br><span class="line">	<span class="type">int</span> off = <span class="number">1</span>, len = <span class="number">2</span>;</span><br><span class="line">	<span class="type">int</span> type_name;</span><br><span class="line">	<span class="comment">// 这里的off和len都声明为signed int.因为根据C标准的定义,sizeof运算符返回的是一个无符号整数类型(size_t),</span></span><br><span class="line">	<span class="comment">// 整数转换规则要求在那些signed int的宽度等于size_t的宽度的实现上,len - sizeof(type_name)被计算为无符号</span></span><br><span class="line">	<span class="comment">// 的值,如果len比sizeof运算符返回的值小,那么减法操作会回绕并产生一个巨大的正值</span></span><br><span class="line">	std::cout&lt;&lt;<span class="string">&quot;len - sizeof(type_name): &quot;</span>&lt;&lt;len - <span class="built_in">sizeof</span>(type_name)&lt;&lt;std::endl; <span class="comment">// 18446744073709551614</span></span><br><span class="line">	<span class="keyword">if</span> (off &gt; len - <span class="built_in">sizeof</span>(type_name)) <span class="keyword">return</span>;</span><br><span class="line">	<span class="comment">// 要消除以上问题,可以把整数范围检查编写为下列替代形式</span></span><br><span class="line">	<span class="comment">// 程序员仍然必须保证这里的加法操作不会导致回绕,这是通过保证off的值在一个已定义的范围内实现的.为了消除</span></span><br><span class="line">	<span class="comment">// 潜在的转换错误,在本例中也应当把off和len都声明为size_t类型</span></span><br><span class="line">	<span class="keyword">if</span> ((off + <span class="built_in">sizeof</span>(type_name)) &gt; len) <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-有符号整数溢出"><a href="#2-有符号整数溢出" class="headerlink" title="2 有符号整数溢出"></a>2 有符号整数溢出</h4><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 有符号整数溢出</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">test_integer_security_overflow</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="type">int</span> i = INT_MAX; <span class="comment">// 2147483647, int最大值</span></span><br><span class="line">	i++; <span class="built_in">fprintf</span>(stdout, <span class="string">&quot;i = %d\n&quot;</span>, i); <span class="comment">// -2147483648, int最小值</span></span><br><span class="line"> </span><br><span class="line">	i = INT_MIN; <span class="comment">// -2147483648, int最小值</span></span><br><span class="line">	i--; <span class="built_in">fprintf</span>(stdout, <span class="string">&quot;i = %d\n&quot;</span>, i); <span class="comment">// 2147483647, int最大值</span></span><br><span class="line"> </span><br><span class="line">	std::cout &lt;&lt; <span class="string">&quot;abs(INT_MIN): &quot;</span> &lt;&lt; std::<span class="built_in">abs</span>(INT_MIN) &lt;&lt; std::endl; <span class="comment">// -2147483648</span></span><br><span class="line">	<span class="comment">// 因为二进制补码表示是不对称的,数值0被表示为”正”数,所以用补码表示的一个给定类型最小负值的相反数不能以那种类型表示</span></span><br><span class="line">	<span class="comment">// 对最小的负值而言,结果是未定义的或错误的</span></span><br><span class="line">	<span class="meta">#<span class="keyword">define</span> abs(n) ((n) &lt; 0 ? -(n) : (n))</span></span><br><span class="line">	<span class="meta">#<span class="keyword">undef</span> abs</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-字符类型表示整数"><a href="#3-字符类型表示整数" class="headerlink" title="3 字符类型表示整数"></a>3 字符类型表示整数</h4><p>在把 char 类型用于数值时必须使用明确的 signed char 或 unsigned char。建议仅使用 signed char 和 unsigned char 类型存储和使用小数值，也就是范围分别在 SCHAR_MIN 和 SCHAR_MAX 之间，或 0 和 UCHAR_MAX 之间的值，因为这是可移植的保证数据的符号字符类型的唯一方式。常规的 char 不应该被用来存储数值，因为编译器有定义 char 的自由，使其要么与 signed char，要么与 unsigned char 具有相同的范围、表示和行为。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 字符类型</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">test_integer_security_char</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// char类型的变量c可能是有符号或无符号的</span></span><br><span class="line">        <span class="comment">// 初始值200(它具有signed char类型)无法在(有符号的)char类型中表示(这是未定义的行为)</span></span><br><span class="line">        <span class="comment">// 许多编译器将用标准的由无符号转换到有符号的模字大小(modulo-word-size)规则把200转换为-56</span></span><br><span class="line">        <span class="type">char</span> c = <span class="number">200</span>;</span><br><span class="line">        <span class="type">int</span> i = <span class="number">1000</span>;</span><br><span class="line">        <span class="built_in">fprintf</span>(stdout, <span class="string">&quot;i/c = %d\n&quot;</span>, i / c); <span class="comment">// 在windows/linux上会输出-17, 1000/-56=-17</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 声明unsigned char型变量c,使后面的除法操作与char的符号性无关,因此它有一个可预见的结果</span></span><br><span class="line">        <span class="type">unsigned</span> <span class="type">char</span> c = <span class="number">200</span>;</span><br><span class="line">        <span class="type">int</span> i = <span class="number">1000</span>;</span><br><span class="line">        <span class="built_in">fprintf</span>(stdout, <span class="string">&quot;i/c = %d\n&quot;</span>, i / c); <span class="comment">// 5</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-整数类型提升"><a href="#4-整数类型提升" class="headerlink" title="4 整数类型提升"></a>4 整数类型提升</h4><p>如果一个整数类型具有低于或等于 int 或 unsigned int 的整数转换级别，那么它的对象或表达式在用于一个需要 int 或 unsigned int 的表达式时，就会被提升。整数类型提升被作为普通算术转换的一个组成部分。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">test_integer_security_promotion</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">&#123;</span><br><span class="line">	<span class="type">int</span> sum = <span class="number">0</span>;</span><br><span class="line">	<span class="type">char</span> c1 = <span class="string">&#x27;a&#x27;</span>, c2 = <span class="string">&#x27;b&#x27;</span>;</span><br><span class="line">	<span class="comment">// 整数类型提升规则要求把c1和c2都提升到int类型</span></span><br><span class="line">	<span class="comment">// 然后把这两个int类型的数据相加,得到一个int类型的值,并且该结果被保存在整数类型变量sum中</span></span><br><span class="line">	sum = c1 + c2;</span><br><span class="line">	<span class="built_in">fprintf</span>(stdout, <span class="string">&quot;sum: %d\n&quot;</span>, sum); <span class="comment">// 195</span></span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">&#123;</span><br><span class="line">	<span class="type">signed</span> <span class="type">char</span> cresult, c1, c2, c3;</span><br><span class="line">	c1 = <span class="number">100</span>; c2 = <span class="number">3</span>; c3 = <span class="number">4</span>;</span><br><span class="line">	<span class="comment">// 在用8位补码表示signed char的平台上,c1与c2相乘的结果可能会因超过这些平台上signed char类型的最大值(+127)</span></span><br><span class="line">	<span class="comment">// 而引起signed char类型的溢出.然而,由于发生了整数类型提升,c1, c2和c3都被转换为int,因此整个表达式的结果</span></span><br><span class="line">	<span class="comment">// 能够被成功地计算出来.该结果随后被截断,并被存储在cresult中.由于结果位于signed char类型的取值范围内,因</span></span><br><span class="line">	<span class="comment">// 此该截断操作并不会导致数据丢失或数据解释错误 </span></span><br><span class="line">	cresult = c1 * c2 / c3;</span><br><span class="line">	<span class="built_in">fprintf</span>(stdout, <span class="string">&quot;cresult: %d\n&quot;</span>, cresult); <span class="comment">// 75</span></span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">&#123;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">char</span> uc = UCHAR_MAX; <span class="comment">// 0xFF</span></span><br><span class="line">	<span class="comment">// 当uc用作求反运算符&quot;~&quot;的操作数时,通过使用零扩展把它扩展为32位,它被提升为signed int类型,因此,在</span></span><br><span class="line">	<span class="comment">// x86-32架构平台中,该操作始终产生一个类型为signed int的负值</span></span><br><span class="line">	<span class="type">int</span> i = ~uc;</span><br><span class="line">	<span class="built_in">fprintf</span>(stdout, <span class="string">&quot;i: %0x\n&quot;</span>, i); <span class="comment">// 0xffffff00</span></span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="5-无符号整数类型转换"><a href="#5-无符号整数类型转换" class="headerlink" title="5 无符号整数类型转换"></a>5 无符号整数类型转换</h4><p>从较小的无符号整数类型转换到较大的无符号整数类型始终是安全的，通常通过对其值进行零扩展(zero-extending)而完成。当表达式包含不同宽度的无符号整数操作数时，C标准要求每个操作的结果都具有其中较宽的操作数的类型(和表示范围)。假设相应的数学运算产生一个在结果类型能表示的范围内的结果，则得到的表示值就是那个数学值。如果数学结果值不能用结果类型表示，发生的情况有两类：无符号，损失精度；无符号值转换成有符号值：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">test_integer_security_unsigned_conversion</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">&#123; <span class="comment">// 无符号,损失精度</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> ui = <span class="number">300</span>;</span><br><span class="line">	<span class="comment">// 当uc被赋予存储在ui中的值时,值300以模2^8取余,或300-256=44</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">char</span> uc = ui;</span><br><span class="line">	<span class="built_in">fprintf</span>(stdout, <span class="string">&quot;uc: %u\n&quot;</span>, uc); <span class="comment">// 44</span></span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">&#123; <span class="comment">// 无符号值转换成有符号值</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> <span class="type">int</span> ul = ULONG_MAX;</span><br><span class="line">	<span class="type">signed</span> <span class="type">char</span> sc;</span><br><span class="line">	sc = ul; <span class="comment">// 可能会导致截断错误</span></span><br><span class="line">	<span class="built_in">fprintf</span>(stdout, <span class="string">&quot;sc: %d\n&quot;</span>, sc); <span class="comment">// -1</span></span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">&#123; <span class="comment">// 当从一个无符号类型转换为有符号类型时,应验证范围</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> <span class="type">int</span> ul = ULONG_MAX;</span><br><span class="line">	<span class="type">signed</span> <span class="type">char</span> sc;</span><br><span class="line">	<span class="keyword">if</span> (ul &lt;= SCHAR_MAX) &#123;</span><br><span class="line">		sc = (<span class="type">signed</span> <span class="type">char</span>)ul; <span class="comment">// 使用强制转换来消除警告</span></span><br><span class="line">	&#125; <span class="keyword">else</span> &#123; <span class="comment">// 处理错误情况</span></span><br><span class="line">		<span class="built_in">fprintf</span>(stderr, <span class="string">&quot;fail\n&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="6-有符号整数类型转换"><a href="#6-有符号整数类型转换" class="headerlink" title="6 有符号整数类型转换"></a>6 有符号整数类型转换</h4><p>从较小的有符号整数类型转换为较大的有符号整数类型始终是安全的，并可以采用对该值进行符号扩展的方法在补码表示中实现：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">test_integer_security_signed_conversion</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">&#123; <span class="comment">// 有符号,损失精度</span></span><br><span class="line">	<span class="type">signed</span> <span class="type">long</span> <span class="type">int</span> sl = LONG_MAX;</span><br><span class="line">	<span class="type">signed</span> <span class="type">char</span> sc = (<span class="type">signed</span> <span class="type">char</span>)sl; <span class="comment">// 强制转换消除了警告</span></span><br><span class="line">	<span class="built_in">fprintf</span>(stdout, <span class="string">&quot;sc: %d\n&quot;</span>, sc); <span class="comment">// -1</span></span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">&#123; <span class="comment">// 当从一个有符号类型转换到精度较低的有符号类型时,应验证范围</span></span><br><span class="line">	<span class="type">signed</span> <span class="type">long</span> <span class="type">int</span> sl = LONG_MAX;</span><br><span class="line">	<span class="type">signed</span> <span class="type">char</span> sc;</span><br><span class="line">	<span class="keyword">if</span> ((sl &lt; SCHAR_MIN) || (sl &gt; SCHAR_MAX)) &#123; <span class="comment">// 处理错误情况</span></span><br><span class="line">		<span class="built_in">fprintf</span>(stderr, <span class="string">&quot;fail\n&quot;</span>);</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		sc = (<span class="type">signed</span> <span class="type">char</span>)sl; <span class="comment">// 使用强制转换来消除警告</span></span><br><span class="line">		<span class="built_in">fprintf</span>(stdout, <span class="string">&quot;sc: %d\n&quot;</span>, sc);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">&#123; <span class="comment">// 负值和无符号值的比较固有问题</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> ui = UINT_MAX;</span><br><span class="line">	<span class="type">signed</span> <span class="type">char</span> c = <span class="number">-1</span>;</span><br><span class="line">	<span class="comment">// 由于整数提升,c被转换为unsigned int类型的值0xFFFFFFFF,即4294967295</span></span><br><span class="line">	<span class="keyword">if</span> (c == ui) &#123;</span><br><span class="line">	      <span class="built_in">fprintf</span>(stderr, <span class="string">&quot;why is -1 = 4294967295\n&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">&#123; <span class="comment">// 从有符号类型转换为无符号类型时,可能发生类型范围错误,包括数据丢失(截断)和损失符号(符号错误)</span></span><br><span class="line">	<span class="type">signed</span> <span class="type">int</span> si = INT_MIN;</span><br><span class="line">	<span class="comment">// 导致损失符号</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> ui = (<span class="type">unsigned</span> <span class="type">int</span>)si; <span class="comment">// 强制转换消除了警告</span></span><br><span class="line">	<span class="built_in">fprintf</span>(stderr, <span class="string">&quot;ui: %u\n&quot;</span>, ui); <span class="comment">// 2147483648</span></span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">&#123; <span class="comment">// 从有符号类型转换为无符号类型时,应验证取值范围</span></span><br><span class="line">	<span class="type">signed</span> <span class="type">int</span> si = INT_MIN;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> ui;</span><br><span class="line">	<span class="keyword">if</span> (si &lt; <span class="number">0</span>) &#123; <span class="comment">// 处理错误情况</span></span><br><span class="line">		<span class="built_in">fprintf</span>(stderr, <span class="string">&quot;fail\n&quot;</span>);</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		ui = (<span class="type">unsigned</span> <span class="type">int</span>)si; <span class="comment">// 强制转换消除了警告</span></span><br><span class="line">		<span class="built_in">fprintf</span>(stdout, <span class="string">&quot;ui: %u\n&quot;</span>, ui);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>下面展示了一些整数转换和截断错误：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">test_integer_security_conversion_truncation</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">&#123; <span class="comment">// 由转换错误导致的安全漏洞</span></span><br><span class="line">	<span class="type">int</span> size = <span class="number">5</span>;</span><br><span class="line">	<span class="type">int</span> MAX_ARRAY_SIZE = <span class="number">10</span>;</span><br><span class="line">	<span class="comment">// 如果size为负数,此检查将通过,而malloc()函数将被传入一个为负的大小.因为malloc()需要size_t类型的参数,</span></span><br><span class="line">	<span class="comment">// 所以size会被转换成一个巨大的无符号数.当有符号整数类型被转换为一个无符号的整数类型时,会重复加上或减去</span></span><br><span class="line">	<span class="comment">// 新类型的宽度(2^N),以使结果落在可表示的范围之内.因此,这种转换可能会导致大于MAX_ARRAY_SIZE的值.这种</span></span><br><span class="line">	<span class="comment">// 错误可以通过把size声明为size_t而不是int来消除</span></span><br><span class="line">	<span class="keyword">if</span> (size &lt; MAX_ARRAY_SIZE) &#123; <span class="comment">// 初始化数组</span></span><br><span class="line">		<span class="type">char</span>* array = (<span class="type">char</span>*)<span class="built_in">malloc</span>(size);</span><br><span class="line">		<span class="built_in">free</span>(array);</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123; <span class="comment">// 处理错误</span></span><br><span class="line">		<span class="built_in">fprintf</span>(stderr, <span class="string">&quot;fail\n&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">&#123; <span class="comment">// 由整数截断错误导致的缓冲区溢出漏洞</span></span><br><span class="line">	<span class="type">char</span>* argv[<span class="number">3</span>] = &#123;<span class="string">&quot;&quot;</span>, <span class="string">&quot;abc&quot;</span>, <span class="string">&quot;123&quot;</span>&#125;;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">short</span> <span class="type">int</span> total;</span><br><span class="line">	<span class="comment">// 攻击者可能会提供两个总长度无法用unsigned short整数total表示的字符做参数,这样,总长度值将会用比结果</span></span><br><span class="line">	<span class="comment">// 类型所能表示的最大值大1的数取模截断,函数strlen返回一个无符号整数类型size_t的结果,对于大多数实现而言,</span></span><br><span class="line">	<span class="comment">// size_t的宽度大于unsigned short的宽度,必然要进行降级操作,strcpy和strcat的执行将导致缓冲区溢出</span></span><br><span class="line">	total = <span class="built_in">strlen</span>(argv[<span class="number">1</span>]) + <span class="built_in">strlen</span>(argv[<span class="number">2</span>]) + <span class="number">1</span>;</span><br><span class="line">	<span class="type">char</span>* buff = (<span class="type">char</span>*)<span class="built_in">malloc</span>(total);</span><br><span class="line">	<span class="built_in">strcpy</span>(buff, argv[<span class="number">1</span>]);</span><br><span class="line">	<span class="built_in">strcat</span>(buff, argv[<span class="number">2</span>]);</span><br><span class="line">	<span class="built_in">fprintf</span>(stdout, <span class="string">&quot;buff: %s\n&quot;</span>, buff);</span><br><span class="line">	<span class="built_in">free</span>(buff);</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="7-整数操作"><a href="#7-整数操作" class="headerlink" title="7 整数操作"></a>7 整数操作</h4><p>所有证书操作都可能会导致异常情况下的错误，如溢出、回绕和截断。当某个操作产生的结果不能在操作结果类型中表示时，就会发生异常情况。</p>
+<h5 id="7-1-赋值"><a href="#7-1-赋值" class="headerlink" title="7.1 赋值"></a>7.1 赋值</h5><p>在简单的赋值(&#x3D;)中，右操作数的值被转换为赋值表达式的类型并替换存储在左操作数所指定的对象的值。用一个有符号整数为一个无符号整数赋值，或者用一个无符号整数为一个宽度相等的有符号整数赋值，都可能导致所产生的值被误解。当从一个具有较大宽度的类型向较小宽度的类型赋值或强制类型转换时，就会导致发生截断。如果该值不能用结果类型表示，那么数据可能会丢失。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">f_5_4</span><span class="params">(<span class="type">void</span>)</span> </span>&#123; <span class="keyword">return</span> <span class="number">66</span>; &#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">test_integer_security_assignment</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">&#123;</span><br><span class="line">	<span class="type">char</span> c;</span><br><span class="line">	<span class="comment">// 函数f_5_4返回的int值可能在存储到char时被截断,然后在比较之前将其转换回int宽度</span></span><br><span class="line">	<span class="comment">// 在&quot;普通&quot;char具有与unsigned char相同的取值范围的实现中,转换的结果不能为负,所以下面比较的操作数</span></span><br><span class="line">	<span class="comment">// 永远无法比较为相等,因此,为了有充分的可移植性,变量c应声明为int类型</span></span><br><span class="line">	<span class="keyword">if</span> ((c = <span class="built_in">f_5_4</span>()) == <span class="number">-1</span>) &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">&#123;</span><br><span class="line">	<span class="type">char</span> c = <span class="string">&#x27;a&#x27;</span>;</span><br><span class="line">	<span class="type">int</span> i = <span class="number">1</span>;</span><br><span class="line">	<span class="type">long</span> l;</span><br><span class="line">	<span class="comment">// i的值被转换为c=i赋值表达式的类型,那就是char类型,然后包含在括号中的表达式的值被转换为括号外的赋值</span></span><br><span class="line">	<span class="comment">// 表达式的类型,即long int型.如果i的值不在char的取值范围内,那么在这一系列的分配后,比较表达式</span></span><br><span class="line">	<span class="comment">// l == i是不会为真的</span></span><br><span class="line">	l = (c = i);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">&#123;</span><br><span class="line">	<span class="comment">// 用一个有符号整数为一个无符号整数赋值,或者用一个无符号整数为一个宽度相等的有符号整数赋值,</span></span><br><span class="line">	<span class="comment">// 都可能导致所产生的值被误解</span></span><br><span class="line">	<span class="type">int</span> si = <span class="number">-3</span>;</span><br><span class="line">	<span class="comment">// 因为新的类型是无符号的,那么通过反复增加或减去比新的类型可以表示的最大值大1的数,该值可以被转换,</span></span><br><span class="line">	<span class="comment">// 直到该值落在新的类型的取值范围内.如果作为无符号值访问,结果值会被误解为一个大的正值</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> ui = si;</span><br><span class="line">	<span class="built_in">fprintf</span>(stdout, <span class="string">&quot;ui = %u\n&quot;</span>, ui); <span class="comment">// 4294967293</span></span><br><span class="line">	<span class="built_in">fprintf</span>(stdout, <span class="string">&quot;ui = %d\n&quot;</span>, ui); <span class="comment">// -3</span></span><br><span class="line">	<span class="comment">// 在大多数实现中,通过逆向操作可以轻易地恢复原来的值</span></span><br><span class="line">	si = ui;</span><br><span class="line">	<span class="built_in">fprintf</span>(stdout, <span class="string">&quot;si = %d\n&quot;</span>, si); <span class="comment">// -3</span></span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">&#123;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">char</span> sum, c1, c2;</span><br><span class="line">	c1 = <span class="number">200</span>; c2 = <span class="number">90</span>;</span><br><span class="line">	<span class="comment">// c1和c2相加产生的值在unsigned char的取值范围之外,把结果赋值给sum时会被截断</span></span><br><span class="line">	sum = c1 + c2;</span><br><span class="line">	<span class="built_in">fprintf</span>(stdout, <span class="string">&quot;sum = %u\n&quot;</span>, sum); <span class="comment">// 34</span></span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="7-2-加法"><a href="#7-2-加法" class="headerlink" title="7.2 加法"></a>7.2 加法</h5><p>可以用来将两个算术操作数或者将一个指针与一个整数相加。如果两个操作数都是算术类型，那么将会对它们执行普通算术转换。二元的”+”运算符的结果就是其操作数的和。递增与加1等价。如果表达式是将一个整数类型加到一个指针上，那么其结果将是一个指针，这称为指针算术运算。两个整数相加的结果总是能够用比两个操作数中较大者的宽度大1位的数来表示。任何整数操作的结果都可以用任何比其中较大者的宽度大1的类型表示。如果结果整数类型占用的位数不足以表示其结果，那么整数加法就会导致溢出或回绕。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">test_integer_security_add</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">&#123; <span class="comment">// 先验条件测试,补码表示: 用来检测有符号溢出,该解决方案只适用于使用补码表示的架构</span></span><br><span class="line">	<span class="type">signed</span> <span class="type">int</span> si1, si2, sum;</span><br><span class="line">	si1 = <span class="number">-40</span>; si2 = <span class="number">30</span>;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> usum = (<span class="type">unsigned</span> <span class="type">int</span>)si1 + si2;</span><br><span class="line">	<span class="built_in">fprintf</span>(stdout, <span class="string">&quot;usm = %x, si1 = %x, si2 = %x, int_min = %x\n&quot;</span>, usum, si1, si2, INT_MIN);</span><br><span class="line">	<span class="comment">// 异或可以被当作一个按位的&quot;不等&quot;操作,由于只关心符号位置,因此把表达式用INT_MIN进行掩码,</span></span><br><span class="line">	<span class="comment">// 这使得只有符号位被设置</span></span><br><span class="line">	<span class="keyword">if</span> ((usum ^ si1) &amp; (usum ^ si2) &amp; INT_MIN) &#123; <span class="comment">// 处理错误情况</span></span><br><span class="line">		<span class="built_in">fprintf</span>(stderr, <span class="string">&quot;fail\n&quot;</span>);</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		sum = si1 + si2;</span><br><span class="line">		<span class="built_in">fprintf</span>(stdout, <span class="string">&quot;sum = %d\n&quot;</span>, sum);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">&#123; <span class="comment">// 一般的先验条件测试</span></span><br><span class="line">	<span class="type">signed</span> <span class="type">int</span> si1, si2, sum;</span><br><span class="line">	si1 = <span class="number">-40</span>; si2 = <span class="number">30</span>;</span><br><span class="line">	<span class="keyword">if</span> ((si2 &gt; <span class="number">0</span> &amp;&amp; si1 &gt; INT_MAX - si2) || (si2 &lt; <span class="number">0</span> &amp;&amp; si1 &lt; INT_MIN - si2)) &#123; <span class="comment">// 处理错误情况</span></span><br><span class="line">		<span class="built_in">fprintf</span>(stderr, <span class="string">&quot;fail\n&quot;</span>);</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		sum = si1 + si2;</span><br><span class="line">		<span class="built_in">fprintf</span>(stdout, <span class="string">&quot;sum = %d\n&quot;</span>, sum);	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">&#123; <span class="comment">// 先验条件测试:保证没有回绕的可能性</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> ui1, ui2, usum;</span><br><span class="line">	ui1 = <span class="number">10</span>; ui2 = <span class="number">20</span>;</span><br><span class="line">	<span class="keyword">if</span> (UINT_MAX - ui1 &lt; ui2) &#123; <span class="comment">// 处理错误情况</span></span><br><span class="line">		<span class="built_in">fprintf</span>(stderr, <span class="string">&quot;fail\n&quot;</span>);</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		usum = ui1 + ui2;</span><br><span class="line">		<span class="built_in">fprintf</span>(stdout, <span class="string">&quot;usum = %u\n&quot;</span>, usum);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">&#123; <span class="comment">// 后验条件测试</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> ui1, ui2, usum;</span><br><span class="line">	ui1 = <span class="number">10</span>; ui2 = <span class="number">20</span>;</span><br><span class="line">	usum = ui1 + ui2;</span><br><span class="line">	<span class="keyword">if</span> (usum &lt; ui1) &#123; <span class="comment">// 处理错误情况</span></span><br><span class="line">		<span class="built_in">fprintf</span>(stderr, <span class="string">&quot;fail\n&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="7-3-减法"><a href="#7-3-减法" class="headerlink" title="7.3 减法"></a>7.3 减法</h5><p>与加法类型，减法也是一种加法操作。对减法而言，两个操作数都必须是算术类型或指向兼容对象类型的指针。从一个指针中减去一个整数也是合法的。递减操作等价于减1操作。如果两个操作之差是负数，那么无符号减法会产生回绕。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">test_integer_security_substruction</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">&#123; <span class="comment">// 先验条件测试:两个正数相减或两个负数相减都不会发生溢出</span></span><br><span class="line">	<span class="type">signed</span> <span class="type">int</span> si1, si2, result;</span><br><span class="line">	si1 = <span class="number">10</span>; si2 = <span class="number">-20</span>;</span><br><span class="line">	<span class="comment">// 如果两个操作数异号,并且结果的符号与第一个操作数不同,则已发生减法溢出</span></span><br><span class="line">	<span class="comment">// 异或用作一个按位的&quot;不等&quot;操作.要测试符号位置,表达式用INT_MIN进行掩码,这使得只有符号位被设置</span></span><br><span class="line">	<span class="comment">// 该解决方案只适用于适用补码表示的架构</span></span><br><span class="line">	<span class="keyword">if</span> ((si1 ^ si2) &amp; (((<span class="type">unsigned</span> <span class="type">int</span>)si1 - si2) ^ si1) &amp; INT_MIN) &#123; <span class="comment">// 处理错误条件</span></span><br><span class="line">		<span class="built_in">fprintf</span>(stderr, <span class="string">&quot;fail\n&quot;</span>);</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		result = si1 - si2;</span><br><span class="line">		<span class="built_in">fprintf</span>(stdout, <span class="string">&quot;result = %d\n&quot;</span>, result);</span><br><span class="line">	&#125;</span><br><span class="line"> </span><br><span class="line">	<span class="comment">// 可移植的先验条件测试</span></span><br><span class="line">	<span class="keyword">if</span> ((si2 &gt; <span class="number">0</span> &amp;&amp; si1 &lt; INT_MIN + si2) || (si2 &lt; <span class="number">0</span> &amp;&amp; si1 &gt; INT_MAX + si2)) &#123; <span class="comment">// 处理错误条件</span></span><br><span class="line">		<span class="built_in">fprintf</span>(stderr, <span class="string">&quot;fail\n&quot;</span>);</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		result = si1 - si2;</span><br><span class="line">		<span class="built_in">fprintf</span>(stdout, <span class="string">&quot;result = %d\n&quot;</span>, result);	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">&#123; <span class="comment">// 无符号操作数的减法操作的先验条件测试,以保证不存在无符号回绕现象</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> ui1, ui2, udiff;</span><br><span class="line">	ui1 = <span class="number">10</span>; ui2 = <span class="number">20</span>;</span><br><span class="line">	<span class="keyword">if</span> (ui1 &lt; ui2) &#123; <span class="comment">// 处理错误条件</span></span><br><span class="line">		<span class="built_in">fprintf</span>(stderr, <span class="string">&quot;fail\n&quot;</span>);</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		udiff = ui1 - ui2;</span><br><span class="line">		<span class="built_in">fprintf</span>(stdout, <span class="string">&quot;udiff = %u\n&quot;</span>, udiff);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">&#123; <span class="comment">// 后验条件测试</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> ui1, ui2, udiff;</span><br><span class="line">	ui1 = <span class="number">10</span>; ui2 = <span class="number">20</span>;</span><br><span class="line">	udiff = ui1 - ui2;</span><br><span class="line">	<span class="keyword">if</span> (udiff &gt; ui1) &#123; <span class="comment">// 处理错误情况</span></span><br><span class="line">		<span class="built_in">fprintf</span>(stderr, <span class="string">&quot;fail\n&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="7-4-乘法"><a href="#7-4-乘法" class="headerlink" title="7.4 乘法"></a>7.4 乘法</h5><p>二元运算符”*”的每个操作数都是算术类型。操作数执行普通算术转换。乘法容易产生溢出错误，因为相对较小的操作数相乘时，都可能导致一个指定的整数类型溢出。一般情况下，两个整数的操作数的积总是可以用两个操作数中较大的那个所用的位数的两倍来表示。这意味着，例如，两个8位操作数的积总是可以使用16位类表示，而两个16位操作数的积总是可以使用32位来表示。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">test_integer_security_multiplication</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">&#123; <span class="comment">// 在无符号乘法的情况下,如果需要高位来表示两个操作数的积,那么结果以及回绕了</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> ui1 = <span class="number">10</span>;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> ui2 = <span class="number">20</span>;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> product;</span><br><span class="line"> </span><br><span class="line">	<span class="built_in">static_assert</span>(<span class="built_in">sizeof</span>(<span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span>) &gt;= <span class="number">2</span> * <span class="built_in">sizeof</span>(<span class="type">unsigned</span> <span class="type">int</span>), </span><br><span class="line">		<span class="string">&quot;Unable to detect wrapping after multiplication&quot;</span>);</span><br><span class="line"> </span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span> tmp = (<span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span>)ui1 * (<span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span>)ui2;</span><br><span class="line">	<span class="keyword">if</span> (tmp &gt; UINT_MAX) &#123; <span class="comment">// 处理无符号回绕</span></span><br><span class="line">		<span class="built_in">fprintf</span>(stderr, <span class="string">&quot;fail\n&quot;</span>);</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		product = (<span class="type">unsigned</span> <span class="type">int</span>)tmp;</span><br><span class="line">		<span class="built_in">fprintf</span>(stdout, <span class="string">&quot;product = %u\n&quot;</span>, product);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">&#123; <span class="comment">// 保证在long long宽度至少是int宽度两倍的系统上,不可能产生符号溢出</span></span><br><span class="line">	<span class="type">signed</span> <span class="type">int</span> si1 = <span class="number">20</span>, si2 = <span class="number">10</span>;</span><br><span class="line">	<span class="type">signed</span> <span class="type">int</span> result;</span><br><span class="line">	<span class="built_in">static_assert</span>(<span class="built_in">sizeof</span>(<span class="type">long</span> <span class="type">long</span>) &gt;= <span class="number">2</span> * <span class="built_in">sizeof</span>(<span class="type">int</span>),</span><br><span class="line">		<span class="string">&quot;Unable to detect overflow after multiplication&quot;</span>);</span><br><span class="line">	<span class="type">long</span> <span class="type">long</span> tmp = (<span class="type">long</span> <span class="type">long</span>)si1 * (<span class="type">long</span> <span class="type">long</span>)si2;</span><br><span class="line">	<span class="keyword">if</span> ((tmp &gt; INT_MAX) || (tmp &lt; INT_MIN)) &#123; <span class="comment">// 处理有符号溢出</span></span><br><span class="line">		<span class="built_in">fprintf</span>(stderr, <span class="string">&quot;fail\n&quot;</span>);</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		result = (<span class="type">int</span>)tmp;</span><br><span class="line">		<span class="built_in">fprintf</span>(stdout, <span class="string">&quot;result = %d\n&quot;</span>, result);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">&#123; <span class="comment">// 一般的先验调试测试</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> ui1 = <span class="number">10</span>, ui2 = <span class="number">20</span>;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> product;</span><br><span class="line"> </span><br><span class="line">	<span class="keyword">if</span> (ui1 &gt; UINT_MAX / ui2) &#123; <span class="comment">// 处理无符号回绕</span></span><br><span class="line">		<span class="built_in">fprintf</span>(stderr, <span class="string">&quot;fail\n&quot;</span>);</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		product = ui1 * ui2;</span><br><span class="line">		<span class="built_in">fprintf</span>(stdout, <span class="string">&quot;product = %u\n&quot;</span>, product);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">&#123; <span class="comment">// 可以防止有符号溢出,而不需要向上强制类型转换到现有位数的两倍的整数类型</span></span><br><span class="line">	<span class="type">signed</span> <span class="type">int</span> si1 = <span class="number">10</span>, si2 = <span class="number">20</span>;</span><br><span class="line">	<span class="type">signed</span> <span class="type">int</span> product;</span><br><span class="line"> </span><br><span class="line">	<span class="keyword">if</span> (si1 &gt; <span class="number">0</span>) &#123; <span class="comment">// si1是正数</span></span><br><span class="line">		<span class="keyword">if</span> (si2 &gt; <span class="number">0</span>) &#123; <span class="comment">// si1和si2都是正数</span></span><br><span class="line">			<span class="keyword">if</span> (si1 &gt; (INT_MAX / si2)) &#123; <span class="comment">// 处理错误情况</span></span><br><span class="line">				<span class="built_in">fprintf</span>(stderr, <span class="string">&quot;fail\n&quot;</span>);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; <span class="comment">// end if si1和si2都是正数</span></span><br><span class="line">		<span class="keyword">else</span> &#123; <span class="comment">// si1是正数,si2不是正数</span></span><br><span class="line">			<span class="keyword">if</span> (si2 &lt; (INT_MIN / si1)) &#123; <span class="comment">// 处理错误情况</span></span><br><span class="line">				<span class="built_in">fprintf</span>(stderr, <span class="string">&quot;fail\n&quot;</span>);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; <span class="comment">// end if si1是正数,si2不是正数</span></span><br><span class="line">	&#125; <span class="comment">// end fif si1是正数</span></span><br><span class="line">	<span class="keyword">else</span> &#123; <span class="comment">// si1不是正数</span></span><br><span class="line">		<span class="keyword">if</span> (si2 &gt; <span class="number">0</span>) &#123; <span class="comment">// si1不是正数,si2是正数</span></span><br><span class="line">			<span class="keyword">if</span> (si1 &lt; (INT_MIN / si2)) &#123; <span class="comment">// 处理错误情况</span></span><br><span class="line">				<span class="built_in">fprintf</span>(stderr, <span class="string">&quot;fail\n&quot;</span>);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; <span class="comment">// end if si1不是正数,si2是正数</span></span><br><span class="line">		<span class="keyword">else</span> &#123; <span class="comment">// si1和si2都不是正数</span></span><br><span class="line">			<span class="keyword">if</span> ((si1 != <span class="number">0</span>) &amp;&amp; (si2 &lt; (INT_MAX / si1))) &#123; <span class="comment">// 处理错误情况</span></span><br><span class="line">				<span class="built_in">fprintf</span>(stderr, <span class="string">&quot;fail\n&quot;</span>);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; <span class="comment">// end if si1和si2都不是正数</span></span><br><span class="line">	&#125; <span class="comment">// end if si1不是正数</span></span><br><span class="line"> </span><br><span class="line">	product = si1 * si2;</span><br><span class="line">	<span class="built_in">fprintf</span>(stdout, <span class="string">&quot;product = %d\n&quot;</span>, product);</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="7-5-除法和求余"><a href="#7-5-除法和求余" class="headerlink" title="7.5 除法和求余"></a>7.5 除法和求余</h5><p>整数相除时，”&#x2F;”运算符的结果是代数商的整数部分，任何小数部分都被丢弃，而”%”运算符的结果是余数。这通常称为向零截断(truncation toward zero)。在这两种运算中，如果第二个操作数的值是0，则该行为是未定义的。无符号整数除法不可能产生回绕，因为商总是小于或等于被除数。但并不总是显而易见的是，有符号整数除法也可能导致溢出，因为你可能认为商数始终小于被除数。然而，补码的最小值除以-1时会出现整数溢出。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">test_integer_security_division_remainder</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">// 先验条件:可以通过检查分子是否为整数类型的最小值以及检查分母是否为-1来防止有符号整数除法溢出的发生</span></span><br><span class="line">	<span class="comment">// 只要确保除数不为0,就可以保证不发生除以零错误</span></span><br><span class="line">	<span class="type">signed</span> <span class="type">long</span> sl1 = <span class="number">100</span>, sl2 = <span class="number">5</span>;</span><br><span class="line">	<span class="type">signed</span> <span class="type">long</span> quotient, result;</span><br><span class="line"> </span><br><span class="line">	<span class="comment">// 此先验条件也可测试余数操作数,以保证不可能有一个除以零错误或(内部)溢出错误</span></span><br><span class="line">	<span class="keyword">if</span> ((sl2 == <span class="number">0</span>) || ((sl1 == LONG_MIN) &amp;&amp; (sl2 == <span class="number">-1</span>))) &#123; <span class="comment">// 处理错误情况</span></span><br><span class="line">		<span class="built_in">fprintf</span>(stderr, <span class="string">&quot;fail\n&quot;</span>);</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		quotient = sl1 / sl2;</span><br><span class="line">		result = sl1 % sl2;</span><br><span class="line">		<span class="built_in">fprintf</span>(stdout, <span class="string">&quot;quotient = %ld, result = %ld\n&quot;</span>, quotient, result);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="7-6-求负"><a href="#7-6-求负" class="headerlink" title="7.6 求负"></a>7.6 求负</h5><p>对一个补码表示的有符号的整数求反，也可能产生一个符号错误，因为有符号整数类型的可能值范围是不对称的。</p>
+<h5 id="7-7-移位"><a href="#7-7-移位" class="headerlink" title="7.7 移位"></a>7.7 移位</h5><p>此操作包括左移位和右移位。移位会在操作数上执行整数提升，其中每个操作数都具有整数类型。结果类型是提升后的左操作数类型。移位运算符右边的操作数提供移动的位数。如果该数值为负值或者大于或等于结果类型的位数，那么该行为是未定义的。在几乎所有情况下，试图移动一个负的位数或试图移动比操作数中存在的位数更多的位都表明一个错误(逻辑错误)。这与溢出是不同的，后者是一个表示不足。不要移动一个负的位数或移动比操作数中存在的位数更多的位。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">test_integer_security_shift</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">&#123; <span class="comment">// 消除了无符号整数左移位操作造成的未定义行为的可能性</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> ui1 = <span class="number">1</span>, ui2 = <span class="number">31</span>;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> uresult;</span><br><span class="line"> </span><br><span class="line">	<span class="keyword">if</span> (ui2 &gt;= <span class="built_in">sizeof</span>(<span class="type">unsigned</span> <span class="type">int</span>) * CHAR_BIT) &#123; <span class="comment">// 处理错误情况</span></span><br><span class="line">		<span class="built_in">fprintf</span>(stderr, <span class="string">&quot;fail\n&quot;</span>);</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		uresult = ui1 &lt;&lt; ui2;</span><br><span class="line">		<span class="built_in">fprintf</span>(stdout, <span class="string">&quot;uresult = %u\n&quot;</span>, uresult);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">&#123;</span><br><span class="line">	<span class="type">int</span> rc = <span class="number">0</span>;</span><br><span class="line">	<span class="comment">//int stringify = 0x80000000; // windows/liunx will crash in sprintf function</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> stringify = <span class="number">0x80000000</span>;</span><br><span class="line">	<span class="type">char</span> buf[<span class="built_in">sizeof</span>(<span class="string">&quot;256&quot;</span>)] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">	rc = <span class="built_in">sprintf</span>(buf, <span class="string">&quot;%u&quot;</span>, stringify &gt;&gt; <span class="number">24</span>);</span><br><span class="line">	<span class="keyword">if</span> (rc == <span class="number">-1</span> || rc &gt;= <span class="built_in">sizeof</span>(buf)) &#123; <span class="comment">// 处理错误</span></span><br><span class="line">		<span class="built_in">fprintf</span>(stderr, <span class="string">&quot;fail\n&quot;</span>);</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="built_in">fprintf</span>(stdout, <span class="string">&quot;value: %s\n&quot;</span>, buf); <span class="comment">// 128</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+    <div>
+    
+      <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">---- 本文结束 <i class="fa fa-trophy"></i> 知识又增加了亿点点！----</div>
+    
+</div>
+<br />
+<div>
+  <div>
+    <fieldset
+        style="
+            border: 1px dashed #C0C0C0;
+            padding: 10px;
+            border-radius: 5px;
+            line-height: 2em;
+            color: #6d6d6d;
+        ">
+        <legend
+            align="center"
+            style="
+                width: 30%;
+                text-align: center;
+                color: #6d6d6d;
+                border: 1px dashed #C0C0C0;
+                border-radius: 5px;
+            ">
+            文章版权声明
+        </legend>
+        1、博客名称：<font color="#37c6c0">LycTechStack</font><br />
+        2、博客网址：<font color="#37c6c0">https://lz328.github.io/LycTechStack.github.io/</font><br />
+        3、本博客的文章部分内容可能来源于网络，仅供大家学习与参考，如有侵权，请联系博主进行删除处理。<br />
+        4、本博客所有文章版权归博主所有，如需转载请标明出处。<br />
+    </fieldset>
+  </div>
+</div>
+
+    
+    </div>
+      
+  <div class="popular-posts-header">相关文章</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2023\03\16\20230316-安全编码-内存管理\" rel="bookmark">【安全编码】内存管理</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2023\03\16\20230316-安全编码-字符串\" rel="bookmark">【安全编码】字符串</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2023\03\16\20230316-安全编码-并发和多线程\" rel="bookmark">【安全编码】并发和多线程</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\03\20220303-二叉树\" rel="bookmark">【数据结构】二叉树</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\02\20220303-线性数据结构\" rel="bookmark">【数据结构】线性数据结构</a></div>
+    </li>
+  </ul>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/LycTechStack.github.io/tags/C/" rel="tag"># C++</a>
+              <a href="/LycTechStack.github.io/tags/C%E5%92%8CC-%E5%AE%89%E5%85%A8%E7%BC%96%E7%A0%81/" rel="tag"># C和C++安全编码</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/LycTechStack.github.io/2023/03/16/20230316-%E5%AE%89%E5%85%A8%E7%BC%96%E7%A0%81-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" rel="prev" title="【安全编码】内存管理">
+      <i class="fa fa-chevron-left"></i> 【安全编码】内存管理
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/LycTechStack.github.io/2023/03/16/20230316-%E5%AE%89%E5%85%A8%E7%BC%96%E7%A0%81-%E5%B9%B6%E5%8F%91%E5%92%8C%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="next" title="【安全编码】并发和多线程">
+      【安全编码】并发和多线程 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E7%9A%84%E6%95%B4%E6%95%B0%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E"><span class="nav-text">常见的整数安全漏洞</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E6%97%A0%E7%AC%A6%E5%8F%B7%E6%95%B4%E6%95%B0%E5%9B%9E%E7%BB%95"><span class="nav-text">1 无符号整数回绕</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E6%9C%89%E7%AC%A6%E5%8F%B7%E6%95%B4%E6%95%B0%E6%BA%A2%E5%87%BA"><span class="nav-text">2 有符号整数溢出</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E5%AD%97%E7%AC%A6%E7%B1%BB%E5%9E%8B%E8%A1%A8%E7%A4%BA%E6%95%B4%E6%95%B0"><span class="nav-text">3 字符类型表示整数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-%E6%95%B4%E6%95%B0%E7%B1%BB%E5%9E%8B%E6%8F%90%E5%8D%87"><span class="nav-text">4 整数类型提升</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-%E6%97%A0%E7%AC%A6%E5%8F%B7%E6%95%B4%E6%95%B0%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2"><span class="nav-text">5 无符号整数类型转换</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-%E6%9C%89%E7%AC%A6%E5%8F%B7%E6%95%B4%E6%95%B0%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2"><span class="nav-text">6 有符号整数类型转换</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#7-%E6%95%B4%E6%95%B0%E6%93%8D%E4%BD%9C"><span class="nav-text">7 整数操作</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#7-1-%E8%B5%8B%E5%80%BC"><span class="nav-text">7.1 赋值</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#7-2-%E5%8A%A0%E6%B3%95"><span class="nav-text">7.2 加法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#7-3-%E5%87%8F%E6%B3%95"><span class="nav-text">7.3 减法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#7-4-%E4%B9%98%E6%B3%95"><span class="nav-text">7.4 乘法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#7-5-%E9%99%A4%E6%B3%95%E5%92%8C%E6%B1%82%E4%BD%99"><span class="nav-text">7.5 除法和求余</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#7-6-%E6%B1%82%E8%B4%9F"><span class="nav-text">7.6 求负</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#7-7-%E7%A7%BB%E4%BD%8D"><span class="nav-text">7.7 移位</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Lyc"
+      src="/LycTechStack.github.io/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Lyc</p>
+  <div class="site-description" itemprop="description">个人学习总结和技术经验分享，主要内容包括C++、数据结构、算法、计算机图形学、3D数学、实时渲染、游戏引擎等等，希望未来能真正踏入图形/引擎开发的大门！</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/LycTechStack.github.io/archives/">
+        
+          <span class="site-state-item-count">134</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/LycTechStack.github.io/categories/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/LycTechStack.github.io/tags/">
+          
+        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/LZ328/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;LZ328&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:27487358@qq.com" title="E-Mail → mailto:27487358@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2021 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heartbeat"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lyc</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">15:12</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="/LycTechStack.github.io/lib/canvas-ribbon/canvas-ribbon.js"></script>
+  <script src="/LycTechStack.github.io/lib/anime.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/pjax/pjax.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4/dist/browser/pangu.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/velocity/velocity.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/LycTechStack.github.io/js/utils.js"></script>
+
+<script src="/LycTechStack.github.io/js/motion.js"></script>
+
+
+<script src="/LycTechStack.github.io/js/schemes/pisces.js"></script>
+
+
+<script src="/LycTechStack.github.io/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/LycTechStack.github.io/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '09aa5d8a5587f012a8af',
+      clientSecret: '7f7ec08f02d74e1865e57b5f03a982047700b547',
+      repo        : 'LycTechStack.github.io',
+      owner       : 'LZ328',
+      admin       : ['LZ328'],
+      id          : 'a22e71fc3ee1c625f8efdf4d4ef66abe',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+    </div>
+  
+</body>
+</html>

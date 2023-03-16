@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/LycTechStack.github.io/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/LycTechStack.github.io/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/LycTechStack.github.io/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/LycTechStack.github.io/images/safari-pinned-tab.svg" color="#222">
+
+<link rel="stylesheet" href="/LycTechStack.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="/LycTechStack.github.io/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/LycTechStack.github.io/lib/pace/pace-theme-minimal.min.css">
+  <script src="/LycTechStack.github.io/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lz328.github.io","root":"/LycTechStack.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":5,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="本篇总结了《C和C++安全编码》中字符串相关的内容。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【安全编码】字符串">
+<meta property="og:url" content="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-%E5%AE%89%E5%85%A8%E7%BC%96%E7%A0%81-%E5%AD%97%E7%AC%A6%E4%B8%B2/index.html">
+<meta property="og:site_name" content="LycTechStack">
+<meta property="og:description" content="本篇总结了《C和C++安全编码》中字符串相关的内容。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-03-16T04:20:49.000Z">
+<meta property="article:modified_time" content="2023-03-16T04:23:18.901Z">
+<meta property="article:author" content="Lyc">
+<meta property="article:tag" content="C++">
+<meta property="article:tag" content="C和C++安全编码">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-%E5%AE%89%E5%85%A8%E7%BC%96%E7%A0%81-%E5%AD%97%E7%AC%A6%E4%B8%B2/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>【安全编码】字符串 | LycTechStack</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/LycTechStack.github.io/atom.xml" title="LycTechStack" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/LycTechStack.github.io/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LycTechStack</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Lyc的个人成长技术栈</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/LycTechStack.github.io/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/LycTechStack.github.io/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/LycTechStack.github.io/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/LycTechStack.github.io/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/LycTechStack.github.io/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://lz328.github.io/LycTechStack.github.io/2023/03/16/20230316-%E5%AE%89%E5%85%A8%E7%BC%96%E7%A0%81-%E5%AD%97%E7%AC%A6%E4%B8%B2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/LycTechStack.github.io/images/avatar.png">
+      <meta itemprop="name" content="Lyc">
+      <meta itemprop="description" content="个人学习总结和技术经验分享，主要内容包括C++、数据结构、算法、计算机图形学、3D数学、实时渲染、游戏引擎等等，希望未来能真正踏入图形/引擎开发的大门！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LycTechStack">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【安全编码】字符串
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-03-16 12:20:49 / 修改时间：12:23:18" itemprop="dateCreated datePublished" datetime="2023-03-16T12:20:49+08:00">2023-03-16</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/LycTechStack.github.io/categories/C%E5%92%8CC-%E5%AE%89%E5%85%A8%E7%BC%96%E7%A0%81/" itemprop="url" rel="index"><span itemprop="name">C和C++安全编码</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本篇总结了《C和C++安全编码》中字符串相关的内容。</p>
+<p><em><span id="more"></span></em></p>
+<h3 id="1-常见的字符串操作错误"><a href="#1-常见的字符串操作错误" class="headerlink" title="1 常见的字符串操作错误"></a>1 常见的字符串操作错误</h3><p>在 C 和 C++ 中，常见的字符串操作错误有四种，分别是是无界字符串复制（unbounded string copy）、差一错误（off-by-one error）、空结尾错误（null termination error）以及字符串截断（string truncation）。</p>
+<h4 id="1-1-无界字符串复制（unbounded-string-copy）"><a href="#1-1-无界字符串复制（unbounded-string-copy）" class="headerlink" title="1.1 无界字符串复制（unbounded string copy）"></a>1.1 无界字符串复制（unbounded string copy）</h4><p>无界字符串复制发生在从源数据复制数据到一个定长的字符数组时。从无界数据源（如cin）读入数据，由于事先无法得知用户将会输入多少个字符，因此不可能预先分配一个长度足够的数组：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">test_unbounded_string_copy</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="type">char</span> buf[<span class="number">12</span>];</span><br><span class="line">	std::cin &gt;&gt; buf; <span class="comment">// 如果用户输入多于11个字符，会导致写越界</span></span><br><span class="line">	std::cout &lt;&lt; <span class="string">&quot;echo: &quot;</span> &lt;&lt; buf &lt;&lt; std::endl;</span><br><span class="line"> </span><br><span class="line">	std::cin.<span class="built_in">width</span>(<span class="number">12</span>); <span class="comment">// 通过将域宽成员设置为字符数组的长度消除了溢出</span></span><br><span class="line">	std::cin &gt;&gt; buf;</span><br><span class="line">	std::cout &lt;&lt; <span class="string">&quot;echo: &quot;</span> &lt;&lt; buf &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>此外，当分配的空间不足以复制一个程序的输入时，就会产生漏洞。如常用的 <code>strcpy()</code>、<code>strcat()</code> 和 <code>sprintf()</code> 等函数，都会执行无界复制操作。</p>
+<p><code>strcpy()</code>相对安全，因为目标数组已经被分配了适当的大小。<code>snprintf()</code> 函数同样是一个相对安全的函数，但像其它格式的输出函数一样，它也容易产生格式化字符串漏洞。需要对<code>snprintf()</code>的返回值进行检查，因为函数可能会失败，这不仅是因为缓冲区空间不足，还有其它原因，如在函数执行过程中发生内存不足的状况。</p>
+<h4 id="1-2-差一错误（off-by-one-error）"><a href="#1-2-差一错误（off-by-one-error）" class="headerlink" title="1.2 差一错误（off-by-one error）"></a>1.2 差一错误（off-by-one error）</h4><p>众所周知，在 C 中，字符串是一个以空字符结尾的字符数组，而 C++ 中 string 的大多数实现也是如此，而<code>sizeof</code>运算返回的是不包含空字符的长度，因此在复制或申请内存时需要加1，否则将导致差一错误。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">test_off_by_one_error</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="type">char</span> s1[] = <span class="string">&quot;012345678&quot;</span>;</span><br><span class="line">	<span class="type">char</span> s2[] = <span class="string">&quot;0123456789&quot;</span>;</span><br><span class="line"> </span><br><span class="line">	<span class="comment">// strcpy_s(s1, sizeof(s2), s2); // error</span></span><br><span class="line">	<span class="built_in">strcpy_s</span>(s1, <span class="built_in">sizeof</span>(s2) + <span class="number">1</span>, s2);  <span class="comment">// ok</span></span><br><span class="line"></span><br><span class="line"> </span><br><span class="line">	<span class="comment">// char* dest = (char*)malloc(strlen(s1)); // error</span></span><br><span class="line">	<span class="type">char</span>* dest = (<span class="type">char</span>*)<span class="built_in">malloc</span>(<span class="built_in">strlen</span>(s1) + <span class="number">1</span>);	<span class="comment">// ok</span></span><br><span class="line">	<span class="type">int</span> i = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="built_in">strlen</span>(s1); ++i) &#123;</span><br><span class="line">		dest[i] = s1[i];</span><br><span class="line">	&#125;</span><br><span class="line">	dest[i] = <span class="string">&#x27;\0&#x27;</span>;</span><br><span class="line"> </span><br><span class="line">	<span class="built_in">fprintf</span>(stdout, <span class="string">&quot;dest: %s\n&quot;</span>, dest);</span><br><span class="line">	<span class="built_in">free</span>(dest);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-3-空结尾错误（null-termination-error）"><a href="#1-3-空结尾错误（null-termination-error）" class="headerlink" title="1.3 空结尾错误（null termination error）"></a>1.3 空结尾错误（null termination error）</h4><p>如果一个字符串没有以空字符结尾，程序可能会被欺骗，导致在数组边界之外读取或写入数据。这就是空结尾错误。字符串必须在数组的最后一个元素的地址处或在它之前包含一个空终止字符，才可以安全地作为标准字符串处理函数如<code>strcpy()</code>函数或<code>strlen()</code>函数的参数被传递。空终止字符之所以是必要的，是因为前面这些函数以及其它由 C 标准定义的字符串处理函数，都依赖于它的存在来标记字符串的结尾。同样，如果程序对一个字符数组迭代循环的终止条件取决于为字符串分配的内存是否存在一个空终止字符，字符串也必须以空字符结尾。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">test_null_termination_error</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="type">char</span> a[<span class="number">16</span>], b[<span class="number">16</span>], c[<span class="number">16</span>];</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//strncpy(a, &quot;0123456789abcdef&quot;, sizeof(a)); // error, a并未以空字符结尾</span></span><br><span class="line">	<span class="built_in">strncpy</span>(a, <span class="string">&quot;0123456789abcde&quot;</span>, <span class="built_in">sizeof</span>(a));</span><br><span class="line">	<span class="comment">//strncpy(b, &quot;0123456789abcdef&quot;, sizeof(b)); // error, b并未以空字符结尾</span></span><br><span class="line">	<span class="built_in">strncpy</span>(b, <span class="string">&quot;0123456789abcde&quot;</span>, <span class="built_in">sizeof</span>(b));</span><br><span class="line"></span><br><span class="line">	<span class="built_in">strcpy</span>(c, a); <span class="comment">// 若a并未以空字符结尾,那么c也未以空字符结尾，而且c可能写得远远超出了数组界限，导致无法正常打印c</span></span><br><span class="line"> 	<span class="comment">// 正确的做法</span></span><br><span class="line">	<span class="type">char</span> d[<span class="number">16</span>];</span><br><span class="line">	<span class="built_in">strncpy</span>(d, <span class="string">&quot;0123456789abcdefghijk&quot;</span>, <span class="built_in">sizeof</span>(d) - <span class="number">1</span>);</span><br><span class="line">	d[<span class="built_in">sizeof</span>(d) - <span class="number">1</span>] = <span class="string">&#x27;\0&#x27;</span>;</span><br><span class="line">	<span class="built_in">fprintf</span>(stdout, <span class="string">&quot;d: %s\n&quot;</span>, d);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-4-字符串截断（string-truncation）"><a href="#1-4-字符串截断（string-truncation）" class="headerlink" title="1.4 字符串截断（string truncation）"></a>1.4 字符串截断（string truncation）</h4><p>当目标字符数组的长度不足以容纳一个字符串的内容时，就会发生字符串截断。截断通常发生于读取用户输入或字符串复制时，通常是程序员试图防止缓冲区溢出的结果。尽管没有缓冲区溢出危害那么大，但字符串截断会丢失数据，有时也会导致软件漏洞。</p>
+<h3 id="2-字符串漏洞缓解策略"><a href="#2-字符串漏洞缓解策略" class="headerlink" title="2 字符串漏洞缓解策略"></a>2 字符串漏洞缓解策略</h3><p>当在为一个特定数据结构分配的内存的边界之外写入数据时，就会发生缓冲区溢出。缓冲区溢出在 C 和 C++ 程序中司空见惯，因为这两种语言：</p>
+<ol>
+<li>将字符串定义为以空字符结尾的字符数组；</li>
+<li>不进行隐式的边界检查；</li>
+<li>提供了不执行边界检查的标准字符串调用库。</li>
+</ol>
+<p>在 C++ 中，使用 string 类是一个方便的选择，string 类已经为上面的问题提供了处理办法，因此编程时无需关注上述问题。但使用 string 类需要格外注意迭代器失效的问题：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">test_string_reference_invalid</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="type">char</span> input[] = <span class="string">&quot;aaaa;bbbb;cccc;dddd&quot;</span>;</span><br><span class="line">	std::string email;</span><br><span class="line">	std::string::iterator loc = email.<span class="built_in">begin</span>();</span><br><span class="line">	<span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="built_in">strlen</span>(input); ++i) &#123;</span><br><span class="line">		<span class="keyword">if</span> (input[i] != <span class="string">&#x27;;&#x27;</span>) &#123;</span><br><span class="line">			<span class="comment">//email.insert(loc++, input[i]); // 迭代器失效</span></span><br><span class="line">			loc = email.<span class="built_in">insert</span>(loc, input[i]); <span class="comment">// ok</span></span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="comment">//email.insert(loc++, &#x27; &#x27;); // 迭代器失效</span></span><br><span class="line">			loc = email.<span class="built_in">insert</span>(loc, <span class="string">&#x27; &#x27;</span>);	<span class="comment">// ok</span></span><br><span class="line">		&#125;</span><br><span class="line">		++loc;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">fprintf</span>(stdout, <span class="string">&quot;email: %s\n&quot;</span>, email.<span class="built_in">c_str</span>());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-字符串处理函数"><a href="#3-字符串处理函数" class="headerlink" title="3 字符串处理函数"></a>3 字符串处理函数</h3><ul>
+<li><p>gets()：永远不要使用，因为它不对缓冲区溢出进行任何检测。可以用 fgets() 或 getchar() 取代 gets()。</p>
+</li>
+<li><p>fgets()：接受两个额外的参数：期望读入的字符数和输入流。与 gets() 不同，fgets() 函数保留换行符。当使用 fgets() 时，可能只读取了一行的部分数据，然而，可以确定用户的输入是否被截断了，因为那样的话，输入缓冲区内将不会包含一个换行符。fget() 函数从流中最多读入比指定数量少 1 个的字符到一个数组中。如果遇到换行符或者 EOF 标志，则不会继续读取。在最后一个字符读入数组中后，一个空字符随即被写入缓冲区的结尾处。</p>
+</li>
+<li><p>getchar()：返回 stdin 指向的输入流中的下一个字符。如果流在 EOF 处，则该流的 EOF 标记就会被设置，且 getchar() 返回 EOF。如果发生读取错误，则该流的错误标记就会被设置，且 getchar() 返回 EOF。</p>
+</li>
+<li><p>gets_s()：gets_s() 函数是 gets() 的一个兼容且更安全的版本。它只从 stdin 指向的流中读取，且不保留换行符。gets_s() 函数接受一个额外的参数 rsize_t，用于指定输入的最大字符数。如果这个参数等于 0 或者比 RSIZE_MAX 更大，或者目标字符数组指针为 NULL，将产生一个错误条件。如果产生了错误条件，那么将不会有任何的输入动作，并且目标字符数组将不会被更改。否则，该函数最多读入比指定数量少 1 的字符，并且在最后一个字符读入数组后立即在其后加上空字符。如果 gets_s() 函数执行成功，则返回一个指向字符数组的指针，否则返回一个空指针。如果指定的输入字符数超过目标缓冲区的长度，那么 gets_s() 函数仍然可能导致缓冲区溢出。</p>
+</li>
+<li><p>strcpy() 和 strcat()：是缓冲区溢出的频繁来源，因为它们不允许调用者指定目标数组的大小，许多预防策略都建议使用这些函数的更安全的变种。strcpy_s() 和 strcat_s() 函数被定义为与 strcpy() 和 strcat() 函数非常接近的替代函数。strcpy_s() 函数有一个额外的参数，用于给定目标数组的大小，来防止缓冲区溢出。strcpy_s() 仅在源字符串可被完全复制到目标缓冲区且不引起目标缓冲区溢出的情况下才会调用成功。strcpy_s() 函数执行各种运行时约束。strcat_s() 函数将源字符串中的字符追加到目标字符串的末尾，直至遇到空结束符为止，并且追加的字符包含结尾的空字符。在没有正确指定目标缓冲区的最大长度的情况下，strcpy_s()和strcat_s()仍然可能会引起缓冲区溢出的问题。</p>
+</li>
+<li><p>strncpy() 和 strncat()：与 strcpy() 和 strcat() 函数类似，但每个函数都有一个额外的 size_t 类型的参数 n 用于限制要被复制的字符数量。这些函数可以被认为是截断型的复制和拼接函数。strncpy_s() 函数有一个额外的参数用于给出目标数组的大小，以防止缓冲区溢出。如果发生运行时约束违反，则目标数组被设置为空字符串，以增加问题的能见度。strncpy_s() 函数返回 0 表示成功。因为 strncpy() 函数不能保证用空字符终止目标字符串，所有程序员必须小心，以确保目标字符串是正确地以空字符终止的，并且没有覆盖最后一个字符。C 标准的 strncpy() 函数经常被推荐为 strcpy() 函数”更安全”的替代品，然而，strncpy() 容易发生串终止错误。</p>
+</li>
+<li><p>strncat(char* s1, const char* s2, size_t n)函数：从 s2 指向的数组追加不超过 n 个字符(空字符和它后面的字符不追加)到 s1 指向的字符串结尾。s2 最初的字符覆盖了 s1 末尾的空字符。终止空字符总是被附加到结果字符串。因此，在 s1 指向的数组中的最大字符数量是 strlen(s1)+n+1。必须谨慎使用 strncpy() 和 strncat() 函数，或根本不使用它们，尤其是在有更不易出错的替代品的时候。这两个函数都要求指定剩余的长度而不是缓冲区的总长度。由于剩余的长度在每次添加或删除数据时都会改变，因此程序员必须跟踪这些改变或重新计算剩余长度。这个过程很容易出错，并且可能会导致漏洞。</p>
+</li>
+<li><p>memcpy() 和 memmove()：memcpy_s() 和 memmove_s() 函数与相应的安全性较低的 memcpy() 和 memmove() 函数类似，但提供了一些额外的保障。为了防止缓冲区溢出，memcpy_s() 和 memmove_s() 函数具有额外的参数来指定目标数组的大小。</p>
+</li>
+<li><p>strlen()：没有特别的缺陷，但由于底层字符串表示的弱点，它的操作可能被破坏。strlen() 函数接受一个指向一个字符数组的指针，并返回终止空字符之前的字符数量。如果字符数组不是正确地以空字符结尾的，strlen() 函数可能会返回一个错误的超大的数值，使用它时，就可能会导致漏洞。在将字符串传递给 strlen() 函数之前，有必要确保它们是正确地以空值结尾的，从而使函数的结果在预期范围内。</p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <div>
+    
+      <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">---- 本文结束 <i class="fa fa-trophy"></i> 知识又增加了亿点点！----</div>
+    
+</div>
+<br />
+<div>
+  <div>
+    <fieldset
+        style="
+            border: 1px dashed #C0C0C0;
+            padding: 10px;
+            border-radius: 5px;
+            line-height: 2em;
+            color: #6d6d6d;
+        ">
+        <legend
+            align="center"
+            style="
+                width: 30%;
+                text-align: center;
+                color: #6d6d6d;
+                border: 1px dashed #C0C0C0;
+                border-radius: 5px;
+            ">
+            文章版权声明
+        </legend>
+        1、博客名称：<font color="#37c6c0">LycTechStack</font><br />
+        2、博客网址：<font color="#37c6c0">https://lz328.github.io/LycTechStack.github.io/</font><br />
+        3、本博客的文章部分内容可能来源于网络，仅供大家学习与参考，如有侵权，请联系博主进行删除处理。<br />
+        4、本博客所有文章版权归博主所有，如需转载请标明出处。<br />
+    </fieldset>
+  </div>
+</div>
+
+    
+    </div>
+      
+  <div class="popular-posts-header">相关文章</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2023\03\16\20230316-安全编码-内存管理\" rel="bookmark">【安全编码】内存管理</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2023\03\16\20230316-安全编码-并发和多线程\" rel="bookmark">【安全编码】并发和多线程</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2023\03\16\20230316-安全编码-整数安全\" rel="bookmark">【安全编码】整数安全</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\03\20220303-二叉树\" rel="bookmark">【数据结构】二叉树</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\LycTechStack.github.io\2022\03\02\20220303-线性数据结构\" rel="bookmark">【数据结构】线性数据结构</a></div>
+    </li>
+  </ul>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/LycTechStack.github.io/tags/C/" rel="tag"># C++</a>
+              <a href="/LycTechStack.github.io/tags/C%E5%92%8CC-%E5%AE%89%E5%85%A8%E7%BC%96%E7%A0%81/" rel="tag"># C和C++安全编码</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/LycTechStack.github.io/2023/03/09/20230309-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%85%B6%E4%BB%96%E5%B8%B8%E7%94%A8%E6%A8%A1%E5%BC%8F%E5%8F%8A%E6%80%BB%E7%BB%93/" rel="prev" title="【设计模式】其他常用模式及总结">
+      <i class="fa fa-chevron-left"></i> 【设计模式】其他常用模式及总结
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/LycTechStack.github.io/2023/03/16/20230316-%E5%AE%89%E5%85%A8%E7%BC%96%E7%A0%81-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" rel="next" title="【安全编码】内存管理">
+      【安全编码】内存管理 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%B8%B8%E8%A7%81%E7%9A%84%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%93%8D%E4%BD%9C%E9%94%99%E8%AF%AF"><span class="nav-text">1 常见的字符串操作错误</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-%E6%97%A0%E7%95%8C%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%A4%8D%E5%88%B6%EF%BC%88unbounded-string-copy%EF%BC%89"><span class="nav-text">1.1 无界字符串复制（unbounded string copy）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-%E5%B7%AE%E4%B8%80%E9%94%99%E8%AF%AF%EF%BC%88off-by-one-error%EF%BC%89"><span class="nav-text">1.2 差一错误（off-by-one error）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-%E7%A9%BA%E7%BB%93%E5%B0%BE%E9%94%99%E8%AF%AF%EF%BC%88null-termination-error%EF%BC%89"><span class="nav-text">1.3 空结尾错误（null termination error）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-4-%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%88%AA%E6%96%AD%EF%BC%88string-truncation%EF%BC%89"><span class="nav-text">1.4 字符串截断（string truncation）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%BC%8F%E6%B4%9E%E7%BC%93%E8%A7%A3%E7%AD%96%E7%95%A5"><span class="nav-text">2 字符串漏洞缓解策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%A4%84%E7%90%86%E5%87%BD%E6%95%B0"><span class="nav-text">3 字符串处理函数</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Lyc"
+      src="/LycTechStack.github.io/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Lyc</p>
+  <div class="site-description" itemprop="description">个人学习总结和技术经验分享，主要内容包括C++、数据结构、算法、计算机图形学、3D数学、实时渲染、游戏引擎等等，希望未来能真正踏入图形/引擎开发的大门！</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/LycTechStack.github.io/archives/">
+        
+          <span class="site-state-item-count">134</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/LycTechStack.github.io/categories/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/LycTechStack.github.io/tags/">
+          
+        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/LZ328/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;LZ328&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:27487358@qq.com" title="E-Mail → mailto:27487358@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2021 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heartbeat"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lyc</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">15:12</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="/LycTechStack.github.io/lib/canvas-ribbon/canvas-ribbon.js"></script>
+  <script src="/LycTechStack.github.io/lib/anime.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/pjax/pjax.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4/dist/browser/pangu.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/velocity/velocity.min.js"></script>
+  <script src="/LycTechStack.github.io/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/LycTechStack.github.io/js/utils.js"></script>
+
+<script src="/LycTechStack.github.io/js/motion.js"></script>
+
+
+<script src="/LycTechStack.github.io/js/schemes/pisces.js"></script>
+
+
+<script src="/LycTechStack.github.io/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/LycTechStack.github.io/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '09aa5d8a5587f012a8af',
+      clientSecret: '7f7ec08f02d74e1865e57b5f03a982047700b547',
+      repo        : 'LycTechStack.github.io',
+      owner       : 'LZ328',
+      admin       : ['LZ328'],
+      id          : '6c30e092fe9bf27d9e856d5ad9be19ec',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+    </div>
+  
+</body>
+</html>
