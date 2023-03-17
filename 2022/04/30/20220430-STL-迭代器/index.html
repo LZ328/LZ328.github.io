@@ -255,7 +255,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>2.2k</span>
+              <span>2.1k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -276,16 +276,13 @@
       
         <p>STL的中心思想是：将数据容器和算法分隔开，彼此独立设计，最后再用黏合剂将它们撮合在一起。容器和算法的泛型化，可以用 C++ 的 class template 和 function template 来实现，而迭代器（Iterator）就是二者的黏合剂了。</p>
 <p><em><span id="more"></span></em></p>
-<h3 id="1-迭代器的实现"><a href="#1-迭代器的实现" class="headerlink" title="1 迭代器的实现"></a>1 迭代器的实现</h3><p>迭代器是一种智能指针，它将指针进行了一层封装，既包含了原生指针的灵活和强大，也加上很多重要的特性，使其能发挥更大的作用以及能更好的使用。指针最常见也最为重要的行为就是内容提领 (dereference) 和成员访问 (member access)，迭代器对指针的一些基本操作如*、-&gt;、++、&#x3D;&#x3D;、!&#x3D;、&#x3D;进行了重载，使其具有了遍历复杂数据结构的能力，其遍历机制取决于所遍历的数据结构。</p>
+<h3 id="1-迭代器的实现"><a href="#1-迭代器的实现" class="headerlink" title="1 迭代器的实现"></a>1 迭代器的实现</h3><p>迭代器是一种智能指针，它将指针进行了一层封装，既包含了原生指针的灵活和强大，也加上很多重要的特性，使其能发挥更大的作用以及能更好的使用。指针最常见也最为重要的行为就是内容提领 (dereference) 和成员访问 (member access)，迭代器对指针的一些基本操作如*、-&gt;、++、==、!=、=进行了重载，使其具有了遍历复杂数据结构的能力，其遍历机制取决于所遍历的数据结构。</p>
 <p>迭代器的“智能”体现在，针对不同的数据容器能够使用统一的方法、函数进行操作，以达到相同的目的。比如：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;  </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Iterator</span>  </span><br><span class="line">&#123;  </span><br><span class="line"><span class="keyword">public</span>:  </span><br><span class="line">    Iterator&amp; <span class="keyword">operator</span>++();  </span><br><span class="line"></span><br><span class="line">    ...  </span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:   </span><br><span class="line">    T *m_ptr;  </span><br><span class="line">&#125;;  </span><br></pre></td></tr></table></figure>
-
 <p>对于不同的数据容器，以上 Iterator 类中的成员函数 operator++ 的实现会各不相同，例如，对于数组的可能实现如下：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//对于数组的实现  </span></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;  </span><br><span class="line">Iterator&amp; <span class="keyword">operator</span>++()  </span><br><span class="line">&#123;   </span><br><span class="line">   ++m_ptr;   </span><br><span class="line">   retrun *<span class="keyword">this</span>;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>对于链表，它会有一个类似于 next 的成员函数用于获取下一个结点，其可能实现如下：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;  </span><br><span class="line">Iterator&amp; <span class="keyword">operator</span>++()  </span><br><span class="line">&#123;  </span><br><span class="line">   m_ptr = m_ptr-&gt;<span class="built_in">next</span>();<span class="comment">//next()用于获取链表的下一个节点   </span></span><br><span class="line">   <span class="keyword">return</span> *<span class="keyword">this</span>;  </span><br><span class="line">&#125;  </span><br></pre></td></tr></table></figure>
-
 <p>iterator 的实现首先要对其所指向的对象的实现细节有非常丰富的了解，所以 iterator 为了不暴露所指向对象的信息，干脆就将 iterator 的实现由各个容器的设计者来实现好了。STL 将迭代器的实现交给了容器，每种容器都会以嵌套的方式在内部定义专属的迭代器。各种迭代器的接口相同，内部实现却不相同，这也直接体现了泛型编程的概念。</p>
 <h3 id="2-迭代器的类别"><a href="#2-迭代器的类别" class="headerlink" title="2 迭代器的类别"></a>2 迭代器的类别</h3><p>不同容器的迭代器，其功能强弱有所不同。容器的迭代器的功能强弱，决定了该容器是否支持 STL 中的某种算法。例如，排序算法需要通过随机访问迭代器来访问容器中的元素，因此有的容器就不支持排序算法。</p>
 <p>常用的迭代器按功能强弱分为：</p>
@@ -295,17 +292,18 @@
 <li>正向迭代器：正向遍历迭代器，假设 p 是一个正向迭代器，则 p 支持以下操作：++p，p++，*p。此外，两个正向迭代器可以互相赋值，还可以用<code>==</code>和<code>!=</code>运算符进行比较。</li>
 <li>双向迭代器：双向迭代器具有正向迭代器的全部功能。除此之外，若 p 是一个双向迭代器，则<code>--p</code>和<code>p--</code> 都是有定义的。<code>--p</code>使得 p 朝和<code>++p</code>相反的方向移动。</li>
 <li>随机访问迭代器：随机访问迭代器具有双向迭代器的全部功能。若 p 是一个随机访问迭代器，i 是一个整型变量或常量，则 p 还支持以下操作：<ul>
-<li>p+&#x3D;i：使得 p 往后移动 i 个元素。</li>
-<li>p-&#x3D;i：使得 p 往前移动 i 个元素。</li>
+<li>p+=i：使得 p 往后移动 i 个元素。</li>
+<li>p-=i：使得 p 往前移动 i 个元素。</li>
 <li>p+i：返回 p 后面第 i 个元素的迭代器。</li>
 <li>p-i：返回 p 前面第 i 个元素的迭代器。</li>
 <li>p[i]：返回 p 后面第 i 个元素的引用。</li>
 </ul>
 </li>
 </ul>
-<p>此外，两个随机访问迭代器 p1、p2 还可以用 &lt;、&gt;、&lt;&#x3D;、&gt;&#x3D; 运算符进行比较。<code>p1&lt;p2</code>的含义是：p1 经过若干次（至少一次）<code>++</code>操作后，就会等于 p2。其他比较方式的含义与此类似。</p>
+<p>此外，两个随机访问迭代器 p1、p2 还可以用 &lt;、&gt;、&lt;=、&gt;= 运算符进行比较。<code>p1&lt;p2</code>的含义是：p1 经过若干次（至少一次）<code>++</code>操作后，就会等于 p2。其他比较方式的含义与此类似。</p>
 <p>对于两个随机访问迭代器 p1、p2，表达式<code>p2-p1</code>也是有定义的，其返回值是 p2 所指向元素和 p1 所指向元素的序号之差（也可以说是 p2 和 p1 之间的元素个数减一）。</p>
 <p>下表是不同容器的迭代器功能类型：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -313,7 +311,8 @@
 <th>迭代器功能</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>vector</td>
 <td>随机访问</td>
 </tr>
@@ -326,11 +325,11 @@
 <td>双向</td>
 </tr>
 <tr>
-<td>set &#x2F; multiset</td>
+<td>set / multiset</td>
 <td>双向</td>
 </tr>
 <tr>
-<td>map &#x2F; multimap</td>
+<td>map / multimap</td>
 <td>双向</td>
 </tr>
 <tr>
@@ -345,7 +344,9 @@
 <td>priority_queue</td>
 <td>不支持迭代器</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>在以上功能的基础上，迭代器根据定义方式还分为：</p>
 <ul>
 <li>正向迭代器：容器类名::iterator </li>
@@ -586,7 +587,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">15:29</span>
+    <span title="站点阅读时长">15:23</span>
 </div>
 
         

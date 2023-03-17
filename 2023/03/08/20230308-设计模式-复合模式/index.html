@@ -29,18 +29,18 @@
 <meta property="og:site_name" content="LycTechStack">
 <meta property="og:description" content="本篇介绍了由多种设计模式组合而成的复合设计模式，其中最经典的三个模式分别为 MVC、MVP 和 MVVM 模式。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/08/20230308-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%A4%8D%E5%90%88%E6%A8%A1%E5%BC%8F/image-20230308140251789.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/08/20230308-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%A4%8D%E5%90%88%E6%A8%A1%E5%BC%8F/image-20230308140450568.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/08/20230308-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%A4%8D%E5%90%88%E6%A8%A1%E5%BC%8F/image-20230308140524872.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/08/20230308-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%A4%8D%E5%90%88%E6%A8%A1%E5%BC%8F/image-20230308140540315.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/08/20230308-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%A4%8D%E5%90%88%E6%A8%A1%E5%BC%8F/8a122cedc7034ff4b34c5512658cb667.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/08/20230308-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%A4%8D%E5%90%88%E6%A8%A1%E5%BC%8F/bad4a11617954c68bc3f5c5070f630b4.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20230308140251789.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20230308140450568.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20230308140524872.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20230308140540315.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/8a122cedc7034ff4b34c5512658cb667.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/bad4a11617954c68bc3f5c5070f630b4.png">
 <meta property="article:published_time" content="2023-03-08T06:26:16.000Z">
 <meta property="article:modified_time" content="2023-03-08T06:27:20.263Z">
 <meta property="article:author" content="Lyc">
 <meta property="article:tag" content="设计模式">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/08/20230308-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%A4%8D%E5%90%88%E6%A8%A1%E5%BC%8F/image-20230308140251789.png">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/image-20230308140251789.png">
 
 <link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2023/03/08/20230308-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%A4%8D%E5%90%88%E6%A8%A1%E5%BC%8F/">
 
@@ -283,12 +283,12 @@
 <li>C : Controller， 是 View 层和 Model 层的纽带，负责用户与应用的响应操作。</li>
 </ul>
 <p>他们的关系如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/03/08/20230308-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%A4%8D%E5%90%88%E6%A8%A1%E5%BC%8F/image-20230308140251789.png" alt="image-20230308140251789"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20230308140251789.png" alt="image-20230308140251789"></p>
 <p>在 MVC 模式中，通过分离 Model、View 和 Controller 的方式来组织代码结构。当用户与页面产生交互的时候，Controller 层的事件触发器就开始工作了，通过调用 Model 层，来完成对 Model 的修改，然后 Model 层再去通知 View 层更新。</p>
 <p>回顾之前的设计模式，实际上 MVC 模式包含了观察者模式、策略模式和和组合模式等多种模式：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/03/08/20230308-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%A4%8D%E5%90%88%E6%A8%A1%E5%BC%8F/image-20230308140450568.png" alt="image-20230308140450568"></p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/03/08/20230308-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%A4%8D%E5%90%88%E6%A8%A1%E5%BC%8F/image-20230308140524872.png" alt="image-20230308140524872"></p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/03/08/20230308-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%A4%8D%E5%90%88%E6%A8%A1%E5%BC%8F/image-20230308140540315.png" alt="image-20230308140540315"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20230308140450568.png" alt="image-20230308140450568"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20230308140524872.png" alt="image-20230308140524872"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20230308140540315.png" alt="image-20230308140540315"></p>
 <p>当然，在模型、视图、控制器的具体实现过程中，肯定还会使用到其他的设计模式，但 MVC 的整体框架中涉及到的基本就是以上三种模式。MVC 模式将程序中的对象、显示、控制分离以提高软件的的灵活性和复用性，可以使程序具有对象化的特征，也更容易维护。</p>
 <h3 id="2-MVP-模式"><a href="#2-MVP-模式" class="headerlink" title="2 MVP 模式"></a>2 MVP 模式</h3><p>MVP 模式是 MVC 模式的一种变体，其中：</p>
 <ul>
@@ -296,7 +296,7 @@
 <li>V : View，负责页面的显示以及与用户交互。</li>
 <li>P : Presenter， 负责完成 View 与 Model 之间的交互。</li>
 </ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/03/08/20230308-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%A4%8D%E5%90%88%E6%A8%A1%E5%BC%8F/8a122cedc7034ff4b34c5512658cb667.png" alt="8a122cedc7034ff4b34c5512658cb667"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/8a122cedc7034ff4b34c5512658cb667.png" alt="8a122cedc7034ff4b34c5512658cb667"></p>
 <p>MVP 与 MVC 有着一个重大的区别：在 MVP 中 View 并不直接使用 Model，它们之间的通信是通过 Presenter (MVC 中的 Controller) 来进行的，所有的交互都发生在 Presenter 内部，而在 MVC 中 View 会直接从 Model 中读取数据而不是通过 Controller。</p>
 <p>MVP 模式通过使用 Presenter 实现了对 View 层和 Model 层的解耦。MVC 中的Controller 只知道 Model 的接口，因此它没有办法控制 View 层的更新，而在MVP 模式中，View 层的接口暴露给了 Presenter 因此可以在 Presenter 中将 Model 的变化和 View 的变化绑定在一起，以此来实现 View 和 Model 的同步更新。</p>
 <p>在 View 层通过 presenter 对象来调用 Model 层中数据请求的接口，而 Model 层中数据请求的结果会通过 presenter 中定义的接口回调给 presenter ，然后 presenter 再通知给 View 层。</p>
@@ -306,7 +306,7 @@
 <li>V : View，负责页面的显示。</li>
 <li>VM : ViewModel，负责监听 Model 中数据的改变并且控制视图的更新，处理用户交互操作。</li>
 </ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/03/08/20230308-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%A4%8D%E5%90%88%E6%A8%A1%E5%BC%8F/bad4a11617954c68bc3f5c5070f630b4.png" alt="bad4a11617954c68bc3f5c5070f630b4"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/bad4a11617954c68bc3f5c5070f630b4.png" alt="bad4a11617954c68bc3f5c5070f630b4"></p>
 <p>MVVM 将数据双向绑定（data-binding）作为核心思想，View 和 Model 之间没有联系，它们通过 ViewModel 这个桥梁进行交互。Model 和 ViewModel 之间的交互是双向的，因此 View 的变化会自动同步到 Model，而 Model 的变化也会立即反映到 View 上显示。当用户操作 View，ViewModel 感知到变化，然后通知 Model 发生相应改变；反之当 Model 发生改变，ViewModel 也能感知到变化，使 View 作出相应更新。</p>
 <p>通过上面的模型图来看，MVP 和 MVVM 模式似乎是相同的，其实不然。它们是相似的，唯一区别在于 MVVM 模式采用了双向数据绑定。开发者只需要更改 View 层或者 Model 层中的数据值，不需要进行同步 Model 层和 View 层的操作，因为数据的同步会由 ViewModel 层自动完成。而 MVP 模式中，开发者需要进行处理接收事件和 View 更新的工作。</p>
 
@@ -533,7 +533,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">15:29</span>
+    <span title="站点阅读时长">15:23</span>
 </div>
 
         

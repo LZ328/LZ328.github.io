@@ -29,13 +29,13 @@
 <meta property="og:site_name" content="LycTechStack">
 <meta property="og:description" content="本篇介绍了代理模式及相关的面向对象设计原则。代理模式为其他对象提供一种替身或占位符（代理）以控制对这个对象的访问。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/08/20230308-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/image-20230308133854858.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20230308133854858.png">
 <meta property="article:published_time" content="2023-03-08T05:43:55.000Z">
 <meta property="article:modified_time" content="2023-03-08T05:44:57.469Z">
 <meta property="article:author" content="Lyc">
 <meta property="article:tag" content="设计模式">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2023/03/08/20230308-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/image-20230308133854858.png">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/image-20230308133854858.png">
 
 <link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2023/03/08/20230308-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/">
 
@@ -273,10 +273,9 @@
 <p><em><span id="more"></span></em></p>
 <p>代理模式顾名思义，为某一个对象提供一个代理，从而使客户想要访问该对象的时候与代理进行沟通，而不是直接与该对象发生交互。这在很多时候是很重要的，比如某些系统需要安全控制或者直接访问对象的开销很大时，就需要代理模式来控制对象的访问。</p>
 <p>我们可以让代理对象和实际对象继承于同一个基类，这样在需要访问实际对象的时候就可以使用代理对象来替代了。代理模式的类图如下：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/2023/03/08/20230308-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/image-20230308133854858.png" alt="image-20230308133854858"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20230308133854858.png" alt="image-20230308133854858"></p>
 <p>框架代码如下：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">ISubject</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">process</span><span class="params">()</span></span>;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">// 实际对象</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">RealSubject</span> : <span class="keyword">public</span> ISubject &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">process</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">// 代理对象</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">SubjectProxy</span>: <span class="keyword">public</span> ISubject &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">process</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 对RealSubject的一种间接访问</span></span><br><span class="line">        <span class="comment">// ....</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">// 客户代码</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ClientApp</span> &#123;</span><br><span class="line"><span class="keyword">private</span>: </span><br><span class="line">    ISubject* subject;    </span><br><span class="line"><span class="keyword">public</span>:   </span><br><span class="line">    <span class="built_in">ClientApp</span>() &#123;</span><br><span class="line">        subject = <span class="keyword">new</span> <span class="built_in">SubjectProxy</span>();</span><br><span class="line">    &#125;    </span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">DoTask</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">//...</span></span><br><span class="line">        subject-&gt;<span class="built_in">process</span>();</span><br><span class="line">        <span class="comment">//....</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
 <p>具体代理模式的实现方式差别很大，有些可能对单个对象做细粒度的控制，有些可能对组件模块提供抽象代理层，在架构层次对对象做代理。</p>
 
     </div>
@@ -501,7 +500,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">15:29</span>
+    <span title="站点阅读时长">15:23</span>
 </div>
 
         
