@@ -22,30 +22,30 @@
     var CONFIG = {"hostname":"lz328.github.io","root":"/LycTechStack.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":5,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="本篇对《Real-Time Rendering》一书中纹理相关知识进行概括总结。主要内容包括：  纹理管线（Texture Pipeline） 纹理缓存（Texture Caching） 纹理压缩（Texture Compression） 体纹理（Volume Texture）  立方体贴图（Cube Map）  程序纹理（Procedural Texturing） 凹凸贴图（Bump Mappi">
+  <meta name="description" content="本篇对《Real-Time Rendering》一书中纹理相关知识进行概括总结。主要内容包括：  纹理管线（Texture Pipeline）  纹理缓存（Texture Caching）  纹理压缩（Texture Compression）  体纹理（Volume Texture）  立方体贴图（Cube Map）  程序纹理（Procedural Texturing）  凹凸贴图（Bump M">
 <meta property="og:type" content="article">
 <meta property="og:title" content="【Real-Time Rendering】纹理总结">
 <meta property="og:url" content="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/index.html">
 <meta property="og:site_name" content="LycTechStack">
-<meta property="og:description" content="本篇对《Real-Time Rendering》一书中纹理相关知识进行概括总结。主要内容包括：  纹理管线（Texture Pipeline） 纹理缓存（Texture Caching） 纹理压缩（Texture Compression） 体纹理（Volume Texture）  立方体贴图（Cube Map）  程序纹理（Procedural Texturing） 凹凸贴图（Bump Mappi">
+<meta property="og:description" content="本篇对《Real-Time Rendering》一书中纹理相关知识进行概括总结。主要内容包括：  纹理管线（Texture Pipeline）  纹理缓存（Texture Caching）  纹理压缩（Texture Compression）  体纹理（Volume Texture）  立方体贴图（Cube Map）  程序纹理（Procedural Texturing）  凹凸贴图（Bump M">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220515094736104.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220515095022930.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220515095836855.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220515100701571.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220515100722640.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220515104558734.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220515105351266.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220515105943878.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220515110338598.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220515110121700.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515094736104.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515095022930.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515095836855.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515100701571.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515100722640.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515104558734.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515105351266.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515105943878.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515110338598.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515110121700.png">
 <meta property="article:published_time" content="2022-05-15T03:09:44.000Z">
 <meta property="article:modified_time" content="2022-05-15T09:35:29.304Z">
 <meta property="article:author" content="Lyc">
 <meta property="article:tag" content="计算机图形学">
 <meta property="article:tag" content="实时渲染">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220515094736104.png">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515094736104.png">
 
 <link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/">
 
@@ -281,20 +281,25 @@
       
         <p>本篇对《Real-Time Rendering》一书中纹理相关知识进行概括总结。主要内容包括：</p>
 <ul>
-<li>纹理管线（Texture Pipeline）</li>
-<li>纹理缓存（Texture Caching）</li>
-<li>纹理压缩（Texture Compression）</li>
+<li><p>纹理管线（Texture Pipeline）</p>
+</li>
+<li><p>纹理缓存（Texture Caching）</p>
+</li>
+<li><p>纹理压缩（Texture Compression）</p>
+</li>
 <li><p>体纹理（Volume Texture）</p>
 </li>
 <li><p>立方体贴图（Cube Map）</p>
 </li>
-<li>程序纹理（Procedural Texturing）</li>
-<li>凹凸贴图（Bump Mapping）及其改进</li>
+<li><p>程序纹理（Procedural Texturing）</p>
+</li>
+<li><p>凹凸贴图（Bump Mapping）及其改进</p>
+</li>
 </ul>
 <p><em><span id="more"></span></em></p>
 <h3 id="1-纹理管线"><a href="#1-纹理管线" class="headerlink" title="1 纹理管线"></a>1 纹理管线</h3><p>简单来说，纹理（Texturing）是一种针对物体表面属性进行“建模”的高效技术。图像纹理中的像素通常被称为纹素（Texels），以区别于屏幕上的像素。根据 Kershaw 的术语，通过将投影方程（projector function）运用于空间中的点 ，从而得到一组称为参数空间值（parameter-spacevalues）的关于纹理的数值。这个过程就称为贴图（Mapping，也称映射 ）,也就是纹理贴图（Texture Mapping，也称纹理映射 ）这个词的由来。纹理贴图可以用一个通用的纹理管线来进行描述。<strong>纹理贴图过程的初始点是空间中的一个位置。这个位置可以基于世界空间，但是更常见的是基于模型空间。因为若此位置是基于模型空间的，当模型移动时，其纹理才会随之移动。</strong></p>
 <p>下图展示了单个纹理的通用管线：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220515094736104.png" alt="image-20220515094736104"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515094736104.png" alt="image-20220515094736104"></p>
 <ul>
 <li>第一步。通过将投影方程（projector function）运用于空间中的点   ，从而得到一组称为参数空间值（parameter-space values）的关于纹理的数值，即 uv 坐标，在（0, 1）范围内。</li>
 <li>第二步。在使用这些新值访问纹理之前，可以使用一个或者多个映射函数（corresponder function）将参数空间值（parameter-space values  ）转换到纹理空间，即对 uv坐标进行平移和缩放以映射到纹理空间中。</li>
@@ -302,7 +307,7 @@
 <li>第四步。再使用值变换函数（value transform function）对检索结果进行值变换，最后使用得到的新值来改变表面属性，如材质或者着色法线等等。</li>
 </ul>
 <p>下图通过一个例子描述了上述过程：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220515095022930.png" alt="image-20220515095022930"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515095022930.png" alt="image-20220515095022930"></p>
 <h4 id="1-1-投影函数"><a href="#1-1-投影函数" class="headerlink" title="1.1 投影函数"></a>1.1 投影函数</h4><p>作为纹理管线的第一步，<strong>投影函数的功能就是将空间中的三维点转化为纹理坐标，也就是获取表面的位置并将其投影到参数空间中。</strong></p>
 <p>在常规情况下，投影函数通常在美术建模阶段使用，并将投影结果存储于顶点数据中。也就是说，在软件开发过程中，我们一般不会去用投影函数计算得到投影结果，而是直接使用在美术建模过程中，已经存储在模型顶点数据中的投影结果。</p>
 <h4 id="1-2-映射函数"><a href="#1-2-映射函数" class="headerlink" title="1.2 映射函数"></a>1.2 映射函数</h4><p><strong>映射函数（The Corresponder Function）的作用是将参数空间坐标（parameter-space coordinates）转换为纹理空间位置（texture space locations）。</strong>我们知道图像会出现在物体表面的 (u,v) 位置上，且  uv 值的正常范围在 [0, 1) 范围内。超出这个值域的纹理，其显示方式便可以由映射函数（The Corresponder Function）来决定。</p>
@@ -314,7 +319,7 @@
 <li>边框颜色寻址模式，border (DirectX)，clamp to border (OpenGL)。边框颜色寻址模式就是在 [0.0, 1.0] 之间绘制纹理，然后 [0.0, 1.0] 之外的内容就用边框颜色填充。</li>
 </ul>
 <p>下图展示了上述四种寻址模式：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220515095836855.png" alt="image-20220515095836855"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515095836855.png" alt="image-20220515095836855"></p>
 <p>另外，每个纹理轴可以使用不同的映射函数。例如在 u 轴使用重复寻址模式，在 v 轴使用取寻址模式。</p>
 <h3 id="2-纹理缓存"><a href="#2-纹理缓存" class="headerlink" title="2 纹理缓存"></a>2 纹理缓存</h3><p>一个复杂的应用程序可能需要相当数量的纹理。快速纹理存储器的数量因系统而异，但你会发现它们永远不够用。于是有了各种各样的纹理缓存（texture caching）技术，但我们一直在上传纹理到内存的开销和纹理单次消耗的内存量之间寻求一个好的平衡点。比如，一个由纹理贴图的多边形对象，初始化在离相机很远的位置，程序也许会只加载 mipmap 中更小的子纹理，就可以很完美的完成这个对象的显示了。</p>
 <p>一些基本的建议是——<strong>保持纹理在不需要放大再用的前提下尽可能小，并尝试基于多边形将纹理分组。</strong>即便所有纹理都一直存储在内存中，这种预防措施也可能会提高处理器的缓存性能。</p>
@@ -340,8 +345,8 @@
 </ul>
 <h3 id="5-立方体贴图"><a href="#5-立方体贴图" class="headerlink" title="5 立方体贴图"></a>5 立方体贴图</h3><p>立方体贴图（cube map）也称立方体纹理（cube texture），是一种特殊的纹理技术，它用 6 幅二维纹理图像构成一个以原点为中心的纹理立方体，这每个 2D 纹理是一个立方体（cube）的一个面。对于每个片段，<strong>纹理坐标 (s, t, r) 被当作方向向量看待，每个纹素(texel)都表示从原点所看到的纹理立方体上的图像。</strong></p>
 <p>下图以两种方式展示了立方体贴图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220515100701571.png" alt="image-20220515100701571"></p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220515100722640.png" alt="image-20220515100722640"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515100701571.png" alt="image-20220515100701571"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515100722640.png" alt="image-20220515100722640"></p>
 <p><strong>可以使用三分量纹理坐标向量来访问立方体贴图中的数据，该矢量指定了从立方体中心向外指向的光线的方向。</strong>选择具有最大绝对值的纹理坐标对应的相应的面。例如给定矢量（-3.2, 5.1, -8.4），选择绝对值最大的 -8.4 所在的 -Z 面，然后将其他两维除以最大的绝对值，就映射到了（-1, 1），然后再映射到（0, 1）范围就可以在 -Z 面上得到一个纹理坐标了。</p>
 <h3 id="6-程序纹理"><a href="#6-程序纹理" class="headerlink" title="6 程序纹理"></a>6 程序纹理</h3><p>给定纹理空间位置，进行图像查找是生成纹理值的一种方法。另一种方法是对函数进行求值，从而得到一个程序贴图纹理（procedural texture）。</p>
 <p>程序贴图纹理也称为过程纹理，是用计算机算法生成的，旨在创建用于纹理映射的自然元素（例如木材，大理石，花岗岩，金属，石头等）的真实表面或三维物体而创建的纹理图像。通常，会使用分形噪声（fractal noise）和湍流扰动函数（turbulence functions）这类“随机性”的函数来生成程序贴图纹理。</p>
@@ -349,19 +354,19 @@
 <p>关于程序纹理中常见的噪声，之后有专门的文章总结。</p>
 <h3 id="7-凹凸贴图及其改进"><a href="#7-凹凸贴图及其改进" class="headerlink" title="7 凹凸贴图及其改进"></a>7 凹凸贴图及其改进</h3><p>与凹凸贴图相关的改进技术包括：位移贴图、法线贴图、视差贴图、浮雕贴图等，除了位移贴图方法以外，其他的几种改进一般都是通过修改每像素着色方程来实现，关键思想是访问纹理来修改表面的法线，而不是改变光照方程中的颜色分量。物体表面的几何法线保持不变，我们修改的只是着色方程中使用的法线值。他们比单独的纹理有更好的三维感官，但是显然还是比不上实际的三维几何体。下面将分别说明这几种方法。</p>
 <h4 id="7-1-凹凸贴图"><a href="#7-1-凹凸贴图" class="headerlink" title="7.1 凹凸贴图"></a>7.1 凹凸贴图</h4><p><strong>凹凸贴图是通过改变表面光照方程的法线，而不是表面的几何法线，或对每个待渲染的像素在计算照明之前都要加上一个从高度图中找到的扰动，来模拟凹凸不平的视觉特征</strong>，如褶皱、波浪等等。<br>Blinn 于 1978 年提出了凹凸贴图方法。使用凹凸贴图，是为了给光滑的平面，在不增加顶点的情况下，增加一些凹凸的变化。他的原理是通过法向量的变化，来产生光影的变化，从而产生凹凸感。<strong>实际上并没有几何顶点上的变化。</strong>所以下图中球体边缘还是光滑的：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220515104558734.png" alt="image-20220515104558734"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515104558734.png" alt="image-20220515104558734"></p>
 <h4 id="7-2-位移贴图"><a href="#7-2-位移贴图" class="headerlink" title="7.2 位移贴图"></a>7.2 位移贴图</h4><p>移位贴图（Displacement Mapping）也有人称为置换贴图，或称高度纹理贴图（Heightfield Texturing）。这种方法类似于法线贴图，<strong>移位贴图的每一个纹素中存储了一个向量，这个向量代表了对应顶点的位移。</strong>注意，此处的纹素并不是与像素一一对应，而是与顶点一一对应，因此，纹理的纹素个数与网格的顶点个数是相等的。在 Vertex Shader 阶段，获取每个顶点对应的纹素中的位移向量，施加到局部坐标系下的顶点上，然后进行世界视点投影变换即可。<strong>位移贴图真正改变了顶点位置。</strong></p>
 <h4 id="7-3-法线贴图"><a href="#7-3-法线贴图" class="headerlink" title="7.3 法线贴图"></a>7.3 法线贴图</h4><p>法线贴图（Normal mapping）是凸凹贴图（Bump mapping）技术的一种应用。简单来说，<strong>Normal Map 直接将正确的 Normal 值保存到一张纹理中去，那么在使用的时候直接从贴图中取即可。</strong>为了使法线贴图能应用于不同的物体，所以法线贴图中存储的法线值一般是表面顶点切线空间下的法线值，所谓切线空间是指以顶点切线为 x 轴，副切线为 y 轴，顶点法线为 z 轴的空间，相比于存储模型空间下的法线值，切线空间下的法线值是一个相对值，可以应用到不同的模型上而不至于出错。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220515105351266.png" alt="image-20220515105351266"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515105351266.png" alt="image-20220515105351266"></p>
 <p>上图展示了基于法线贴图的凹凸映射，左侧为法线贴图，每个颜色通道实际上是表面法线坐标。红色通道是 x 偏差; 红色越多，正常点越多。 绿色是 y 偏差，蓝色是 z。 右边是使用法线贴图生成的图像。 请注意立方体顶部的扁平外观，<strong>法线贴图显然没有改变几何形状。</strong></p>
 <h4 id="7-4-视差贴图"><a href="#7-4-视差贴图" class="headerlink" title="7.4 视差贴图"></a>7.4 视差贴图</h4><p>视差贴图（Parallax Mapping），又称为 Offset Mapping，或 virtual displacement mapping，视差贴图是一种改进的 Bump Mappin 技术，相较于普通的凹凸贴图，视差贴图技术得到凹凸效果得会更具真实感（如石墙的纹理将有更明显的深度）。<strong>视差贴图是通过替换渲染多边形上的顶点处的纹理坐标来实现的</strong>，而这个替换依赖于一个关于切线空间中的视角（相对于表面法线的角度）和在该点上的高度图的方程。简单来说，Parallax Mapping 利用  Height Map 进行了近似的  Texture Offset。如下图所示：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220515105943878.png" alt="image-20220515105943878"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515105943878.png" alt="image-20220515105943878"></p>
 <h4 id="7-5-浮雕贴图"><a href="#7-5-浮雕贴图" class="headerlink" title="7.5 浮雕贴图"></a>7.5 浮雕贴图</h4><p>浮雕贴图（Relief Mapping），有人把它誉为凹凸贴图的极致。我们知道，Parallax Mapping 是针对  Normal Mapping 的改进，利用  HeightMap 进行了近似的 Texture Offset。而 Relief Mapping 是精确的 Texture Offset，所以在表现力上比较完美。</p>
 <p>Parallax Mapping 能够提供比 Bump Mapping 更多的深度，尤其相比于小视角下，但是如果想提供更深的深度，Parallax Mapping 就无能为力了，Relief Mapping 则可以很好的胜任。相较于 Parallax Mapping，浮雕贴图可以实现更深的凹凸深度，并且还可以做出自阴影和闭塞效果。当然算法也稍稍有点复杂，具体细节可以参考这篇中文文献：<a target="_blank" rel="noopener" href="https://www.ixueshu.com/document/3dc4369a761ca0d6318947a18e7f9386.html">Relief mapping：凹凸贴图的极致</a>，而如果要用一句话概括  Relief Mapping，将会是：“在 Shader 里做光线追踪”。</p>
 <p>下图是法线贴图和浮雕贴图的对比，浮雕贴图可以实现自阴影：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220515110338598.png" alt="image-20220515110338598"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515110338598.png" alt="image-20220515110338598"></p>
 <p>下图是视差贴图和浮雕贴图的对比，浮雕贴图可以实现更深的凹凸深度：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220515110121700.png" alt="image-20220515110121700"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/05/15/20220515-RTR-%E7%BA%B9%E7%90%86%E6%80%BB%E7%BB%93/image-20220515110121700.png" alt="image-20220515110121700"></p>
 
     </div>
 
@@ -587,7 +592,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">15:23</span>
+    <span title="站点阅读时长">15:29</span>
 </div>
 
         

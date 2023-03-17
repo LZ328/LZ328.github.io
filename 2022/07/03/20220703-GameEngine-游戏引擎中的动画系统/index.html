@@ -29,62 +29,62 @@
 <meta property="og:site_name" content="LycTechStack">
 <meta property="og:description" content="游戏引擎中的动画系统是最重要的系统之一，直接决定了角色动作是否自然，酷炫的动画也是一个游戏最能吸引人的地方，这一节来简单了解游戏引擎中的动画系统，蒙皮动画的数学原理以及动画压缩技术。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703104804654.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703105116202.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703105453426.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703105729235.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703110627378.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703110821902.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703110247889.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703110553383.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703111025886.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703111310429.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703111423781.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703111819051.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703111835096.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703111900765.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703111927064.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703112129521.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703112421587.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703112652270.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703112723067.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703113522897.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703113632960.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703114728451.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703114951451.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703124251350.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703124316201.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703124737356.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703125107407.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703125034152.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703124922689.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703125320376.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703125937121.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703130039721.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703130212666.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703130759588.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703130812422.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703131014403.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703131709781.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703131842087.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703151402089.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703151517898.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703151503298.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703151624831.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703151854905.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703151951269.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703152052410.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703152516324.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703152759121.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703152943879.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703153118965.png">
-<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703153301117.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703104804654.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703105116202.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703105453426.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703105729235.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703110627378.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703110821902.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703110247889.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703110553383.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703111025886.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703111310429.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703111423781.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703111819051.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703111835096.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703111900765.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703111927064.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703112129521.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703112421587.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703112652270.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703112723067.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703113522897.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703113632960.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703114728451.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703114951451.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703124251350.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703124316201.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703124737356.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703125107407.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703125034152.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703124922689.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703125320376.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703125937121.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703130039721.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703130212666.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703130759588.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703130812422.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703131014403.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703131709781.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703131842087.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703151402089.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703151517898.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703151503298.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703151624831.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703151854905.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703151951269.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703152052410.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703152516324.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703152759121.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703152943879.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703153118965.png">
+<meta property="og:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703153301117.png">
 <meta property="article:published_time" content="2022-07-03T05:37:44.000Z">
 <meta property="article:modified_time" content="2022-07-03T07:34:58.655Z">
 <meta property="article:author" content="Lyc">
 <meta property="article:tag" content="游戏引擎">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/image-20220703104804654.png">
+<meta name="twitter:image" content="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703104804654.png">
 
 <link rel="canonical" href="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/">
 
@@ -299,7 +299,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>5.8k</span>
+              <span>5.9k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -322,128 +322,128 @@
 <p><em><span id="more"></span></em></p>
 <h3 id="1-游戏引擎中的动画系统"><a href="#1-游戏引擎中的动画系统" class="headerlink" title="1 游戏引擎中的动画系统"></a>1 游戏引擎中的动画系统</h3><p>引擎中的动画技术来自于动画电影，但相比于动画电影，游戏中的动画还要和玩家进行交互，根据玩家的输入来执行不同的动作，并且游戏需要实时运行，动画的计算也要在极短的时间内完成，大量的游戏对象也会有大量的动画数据，动画数据的存储和使用也是一个极大的挑战。</p>
 <p>最早的动画利用人的视觉残留，通过快速播放关键帧来实现，这种方式也叫做精灵动画（Sprite Animation），现在的许多简单 2D 动画，比如 2D 角色的动作和一些特效等，也可以使用这种方式来实现：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703104804654.png" alt="image-20220703104804654"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703104804654.png" alt="image-20220703104804654"></p>
 <p>此外还有比较热门的 Live2D 动画，将 2D 人物的各个部分分别作为不同的组件，通过调整各组件的顶点或者利用动作捕捉生成关键帧，然后在这些帧之间插值来形成流畅的动画，因为 2D 动作捕捉控制点较少，可以快速实时计算，因此 Live2D 广泛用于现在的虚拟直播中：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703105116202.png" alt="image-20220703105116202"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703105116202.png" alt="image-20220703105116202"></p>
 <p>当然现在游戏引擎中使用最多的还是 3D 动画，3D 动画依赖于对模型添加骨骼，然后利用骨骼的运动（旋转、平移、缩放）来控制模型表面顶点的运动，从而使模型动起来，对于一些比较复杂的布料、流体运动，不方便添加骨骼来控制，于是会使用顶点动画，将物体表面顶点在每一帧的运动存入一张纹理中，渲染时直接通过纹理就可以改变顶点的位置从而形成动画：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703105453426.png" alt="image-20220703105453426"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703105453426.png" alt="image-20220703105453426"></p>
 <h3 id="2-蒙皮动画"><a href="#2-蒙皮动画" class="headerlink" title="2 蒙皮动画"></a>2 蒙皮动画</h3><p>蒙皮动画是目前最常用的动画技术，蒙皮动画的流程非常简单，大概分为以下几步：</p>
 <ul>
 <li>首先是创建一个模型的 binding pose 的 Mesh 网格，所谓 binding pose 就是指用于后续绑定骨骼的姿势，一般分为 T Pose 和 A Pose，由于 T Pose 在肩部会有一些顶点的重合，可能导致之后的动画表现不完整，因此目前大多使用 A Pose：</li>
 </ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703105729235.png" alt="image-20220703105729235"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703105729235.png" alt="image-20220703105729235"></p>
 <ul>
 <li>第二步是为 Mesh 创建绑定的骨骼，更精确地说是关节，所有的动画都是关节在动，骨骼是两个关节之间的部分：</li>
 </ul>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703110627378.png" alt="image-20220703110627378"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703110627378.png" alt="image-20220703110627378"></p>
 <p>每个顶点会和多个关节绑定，关节动的时候，顶点就随之移动，同一个顶点受到不同关节的影响自然也不同。此外，除了模型本身的关节，还会为角色的衣服、武器等 Game Play 的部分生成关节：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703110821902.png" alt="image-20220703110821902"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703110821902.png" alt="image-20220703110821902"></p>
 <ul>
 <li>第三步就是蒙皮，所谓蒙皮就是为每个顶点生成受到不同关节影响的权重</li>
 <li>第四步就是对关节进行动画设计生成动画矩阵</li>
 <li>第五步对每个顶点，根据不同权重应用相应的关节动画来计算得到顶点的位置</li>
 </ul>
 <p>整个蒙皮动画流程如下图：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703110247889.png" alt="image-20220703110247889"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703110247889.png" alt="image-20220703110247889"></p>
 <h4 id="2-1-骨骼层次结构"><a href="#2-1-骨骼层次结构" class="headerlink" title="2.1 骨骼层次结构"></a>2.1 骨骼层次结构</h4><p>一般来说会为骨骼生成层次结构以便于关节间动画的传递，对于人类（双足）模型来说，一般用尾椎骨的关节作为中心关节（Pelvis Joint），因为尾椎骨关节向下就是腿部关节，向上就是上身和胳膊关节，对于动物（四足）模型，也是类似的：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703110553383.png" alt="image-20220703110553383"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703110553383.png" alt="image-20220703110553383"></p>
 <p>一般的层次结构中，在尾椎骨关节点之上还会有一个 root 节点，root 节点一般取人的两腿之间或者动物的四肢之间的中心和地地面接触的地方：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703111025886.png" alt="image-20220703111025886"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703111025886.png" alt="image-20220703111025886"></p>
 <p>因为这样的 root 节点在模型运动的时候高度不会发生改变，有了层次结构我们就可以知道每个关节的父关节和子关节，从而将运动传递下去。</p>
 <p>对于绑定的模型，比如人和载具，还会将他们的 Pelvis Joint 对接到一起，从而使他们的动画能够进行传递，对接不仅是指关节的位置重合，他们的局部坐标系也要变换到完全一致：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703111310429.png" alt="image-20220703111310429"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703111310429.png" alt="image-20220703111310429"></p>
 <h4 id="2-2-蒙皮动画矩阵"><a href="#2-2-蒙皮动画矩阵" class="headerlink" title="2.2 蒙皮动画矩阵"></a>2.2 蒙皮动画矩阵</h4><p>接下来推导动画矩阵，首先明确三个坐标系：局部空间、模型空间和世界空间。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703111423781.png" alt="image-20220703111423781"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703111423781.png" alt="image-20220703111423781"></p>
 <p>局部空间是指以关节为中心的空间，每个关节的局部空间自然是不同的，模型空间和世界空间不必多说，在渲染中已经非常熟悉了。</p>
 <p>对于关节的运动，只有三种：旋转、平移和缩放。旋转改变关节的朝向（Orientation）：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703111819051.png" alt="image-20220703111819051"></p>
-<p>平移改变关节的位置：<br><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703111835096.png" alt="image-20220703111835096"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703111819051.png" alt="image-20220703111819051"></p>
+<p>平移改变关节的位置：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703111835096.png" alt="image-20220703111835096"></p>
 <p>缩放改变关节的尺寸：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703111900765.png" alt="image-20220703111900765"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703111900765.png" alt="image-20220703111900765"></p>
 <p>于是对于关节的变换通常就是三个矩阵的结合：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703111927064.png" alt="image-20220703111927064"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703111927064.png" alt="image-20220703111927064"></p>
 <p>于是一个关节当前的 pose 就可以表示为从根节点开始到该节点的所有运动的作用的叠加，也就是矩阵相乘：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703112129521.png" alt="image-20220703112129521"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703112129521.png" alt="image-20220703112129521"></p>
 <p>这里需要注意的是对于关节的两个 pose 中间状态的插值要在局部空间进行，而不能在模型空间将进行，因为对于关节来说模型空间是一个全局坐标系，直接对关节的位置插值会是不平滑的，而局部空间是相对坐标系，插值会是均匀的，下图左是在局部空间插值的效果，下图右是在模型空间插值的结果：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703112421587.png" alt="image-20220703112421587"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703112421587.png" alt="image-20220703112421587"></p>
 <p>有了关节的运动，接下来就是如何利用关节运动计算顶点运动，我们先假设每个顶点只和一个关节绑定。</p>
 <p>计算顶点运动的关键就在于顶点相对于关节的位置是永远不可能发生变化的，也就是说顶点在绑定的关节的局部空间的坐标是永远不变得，这样才能保证模型动画的正确：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703112652270.png" alt="image-20220703112652270"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703112652270.png" alt="image-20220703112652270"></p>
 <p>于是我们可以得出以下关系：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703112723067.png" alt="image-20220703112723067"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703112723067.png" alt="image-20220703112723067"></p>
 <p>也就是顶点在 Bind Pose 时相对于绑定的关节 J 的局部空间的坐标 $V_b^l$ 和顶点在任何时间 t 时相对于绑定的关节 J 的局部空间的坐标 $V^l(t)$ 恒相等。</p>
-<p>如果把顶点在 Bind Pose 时模型空间的坐标表示为 $V<em>b^m$，关节从局部空间到模型空间的变换矩阵（也就是关节在 Bind Pose 时模型空间下的 pose）表示为 $M^m</em>{b(j)}$，因为顶点和关节的相对位置不变，利用关节的变换矩阵的逆矩阵和顶点在关节局部空间下的坐标也可以将顶点变换到模型空间，于是顶点在任何时间 t 时相对于绑定的关节 J 的局部空间的坐标就等于 $V<em>b^m$ 乘上 $M^m</em>{b(j)}$ 的逆矩阵，即为上式所表示的含义。</p>
-<p>上面说过，任何一个关节在模型空间的 pose 可以表示为从根节点到当前关节的 pose 的叠加：<br><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703113522897.png" alt="image-20220703113522897"></p>
+<p>如果把顶点在 Bind Pose 时模型空间的坐标表示为 $V_b^m$，关节从局部空间到模型空间的变换矩阵（也就是关节在 Bind Pose 时模型空间下的 pose）表示为 $M^m_{b(j)}$，因为顶点和关节的相对位置不变，利用关节的变换矩阵的逆矩阵和顶点在关节局部空间下的坐标也可以将顶点变换到模型空间，于是顶点在任何时间 t 时相对于绑定的关节 J 的局部空间的坐标就等于 $V_b^m$ 乘上 $M^m_{b(j)}$ 的逆矩阵，即为上式所表示的含义。</p>
+<p>上面说过，任何一个关节在模型空间的 pose 可以表示为从根节点到当前关节的 pose 的叠加：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703113522897.png" alt="image-20220703113522897"></p>
 <p>而关节和顶点的相对位置不变，于是对顶点施加和关节相同的运动就可以完成顶点的运动：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703113632960.png" alt="image-20220703113632960"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703113632960.png" alt="image-20220703113632960"></p>
 <p>蒙皮动画矩阵就是关节在 t 时刻的 pose 矩阵和关节在 Bind Pose 时的 pose 矩阵的逆矩阵的乘积。有了这个矩阵，我们只要知道任何一个顶点在 Bind Pose 时的模型空间位置，就可以得到该顶点在任何时刻 t 的模型空间坐标，从而实现动画效果。</p>
 <p>对于关节在 Bind Pose 时的模型空间的 pose 矩阵，也就是关节在 Bind Pose 时从关节的局部空间到模型空间的变换矩阵，是很容易得到的，但因为我们要用的是该矩阵的逆矩阵，求逆操作代价较大，所以一般提前算好存在每个关节的结构体中：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703114728451.png" alt="image-20220703114728451"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703114728451.png" alt="image-20220703114728451"></p>
 <p>最后对于渲染，我们要知道的是顶点的世界空间坐标，还要在上面的矩阵上乘上一个物体从模型空间到世界空间的变换矩阵，这个矩阵自然还包含了模型在世界空间中的运动，这样一来就可以实现模型在世界空间的运动和模型本身的运动的动画了：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703114951451.png" alt="image-20220703114951451"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703114951451.png" alt="image-20220703114951451"></p>
 <p>上面的推导是对于一个顶点只绑定一个关节的情况，实际为了动画更加自然，一个顶点会绑定多个关节，然后将通过不同关节运动计算出的顶点模型空间坐标进行加权平均得到最终的顶点坐标：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703124251350.png" alt="image-20220703124251350"></p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703124316201.png" alt="image-20220703124316201"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703124251350.png" alt="image-20220703124251350"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703124316201.png" alt="image-20220703124316201"></p>
 <h4 id="2-3-pose-插值"><a href="#2-3-pose-插值" class="headerlink" title="2.3 pose 插值"></a>2.3 pose 插值</h4><p>通过上面的方法可以生成一个动作的多个关键帧 pose，这些关键帧 pose 组成序列叫做 Clip，对 Clip 中的 pose 进行插值就可以得到连续的动画。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703124737356.png" alt="image-20220703124737356"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703124737356.png" alt="image-20220703124737356"></p>
 <p>插值实际上是对不同 pose 的运动之间的插值，最难处理的就是旋转的插值。</p>
 <p>之前学习过四元数的球面线性插值，球面线性插值通过旋转角度的正弦进行插值，当角度很小的时候正弦值也很小，可能造成插值不稳定，因此游戏引擎一般使用球面线性插值对较大的旋转角度进行插值：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703125107407.png" alt="image-20220703125107407"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703125107407.png" alt="image-20220703125107407"></p>
 <p>而对于较小的角度，使用 NLERP 进行插值，也就是先进行线性插值，对插值结果再做归一化：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703125034152.png" alt="image-20220703125034152"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703125034152.png" alt="image-20220703125034152"></p>
 <p>NLERP 插值速度变换不均匀，但插值结果比较稳定，所以非常适合和 SLERP 搭配使用。</p>
 <p>无论使用哪种插值方法，都需要使用两个四元数的点乘来判断插值方向，以此保证每次都是向最近的方向插值，因为角度是以 $2\pi$ 为周期的，所以存在插值方向的问题，如果不进行方向判断，就可能出现某个骨骼角度突变的情况。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703124922689.png" alt="image-20220703124922689"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703124922689.png" alt="image-20220703124922689"></p>
 <h3 id="3-动画管线"><a href="#3-动画管线" class="headerlink" title="3 动画管线"></a>3 动画管线</h3><p>最后总结一下最简单的动画管线，如下图所示：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703125320376.png" alt="image-20220703125320376"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703125320376.png" alt="image-20220703125320376"></p>
 <p>首先就是生成模型、骨骼和蒙皮，然后设计动作的 Clip，然后对 Clip 中的 Key Pose 之间进行插值得到每一帧的 pose，然后利用 pose 的动画矩阵计算顶点在世界空间的位置，之后就可以进行渲染，从而使模型动起来了。</p>
 <p>上图中大部分计算都是在 CPU 中进行的，但实际上在现代引擎中这些计算几乎都由 GPU 完成。</p>
 <p>对于美术人员或者动画设计师来说，建模工具已经提供了模型网格、骨骼结构和蒙皮生成工具，只要在自动生成的蒙皮上稍微修改一些权重就可以得到想要的动画效果，然后再设计骨骼动画生成 Clip，之后将这些数据导出为我们的引擎能够处理的文件，再进行上面的动画管线流程即可。</p>
 <h3 id="4-动画压缩"><a href="#4-动画压缩" class="headerlink" title="4 动画压缩"></a>4 动画压缩</h3><p>动画压缩是为了减少 Clip 的数据存储，我们知道 Clip 包含一个动画的关键 pose 的所有 joint 的运动数据，这些运动数据又包含旋转、缩放、平移，对于一个模型来说，正常情况下有几十个到几百个 joint，而一个动画的 Clip 通常又包含几十帧关键 pose，整个游戏资源中的游戏对象又有成百上千个，于是光是动画数据可能就要达到数十 G，如果不进行压缩，存储空间的问题先不说，光是不停的读取这些资源就要消耗大量带宽从而影响游戏性能。</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703125937121.png" alt="image-20220703125937121"></p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703130039721.png" alt="image-20220703130039721"></p>
-<p>但是通过观察，人们发现，实际上大量的动画 pose 中，许多数据是几乎不变的，比如人走路的动画，所有关节的位置和尺寸完全不会发生改变，只有关节的朝向在变，也就是人走路的过程中，所有关节只进行了旋转变换：<br><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703130212666.png" alt="image-20220703130212666"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703125937121.png" alt="image-20220703125937121"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703130039721.png" alt="image-20220703130039721"></p>
+<p>但是通过观察，人们发现，实际上大量的动画 pose 中，许多数据是几乎不变的，比如人走路的动画，所有关节的位置和尺寸完全不会发生改变，只有关节的朝向在变，也就是人走路的过程中，所有关节只进行了旋转变换：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703130212666.png" alt="image-20220703130212666"></p>
 <p>如果还把每个关键 pose 的所有数据存下来，那很多数据都是重复的，于是对于大多数动画，可以舍弃位移和缩放的数据，除非有面部的骨骼变化，然后对于旋转可以对关键 pose 进行压缩，也就是合并一些可以通过插值得到的关键 pose，只要插值结果和关键 pose 结果的误差在一定范围内，我们就不需要这个关键 pose 了，这样一来可以减少很多数据的存储。</p>
 <p>此外，对于旋转的角度随时间的变化曲线，还可以通过 Catmull-Rom 样条等曲线进行拟合，这样只需要通过极少的控制点，就可以得到误差在可接受范围内的旋转角度曲线：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703130759588.png" alt="image-20220703130759588"></p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703130812422.png" alt="image-20220703130812422"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703130759588.png" alt="image-20220703130759588"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703130812422.png" alt="image-20220703130812422"></p>
 <p>对于四元数的存储，通常是四个浮点数，四个浮点数就需要 4 * 32 个 bit 来存储，但通过观察，人们发现如果不考虑四元数最大的一个分量，其他三个分量的范围都在 $[-\frac{1}{\sqrt 2},\frac{1}{\sqrt 2}]$ 范围内：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703131014403.png" alt="image-20220703131014403"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703131014403.png" alt="image-20220703131014403"></p>
 <p>并且因为表示旋转的都是单位四元数，因此当我们知道三个分量的时候就可以利用模为 1 来求得第四个分量。</p>
-<p>这样一来我们可以用 2 bit 来表示最大的维度是哪个，然后只存储其他三个维度，并且因为其他三个维度的范围我们是知道的，我们可以利用定点数的方式存储他们，将 $[-\frac{1}{\sqrt 2},\frac{1}{\sqrt 2}]$ 范围内的小数均匀的分成若干个，映射到整数范围内，比如用 15 位来存储 $[-\frac{1}{\sqrt 2},\frac{1}{\sqrt 2}]$ 范围内的小数，那么 0 就对应 $-\frac{1}{\sqrt 2}$，32767 就对应 $\frac{1}{\sqrt 2}$，数据精度就是 $\sqrt2 / 32767 = 0.000043$。</p>
-<p>于是需要用 128 bit 来存储的四元数，经过压缩就只需要 2 + 3 * 15 = 47 bit，为了内存对齐，最终使用 48 bit 存储：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703131709781.png" alt="image-20220703131709781"></p>
+<p>这样一来我们可以用 2 bit 来表示最大的维度是哪个，然后只存储其他三个维度，并且因为其他三个维度的范围我们是知道的，我们可以利用定点数的方式存储他们，将 $[-\frac{1}{\sqrt 2},\frac{1}{\sqrt 2}]$ 范围内的小数均匀的分成若干个，映射到整数范围内，比如用 15 位来存储 $[-\frac{1}{\sqrt 2},\frac{1}{\sqrt 2}]$ 范围内的小数，那么 0 就对应 $-\frac{1}{\sqrt 2}$，32767 就对应 $\frac{1}{\sqrt 2}$，数据精度就是 $\sqrt2 &#x2F; 32767 &#x3D; 0.000043$。</p>
+<p>于是需要用 128 bit 来存储的四元数，经过压缩就只需要 2 + 3 * 15 &#x3D; 47 bit，为了内存对齐，最终使用 48 bit 存储：</p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703131709781.png" alt="image-20220703131709781"></p>
 <p>当然这样存储会产生一定误差，在运动不断传递的过程中就会产生越来越大的累计误差：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703131842087.png" alt="image-20220703131842087"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703131842087.png" alt="image-20220703131842087"></p>
 <p>因此还需要进行误差的修正，这就相对来说比较的复杂了，这里不再讨论，不过一般矫正误差不会从运动参数方面进行矫正，而是从视觉误差方面校正，只要视觉上看起来动画是合理的，即便运动参数有误差，也不需要做额外的矫正操作。</p>
-<h3 id="5-动画融合"><a href="#5-动画融合" class="headerlink" title="5 动画融合"></a>5 动画融合</h3><p>动画融合是指在不同动画的 Clip 之间进行插值融合，而之前我们讨论的都是在 Clip 内部的关键 pose 之间的插值。不同动画之间的融合就涉及到更多复杂的问题，比如两个动画需要在时间和骨骼位置上有对应关系，这样融合起来的过渡动画才更加自然，而且对于角色在三维空间的运动，通常会有前后左右各个方向的运动，需要融合的动画可能不是两个动画，而是更多的动画，这时就需要构造融合空间，当角色在空间中移动的时候，选用离的最近的三个动画进行插值融合：<br><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703151402089.png" alt="image-20220703151402089"></p>
+<h3 id="5-动画融合"><a href="#5-动画融合" class="headerlink" title="5 动画融合"></a>5 动画融合</h3><p>动画融合是指在不同动画的 Clip 之间进行插值融合，而之前我们讨论的都是在 Clip 内部的关键 pose 之间的插值。不同动画之间的融合就涉及到更多复杂的问题，比如两个动画需要在时间和骨骼位置上有对应关系，这样融合起来的过渡动画才更加自然，而且对于角色在三维空间的运动，通常会有前后左右各个方向的运动，需要融合的动画可能不是两个动画，而是更多的动画，这时就需要构造融合空间，当角色在空间中移动的时候，选用离的最近的三个动画进行插值融合：<br><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703151402089.png" alt="image-20220703151402089"></p>
 <p>除了全身动画融合之外，有时还需要将动画只应用到上半身或者下半身，比如：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703151517898.png" alt="image-20220703151517898"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703151517898.png" alt="image-20220703151517898"></p>
 <p>这时可以对骨骼动画进行一个 Mask 操作：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703151503298.png" alt="image-20220703151503298"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703151503298.png" alt="image-20220703151503298"></p>
 <p>还有的情况需要让同一个动画在不同的朝向执行，比如朝不同方向点头：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703151624831.png" alt="image-20220703151624831"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703151624831.png" alt="image-20220703151624831"></p>
 <p>这时可以只存储骨骼的相对运动，再进行融合。</p>
 <h3 id="6-动画状态机和动画树"><a href="#6-动画状态机和动画树" class="headerlink" title="6 动画状态机和动画树"></a>6 动画状态机和动画树</h3><p>在游戏过程中设计许多动画的切换，即便是一个动画，也需要分为很多部分进行循环切换，比如一个跳跃的动作，分为起跳，空中循环和落地三个动作，这三个动作需要在不同的时间进行切换，这样的切换可以用状态机来描述：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703151854905.png" alt="image-20220703151854905"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703151854905.png" alt="image-20220703151854905"></p>
 <p>而目前游戏引擎中使用最多的动画切换和融合模型是动画树，动画树类似于运算树：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703151951269.png" alt="image-20220703151951269"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703151951269.png" alt="image-20220703151951269"></p>
 <p>动画树将各个动画 pose 视为节点，在融合节点进行融合，融合的条件和权重可以依据游戏进行的过程进行调节，比如角色当前的状态，游戏中发生的事件等等：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703152052410.png" alt="image-20220703152052410"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703152052410.png" alt="image-20220703152052410"></p>
 <p>动画状态机和动画树还可以结合起来表达更加复杂的动画切换。</p>
 <h3 id="7-反向动力学"><a href="#7-反向动力学" class="headerlink" title="7 反向动力学"></a>7 反向动力学</h3><p>反向动力学（Inverse Kinematics, IK）是指，有时候角色动画还依赖于和场景的互动，比如攀岩的时候我们的某只手或者脚要固定在山体上，走路的时候一只脚要固定在地面上，这时我们就要求解在某个 joint 固定的情况下，要达到某个目标点，其他 joint 要如何变化，这就是反向动力学。</p>
 <p>IK 是动画中比较难的部分，首先要判断能否到达目标点，一般可以用骨骼拉直判断到目标点的距离或者将其他骨骼折叠起来和最长的骨骼对比长度等方法：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703152516324.png" alt="image-20220703152516324"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703152516324.png" alt="image-20220703152516324"></p>
 <p>当能够到达目标点的时候，就需要求解各个 joint 的变化，比较常用的算法有 CCD (Cyclic Coordinate Decent)、FABRIK (Forward And Backward Reaching Inverse Kinematics) 和雅可比矩阵（Jacobian Matrix）等，基本都是靠多次迭代不断逼近目标点，同时调整路径上的各个 joint，具体的算法比较复杂，这里不再展开了。</p>
 <p>此外计算 IK 的时候还得考虑整个身体的平衡，要符合物理事实，因此 IK 是一个非常困难的领域。也因为有动画融合和 IK 的存在，整个动画管线就变得更加复杂：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703152759121.png" alt="image-20220703152759121"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703152759121.png" alt="image-20220703152759121"></p>
 <p>还需要考虑不同动画的融合以及动画和世界场景的交互。</p>
 <h3 id="8-动画重定向"><a href="#8-动画重定向" class="headerlink" title="8 动画重定向"></a>8 动画重定向</h3><p>动画重定向是为了将一个模型的骨骼动画应用到另一个模型上：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703152943879.png" alt="image-20220703152943879"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703152943879.png" alt="image-20220703152943879"></p>
 <p>这只中还要考虑模型骨骼关系、骨骼数量的差异甚至模型骨骼结构的差异：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703153118965.png" alt="image-20220703153118965"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703153118965.png" alt="image-20220703153118965"></p>
 <p>因为体型不同，还要考虑身体自身的碰撞，比如通过样的走路动画，一个较小的角色动画应用到体型比较大的角色身上就会穿模，鼓掌的时候可能原本首长可以碰到，但换到另一个模型上就碰不到了：</p>
-<p><img src="https://lz328.github.io/LycTechStack.github.io/image-20220703153301117.png" alt="image-20220703153301117"></p>
+<p><img src="https://lz328.github.io/LycTechStack.github.io/2022/07/03/20220703-GameEngine-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E4%B8%AD%E7%9A%84%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F/image-20220703153301117.png" alt="image-20220703153301117"></p>
 <p>所以如何能够将一个动画应用到体型不同的其他角色上还不出现错误也是一个比较复杂的工作。</p>
 
     </div>
@@ -669,7 +669,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">15:23</span>
+    <span title="站点阅读时长">15:29</span>
 </div>
 
         
